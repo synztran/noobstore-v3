@@ -1,0 +1,18 @@
+
+.pulseIn {
+  box-shadow: 0 0 rgb(74 222 128);
+  animation: pulseIn 2s infinite;
+}
+
+@keyframes pulseIn {
+  0% {
+    box-shadow: 0 0 rgb(74 222 128);
+  }
+  70% {
+    box-shadow: 0 0 0 8px #29d4ba00;
+  }
+
+  100% {
+    box-shadow: 0 0 #29d4ba00
+  }
+}

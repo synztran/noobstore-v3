@@ -1,0 +1,3 @@
+.sliderBanner , .sliderBanner [class*='slick-list'], .sliderBanner [class*='slick-list'] [class*='slick-track'] {
+    height: 50vh;
+}

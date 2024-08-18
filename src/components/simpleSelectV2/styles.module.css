@@ -1,0 +1,10 @@
+.select {
+  box-shadow: none !important;
+  border: 1px solid #d9d9d9;
+}
+
+.labelRoot {
+  padding: 16px 0 0 18px !important;
+  z-index: 10;
+  color: #000;
+}

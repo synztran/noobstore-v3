@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext", "ES6"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "strict": false,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+
+    "target": "es5",
+    "outDir": "out",
+    "declaration": true,
+    "sourceMap": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "jsx": "preserve",
+    "noEmit": true,
+    "isolatedModules": true,
+    "incremental": true,
+
+    // "baseUrl": ".",
+    "baseUrl": "./src",
+    // "paths": {
+    //   "*": ["./src/*"],
+    //   "public/*": ["./public/*"],
+    //   "constants/*": ["./src/constants/*"],
+    //   "utils/*": ["./src/utils/*"],
+    //   "context/*": ["./src/context/*"],
+    // }
+    "paths": {
+      "@/*":["*"], 
+      "@mui/styled-engine": [ "./node_modules/@mui/styled-engine-sc" ]
+      // "@/components/*": ["src/components/*"],
+      // "@/assets/*": ["src/assets/*"],
+      // "@/styles/*": ["src/styles/*"],
+      // "@/client/*": ["src/client/*"],
+      // "@/constants/*": ["src/constants/*"],
+      // "@/utils/*": ["src/utils/*"],
+    }
+  },
+  "exclude": ["./out/**/*", "./node_modules/**/*"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/icons/keyboard.js", "src/constants"]
+}

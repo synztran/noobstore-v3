@@ -1,0 +1,12 @@
+.focused {
+  border: none
+}
+
+.root {
+  box-shadow: none;
+}
+
+.input {
+  border: none !important;
+  box-shadow: none!important;
+}

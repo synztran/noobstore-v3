@@ -1,0 +1,8 @@
+.collectionImage:hover .overlay {
+  opacity: 100;
+  background-color: #00000073;
+}
+
+.collectionImage:hover .textImage {
+  opacity: 100;
+}

@@ -1,0 +1,59 @@
+.itemOption {
+  padding: 4px 8px!important;
+  border-left: unset!important;
+  border: 1px solid #e9e9e9;
+
+}
+
+.itemSelectGroup {
+  display: flex;
+  gap: 8px;
+  border-radius: 4px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 1rem;
+}
+
+.label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.buttonItemDisabled {
+  position: relative!important;
+  overflow: hidden;
+  background-color: #f8f8f8!important;
+}
+
+.buttonItemDisabled:before {
+  content: "";
+  width: 100%;
+  height: 160px;
+  position: absolute;
+  border-right: 1px solid #6b6a6a;
+  left: 0;
+  top: 0;
+  rotate: 72deg;
+  translate: -50% -60%;
+}
+
+.buttonItemDisabled:after {
+  content: "";
+  width: 100%;
+  height: 160px;
+  position: absolute;
+  border-left: 1px solid #6b6a6a;
+  left: 0;
+  top: 0;
+  rotate: -72deg;
+  translate: 50% -60%;
+}
+
+/* .parentContainer [class*='Mui-selected'] {
+  color: green !important;
+} */

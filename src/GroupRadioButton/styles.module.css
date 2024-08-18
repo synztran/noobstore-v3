@@ -1,0 +1,70 @@
+.groupLabel {
+  font-size: 21px !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+}
+
+.groupSubtitle {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  color: #676767 !important;
+}
+
+.groupOption {
+  margin: 0!important;
+  padding: 0.25rem 17px 0.25rem 0.5rem!important;
+  position: relative;
+  display: flex;
+}
+
+.groupOption[class*='Mui-disabled'] span:first-child {
+  opacity: 0.4;
+}
+
+.mainGroup {
+  clear: both;
+  margin-top: 1rem;
+}
+.mainGroup > label:not(:last-child) {
+  border-bottom: 1px solid #000!important;
+}
+
+.imageRight {
+  display: inline-block;
+  width: 40px;
+  height: 100%;
+  position: relative;
+}
+
+.textRight {
+  width: 100%;
+}
+
+.groupOnlyOne {
+  border: 1px solid rgb(160 174 192);
+  padding: 1rem 17px 1rem 0.5rem;
+  margin: 1rem 0 0!important;
+  border-radius: 0.375rem;
+  display: flex;
+}
+
+.collapseCotainer {
+  padding: 1rem !important;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.collapseInput {
+  border: 1px solid rgb(203 213 224);
+  border-radius: 0.25rem;
+  padding: 0.75rem 1rem;
+  background-color: #fff;
+}
+
+.collapseInput > input {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+}

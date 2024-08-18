@@ -1,0 +1,11 @@
+export enum ENUM_CHECKOUT_COLLAPSE_TYPE {
+  NEW_ADDRESS = 'NEW_ADDRESS',
+}
+
+export enum EnumSideMenu {
+  "DETAIL" = "DETAIL",
+  "NOTIFICATION" = "NOTIFICATION",
+  "ADDRESSES" = "ADDRESSES",
+  "ORDERS" = "ORDERS",
+  "LOGOUT" = "LOGOUT",
+}
