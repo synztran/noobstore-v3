@@ -2,12 +2,14 @@
   font-size: 21px !important;
   font-weight: 700 !important;
   color: #000 !important;
+  background-color: transparent !important;
 }
 
 .groupSubtitle {
   font-size: 16px !important;
   font-weight: 400 !important;
   color: #676767 !important;
+  background-color: transparent !important;
 }
 
 .groupOption {
@@ -38,6 +40,7 @@
 
 .textRight {
   width: 100%;
+  margin: auto 0
 }
 
 .groupOnlyOne {

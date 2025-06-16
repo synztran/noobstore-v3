@@ -1,85 +1,76 @@
-import { isValid } from "@/client";
-import CategoryClient from "@/client/CategoryClient";
 import Breadcumb from "@/components/breadcumb";
 import CategoryCard from "@/components/categoryCard";
-import { BreadcumbTitle, sortOptions } from "@/components/constants";
 import FilterSection from "@/components/filter";
-import { Category } from "@/interface";
+import { BreadcumbTitle, sortOptions } from "@/constants";
+import { useAuth } from "@/context/Auth";
+import { ICategory } from "@/interface/interface";
+import useCategoryQuery from "@/react-query/shop/api/useCategoryQueries";
 import { Base } from "@/templates/Base";
 import { classNames } from "@/utils/AppConfig";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { CircularProgress } from "@material-ui/core";
 import { useRouter } from "next/router";
-import { Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useState } from "react";
 
 const ShopPage = () => {
-  const router = useRouter();
-  const { status } = router.query
+	const router = useRouter();
+	const { status } = router.query;
+	const { isAuthenticated } = useAuth() as unknown as {
+		isAuthenticated: boolean;
+	};
 
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-	const [categoryDetail, setCategoryDetail] = useState<Category[]>([]);
-	const [isLoading, setLoading] = useState(false)
+	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+	const { data: categoryList, isLoading } = useCategoryQuery({
+		status: status as string,
+		isValidate: true,
+	});
 
-	useEffect(() => {
-		(async () => {
-			setLoading(true)
-			const resp = await CategoryClient.getAllCategory({params: {
-        status_gb: status
-      }});
-			if (isValid(resp)) {
-				setCategoryDetail(resp.data);	
-			} else {
-				setCategoryDetail([])
-			}
-			setLoading(false)
-		})();
-	}, [status]);
-	
-  return (
-    <Base>
+	return (
+		<Base>
 			<div className="mx-w-full py-6 relative z-1">
-				<Breadcumb
-					mainRoot={BreadcumbTitle["shop"]}
-				/>
+				<Breadcumb mainRoot={BreadcumbTitle["shop"] as string} />
 				{/* <HeadSection
 					setMobileFiltersOpen={setMobileFiltersOpen}
 				/> */}
-				<article className="flex gap-x-8 mt-4">
+				<article className="flex gap-x-4 mt-4">
 					<FilterSection
 						isMobileOpen={mobileFiltersOpen}
 						setMobileOpen={setMobileFiltersOpen}
 					/>
-					{
-						isLoading ? (
-							<div className="flex justify-center items-center w-full h-96">
-								<CircularProgress size={32} />
+					{isLoading ? (
+						<div className="flex justify-center items-center w-full h-96">
+							<CircularProgress size={32} />
+						</div>
+					) : null}
+					{!isLoading && categoryList?.length === 0 ? (
+						<div className="flex justify-center items-center w-full h-96">
+							<div>
+								{!isAuthenticated
+									? "Vui lòng đăng nhập để xem sản phẩm"
+									: "Hiện tại không có sản phẩm!"}
 							</div>
-						) : null
-					}
-					{
-						!isLoading && categoryDetail?.length === 0 ? (
-							<div className="flex justify-center items-center w-full h-96">
-								<div>Không có dữ liệu</div>
-							</div>
-						) : null
-					}
-					{
-						!isLoading && categoryDetail?.length > 0 ? (
-							<div className="grid gap-x-4 gap-y-4 grid-cols-3 md:grid-cols-3 w-full">
-								{
-									categoryDetail?.filter(category => category.is_active)?.map(child => <CategoryCard category={child} />)
-								}
-							</div>
-						) : null
-					}
+						</div>
+					) : null}
+					{!isLoading && categoryList && categoryList?.length > 0 ? (
+						<div className="grid gap-2 grid-cols-4 max-lg:grid-cols-3 w-full">
+							{categoryList?.map(
+								(child: ICategory, index: number) => (
+									<CategoryCard
+										category={child}
+										key={index}
+									/>
+								)
+							)}
+						</div>
+					) : null}
 				</article>
 			</div>
 		</Base>
-  )
-}
+	);
+};
 
-export default ShopPage
+export default ShopPage;
 
 const HeadSection = ({
 	setMobileFiltersOpen,

@@ -2,7 +2,6 @@
   padding: 4px 8px!important;
   border-left: unset!important;
   border: 1px solid #e9e9e9;
-
 }
 
 .itemSelectGroup {
@@ -53,7 +52,3 @@
   rotate: -72deg;
   translate: 50% -60%;
 }
-
-/* .parentContainer [class*='Mui-selected'] {
-  color: green !important;
-} */

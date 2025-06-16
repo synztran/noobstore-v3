@@ -2,35 +2,33 @@ import CategoryClient from "@/client/CategoryClient";
 import { getFirst, isValid } from "@/client/index";
 import Breadcumb from "@/components/breadcumb";
 import CategoryCard from "@/components/categoryCard";
-import { BreadcumbTitle, sortOptions } from "@/components/constants";
 import FilterSection from "@/components/filter";
-import { Category } from "@/interface";
+import { BreadcumbTitle, sortOptions } from "@/constants";
+import { ICategory } from "@/interface/interface";
 import { Base } from "@/templates/Base";
 import { classNames } from "@/utils/AppConfig";
 import { Menu, Transition } from "@headlessui/react";
 import {
 	ChevronDownIcon,
 	FunnelIcon,
-	Squares2X2Icon
+	Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import { Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
-
 
 interface Props {
 	title: string;
 }
 
 const CollectionPage = ({ title }: Props) => {
-
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-	const [categoryDetail, setCategoryDetail] = useState<Category[]>([]);
+	const [categoryDetail, setCategoryDetail] = useState<ICategory[]>([]);
 
 	useEffect(() => {
 		(async () => {
-			const resp = await CategoryClient.getAllCategory();
-			console.log("resp", resp)
+			const resp = await CategoryClient.getAllCategory({});
+			console.log("resp", resp);
 			if (isValid(resp)) {
-				setCategoryDetail(getFirst(resp));	
+				setCategoryDetail(getFirst(resp));
 			}
 		})();
 	}, []);
@@ -38,11 +36,9 @@ const CollectionPage = ({ title }: Props) => {
 	return (
 		<Base>
 			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
-				<Breadcumb
-					mainRoot={BreadcumbTitle["collection"]}
-				/>
+				<Breadcumb mainRoot={BreadcumbTitle["collection"]} />
 				<HeadSection
-          title="Danh mục"
+					title="Danh mục"
 					setMobileFiltersOpen={setMobileFiltersOpen}
 				/>
 				<article className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4 mt-4">
@@ -51,9 +47,9 @@ const CollectionPage = ({ title }: Props) => {
 						setMobileOpen={setMobileFiltersOpen}
 					/>
 					<div className="grid gap-x-2 gap-y-4 col-span-1 grid-cols-1 sm:grid-cols-3 sm:col-span-3 justify-items-center">
-            {
-              categoryDetail?.map(child => <CategoryCard category={child} />)
-            }
+						{categoryDetail?.map((child) => (
+							<CategoryCard category={child} />
+						))}
 					</div>
 				</article>
 			</div>
@@ -71,8 +67,12 @@ const HeadSection = ({
 	setMobileFiltersOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
 	return (
-		<div className="flex items-baseline justify-between border-b border-gray-200 pb-2">
-			<h1 className="text-4xl font-bold tracking-tight text-gray-900 capitalize">
+		<div
+			aria-labelledby="title"
+			className="flex items-baseline justify-between border-b border-gray-200 pb-2">
+			<h1
+				id="title"
+				className="text-4xl font-bold tracking-tight text-gray-900 capitalize">
 				{title}
 			</h1>
 

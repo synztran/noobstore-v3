@@ -57,6 +57,10 @@ const ImageFallback = ({
 				setImgSrc(true);
 			}}
 			loading={loading}
+			style={{
+				maxWidth: "100%",
+				height: "auto",
+			}}
 		/>
 	);
 };
@@ -120,8 +124,8 @@ const ImageFallbackProductImage = ({
 
 export default ImageFallback;
 export {
+	ImageFallbackBanner,
+	ImageFallbackProductImage,
 	ImageFallbackStatic,
 	ImageFallbackStoreImage,
-	ImageFallbackProductImage,
-	ImageFallbackBanner,
 };

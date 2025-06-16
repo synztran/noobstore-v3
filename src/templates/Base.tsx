@@ -1,48 +1,79 @@
-// import { Meta } from "../layout/Meta";
-// import { AppConfig } from "../utils/AppConfig";
-import { Box, CircularProgress, Container } from "@material-ui/core";
+import { Box, CircularProgress } from "@material-ui/core";
 import { useEffect } from "react";
 import { Footer } from "./Footer";
 import Header from "./Header";
 import LandingPage from "./LandingPage";
+import { useCalcBodyHeight } from "@/hook/useConfig";
+import { classNames } from "@/utils/AppConfig";
+import { useRouter } from "next/router";
 
-const Base = ({ children, isLoading = false }: { children?: JSX.Element, isLoading?: boolean }) => {
+const Base = ({
+	children,
+	isLoading = false,
+	styles,
+	isNonStrutured = false,
+}: {
+	children?: JSX.Element | null;
+	isLoading?: boolean;
+	styles?: React.CSSProperties;
+	isNonStrutured?: boolean;
+}) => {
+	const router = useRouter();
+	const { appiedFixedLayout } = useCalcBodyHeight({
+		pathName: router.pathname,
+	});
+
 	useEffect(() => {
+		// Only run on client side
+		if (typeof window === "undefined") return;
+
 		if (isLoading) {
 			document.body.style.overflow = "hidden";
 		} else {
 			document.body.style.overflow = "auto";
 		}
 	}, [isLoading]);
-	
+
+	if (isLoading) {
+		return (
+			<div className="text-gray-600 antialiased bg-gray-100 w-full h-screen">
+				<div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+					<CircularProgress
+						size={84}
+						classes={{
+							circle: "text-red-500",
+						}}
+					/>
+				</div>
+			</div>
+		);
+	}
+
 	return (
-		<div className="text-gray-600 antialiased bg-gray-100">
-			{
-				isLoading ? (
-					<Box position="fixed" width="100%" height="100%" bgcolor="rgba(255,255,255, 0.8)" zIndex={1000}>
-						<CircularProgress size={84} style={{position: "absolute", top: '50%', left: '50%'}} classes={{
-							circle: 'text-red-500'
-						}} />
-					</Box>
-				) : null
-			}
+		<div
+			className={classNames(
+				`text-gray-600 antialiased bg-gray-100 min-h-screen`,
+				`container mx-auto h-full`,
+				isNonStrutured
+					? `grid grid-rows-[${
+							appiedFixedLayout
+								? "130px_calc(100vh-130px-203px)_203px"
+								: "130px_1fr_203px"
+					  }] h-screen`
+					: ""
+			)}
+			id="webpage">
 			<Header />
 			{children && Object.keys(children.props).length > 0 ? (
-				<Container 
-					maxWidth="xl"
-					className="mx-auto bg-gray-100 relative"
-					style={{ minHeight: "calc(100vh - 128px - 365px)" }}
-				>
-					{children}
-				</Container>
+				<>{children}</>
 			) : (
-				<div className="min-h-screen container mx-auto mb-8">
+				<div className="container mx-auto my-8">
 					<LandingPage />
 				</div>
 			)}
 			<Footer />
 		</div>
 	);
-}
+};
 
 export { Base };

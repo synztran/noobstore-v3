@@ -1,7 +1,7 @@
 import Breadcumb from "@/components/breadcumb";
 import CategoryCard from "@/components/categoryCard";
-import { BreadcumbTitle, sortOptions } from "@/components/constants";
 import FilterSection from "@/components/filter";
+import { BreadcumbTitle, sortOptions } from "@/constants";
 import { Base } from "@/templates/Base";
 import { temp } from "@/templates/LandingPage";
 import { classNames } from "@/utils/AppConfig";

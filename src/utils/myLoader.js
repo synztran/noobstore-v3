@@ -5,7 +5,7 @@ const myLoader = ({ src, width, quality }) =>
 	`${src}${src.indexOf("?") >= 0 ? "&" : "?"}w=${width}&q=${quality || 100}`;
 
 export const myLoaderCache = ({ src, width, quality }) =>
-	`${DOMAIN_IMAGE_CACHE_LOADER}/_next/image?url=${encodeURIComponent(
+	`${DOMAIN_IMAGE_CACHE_LOADER}/_next/legacy/image?url=${encodeURIComponent(
 		src
 	)}&w=${width}&q=${quality || 75}`;
 

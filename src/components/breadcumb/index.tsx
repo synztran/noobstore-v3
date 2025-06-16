@@ -7,7 +7,6 @@ interface Props {
 }
 
 const Breadcumb = ({ mainRoot, subRoot, sub2Root }: Props) => {
-	console.log("mainRoot", mainRoot, subRoot);
 	const router = useRouter();
 
 	return (

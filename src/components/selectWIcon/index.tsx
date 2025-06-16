@@ -7,12 +7,14 @@ const people = [
 	{
 		id: 1,
 		name: "Sample 1",
-		imageUrl: "https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+		imageUrl:
+			"https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 	},
 	{
 		id: 2,
 		name: "Sample 2",
-		imageUrl: "https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+		imageUrl:
+			"https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 	},
 ];
 
@@ -20,27 +22,37 @@ interface Props {
 	label?: string;
 	selectList?: {
 		[x: string]: string | number | boolean;
-	}[],
+	}[];
 	isIcon?: boolean;
 	onChange?: (value: string | number) => void;
 	name?: string;
-	setFieldValue?: any
+	setFieldValue?: any;
 }
 
-const SelectWithIcon = ({ label = "", selectList = people, isIcon = true, name, setFieldValue }: Props) => {
+const SelectWithIcon = ({
+	label = "",
+	selectList = people,
+	isIcon = true,
+	name,
+	setFieldValue,
+}: Props) => {
 	const [selected, setSelected] = useState(selectList[0]);
 
-	const handleChange = () => {
-		if (selected) {
-			setSelected(selected);
-			setFieldValue(name, selected)
-		}
-	}
+	const handleChange = (newValue: {
+		name: string;
+		slug: string;
+		type: string;
+		code: string;
+	}) => {
+		console.log("newValue", newValue);
+		setSelected(newValue);
+		setFieldValue(name, newValue);
+	};
 
 	return (
 		<Listbox value={selected} onChange={handleChange}>
 			{({ open }) => (
-				<>
+				<div>
 					<Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
 						{label}
 					</Listbox.Label>
@@ -86,11 +98,13 @@ const SelectWithIcon = ({ label = "", selectList = people, isIcon = true, name, 
 										}
 										value={child}>
 										{({ selected, active }) => (
-											<>
+											<div>
 												<div className="flex items-center">
 													{isIcon ? (
 														<img
-															src={child.imageUrl as string}
+															src={
+																child.imageUrl as string
+															}
 															alt=""
 															className="h-5 w-5 flex-shrink-0 rounded-full"
 														/>
@@ -120,14 +134,14 @@ const SelectWithIcon = ({ label = "", selectList = people, isIcon = true, name, 
 														/>
 													</span>
 												) : null}
-											</>
+											</div>
 										)}
 									</Listbox.Option>
 								))}
 							</Listbox.Options>
 						</Transition>
 					</div>
-				</>
+				</div>
 			)}
 		</Listbox>
 	);

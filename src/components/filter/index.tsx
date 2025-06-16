@@ -1,43 +1,51 @@
-import { EnumSaleStatus } from "@/interface";
+import { filters } from "@/constants";
+import { EnumSaleStatus } from "@/interface/interface";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Button } from "@material-ui/core";
 import { useRouter } from "next/router";
 import { Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
-import { filters } from "../constants";
 
 interface Props {
 	isMobileOpen: boolean;
 	setMobileOpen: Dispatch<SetStateAction<boolean>>;
+	isAllowToSell?: boolean;
+	toggleSellProduct?: () => void;
 }
 
-const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
+const FilterSection = ({
+	isMobileOpen = false,
+	setMobileOpen,
+	isAllowToSell = false,
+	toggleSellProduct,
+}: Props) => {
 	const router = useRouter();
 	const { status } = router.query;
 	const [filterOpts, setFilterOpts] = useState({
-		status_gb: status || EnumSaleStatus.ALL
-	})
+		status_gb: status || EnumSaleStatus.ALL,
+	});
 
 	const handleResetFilter = () => {
 		setFilterOpts({
-			status_gb: EnumSaleStatus.ALL
-		})
+			status_gb: EnumSaleStatus.ALL,
+		});
 		router.replace({
 			query: {},
-			pathname: router.pathname
-		})
-	}
+			pathname: router.pathname,
+		});
+	};
 
 	useEffect(() => {
 		if (status) {
 			setFilterOpts({
-				status_gb: status as EnumSaleStatus
-			})
+				status_gb: status as EnumSaleStatus,
+			});
 		}
- 	}, [status])
+	}, [status]);
 
 	return (
-		<div className="w-96">
+		<div className="w-80">
 			<div className="border border-gray-400 p-4">
 				{/* Mobile filter dialog */}
 				<Transition.Root show={isMobileOpen} as={Fragment}>
@@ -108,10 +116,9 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 												as="div"
 												key={section.id}
 												className="border-t border-gray-200 px-4 py-6"
-												defaultOpen={true}
-											>
+												defaultOpen={true}>
 												{({ open }) => (
-													<>
+													<div>
 														<h3 className="-mx-2 -my-3 flow-root">
 															<Disclosure.Button className="flex w-full items-center justify-between px-2 py-3 text-gray-400 hover:text-gray-500">
 																<span className="font-medium text-gray-900">
@@ -170,7 +177,7 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 																)}
 															</div>
 														</Disclosure.Panel>
-													</>
+													</div>
 												)}
 											</Disclosure>
 										))}
@@ -183,9 +190,7 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 
 				{/* desktop */}
 				<main className="mx-auto max-w-7xl ">
-					<section
-						aria-labelledby="products-heading"
-						className="">
+					<section aria-labelledby="products-heading" className="">
 						<h2 id="products-heading" className="sr-only">
 							Products
 						</h2>
@@ -201,10 +206,9 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 									as="div"
 									key={section.id}
 									className="border-b border-gray-200 py-6"
-									defaultOpen
-								>
+									defaultOpen>
 									{({ open }) => (
-										<>
+										<div>
 											<h3 className="-my-3 flow-root">
 												<Disclosure.Button className="flex w-full items-center justify-between py-3 text-sm text-gray-400 hover:text-gray-500">
 													<span className="font-medium text-gray-900 text-base">
@@ -233,8 +237,7 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 																key={
 																	option.value
 																}
-																className="flex items-center"
-															>
+																className="flex items-center">
 																<input
 																	id={`filter-${section.id}-${optionIdx}`}
 																	name={`${section.id}`}
@@ -243,7 +246,8 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 																	}
 																	type="checkbox"
 																	defaultChecked={
-																		filterOpts.status_gb === option.value
+																		filterOpts.status_gb ===
+																		option.value
 																	}
 																	className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
 																/>
@@ -259,18 +263,33 @@ const FilterSection = ({ isMobileOpen = false, setMobileOpen }: Props) => {
 													)}
 												</div>
 											</Disclosure.Panel>
-										</>
+										</div>
 									)}
 								</Disclosure>
 							))}
 							<div className="flex mt-8 gap-4">
-								<button type="reset" className="w-1/2 border border-gray-400 p-2 rounded-md font-bold hover:bg-gray-200" onClick={handleResetFilter}>
+								<button
+									type="reset"
+									className="w-1/2 border border-gray-400 p-2 rounded-md font-bold hover:bg-gray-200"
+									onClick={handleResetFilter}>
 									Làm mới
 								</button>
 								<button className="w-1/2 border border-gray-400 p-2 rounded-md font-bold hover:bg-gray-200">
 									Áp dụng
 								</button>
 							</div>
+							{isAllowToSell ? (
+								<div className="mt-4">
+									<Button
+										variant="contained"
+										color="primary"
+										className="text-xl normal-case bg-red-400 w-full"
+										onClick={toggleSellProduct}>
+										{" "}
+										Đăng bán
+									</Button>
+								</div>
+							) : null}
 						</form>
 					</section>
 				</main>

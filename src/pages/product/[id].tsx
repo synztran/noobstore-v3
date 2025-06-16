@@ -1,49 +1,106 @@
-import CategoryClient from "client/CategoryClient";
-import { getFirst, isValid } from "client/index";
-import ProductClient from "client/ProductsClient";
-import Breadcumb from "components/breadcumb";
-import { BreadcumbTitle } from "components/constants";
+import { getFirst } from "@/client";
+import CategoryClient from "@/client/CategoryClient";
+import { ICategory } from "@/interface/interface";
 import ProductCard from "components/productCard";
-import { Category, Product } from "interface";
-import { useParams } from "next/navigation";
-import { memo, useEffect, useState } from "react";
+import { GetStaticPaths, GetStaticProps } from "next";
+import { ParsedUrlQuery } from "querystring";
+import { memo } from "react";
 import { Base } from "templates/Base";
 
-const ProductPage = () => {
-	const params = useParams();
-	const { id } = params || {};
+export const getStaticPaths: GetStaticPaths = async () => {
+	try {
+		const categories = await CategoryClient.getAllValidCategory({
+			ctx: {},
+			isAuth: false,
+			params: {
+				isValidate: false,
+			},
+		});
 
-	const [categoryDetail, setCategoryDetail] = useState<Category | null>(null);
-	const [products, setProducts] = useState<Product[]>([]);
+		const paths =
+			categories?.data?.map((category) => ({
+				params: { id: category?.categoryId?.toString() },
+			})) || [];
 
-	useEffect(() => {
-		if (id) {
-			(async () => {
-				const resp = await CategoryClient.getCategoryById({ id });
-				if (isValid(resp)) {
-					setCategoryDetail(getFirst(resp));	
-					const respProducts =
-						await ProductClient.getProductsByCategoryID({
-							category_id: getFirst(resp).category_id,
-						});
-					setProducts(getFirst(respProducts));
-				}
-			})();
+		return {
+			paths,
+			fallback: "blocking",
+		};
+	} catch (error) {
+		console.error("Error generating static paths:", error);
+		return {
+			paths: [],
+			fallback: "blocking",
+		};
+	}
+};
+
+interface ProductPageParams extends ParsedUrlQuery {
+	id: string;
+}
+
+export const getStaticProps: GetStaticProps<
+	{ category: ICategory },
+	ProductPageParams
+> = async ({ params }) => {
+	if (!params?.id) {
+		return {
+			notFound: true,
+		};
+	}
+
+	try {
+		const category = await CategoryClient.getCategoryById({
+			id: params.id,
+		});
+		const categoryData = getFirst(category);
+
+		if (!categoryData) {
+			return {
+				notFound: true,
+			};
 		}
-	}, [id]);
+
+		return {
+			props: {
+				category: categoryData,
+			},
+			revalidate: 60 * 60 * 12, // 12 hours
+		};
+	} catch (error) {
+		console.error("Error fetching category:", error);
+		return {
+			notFound: true,
+		};
+	}
+};
+
+interface ProductPageProps {
+	category: ICategory;
+}
+
+const ProductPage = ({ category }: ProductPageProps) => {
+	if (!category) {
+		return (
+			<Base>
+				<div className="flex items-center justify-center min-h-[60vh]">
+					<p className="text-gray-600">Loading...</p>
+				</div>
+			</Base>
+		);
+	}
+
+	const { slug } = category;
 
 	return (
 		<Base>
-			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
-				<Breadcumb
-					mainRoot={BreadcumbTitle["products"]}
+			<div className="mx-w-full pb-6 relative z-1">
+				{/* <Breadcumb
+					mainRoot={BreadcumbTitle["products"] as string}
 					subRoot={categoryDetail?.category_name as string}
-				/>
+				/> */}
 				<article className="mt-4 h-full gap-4">
-					<ProductCard
-						category={categoryDetail as Category}
-						products={products}
-					/>
+					<ProductCard slug={slug as string} />
 				</article>
 			</div>
 		</Base>

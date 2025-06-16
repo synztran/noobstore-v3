@@ -1,5 +1,3 @@
 const SimpleTable = () => {
-  return (
-    <></>
-  )
-}
+	return <div />;
+};

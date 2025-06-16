@@ -1,14 +1,17 @@
-import { EnumSaleStatus } from "@/interface";
+import { EnumSaleStatus, EnumUsedProductStatus } from "@/interface/interface";
 import { useEffect, useState } from "react";
 
 interface Props {
 	color?: string;
 	text: string;
 	bgc?: string;
-	status?: EnumSaleStatus;
+	status?: EnumSaleStatus | EnumUsedProductStatus;
 }
 
-const ColorBoard: Record<EnumSaleStatus, { color: string; bgc: string }> = {
+const ColorBoard: Record<
+	EnumSaleStatus | EnumUsedProductStatus,
+	{ color: string; bgc: string }
+> = {
 	[EnumSaleStatus.TBD]: {
 		color: "#000",
 		bgc: "#c4c4c4",
@@ -27,8 +30,16 @@ const ColorBoard: Record<EnumSaleStatus, { color: string; bgc: string }> = {
 	},
 	[EnumSaleStatus.ALL]: {
 		color: "",
-		bgc: ""
-	}
+		bgc: "",
+	},
+	[EnumUsedProductStatus.AVAILABLE]: {
+		color: "#fff",
+		bgc: "#3c9342",
+	},
+	[EnumUsedProductStatus.SOLD]: {
+		color: "#fff",
+		bgc: "#bf262f",
+	},
 };
 
 const Tag = ({ color, text, bgc, status = EnumSaleStatus.TBD }: Props) => {
@@ -61,9 +72,9 @@ const Tag = ({ color, text, bgc, status = EnumSaleStatus.TBD }: Props) => {
 		<div
 			className="min-w-fit py-1 px-2 rounded-md font-medium"
 			style={{ backgroundColor: tagBackgroundColor }}>
-			<span className="" style={{ color: tagTextColor }}>
+			<div className="text-sm font-bold" style={{ color: tagTextColor }}>
 				{text}
-			</span>
+			</div>
 		</div>
 	);
 };

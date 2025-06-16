@@ -1,33 +1,39 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+
+export enum EnumStatusDialog {
+	OPEN = 1,
+	CLOSE = 0,
+}
 
 interface Actions {
-  toggleDialogLogin: (payload: boolean) => void;
+	toggleDialogLogin: (payload: boolean) => void;
 }
 
 interface InitialDialogLoginState {
-  isOpenDialogLogin: boolean
+	isOpenDialogLogin: boolean;
 }
 
-type DialogLoginState =  InitialDialogLoginState & { actions: Actions}
+type DialogLoginState = InitialDialogLoginState & { actions: Actions };
 
 const InitialState = {
-  isOpenDialogLogin: false
-}
+	isOpenDialogLogin: false,
+};
 
 const useDialogLogin = create<DialogLoginState>()(
-  devtools((set, get) => ({
-    ...InitialState,
-    actions: {
-      toggleDialogLogin: (payload: boolean) => {
-        set(() => ({
-          isOpenDialogLogin: payload
-        }))
-      }
-    }
-  }))
-)
+	devtools((set, get) => ({
+		...InitialState,
+		actions: {
+			toggleDialogLogin: (payload: boolean) => {
+				set(() => ({
+					isOpenDialogLogin: payload,
+				}));
+			},
+		},
+	}))
+);
 
-export const useDialogLoginAction = () => useDialogLogin((state) => state.actions);
+export const useDialogLoginAction = () =>
+	useDialogLogin((state) => state.actions);
 
 export default useDialogLogin;

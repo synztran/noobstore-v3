@@ -1,29 +1,31 @@
-import LogoStore from "@/public/assets/icons/logo.png";
 import NextImage from "next/image";
 import { AppConfig } from "../utils/AppConfig";
+import { LOGO_STORE } from "@/constants/Images";
 
 type ILogoProps = {
 	xl?: boolean;
+	isIcon?: boolean;
 };
 
-const Logo = (props: ILogoProps) => {
-	const size = props.xl ? "44" : "32";
-	const fontStyle = props.xl
-		? "font-semibold text-3xl"
-		: "font-semibold text-xl";
+const Logo = ({ xl, isIcon = false }: ILogoProps) => {
+	const size = xl ? "44" : "32";
+	const fontStyle = xl ? "font-semibold text-3xl" : "font-semibold text-xl";
 
 	return (
 		<span
 			className={`inline-flex items-center text-gray-900 ${fontStyle} gap-2`}>
 			<NextImage
-				src={LogoStore}
+				src={LOGO_STORE}
 				width={120}
 				height={60}
-				objectFit="contain"
 				alt="logo store"
-				className="hover:rotate-12 transition-all duration-300 shadow-xl"
+				className="hover:rotate-6 transition-all duration-300 shadow-xl object-contain"
+				style={{
+					maxWidth: "100%",
+					height: "auto",
+				}}
 			/>
-			{AppConfig.site_name}
+			{isIcon && <span>{AppConfig.site_name}</span>}
 		</span>
 	);
 };

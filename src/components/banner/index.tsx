@@ -13,24 +13,24 @@ const initialSetting = {
 
 const Banner = ({ bannerImages }: Props) => {
 	if (bannerImages?.length === 0) {
-		return <></>;
+		return null;
 	}
 
 	return (
-		<div className="w-full relative max-h-8">
-			{bannerImages.map((banner) => (
+        <div className="w-full relative max-h-8">
+            {bannerImages.map((banner) => (
 				<Slider {...initialSetting}>
 					<Image
-						src={banner.url}
-						alt="banner"
-						objectFit="contain"
-						layout="fill"
-					/>
+                        src={banner.url}
+                        alt="banner"
+                        className="object-contain"
+                        fill
+                        sizes="100vw" />
 					{/* <CategoryCard category={items}  /> */}
 				</Slider>
 			))}
-		</div>
-	);
+        </div>
+    );
 };
 
 export default Banner;

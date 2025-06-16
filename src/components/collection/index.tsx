@@ -29,31 +29,22 @@ const CollectionArray = [
 ];
 
 const CategoryCollection = () => {
-	// const [data, setData] = useState([]);
-
-	// useEffect(() => {
-	// 	(async () => {
-	// 		const resp = await CategoryClient.getAllCategory();
-	// 	})();
-	// }, []);
-
 	return (
-		<div className="flex flex-col gap-10">
-			<div className="font-bold text-3xl uppercase w-full text-center">
+        <div className="flex flex-col gap-10">
+            <div className="font-bold text-3xl uppercase w-full text-center">
 				Danh mục sẵn hàng
 			</div>
-			<div className=" grid grid-cols-5 gap-4">
+            <div className=" grid grid-cols-5 gap-4">
 				{CollectionArray?.sort((a, b) => a.idx - b.idx)?.map(
 					(item, index) => (
 						<div key={index}>
 							<div className="relative w-full h-48 overflow-hidden">
 								<Image
-									className="hover:scale-105 transition duration-500 delay-150 object-cover"
-									src={item.imageUrl}
-									alt={item.text}
-									layout="fill"
-									objectFit="contain"
-								/>
+                                    className="hover:scale-105 transition duration-500 delay-150 object-contain"
+                                    src={item.imageUrl}
+                                    alt={item.text}
+                                    fill
+                                    sizes="100vw" />
 							</div>
 							<p
 								className="text-center font-bold text-xl pt-4"
@@ -64,8 +55,8 @@ const CategoryCollection = () => {
 					)
 				)}
 			</div>
-		</div>
-	);
+        </div>
+    );
 };
 
 export default CategoryCollection;

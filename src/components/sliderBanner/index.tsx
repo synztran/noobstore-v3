@@ -33,29 +33,22 @@ interface Props {
 
 const SliderBanner = ({ data }: Props) => {
 	return (
-		<div className="container relative mb-8 max-w-full">
-			<Slider className={styles.sliderBanner} {...sliderSetting}>
+        <div className="container relative mb-8 max-w-full">
+            <Slider className={styles.sliderBanner} {...sliderSetting}>
 				{tempData?.map((child) => (
 					<div className="w-full relative h-50vh">
-						{/* <ImageFallbackBanner
-							src={child.imageUrl}
-							layout="fill"
-							objectFit="cover"
-							// height={20}
-							alt="image banner"
-						/> */}
 						<Image
-							src={child.imageUrl}
-							layout="fill"
-							objectFit="cover"
-							// height={20}
-							alt="image banner"
-						/>
+                            src={child.imageUrl}
+                            // height={20}
+                            alt="image banner"
+                            className="object-cover"
+                            fill
+                            sizes="100vw" />
 					</div>
 				))}
 			</Slider>
-		</div>
-	);
+        </div>
+    );
 };
 
 export default SliderBanner;

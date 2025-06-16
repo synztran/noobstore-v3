@@ -3,8 +3,8 @@ import CategoryClient from "@/client/CategoryClient";
 // @ts-ignore
 import { getFirst, isValid } from "@/client/index";
 import Breadcumb from "@/components/breadcumb";
-import { BreadcumbTitle } from "@/components/constants";
-import { Category } from "@/interface";
+import { BreadcumbTitle } from "@/constants";
+import { ICategory } from "@/interface/interface";
 import { Base } from "@/templates/Base";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,11 +12,14 @@ import { useEffect, useState } from "react";
 const CategoryDetailPage = () => {
 	const params = useParams();
 	const { id } = params || {};
-	const [categoryDetail, setCategoryDetail] = useState<Category | null>(null);
+	const [categoryDetail, setCategoryDetail] = useState<ICategory | null>(
+		null
+	);
 
 	console.log(params);
 
 	useEffect(() => {
+		console.log("id", id);
 		if (id) {
 			(async () => {
 				const resp = await CategoryClient.getCategoryById({ id });
@@ -27,8 +30,6 @@ const CategoryDetailPage = () => {
 			})();
 		}
 	}, [id]);
-
-	console.log("categoryDetail", categoryDetail);
 
 	return (
 		<Base>

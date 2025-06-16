@@ -1,25 +1,25 @@
+import { CHECKOUT_URL, THANKS_URL } from "@/constants/path";
 import DiscordIcon from "@/icons/discord";
 import { useRouter } from "next/router";
-import { Background } from "../background/Background";
 
 const Footer = () => {
 	const router = useRouter();
-	const isSimpleHeader = ['/checkout'].includes(router.pathname);
+	const isSimpleHeader = [CHECKOUT_URL, THANKS_URL].includes(router.pathname);
 
 	if (isSimpleHeader) {
-		return null
+		return null;
 	}
 
 	return (
-		<Background color="bg-gray-200">
-			<div className="container py-8 mx-auto max-w-90 border-t border-gray-400">
-				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-4">
-					<div className="sm:col-span-2">
-						<h1 className="max-w-lg text-xl font-semibold tracking-tight text-gray-800 xl:text-2x">
-							Đăng ký bản tin của chúng tôi để nhận được cập nhật mới.
+		<footer className="bg-gray-100 relative bottom-0" id="footer">
+			<div className="container py-4 mx-auto max-w-90 border-t border-gray-400 h-full">
+				<div className="grid grid-cols-7 gap-4">
+					<div className="col-span-3">
+						<h1 className="text-xl font-semibold tracking-tight text-gray-800 xl:text-2x">
+							Đăng ký ngay để nhận được cập nhật mới.
 						</h1>
 
-						<div className="flex flex-col mx-auto mt-6 space-y-3 md:space-y-0 md:flex-row">
+						<div className="flex flex-col mx-auto mt-2 space-y-3 md:space-y-0 md:flex-row">
 							<input
 								id="email"
 								type="text"
@@ -33,61 +33,61 @@ const Footer = () => {
 						</div>
 					</div>
 
-					<div>
-						<p className="font-semibold text-gray-800">
+					<div className="col-span-2">
+						<p className="font-semibold text-gray-800 text-xl">
 							Truy cập nhanh
 						</p>
 
-						<div className="flex flex-col items-start mt-5 space-y-2">
+						<div className="grid grid-cols-2 items-start gap-2">
 							<a
 								href="/shop"
-								className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
+								className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
 								Shop
 							</a>
 							<a
 								href="/us"
-								className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
+								className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
 								Về chúng tôi
 							</a>
 							<a
 								href="/contact"
-								className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
+								className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
 								Liên hệ hỗ trợ
 							</a>
-						</div>
-					</div>
-
-					<div>
-						<p className="font-semibold text-gray-800 ">
-							Thời gian hỗ trợ
-						</p>
-
-						<div className="flex flex-col items-start mt-5 space-y-2">
-							<span className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
-								7PM - 11PM Thứ 2 - Thứ 6
-							</span>
-							<span className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
-								8AM - 11PM Thứ 7
-							</span>
 							<a
 								href="/location"
-								className="text-gray-600 transition-colors duration-300   hover:text-blue-500">
+								className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
 								Địa chỉ
 							</a>
 						</div>
 					</div>
+
+					<div className="col-span-2">
+						<p className="font-semibold text-gray-800 text-xl">
+							Thời gian hỗ trợ
+						</p>
+
+						<div className="flex flex-col items-start gap-2">
+							<span className="text-gray-600 transition-colors duration-300">
+								Thứ 2 - Thứ 6: 7:00 - 23:00
+							</span>
+							<span className="text-gray-600 transition-colors duration-300">
+								Thứ 7: 8:00 - 22:00
+							</span>
+						</div>
+					</div>
 				</div>
 
-				<hr className="my-6 border-gray-300 md:my-8 " />
+				<hr className="my-2 border-gray-600 md:my-2" />
 
 				<div className="flex items-center justify-between">
 					<div className="flex gap-2 items-center align-middle">
-						<div className="flex -mx-2 text-sm flex-wrap align-middle items-center">
-							<div className="text-sm w-full flex flex-wrap align-middle items-center gap-2">
+						<div className="flex text-sm flex-wrap align-middle items-center">
+							<div className="text-base w-full flex flex-wrap align-middle items-center gap-2">
 								<div className="inline-flex w-30">
 									<a
 										href="https://discord.gg/CrD4bCY9YJ"
-										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-14 flex items-center align-middle"
+										className="text-gray-600 transition-all duration-300 hover:text-blue-500 w-full h-10 flex items-center align-middle text-sm"
 										aria-label="Discord">
 										Chính sách đổi trả
 									</a>
@@ -96,7 +96,7 @@ const Footer = () => {
 								<div className="flex w-30">
 									<a
 										href="https://discord.gg/CrD4bCY9YJ"
-										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-14 flex items-center align-middle"
+										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-10 flex items-center align-middle text-sm"
 										aria-label="Discord">
 										Chính sách Groupbuy
 									</a>
@@ -105,7 +105,7 @@ const Footer = () => {
 								<div className="flex w-30">
 									<a
 										href="https://discord.gg/CrD4bCY9YJ"
-										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-14 flex items-center align-middle"
+										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-10 flex items-center align-middle text-sm"
 										aria-label="Discord">
 										Chính sách giao hàng
 									</a>
@@ -114,7 +114,7 @@ const Footer = () => {
 								<div className="flex w-30">
 									<a
 										href="https://discord.gg/CrD4bCY9YJ"
-										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-14 flex items-center align-middle"
+										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-10 flex items-center align-middle text-sm"
 										aria-label="Discord">
 										Chính sách bảo mật
 									</a>
@@ -123,16 +123,15 @@ const Footer = () => {
 								<div className="flex w-30">
 									<a
 										href="https://discord.gg/CrD4bCY9YJ"
-										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-14 flex items-center align-middle"
+										className="text-gray-600 transition-all duration-300  hover:text-blue-500 w-full h-10 flex items-center align-middle text-sm"
 										aria-label="Discord">
 										Điều khoản dịch vụ
 									</a>
 								</div>
 							</div>
-							<div className="flex">
-								<span>
-									Copyright © 2017 NoobStore. <br /> Sở hữu và
-									cung cấp bởi NoobTeam
+							<div className="w-full">
+								<span className="text-lg w-full">
+									Copyright © 2017 NoobStore.
 								</span>
 							</div>
 						</div>
@@ -362,8 +361,8 @@ const Footer = () => {
 					</div>
 				</div>
 			</div>
-		</Background>
-	)
-}
+		</footer>
+	);
+};
 
 export { Footer };

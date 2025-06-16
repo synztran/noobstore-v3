@@ -12,8 +12,8 @@ interface Props {
 	name: string;
 	onChange: any;
 	value: {
-		[x: string]: string | number | null
-	}
+		[x: string]: string | number | null;
+	};
 	// selectedOpt: {
 	// 	key: string | number;
 	// 	name: string;
@@ -28,11 +28,10 @@ const SelectBlock = ({
 	options,
 	name,
 	onChange,
-	value
+	value,
 	// selectedOpt,
 	// setSelectedOpt,
 }: Props) => {
-
 	// const [selectedOpt, setSelectedOpt] = useState({
 	// 	key: "",
 	// 	name: "",
@@ -76,7 +75,7 @@ const SelectBlock = ({
 								)
 							}>
 							{({ active, checked }) => (
-								<>
+								<div>
 									<RadioGroup.Label
 										as="span"
 										className="text-sm">
@@ -112,7 +111,7 @@ const SelectBlock = ({
 											</svg>
 										</span>
 									)}
-								</>
+								</div>
 							)}
 						</RadioGroup.Option>
 					))}
