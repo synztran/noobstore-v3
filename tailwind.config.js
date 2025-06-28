@@ -274,14 +274,14 @@ module.exports = {
 				{
 					[`@media (min-width: ${screens.md})`]: {
 						".container": {
-							"max-width": "768px",
+							"max-width": "1024px",
 						},
 					},
 				},
 				{
 					[`@media (min-width: ${screens.lg})`]: {
 						".container": {
-							"max-width": "1024px",
+							"max-width": "1280px",
 						},
 					},
 				},
@@ -295,7 +295,7 @@ module.exports = {
 				{
 					[`@media (min-width: ${screens["2xl"]})`]: {
 						".container": {
-							"max-width": "1280px",
+							"max-width": "1440px",
 						},
 					},
 				},

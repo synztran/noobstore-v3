@@ -4,8 +4,8 @@ import { ICategory } from "@/interface/interface";
 import { formatCurrency } from "@/utils/FormatNumber";
 import NextImage from "next/legacy/image";
 import Link from "next/link";
-import Tag from "../tags";
 import { memo } from "react";
+import ProductTag from "../productTags";
 
 interface Props {
 	category: ICategory;
@@ -39,13 +39,19 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 						priority
 						layout="fill"
 					/>
+					<div className="absolute top-2 right-2">
+						<ProductTag
+							text={CategoryStatus[status]}
+							status={status}
+						/>
+					</div>
 				</div>
 			</Link>
 
 			<div className="w-full h-full flex flex-col justify-between">
 				<div className="mt-2">
 					<div className="font-bold text-base">{categoryName}</div>
-					<div className="text-gray-600 truncate min-h-[24px] text-sm">
+					<div className="text-gray-600 line-clamp-3 min-h-[24px] text-sm">
 						{description || ""}
 					</div>
 				</div>
@@ -74,12 +80,6 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 								{formatCurrency(minPrice)}
 							</div>
 						)}
-						<div>
-							<Tag
-								text={CategoryStatus[status]}
-								status={status}
-							/>
-						</div>
 					</div>
 				</div>
 			</div>

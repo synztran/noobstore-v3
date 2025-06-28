@@ -140,8 +140,6 @@ export default function Products() {
 		},
 	});
 
-	console.log(formik.values);
-
 	const handleCreateProduct = async (payload: IProduct) => {
 		const signal = new AbortController().signal;
 		const resp = await ProductsClient.postNewProduct({

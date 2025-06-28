@@ -72,7 +72,7 @@ export default function Header() {
 	return (
 		<header className="bg-gray-100 sticky top-0 z-50 " id="header">
 			<nav
-				className={`container mx-auto flex items-center justify-between py-6 px-6 border-b border-black max-w-90 h-[130px] ${
+				className={`container mx-0 flex items-center justify-between p-6 border-b border-black max-w-full h-[130px] ${
 					isSimpleHeader ? "px-12" : ""
 				}`}
 				aria-label="Global">

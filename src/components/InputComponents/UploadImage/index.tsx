@@ -189,7 +189,9 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 			<input
 				id="file-upload"
 				type="file"
-				accept={acceptedFileTypes?.join(",") || ".jpg,.jpeg,.png,.gif"}
+				accept={
+					acceptedFileTypes?.join(",") || ".jpg,.jpeg,.png,.gif,.webp"
+				}
 				multiple={allowMultiple}
 				onChange={handleImageUpload}
 				style={{ display: "none" }}

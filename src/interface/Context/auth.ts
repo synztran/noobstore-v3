@@ -16,5 +16,5 @@ export interface IAuthUser {
 	shippingAt: any[]; // Assuming shippingAt is an array of any type
 	verified: boolean;
 	verifiedAt: string; // Assuming this is also a string
-	role?: string;
+	role?: string; // "admin" | "user"
 }

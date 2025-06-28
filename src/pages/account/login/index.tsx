@@ -11,10 +11,19 @@ import * as Yup from "yup";
 
 const RegisterPage = (): JSX.Element => {
 	const router = useRouter();
-	const { isAuthenticated }: any = useAuth();
+	const { isAuthenticated } = useAuth() as unknown as {
+		isAuthenticated: boolean;
+	};
 	const [isVisible, setIsVisible] = useState<boolean>(false);
 	const [onProcessing, setProcessing] = useState<boolean>(false);
-	const { handleLogin }: any = useAuth();
+	const { handleLogin } = useAuth() as unknown as {
+		handleLogin: (data: {
+			email: string;
+			password: string;
+			success: () => void;
+			callback: () => void;
+		}) => void;
+	};
 
 	const SigupSchema = Yup.object().shape({
 		email: Yup.string()

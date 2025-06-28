@@ -5,7 +5,7 @@ import { formatCurrency } from "@/utils/FormatNumber";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Tag from "../tags";
+import Tag from "../productTags";
 
 interface IProps {
 	usedProduct: IUsedProduct;

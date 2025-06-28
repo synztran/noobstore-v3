@@ -17,6 +17,7 @@ interface IProps {
 	note?: string;
 	maxContent?: number;
 	id?: string;
+	rows?: number; // Add rows prop for configuring default lines
 }
 
 const TextEditor: React.FC<IProps> = (props) => {
@@ -30,9 +31,13 @@ const TextEditor: React.FC<IProps> = (props) => {
 		note = "",
 		maxContent = 0,
 		id = "",
+		rows = 4, // Default to 4 rows
 	} = props;
 
 	const [charCount, setCharCount] = useState(value.length);
+
+	// Calculate height based on rows (approximately 20px per row + padding)
+	const editorHeight = rows * 20 + 40; // 40px for padding and borders
 
 	return (
 		<div className={`${className}`}>
@@ -68,6 +73,9 @@ const TextEditor: React.FC<IProps> = (props) => {
 					],
 				}}
 				onBlur={onBlur ? onBlur : () => {}}
+				// style={{
+				// 	height: `${editorHeight}px`,
+				// }}
 			/>
 			<div className="flex justify-between items-center mt-2">
 				{note ? <p className="italic text-gray-500">*{note}</p> : null}

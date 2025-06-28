@@ -42,7 +42,12 @@ const ColorBoard: Record<
 	},
 };
 
-const Tag = ({ color, text, bgc, status = EnumSaleStatus.TBD }: Props) => {
+const ProductTag = ({
+	color,
+	text,
+	bgc,
+	status = EnumSaleStatus.TBD,
+}: Props) => {
 	const [tagTextColor, setTagTextColor] = useState("");
 	const [tagBackgroundColor, setTagBackgroundColor] = useState("");
 
@@ -70,7 +75,7 @@ const Tag = ({ color, text, bgc, status = EnumSaleStatus.TBD }: Props) => {
 
 	return (
 		<div
-			className="min-w-fit py-1 px-2 rounded-md font-medium"
+			className="min-w-fit py-1 px-2 font-medium"
 			style={{ backgroundColor: tagBackgroundColor }}>
 			<div className="text-sm font-bold" style={{ color: tagTextColor }}>
 				{text}
@@ -79,4 +84,4 @@ const Tag = ({ color, text, bgc, status = EnumSaleStatus.TBD }: Props) => {
 	);
 };
 
-export default Tag;
+export default ProductTag;

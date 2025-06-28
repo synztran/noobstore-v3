@@ -1,24 +1,24 @@
-import { useEffect, useState, useRef } from "react";
-import { IMessage, IRoom, websocketService } from "@/services/ChatWS";
-import { Drawer, IconButton, Tooltip } from "@mui/material";
+import { useEffect, useState, useRef, useMemo } from "react";
+import { websocketService } from "@/services/ChatWS";
+import { Drawer, IconButton } from "@mui/material";
 import { useAuth } from "@/context/Auth";
 import Image from "next/image";
-import { MappingConnectionStatus, TConnectionStatus } from "./interface";
-import { CircleHelp, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useCalcBodyHeight } from "@/hook/useConfig";
 import ChatInput from "./ChatInput";
 import { IAuthUser } from "@/interface/Context/auth";
 import useMessageChat from "@/hook/useChat";
+import ChatConnectionStatus from "./connectionStatus";
 
 interface IProps {
-	isAdmin?: boolean;
 	isModule?: boolean;
 }
 
-const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
+const ChatComponent = ({ isModule = false }: IProps) => {
 	const { user } = useAuth() as unknown as { user: IAuthUser };
 	const [isOpen, setIsOpen] = useState(false);
 	const [isInitializing, setInitializing] = useState(true);
+	const [isSwichCustomer, setSwichCustomer] = useState(false);
 	const {
 		listRoom,
 		messages,
@@ -30,14 +30,46 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 	const { bodyHeight } = useCalcBodyHeight({});
 	const messageListRef = useRef<HTMLDivElement>(null);
 
+	const isAdmin =
+		useMemo(() => user && user.role === "admin", [user]) ?? false;
+
 	const handleToggleChat = () => {
 		setIsOpen(!isOpen);
 		setTimeout(() => {
-			setInitializing(true);
+			setInitializing(false);
 		}, 300);
 	};
 
-	console.log("isInitializing", isInitializing);
+	const scrollToBottom = () => {
+		if (messageListRef.current) {
+			messageListRef.current.scrollTop =
+				messageListRef.current.scrollHeight;
+		}
+	};
+
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages, isSwichCustomer]);
+
+	const handleAdminSelectRoom = (roomId: string) => {
+		if (currentRoom?.id === roomId) return; // if the room is already selected, do nothing
+		setSwichCustomer(true);
+		websocketService.send({
+			action: "admin_selected_room",
+			payload: {
+				roomId,
+				sendFrom: user?.customerId,
+				userRole: user?.role as "admin" | "customer",
+			},
+		});
+		setTimeout(() => {
+			setSwichCustomer(false);
+		}, 300);
+	};
+
+	if (isModule && isAdmin) {
+		return null;
+	}
 
 	if (isModule) {
 		return (
@@ -59,32 +91,11 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 						<div className="bg-transparent" />
 					)}>
 					<div className="flex items-center justify-between p-3 sticky top-0">
-						<div className="flex items-center space-x-2">
-							<div
-								className={`w-3 h-3 rounded-full ${getStatusColor(
-									connectionStatus
-								)}`}
-							/>
-							<span className="text-sm font-medium capitalize">
-								{MappingConnectionStatus[connectionStatus]}
-							</span>
-							<div className="flex items-center justify-center">
-								<Tooltip
-									arrow
-									title={
-										<a
-											href="https://www.facebook.com/noobassembly"
-											target="_blank"
-											className="text-white hover:text-blue-300">
-											Lỗi kết nối? Ấn vào đây để được hỗ
-											trợ ngay
-										</a>
-									}
-									placement="top">
-									<CircleHelp className="w-4 h-4 cursor-pointer" />
-								</Tooltip>
-							</div>
-						</div>
+						<ChatConnectionStatus
+							isModule={isModule}
+							connectionStatus={connectionStatus}
+							getStatusColor={getStatusColor}
+						/>
 						<div className="flex items-center gap-2">
 							<IconButton
 								className="!p-0.5 bg-gray-600 hover:bg-gray-700"
@@ -107,7 +118,7 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 								<div
 									key={index}
 									className={`flex gap-2 mb-2 ${
-										msg.senderRole === user?.role
+										msg.senderRole
 											? "flex-row"
 											: "flex-row-reverse"
 									}`}>
@@ -126,7 +137,7 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 									/>
 									<div
 										className={`flex flex-col w-full max-w-[80%] ${
-											msg.senderRole === user?.role
+											msg.senderRole
 												? "items-start"
 												: "items-end"
 										}`}>
@@ -170,79 +181,22 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 				height: `${bodyHeight}px`,
 				maxHeight: `${bodyHeight}px`,
 			}}>
-			<div className="gap-4">
-				<div className="p-4 rounded-lg text-black bg-gray-200">
-					<div className="text-sm flex flex-col gap-2">
-						<div className="flex items-center justify-between space-x-2">
-							<span>Trạng thái: </span>
-							<div className="flex items-center">
-								<div className="flex items-center space-x-2">
-									<div
-										className={`w-3 h-3 rounded-full ${getStatusColor(
-											connectionStatus
-										)}`}
-									/>
-									<span className="text-sm font-medium capitalize">
-										{
-											MappingConnectionStatus[
-												connectionStatus
-											]
-										}
-									</span>
-									<div className="flex items-center justify-center">
-										<Tooltip
-											arrow
-											title={
-												<a
-													href="https://www.facebook.com/noobassembly"
-													target="_blank"
-													className="text-white hover:text-blue-300">
-													Lỗi kết nối? Ấn vào đây để
-													được hỗ trợ ngay
-												</a>
-											}
-											placement="top">
-											<CircleHelp className="w-4 h-4 cursor-pointer" />
-										</Tooltip>
-									</div>
-								</div>
-							</div>
-						</div>
-						{connectionStats && (
-							<div className="flex items-center justify-between">
-								Mã phòng:{" "}
-								<span className="font-medium py-0.5 px-2 bg-gray-600 rounded-sm text-white">
-									{connectionStats.roomId}
-								</span>
-							</div>
-						)}
-						{user && (
-							<div className="flex items-center justify-between">
-								Mã khách hàng:{" "}
-								<span className="font-medium py-0.5 px-2 bg-gray-600 rounded-sm text-white">
-									{user.customerId}
-								</span>
-							</div>
-						)}
-					</div>
-				</div>
+			<div className="flex flex-col gap-4">
+				{/* connection status */}
+				<ChatConnectionStatus
+					connectionStats={connectionStats}
+					connectionStatus={connectionStatus}
+					getStatusColor={getStatusColor}
+				/>
+				{/* list room, only available for admin */}
 				<div className="p-4 border-r border-gray-200 rounded-lg bg-gray-200">
 					{isAdmin ? (
 						<div className="flex flex-col gap-2">
 							{listRoom.map((room) => (
 								<div
-									onClick={() => {
-										websocketService.send({
-											action: "admin_selected_room",
-											payload: {
-												roomId: room.id,
-												sendFrom: user?.customerId,
-												userRole: user?.role as
-													| "admin"
-													| "customer",
-											},
-										});
-									}}
+									onClick={() =>
+										handleAdminSelectRoom(room.id)
+									}
 									key={room.customerId}
 									className="p-3 bg-blue-50 rounded-lg cursor-pointer hover:scale-105 transition-all duration-300 grid grid-cols-4 gap-2 relative">
 									<span className="absolute top-2 right-2 text-[10px]">
@@ -287,18 +241,48 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 			</div>
 
 			{/* Chat Area */}
-			<div className="flex flex-col bg-gray-100 h-[inherit]">
+			<div className="flex flex-col bg-gray-100 h-[inherit] relative">
+				{isSwichCustomer ? (
+					<div className="absolute flex items-center h-full w-full bg-white/80 backdrop-blur-2xl z-[11]">
+						<div className="flex flex-col items-center gap-4 w-full">
+							<div className="flex flex-col gap-4 w-full max-w-full p-4">
+								{Array.from({ length: 3 }).map((_, i) => (
+									<div
+										key={`admin-${i}`}
+										className="flex gap-3">
+										<div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+										<div className="flex flex-col gap-2">
+											<div className="h-12 w-48 bg-gray-200 rounded-lg animate-pulse" />
+											<div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+										</div>
+									</div>
+								))}
+
+								{/* Customer skeleton messages */}
+								{Array.from({ length: 3 }).map((_, i) => (
+									<div
+										key={`customer-${i}`}
+										className="flex gap-3 flex-row-reverse">
+										<div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+										<div className="flex flex-col gap-2 items-end">
+											<div className="h-12 w-48 bg-gray-200 rounded-lg animate-pulse" />
+											<div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+										</div>
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
+				) : null}
 				<div
 					ref={messageListRef}
-					className="flex-1 p-4 overflow-y-auto shadow-lg bg-gray-200"
-					style={{ flex: "1 1 auto", overflowY: "auto" }}>
+					className="p-4 overflow-y-auto shadow-lg bg-gray-200"
+					style={{ flex: "1 1 auto" }}>
 					{messages.map((msg, index) => (
 						<div
 							key={index}
 							className={`flex gap-3 mb-2 ${
-								msg.senderRole === user?.role
-									? "flex-row"
-									: "flex-row-reverse"
+								msg.senderRole ? "flex-row" : "flex-row-reverse"
 							}`}>
 							<Image
 								src={
@@ -314,9 +298,7 @@ const ChatComponent = ({ isAdmin = false, isModule = false }: IProps) => {
 							/>
 							<div
 								className={`flex flex-col w-full min-w-0 ${
-									msg.senderRole === user?.role
-										? "items-start"
-										: "items-end"
+									msg.senderRole ? "items-start" : "items-end"
 								}`}>
 								<div
 									className={`px-4 py-2 rounded-lg max-w-[85%] overflow-hidden  ${

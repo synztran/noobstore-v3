@@ -14,6 +14,7 @@ export enum EnumProductType {
 	KEYCAP = "KEYCAP",
 	SWITCH = "SWITCH",
 	ARTISAN = "ARTISAN",
+	FULL_KIT = "FULL_KIT",
 	ETC = "",
 }
 

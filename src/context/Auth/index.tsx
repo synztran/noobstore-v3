@@ -1,5 +1,6 @@
 import AuthClient from "@/client/AuthClient";
 import UserClient from "@/client/UserClient";
+import { IAuthUser } from "@/interface/Context/auth";
 import { appQueryKeys } from "@/react-query/root";
 import { CircularProgress } from "@material-ui/core";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,7 +28,7 @@ import { getSessionTokenClient } from "utils/SessionUtils";
 
 interface AuthContextType {
 	user: IAuthUser | null;
-	customerInfo: any;
+	customerInfo: IAuthUser | null;
 	isAuthenticated: boolean;
 	login: (info: any, rememberMe: boolean) => void;
 	handleLogin: (payload: {

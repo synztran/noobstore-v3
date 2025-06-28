@@ -1099,6 +1099,7 @@ export const LabelItemSelectedBlock: Record<EnumProductType, string> = {
 	[EnumProductType.SWITCH]: "Pack",
 	[EnumProductType.ARTISAN]: "Artisan",
 	[EnumProductType.ETC]: "Mẫu",
+	[EnumProductType.FULL_KIT]: "Full kit",
 };
 
 export const UploadStatusProperty: Record<
@@ -1243,6 +1244,10 @@ export const RProductPartType: Record<
 	[EnumProductType.ETC]: {
 		label: "Khác",
 		value: EnumProductType.ETC,
+	},
+	[EnumProductType.FULL_KIT]: {
+		label: "Kit full",
+		value: EnumProductType.FULL_KIT,
 	},
 };
 

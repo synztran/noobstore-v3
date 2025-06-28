@@ -45,8 +45,8 @@ const FilterSection = ({
 	}, [status]);
 
 	return (
-		<div className="w-80">
-			<div className="border border-gray-400 p-4">
+		<div className="lg:w-80 w-full">
+			<div className="border border-gray-400 p-4 ">
 				{/* Mobile filter dialog */}
 				<Transition.Root show={isMobileOpen} as={Fragment}>
 					<Dialog
@@ -195,9 +195,9 @@ const FilterSection = ({
 							Products
 						</h2>
 
-						<form className="hidden lg:block md:block">
+						<form className="hidden lg:block md:block sm:block">
 							<h3 className="sr-only">Categories</h3>
-							<h3 className="text-2xl font-bold border-b border-gray-200 flex items-center gap-2">
+							<h3 className="text-2xl font-bold border-b border-gray-400 flex items-center gap-2">
 								<FunnelIcon width={24} height={24} /> Bộ lọc
 							</h3>
 
@@ -205,7 +205,7 @@ const FilterSection = ({
 								<Disclosure
 									as="div"
 									key={section.id}
-									className="border-b border-gray-200 py-6"
+									className="border-b border-gray-400 py-6"
 									defaultOpen>
 									{({ open }) => (
 										<div>
@@ -267,7 +267,7 @@ const FilterSection = ({
 									)}
 								</Disclosure>
 							))}
-							<div className="flex mt-8 gap-4">
+							<div className="flex mt-4 gap-4">
 								<button
 									type="reset"
 									className="w-1/2 border border-gray-400 p-2 rounded-md font-bold hover:bg-gray-200"

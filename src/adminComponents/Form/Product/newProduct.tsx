@@ -46,7 +46,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 			onClose={onClose}
 			fullWidth
 			PaperProps={{
-				className: "!max-w-[50vw]",
+				className: "!max-w-[min(80vw,900px)]",
 			}}>
 			<DialogTitle className="!text-2xl">
 				{isEdit ? "Chỉnh sửa" : "Tạo mới"} Sản phẩm
@@ -135,6 +135,7 @@ const NewProduct: React.FC<IProps> = (props) => {
 							})) as TOptions[]) || []
 						}
 						fetching={isPending}
+						disabled={!formik.values.categoryId}
 					/>
 
 					<div className="grid grid-cols-3 gap-2">

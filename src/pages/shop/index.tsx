@@ -33,7 +33,7 @@ const ShopPage = () => {
 				{/* <HeadSection
 					setMobileFiltersOpen={setMobileFiltersOpen}
 				/> */}
-				<article className="flex gap-x-4 mt-4">
+				<article className="flex gap-x-4 mt-4 lg:flex-row flex-col gap-4">
 					<FilterSection
 						isMobileOpen={mobileFiltersOpen}
 						setMobileOpen={setMobileFiltersOpen}
@@ -53,7 +53,7 @@ const ShopPage = () => {
 						</div>
 					) : null}
 					{!isLoading && categoryList && categoryList?.length > 0 ? (
-						<div className="grid gap-2 grid-cols-4 max-lg:grid-cols-3 w-full">
+						<div className="grid gap-2 grid-cols-4 md:grid-cols-3 lg:grid-cols-3 w-full">
 							{categoryList?.map(
 								(child: ICategory, index: number) => (
 									<CategoryCard

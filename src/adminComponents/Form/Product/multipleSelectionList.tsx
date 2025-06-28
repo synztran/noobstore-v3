@@ -3,11 +3,9 @@ import { classNames } from "@/utils/AppConfig";
 import { formatCurrency } from "@/utils/FormatNumber";
 import CheckIcon from "@mui/icons-material/Check";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { autocompleteClasses } from "@mui/material/Autocomplete";
 import { styled } from "@mui/material/styles";
-import useAutocomplete from "@mui/material/useAutocomplete";
 import { X } from "lucide-react";
-import React, { memo, useState } from "react";
+import React, { memo, useRef, useState } from "react";
 
 export interface TOptions {
 	id: string;
@@ -23,16 +21,18 @@ interface IProps {
 	setFieldValue?: (field: string, value: string[]) => void;
 	options: TOptions[];
 	fetching?: boolean;
+	disabled?: boolean;
 }
 
 const InputWrapper = styled("div")(({ theme }) => ({
-	width: "300px",
+	width: "100%",
 	border: "1px solid #d9d9d9",
 	backgroundColor: "#fff",
 	borderRadius: "4px",
 	padding: "1px",
 	display: "flex",
 	flexWrap: "wrap",
+	position: "relative",
 	...theme.applyStyles("dark", {
 		borderColor: "#434343",
 		backgroundColor: "#141414",
@@ -56,7 +56,7 @@ const InputWrapper = styled("div")(({ theme }) => ({
 		height: "30px",
 		boxSizing: "border-box",
 		padding: "4px 6px",
-		width: "0",
+		width: "100%",
 		minWidth: "30px",
 		flexGrow: 1,
 		border: 0,
@@ -124,6 +124,8 @@ const Listbox = styled("ul")(({ theme }) => ({
 	"& li": {
 		padding: "5px 12px",
 		display: "flex",
+		alignItems: "center",
+		cursor: "pointer",
 		"& span": {
 			flexGrow: 1,
 		},
@@ -131,7 +133,7 @@ const Listbox = styled("ul")(({ theme }) => ({
 			color: "transparent",
 		},
 	},
-	"& li[aria-selected='true']": {
+	"& li.selected": {
 		backgroundColor: "#fafafa",
 		fontWeight: 600,
 		...theme.applyStyles("dark", {
@@ -141,9 +143,8 @@ const Listbox = styled("ul")(({ theme }) => ({
 			color: "#1890ff",
 		},
 	},
-	[`& li.${autocompleteClasses.focused}`]: {
+	"& li.focused": {
 		backgroundColor: "#e6f7ff",
-		cursor: "pointer",
 		...theme.applyStyles("dark", {
 			backgroundColor: "#003b57",
 		}),
@@ -160,127 +161,136 @@ const MultipleSelectionList: React.FC<IProps> = ({
 	setFieldValue,
 	options = [],
 	fetching = false,
+	disabled = false,
 }) => {
-	const {
-		getRootProps,
-		getInputProps,
-		getTagProps,
-		getListboxProps,
-		getOptionProps,
-		groupedOptions,
-		value,
-		focused,
-		setAnchorEl,
-	} = useAutocomplete({
-		id: "customized-hook-demo",
-		defaultValue: [],
-		multiple: true,
-		options: options || [],
-		getOptionLabel: (option) => option.name || "",
-		onChange: (_, newValue) => {
-			const ids =
-				newValue
-					?.map((option) => option?.id)
-					.filter((id): id is string => id !== undefined) || [];
-			setFieldValue && setFieldValue(name, ids as string[]);
-		},
-		value: options?.filter((option) =>
-			values.some((value) => value === option.id)
-		),
-	});
+	const [inputValue, setInputValue] = useState("");
+	const [isOpen, setIsOpen] = useState(false);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleCopyToClipboard = (option: IProductOption) => {
-		const optionData = `${option.id}`;
-		navigator.clipboard
-			.writeText(optionData)
-			.then(() => {
-				console.log("Option data copied to clipboard:", optionData);
-			})
-			.catch((err) => {
-				console.error("Failed to copy option data to clipboard:", err);
-			});
+	const selectedOptions = options.filter(
+		(option) => values?.includes(option.id)
+	);
+	const filteredOptions = options.filter(
+		(option) =>
+			option.name.toLowerCase().includes(inputValue.toLowerCase()) &&
+			!values.includes(option.id)
+	);
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setInputValue(e.target.value);
+		setIsOpen(true);
 	};
 
-	const handleRemoveOption = (index: string) => {
-		const ids = values.filter((id): id is string => id !== index) || [];
-		setFieldValue && setFieldValue(name, ids);
+	const handleSelectOption = (option: TOptions) => {
+		const newValues = [...values, option.id];
+		setFieldValue && setFieldValue(name, newValues);
+		setInputValue("");
+		setIsOpen(false);
+		if (inputRef.current) inputRef.current.focus();
+	};
+
+	const handleRemoveOption = (id: string) => {
+		const newValues = (values || []).filter((v) => v !== id);
+		setFieldValue && setFieldValue(name, newValues);
+	};
+
+	const handleInputFocus = () => {
+		setIsOpen(true);
+	};
+
+	const handleInputBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+		if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+			setTimeout(() => setIsOpen(false), 150);
+		}
+	};
+
+	const handleCopyToClipboard = (option: IProductOption) => {
+		navigator.clipboard.writeText(option.id || "");
 	};
 
 	return (
 		<Box
+			disabled={disabled}
 			component="fieldset"
-			className={`w-full border border-gray-[rgba(0, 0, 0, 0.23)] rounded-sm px-2 py-2 ${className}`}>
+			className={`w-full border border-gray-[rgba(0, 0, 0, 0.23)] rounded-sm px-2 py-2 relative ${className}`}>
 			<Typography component="legend" className="text-[12px]">
 				Tùy chọn option loại sản phẩm
 			</Typography>
-			<div {...getRootProps()}>
+			<div tabIndex={-1} onBlur={handleInputBlur} className="relative">
 				<InputWrapper
-					ref={setAnchorEl}
-					className={classNames(focused ? "focused" : "", "w-full")}>
+					className={classNames(isOpen ? "focused" : "", "w-full")}>
 					{fetching ? (
 						<div className="flex items-center justify-center h-full">
 							<CircularProgress />
 						</div>
 					) : (
 						<>
-							{value.map((option, index) => (
-								<StyledTag
-									{...getTagProps({ index })}
-									key={index}>
-									<span
-										className="cursor-pointer"
-										onClick={() =>
-											handleCopyToClipboard(option)
-										}>
-										{option.name} - {option?.id} (+
-										{formatCurrency(
-											option.salePrice ||
-												option.price ||
-												0
-										)}
-										)
-									</span>
-									<X
-										onClick={(e) => {
-											handleRemoveOption(String(index));
-											getTagProps({ index }).onDelete(e);
-										}}
-									/>
-								</StyledTag>
-							))}
-							<input {...getInputProps()} className="opacity-0" />
+							{selectedOptions
+								.filter(
+									(option) => typeof option.id === "string"
+								)
+								.map((option) => (
+									<StyledTag key={option.id}>
+										<span
+											className="cursor-pointer"
+											onClick={() =>
+												handleCopyToClipboard(option)
+											}>
+											{option.name} - {option.id} (+
+											{formatCurrency(
+												option.salePrice ||
+													option.price ||
+													0
+											)}
+											)
+										</span>
+										<X
+											onClick={() => {
+												if (option.id)
+													handleRemoveOption(
+														option.id
+													);
+											}}
+										/>
+									</StyledTag>
+								))}
+							<input
+								type="text"
+								ref={inputRef}
+								value={inputValue}
+								onChange={handleInputChange}
+								onFocus={handleInputFocus}
+								placeholder={
+									disabled
+										? "Bạn chưa chọn danh mục sản phẩm"
+										: "Tìm kiếm option"
+								}
+								className="w-full outline-none"
+							/>
 						</>
 					)}
 				</InputWrapper>
 			</div>
-			{groupedOptions?.length > 0 && (
-				<Listbox {...getListboxProps()} className="z-10">
-					{groupedOptions
-						.filter(
-							(option): option is TOptions => "name" in option
-						)
-						.map((option, index) => (
-							<li
-								{...getOptionProps({ option, index })}
-								key={index}>
-								<span>
-									{option.name}
-									&nbsp; - {option?.id}
-									&nbsp; (
-									{"+" +
-										formatCurrency(
-											option.salePrice ||
-												option.price ||
-												0
-										)}
-									)
-								</span>
-								<CheckIcon fontSize="small" />
-							</li>
-						))}
+			{isOpen && filteredOptions.length > 0 && (
+				<Listbox className="!z-2 relative w-full mt-2">
+					{filteredOptions.map((option) => (
+						<li
+							key={option.id}
+							onMouseDown={() => handleSelectOption(option)}
+							className="flex items-center hover:bg-gray-100 cursor-pointer">
+							<span>
+								{option.name} - {option.id} (+
+								{formatCurrency(
+									option.salePrice || option.price || 0
+								)}
+								)
+							</span>
+							<CheckIcon fontSize="small" />
+						</li>
+					))}
 				</Listbox>
 			)}
-			<span className="text-[10px] italic text-gray-500">
+			<span className="text-[11px] italic text-gray-600">
 				ấn vào option để copy id
 			</span>
 		</Box>

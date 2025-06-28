@@ -56,7 +56,7 @@ export default function ProductInfoBlock({
 							0
 						)
 					);
-				}, 0)
+			  }, 0)
 			: 0;
 
 		return basePrice + selectedPrice;
@@ -245,6 +245,7 @@ export function CollapseContents({
 							key={idx}
 							title={title}
 							content={content}
+							id={`collapse-${idx}`}
 						/>
 					))}
 				</div>

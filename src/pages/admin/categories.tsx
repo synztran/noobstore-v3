@@ -48,7 +48,6 @@ import {
 } from "react-beautiful-dnd";
 import { Edit, Plus } from "lucide-react";
 import { Trash2 } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
 
 const tableColumns: {
 	id: string;
@@ -376,8 +375,8 @@ const CategoryForm = ({
 	formik: any;
 }) => {
 	const syncImageToFormik = (file: { publicUrl: string; size: number }) => {
-		formik.setFieldValue("images", [
-			...(formik.values.images || []),
+		formik.setFieldValue("thumbnail", [
+			...(formik.values.thumbnail || []),
 			{
 				path: file.publicUrl,
 				size: file.size,
@@ -385,7 +384,7 @@ const CategoryForm = ({
 		]);
 		formik.setFieldValue(
 			"thumbnail",
-			formik.values.images?.[0] || {
+			formik.values.thumbnail?.[0] || {
 				path: "",
 				size: 0,
 			}
@@ -590,9 +589,9 @@ const SaleTypeSelector = ({ formik }: { formik: any }) => {
 						EnumCategorySaleType.ABSOLUTE
 							? formatCurrency(formik.values.saleValue)
 							: formik.values.saleType ===
-								  EnumCategorySaleType.PERCENT
-								? `${formik.values.saleValue}%`
-								: "N/A"}
+							  EnumCategorySaleType.PERCENT
+							? `${formik.values.saleValue}%`
+							: "N/A"}
 					</span>
 				</div>
 			) : null}
@@ -840,12 +839,12 @@ const CollapseContentEditor = ({ formik }: { formik: any }) => {
 																	] !== null
 																		? newContent[
 																				index
-																			]
+																		  ]
 																		: {
 																				title: "",
 																				content:
 																					"",
-																			}),
+																		  }),
 																	title: e
 																		.target
 																		.value,
@@ -878,12 +877,12 @@ const CollapseContentEditor = ({ formik }: { formik: any }) => {
 																	] !== null
 																		? newContent[
 																				index
-																			]
+																		  ]
 																		: {
 																				title: "",
 																				content:
 																					"",
-																			}),
+																		  }),
 																	content,
 																};
 															formik.setFieldValue(
