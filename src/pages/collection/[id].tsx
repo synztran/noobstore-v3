@@ -3,7 +3,7 @@ import CategoryCard from "@/components/categoryCard";
 import FilterSection from "@/components/filter";
 import { BreadcumbTitle, sortOptions } from "@/constants";
 import { Base } from "@/templates/Base";
-import { temp } from "@/templates/LandingPage";
+import { temp } from "@/templates/Home";
 import { classNames } from "@/utils/AppConfig";
 import { Menu, Transition } from "@headlessui/react";
 import {

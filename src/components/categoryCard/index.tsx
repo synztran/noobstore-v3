@@ -33,13 +33,13 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 					<NextImage
 						src={thumbnail?.path || NEW_MISSING_IMAGE}
 						alt="product image"
-						className="hover:scale-105 transition-all duration-500 object-contain"
+						className="hover:scale-105 transition-all duration-500 object-cover"
 						sizes="100vw"
 						quality={100}
 						priority
 						layout="fill"
 					/>
-					<div className="absolute top-2 right-2">
+					<div className="absolute top-1 right-1">
 						<ProductTag
 							text={CategoryStatus[status]}
 							status={status}
@@ -65,7 +65,7 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 					/>
 					<div className="flex justify-between items-center">
 						{salePrice && salePrice > 0 ? (
-							<div className="font-bold flex flex-col">
+							<div className="font-bold flex items-center gap-2">
 								<span className="text-lg text-red-500">
 									{formatCurrency(salePrice)}
 								</span>

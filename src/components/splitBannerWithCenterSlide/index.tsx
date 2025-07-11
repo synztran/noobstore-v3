@@ -37,47 +37,50 @@ const LeftSide = ({ title = "", description = "" }) => {
 
 const Central = () => {
 	return (
-        <Box className={styles.centralSideContainer}>
-            <Swiper
+		<Box className={styles.centralSideContainer}>
+			<Swiper
 				navigation={true}
 				pagination={true}
 				modules={[Navigation, Pagination]}
 				className={styles.swiper}>
 				<SwiperSlide className="relative">
 					<Image
-                        src={HOME_LEFT_BANNER}
-                        alt="placeholder"
-                        className="object-cover"
-                        fill
-                        sizes="100vw" />
+						src={HOME_LEFT_BANNER}
+						alt="placeholder"
+						className="object-cover"
+						fill
+						sizes="100vw"
+					/>
 					<span className="z-1 text-white text-xl font-bold absolute bottom-10">
 						Bottom text
 					</span>
 				</SwiperSlide>
 				<SwiperSlide>
 					<Image
-                        src={HOME_LEFT_BANNER}
-                        alt="placeholder"
-                        className="object-cover"
-                        fill
-                        sizes="100vw" />
+						src={HOME_LEFT_BANNER}
+						alt="placeholder"
+						className="object-cover"
+						fill
+						sizes="100vw"
+					/>
 				</SwiperSlide>
 			</Swiper>
-        </Box>
-    );
+		</Box>
+	);
 };
 
 const RightSide = () => {
 	return (
-        <Grid item xs={12} md={6}>
-            <Box className="relative h-full">
+		<Grid item xs={12} md={6}>
+			<Box className="relative h-full">
 				<Image
-                    src={HOME_LEFT_BANNER}
-                    alt="placeholder"
-                    className="object-cover"
-                    fill
-                    sizes="100vw" />
+					src={HOME_LEFT_BANNER}
+					alt="placeholder"
+					className="object-cover"
+					fill
+					sizes="100vw"
+				/>
 			</Box>
-        </Grid>
-    );
+		</Grid>
+	);
 };

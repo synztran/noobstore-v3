@@ -28,7 +28,7 @@ const ShopPage = () => {
 
 	return (
 		<Base>
-			<div className="mx-w-full py-6 relative z-1">
+			<div className="mx-w-full py-6 relative z-1 min-h-[calc(100vh-280px-130px)]">
 				<Breadcumb mainRoot={BreadcumbTitle["shop"] as string} />
 				{/* <HeadSection
 					setMobileFiltersOpen={setMobileFiltersOpen}
@@ -53,7 +53,7 @@ const ShopPage = () => {
 						</div>
 					) : null}
 					{!isLoading && categoryList && categoryList?.length > 0 ? (
-						<div className="grid gap-2 grid-cols-4 md:grid-cols-3 lg:grid-cols-3 w-full">
+						<div className="grid gap-2 grid-cols-4 md:grid-cols-3 lg:grid-cols-4 w-full">
 							{categoryList?.map(
 								(child: ICategory, index: number) => (
 									<CategoryCard

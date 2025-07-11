@@ -1,8 +1,7 @@
-import { Box, CircularProgress } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import { useEffect } from "react";
 import { Footer } from "./Footer";
 import Header from "./Header";
-import LandingPage from "./LandingPage";
 import { useCalcBodyHeight } from "@/hook/useConfig";
 import { classNames } from "@/utils/AppConfig";
 import { useRouter } from "next/router";
@@ -64,13 +63,7 @@ const Base = ({
 			)}
 			id="webpage">
 			<Header />
-			{children && Object.keys(children.props).length > 0 ? (
-				<>{children}</>
-			) : (
-				<div className="container mx-auto my-8">
-					<LandingPage />
-				</div>
-			)}
+			{children}
 			<Footer />
 		</div>
 	);

@@ -25,14 +25,14 @@ import {
 	MenuItem,
 } from "@material-ui/core";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 import NextImage from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useRef } from "react";
 import LogoStore from "../../public/assets/icons/logo.png";
 import styles from "./styles.module.css";
 import PopupLogOut from "@/components/PopupLogout";
+import { ShoppingCart } from "lucide-react";
 
 export default function Header() {
 	const router = useRouter();
@@ -47,6 +47,9 @@ export default function Header() {
 	const [isOpenModalCartItem, toggleModalCartItem] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const [openPopupLogout, setOpenPopupLogout] = useState(false);
+	const [serviceMenuOpen, setServiceMenuOpen] = useState(false);
+	const [newsMenuOpen, setNewsMenuOpen] = useState(false);
+	const [contactMenuOpen, setContactMenuOpen] = useState(false);
 
 	const open = Boolean(anchorEl);
 
@@ -59,8 +62,6 @@ export default function Header() {
 	};
 
 	const handleLogout = () => {
-		// logout();
-		// router.push("/");
 		setOpenPopupLogout(!openPopupLogout);
 	};
 
@@ -70,9 +71,14 @@ export default function Header() {
 	if (isHideHeader) return null;
 
 	return (
-		<header className="bg-gray-100 sticky top-0 z-50 " id="header">
+		<header
+			className="backdrop-blur-sm sticky top-0 z-50"
+			style={{
+				backgroundColor: "rgba(255,255,255,0.8)",
+			}}
+			id="header">
 			<nav
-				className={`container mx-0 flex items-center justify-between p-6 border-b border-black max-w-full h-[130px] ${
+				className={`container mx-0 flex items-center justify-between p-3 max-w-full ${
 					isSimpleHeader ? "px-12" : ""
 				}`}
 				aria-label="Global">
@@ -90,8 +96,8 @@ export default function Header() {
 						<span className="sr-only">NoobStore</span>
 						<NextImage
 							src={LogoStore}
-							width={120}
-							height={83}
+							width={80}
+							height={80}
 							alt="NoobStore"
 							quality={100}
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -118,237 +124,210 @@ export default function Header() {
 						</Link>
 						{/* service */}
 						<Popover className="relative">
-							<Popover.Button
-								className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
-								Dịch vụ
-								<ChevronDownIcon
-									className="h-5 w-5 flex-none text-gray-400"
-									aria-hidden="true"
-								/>
-							</Popover.Button>
-
-							<Transition
-								as={Fragment}
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1">
-								<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-									<div className="p-4">
-										{services.map((item: any) => (
-											<div
-												key={item.name}
-												className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-												<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-													<item.icon
-														className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-														aria-hidden="true"
-													/>
+							{({ open, close }) => {
+								const buttonRef =
+									useRef<HTMLButtonElement>(null);
+								return (
+									<div
+										onMouseEnter={() => {
+											if (!open && buttonRef.current) {
+												buttonRef.current.click();
+											}
+										}}
+										onMouseLeave={() => {
+											if (open) close();
+										}}>
+										<Popover.Button
+											ref={buttonRef}
+											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											Dịch vụ
+											<ChevronDownIcon
+												className="h-5 w-5 flex-none text-gray-400"
+												aria-hidden="true"
+											/>
+										</Popover.Button>
+										<Transition
+											as={Fragment}
+											enter="transition ease-out duration-200"
+											enterFrom="opacity-0 translate-y-1"
+											enterTo="opacity-100 translate-y-0"
+											leave="transition ease-in duration-150"
+											leaveFrom="opacity-100 translate-y-0"
+											leaveTo="opacity-0 translate-y-1">
+											<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
+												<div className="p-4">
+													{services.map(
+														(item: any) => (
+															<div
+																key={item.name}
+																className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
+																<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+																	<item.icon
+																		className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+																		aria-hidden="true"
+																	/>
+																</div>
+																<div className="flex-auto">
+																	<a
+																		href={
+																			item.href
+																		}
+																		className="block font-semibold text-gray-900">
+																		{
+																			item.name
+																		}
+																		<span className="absolute inset-0" />
+																	</a>
+																	{/* <p className="mt-1 text-gray-600">
+																	{item?.description}
+																</p> */}
+																</div>
+															</div>
+														)
+													)}
 												</div>
-												<div className="flex-auto">
-													<a
-														href={item.href}
-														className="block font-semibold text-gray-900">
-														{item.name}
-														<span className="absolute inset-0" />
-													</a>
-													{/* <p className="mt-1 text-gray-600">
-															{item?.description}
-														</p> */}
-												</div>
-											</div>
-										))}
+											</Popover.Panel>
+										</Transition>
 									</div>
-									{/* <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-											{callsToAction.map((item) => (
-												<a
-													key={item.name}
-													href={item.href}
-													className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100">
-													<item.icon
-														className="h-5 w-5 flex-none text-gray-400"
-														aria-hidden="true"
-													/>
-													{item.name}
-												</a>
-											))}
-										</div> */}
-								</Popover.Panel>
-							</Transition>
+								);
+							}}
 						</Popover>
 						{/* news */}
 						<Popover className="relative">
-							<Popover.Button
-								className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
-								Tin tức
-								<ChevronDownIcon
-									className="h-5 w-5 flex-none text-gray-400"
-									aria-hidden="true"
-								/>
-							</Popover.Button>
-
-							<Transition
-								as={Fragment}
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1">
-								<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-									<div className="p-4">
-										{news.map((item) => (
-											<div
-												key={item.name}
-												className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-												<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-													<item.icon
-														className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-														aria-hidden="true"
-													/>
+							{({ open, close }) => {
+								const buttonRef =
+									useRef<HTMLButtonElement>(null);
+								return (
+									<div
+										onMouseEnter={() => {
+											if (!open && buttonRef.current) {
+												buttonRef.current.click();
+											}
+										}}
+										onMouseLeave={() => {
+											if (open) close();
+										}}>
+										<Popover.Button
+											ref={buttonRef}
+											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											Tin tức
+											<ChevronDownIcon
+												className="h-5 w-5 flex-none text-gray-400"
+												aria-hidden="true"
+											/>
+										</Popover.Button>
+										<Transition
+											as={Fragment}
+											enter="transition ease-out duration-200"
+											enterFrom="opacity-0 translate-y-1"
+											enterTo="opacity-100 translate-y-0"
+											leave="transition ease-in duration-150"
+											leaveFrom="opacity-100 translate-y-0"
+											leaveTo="opacity-0 translate-y-1">
+											<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
+												<div className="p-4">
+													{news.map((item) => (
+														<div
+															key={item.name}
+															className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
+															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+																<item.icon
+																	className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+																	aria-hidden="true"
+																/>
+															</div>
+															<div className="flex-auto">
+																<a
+																	href={
+																		item.href
+																	}
+																	className="block font-semibold text-gray-900">
+																	{item.name}
+																	<span className="absolute inset-0" />
+																</a>
+																<p className="mt-1 text-gray-600">
+																	{
+																		item.description
+																	}
+																</p>
+															</div>
+														</div>
+													))}
 												</div>
-												<div className="flex-auto">
-													<a
-														href={item.href}
-														className="block font-semibold text-gray-900">
-														{item.name}
-														<span className="absolute inset-0" />
-													</a>
-													<p className="mt-1 text-gray-600">
-														{item.description}
-													</p>
-												</div>
-											</div>
-										))}
+											</Popover.Panel>
+										</Transition>
 									</div>
-									{/* <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-											{callsToAction.map((item) => (
-												<a
-													key={item.name}
-													href={item.href}
-													className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100">
-													<item.icon
-														className="h-5 w-5 flex-none text-gray-400"
-														aria-hidden="true"
-													/>
-													{item.name}
-												</a>
-											))}
-										</div> */}
-								</Popover.Panel>
-							</Transition>
+								);
+							}}
 						</Popover>
 						{/* contact */}
 						<Popover className="relative">
-							<Popover.Button
-								className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
-								Liên hệ
-								<ChevronDownIcon
-									className="h-5 w-5 flex-none text-gray-400"
-									aria-hidden="true"
-								/>
-							</Popover.Button>
-
-							<Transition
-								as={Fragment}
-								enter="transition ease-out duration-200"
-								enterFrom="opacity-0 translate-y-1"
-								enterTo="opacity-100 translate-y-0"
-								leave="transition ease-in duration-150"
-								leaveFrom="opacity-100 translate-y-0"
-								leaveTo="opacity-0 translate-y-1">
-								<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-									<div className="p-4">
-										{contact.map((item) => (
-											<div
-												key={item.name}
-												className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-												<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-													<item.icon
-														className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-														aria-hidden="true"
-													/>
+							{({ open, close }) => {
+								const buttonRef =
+									useRef<HTMLButtonElement>(null);
+								return (
+									<div
+										onMouseEnter={() => {
+											if (!open && buttonRef.current) {
+												buttonRef.current.click();
+											}
+										}}
+										onMouseLeave={() => {
+											if (open) close();
+										}}>
+										<Popover.Button
+											ref={buttonRef}
+											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											Liên hệ
+											<ChevronDownIcon
+												className="h-5 w-5 flex-none text-gray-400"
+												aria-hidden="true"
+											/>
+										</Popover.Button>
+										<Transition
+											as={Fragment}
+											enter="transition ease-out duration-200"
+											enterFrom="opacity-0 translate-y-1"
+											enterTo="opacity-100 translate-y-0"
+											leave="transition ease-in duration-150"
+											leaveFrom="opacity-100 translate-y-0"
+											leaveTo="opacity-0 translate-y-1">
+											<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
+												<div className="p-4">
+													{contact.map((item) => (
+														<div
+															key={item.name}
+															className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
+															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+																<item.icon
+																	className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+																	aria-hidden="true"
+																/>
+															</div>
+															<div className="flex-auto">
+																<a
+																	href={
+																		item.href
+																	}
+																	className="block font-semibold text-gray-900">
+																	{item.name}
+																	<span className="absolute inset-0" />
+																</a>
+																<p className="mt-1 text-gray-600">
+																	{
+																		item.description
+																	}
+																</p>
+															</div>
+														</div>
+													))}
 												</div>
-												<div className="flex-auto">
-													<a
-														href={item.href}
-														className="block font-semibold text-gray-900">
-														{item.name}
-														<span className="absolute inset-0" />
-													</a>
-													<p className="mt-1 text-gray-600">
-														{item.description}
-													</p>
-												</div>
-											</div>
-										))}
+											</Popover.Panel>
+										</Transition>
 									</div>
-									{/* <div className="grid grid-cols-2 divide-x divide-gray-900/5 bg-gray-50">
-											{callsToAction.map((item) => (
-												<a
-													key={item.name}
-													href={item.href}
-													className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100">
-													<item.icon
-														className="h-5 w-5 flex-none text-gray-400"
-														aria-hidden="true"
-													/>
-													{item.name}
-												</a>
-											))}
-										</div> */}
-								</Popover.Panel>
-							</Transition>
+								);
+							}}
 						</Popover>
-						{/* comunity */}
-						{/* <Popover className="relative">
-								<Popover.Button className="flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none">
-									Cộng đồng
-									<ChevronDownIcon
-										className="h-5 w-5 flex-none text-gray-400"
-										aria-hidden="true"
-									/>
-								</Popover.Button>
-
-								<Transition
-									as={Fragment}
-									enter="transition ease-out duration-200"
-									enterFrom="opacity-0 translate-y-1"
-									enterTo="opacity-100 translate-y-0"
-									leave="transition ease-in duration-150"
-									leaveFrom="opacity-100 translate-y-0"
-									leaveTo="opacity-0 translate-y-1">
-									<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-										<div className="p-4">
-											{comunity.map((item) => (
-												<div
-													key={item.name}
-													className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-													<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-														<item.icon
-															className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-															aria-hidden="true"
-														/>
-													</div>
-													<div className="flex-auto">
-														<a
-															href={item.href}
-															className="block font-semibold text-gray-900">
-															{item.name}
-															<span className="absolute inset-0" />
-														</a>
-														<p className="mt-1 text-gray-600">
-															{item.description}
-														</p>
-													</div>
-												</div>
-											))}
-										</div>
-									</Popover.Panel>
-								</Transition>
-							</Popover> */}
 					</Popover.Group>
 				) : null}
 				<div className="flex md:hidden md:flex-1">
@@ -364,7 +343,7 @@ export default function Header() {
 					<div className="hidden md:flex md:flex-1 md:justify-end md:order-2">
 						{isSimpleHeader ? (
 							<a href="/cart" style={{ position: "relative" }}>
-								<ShoppingBagIcon
+								<ShoppingCart
 									className="h-6 w-6 text-gray-600 group-hover:text-indigo-600 cursor-pointer"
 									aria-hidden="true"
 								/>
@@ -375,8 +354,6 @@ export default function Header() {
 									<button
 										onClick={handleClick}
 										className="flex items-center gap-1">
-										{/* <AccountCircleIcon className="group text-gray-600 cursor-pointer transition-all m-auto"
-												aria-hidden="true" style={{width: 32, height: 32}}  /> */}
 										{user?.avatar ? (
 											<Box
 												position="relative"
@@ -424,12 +401,7 @@ export default function Header() {
 										transformOrigin={{
 											horizontal: "right",
 											vertical: "top",
-										}}
-										// anchorOrigin={{
-										// 	horizontal: "right",
-										// 	vertical: "bottom",
-										//   }}
-									>
+										}}>
 										<MenuItem className="flex flex-col">
 											<Link href="/account/detail">
 												Thông tin tài khoản
@@ -453,12 +425,12 @@ export default function Header() {
 								<IconButton
 									className="relative p-1"
 									onClick={() => toggleModalCartItem(true)}>
-									<LocalMallIcon
+									<ShoppingCart
 										className="group text-gray-600 cursor-pointer transition-all m-auto"
 										aria-hidden="true"
 										style={{ width: 24, height: 24 }}
 									/>
-									<span className="absolute -top-1 -right-1 bg-red-400 w-5 h-5 rounded-xl flex justify-center items-center text-white text-xs">
+									<span className="absolute -top-1.5 -right-1.5 bg-red-400 w-5 h-5 rounded-xl flex justify-center items-center text-white text-xs">
 										{cart?.totalProductQuantity ===
 											undefined || isIniting ? (
 											<CircularProgress

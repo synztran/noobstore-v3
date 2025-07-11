@@ -24,6 +24,7 @@ export const SERVICE_KEYBOARD_ICON = `/assets/icons/service/keyboard.png`;
 // lading page
 export const LANDING_PAGE_KEYBOARD_IMG = `/assets/images/landingPage/keyboard.png`;
 export const LANDING_PAGE_KEYSET_IMG = `/assets/images/landingPage/keyset.png`;
+export const HOME_BANNER_IMG = `/assets/images/home_banner.jpg`;
 
 // bank
 export const VIETINBANK_LOGO = "/assets/icons/bank/vietinbank.png";
@@ -72,3 +73,33 @@ export const MP3_SIMPLE = "/media/sample_5mb.mp3";
 export const MP3_IMPRESS_ME = "/media/impress_me.mp3";
 export const MP3_MAN_OF_THE_YEAR = "/media/man_of_the_year.mp3";
 export const MP3_SPLIT_SOULBER = "/media/split_soulber.mp3";
+
+// switches
+export const SWITCH_BCP = "/images/bcp.webp";
+
+// keyboards
+export const KEYBOARD_KARINA = "/images/karina65.webp";
+export const KEYBOARD_FILCO = "/images/filco.webp";
+export const KEYBOARD_TGR_910 = "/images/tgr_910.webp";
+
+// posts
+export const COMMUNITY_POST_1 = "/images/posts/post_1.jpg";
+export const COMMUNITY_POST_2 = "/images/posts/post_2.jpg";
+export const COMMUNITY_POST_3 = "/images/posts/post_3.jpg";
+export const COMMUNITY_POST_4 = "/images/posts/post_4.webp";
+
+// community
+export const GROUP_IMAGE_1 = "/images/community/1.jpg";
+export const GROUP_IMAGE_2 = "/images/community/2.jpg";
+export const GROUP_IMAGE_3 = "/images/community/3.jpg";
+export const GROUP_IMAGE_4 = "/images/community/4.jpg";
+export const GROUP_IMAGE_5 = "/images/community/5.jpg";
+export const GROUP_IMAGE_6 = "/images/community/6.jpg";
+export const GROUP_IMAGE_7 = "/images/community/7.jpg";
+export const GROUP_IMAGE_8 = "/images/community/8.jpg";
+export const GROUP_IMAGE_9 = "/images/community/9.jpg";
+export const GROUP_IMAGE_10 = "/images/community/10.jpg";
+export const GROUP_IMAGE_11 = "/images/community/11.jpg";
+export const GROUP_IMAGE_12 = "/images/community/12.jpg";
+export const GROUP_IMAGE_13 = "/images/community/13.jpg";
+export const GROUP_IMAGE_14 = "/images/community/14.jpg";

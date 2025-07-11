@@ -1,10 +1,5 @@
-import { Hero } from "@/templates/Hero";
-import { Base } from "../templates/Base";
+import HomePage from "./home";
 
-const Index = () => (
-	<Base>
-		<Hero />
-	</Base>
-);
+const Index = () => <HomePage />;
 
 export default Index;
