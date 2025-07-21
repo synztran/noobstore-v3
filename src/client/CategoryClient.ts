@@ -18,20 +18,20 @@ const getAllCategory = async ({
 	return GET({ url, params, isAuth, signal, ctx });
 };
 
-const getAllValidCategory = async ({
-	ctx,
-	params,
-	signal,
-	isAuth = false,
-}: {
-	ctx?: any;
-	params?: any;
-	signal?: AbortSignal; // eslint-disable-line
-	isAuth?: boolean;
-}): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.ALL_VALID_CATEGORY;
-	return GET({ url, params, isAuth, signal, ctx });
-};
+// const getAllValidCategory = async ({
+// 	ctx,
+// 	params,
+// 	signal,
+// 	isAuth = false,
+// }: {
+// 	ctx?: any;
+// 	params?: any;
+// 	signal?: AbortSignal; // eslint-disable-line
+// 	isAuth?: boolean;
+// }): Promise<IResponse<ICategory>> => {
+// 	const url = CATEGORY_API.ALL_VALID_CATEGORY;
+// 	return GET({ url, params, isAuth, signal, ctx });
+// };
 
 const getCategoryById = async ({
 	id,
@@ -78,7 +78,7 @@ export default {
 	getAllCategory,
 	getCategoryById,
 	getCategoriesByIds,
-	getAllValidCategory,
+	// getAllValidCategory,
 	postCreateCategory,
 	postUpdateCategory,
 };

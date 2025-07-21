@@ -1,11 +1,3 @@
-import BannerWithCentralText from "@/components/BannerWithCentralText";
-import HomeBanner from "@/components/HomeBanner";
-import OurShopCollection from "@/components/OurProduct";
-import QuickCategoryWithText from "@/components/QuickCategoryWithText";
-import TextLeftBannerRight from "@/components/TextLeftBannerRight";
-// import SplitBannerWithCenterSlide from   "@/components/splitBannerWithCenterSlide";
-// import { Container } from "@material-ui/core";
-// import { Home } from "lucide-react";
 import { Base } from "@/templates/Base";
 import TitleWithMenuQuickAccess from "@/components/home/TitleWithMenuQuickAccess";
 import BannerTagPriceName from "@/components/home/BannerTagPriceName";

@@ -29,8 +29,10 @@ import {
 	FingerPrintIcon,
 	FolderPlusIcon,
 	UserGroupIcon,
+	WrenchIcon,
+	ChatBubbleBottomCenterTextIcon,
 } from "@heroicons/react/24/outline";
-import { CircleCheck, CircleX } from "lucide-react";
+import { CircleCheck, CircleX, MessageCircle, Wrench } from "lucide-react";
 import {
 	COD_ICON,
 	FLAGS_VIETNAM,
@@ -155,13 +157,21 @@ export const services = [
 	{
 		name: "Assemble",
 		href: "/services",
-		icon: KeyboardIcon,
+		description: "Dịch vụ lắp ráp bàn phím",
+		icon: WrenchIcon,
 	},
 	{
 		name: "Tư vấn",
 		href: "https://facebook.com/noobassembly",
-		icon: FacebookIcon,
+		icon: ChatBubbleBottomCenterTextIcon,
+		description: "Tư vấn về bàn phím",
 		isNewPage: true,
+	},
+	{
+		name: "Shop 2nd",
+		href: "/used",
+		icon: ArchiveBoxIcon,
+		description: "Sản phẩm đã qua sử dụng",
 	},
 ];
 

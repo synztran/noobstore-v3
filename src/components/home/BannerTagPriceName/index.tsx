@@ -73,9 +73,9 @@ const customizeSection = {
 
 const BannerTagPriceName = () => {
 	return (
-		<div className="w-full grid grid-cols-3 gap-4 justify-center items-stretch">
+		<div className="w-full grid grid-cols-3 gap-4 justify-center items-stretch max-w-[1120px] mx-auto">
 			<div
-				className="flex-1 rounded-2xl shadow-md px-4 pt-4 flex flex-col items-center relative min-w-[260px] max-w-[340px] gap-2"
+				className="flex-1 rounded-2xl shadow-md px-4 pt-4 flex flex-col items-center relative col-span-1 gap-2"
 				style={{
 					background:
 						"linear-gradient(135deg, #fee2e2 0%, #fef2f2 60%, #fee2e2 100%)",
@@ -98,14 +98,14 @@ const BannerTagPriceName = () => {
 					<Image
 						src={featuredProduct.image}
 						alt={featuredProduct.title}
-						layout="fill"
-						objectFit="conver"
+						fill
+						className="object-cover"
 					/>
 				</div>
 			</div>
 
 			{/* Middle Card: Featured Switches */}
-			<div className="bg-[#f6f5f8] rounded-2xl shadow-md p-4 gap-2 grid">
+			<div className="bg-gray-200 rounded-2xl shadow-md p-4 gap-2 grid col-span-1">
 				<div className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold w-fit opacity-0 h-[24px]" />
 				<div className="flex flex-col items-center">
 					<span
@@ -130,9 +130,8 @@ const BannerTagPriceName = () => {
 								<Image
 									src={sw.image}
 									alt={sw.name}
-									objectFit="cover"
-									layout="fill"
-									className="object-contain rounded"
+									fill
+									className="object-cover rounded"
 								/>
 							</div>
 							<div className="flex-1">
@@ -169,9 +168,9 @@ const BannerTagPriceName = () => {
 						<Image
 							src={LOGO_STORE}
 							alt="help"
-							objectFit="cover"
-							layout="fill"
-							className="rounded-full"
+							fill
+							style={{ objectFit: "cover" }}
+							className="rounded-full object-cover"
 						/>
 					</div>
 					<div className="flex flex-col">
@@ -187,7 +186,7 @@ const BannerTagPriceName = () => {
 			</div>
 
 			{/* Right Card: Customize Section */}
-			<div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col items-center min-w-[260px] max-w-[340px] relative">
+			<div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col items-center col-span-1 relative">
 				<div className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold w-fit opacity-0 h-[24px]" />
 				<div
 					aria-hidden
@@ -211,7 +210,7 @@ const BannerTagPriceName = () => {
 					</div>
 					<div className="flex justify-center">
 						<button
-							className="inline-flex items-center gap-2 px-4 py-2 rounded-50 font-semibold text-blue-600 bg-white relative transition"
+							className="inline-flex items-center gap-2 px-4 py-2 rounded-50 font-semibold text-blue-600 bg-white relative transition group"
 							style={{
 								border: "2px solid transparent",
 								backgroundImage:
@@ -219,7 +218,7 @@ const BannerTagPriceName = () => {
 								backgroundOrigin: "border-box",
 								backgroundClip: "padding-box, border-box",
 							}}>
-							<Hammer />
+							<Hammer className="group-hover:rotate-12 transition-all duration-300" />
 							{customizeSection.buttonText}
 						</button>
 					</div>
@@ -227,9 +226,8 @@ const BannerTagPriceName = () => {
 						<Image
 							src={KEYBOARD_FILCO}
 							alt="keyboard"
-							objectFit="cover"
-							layout="fill"
-							className="object-contain"
+							fill
+							className="object-cover"
 						/>
 					</div>
 				</div>

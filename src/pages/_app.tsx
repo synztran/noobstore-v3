@@ -99,16 +99,8 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
 							{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 
 							<LoadingRoute>
-								{isAdminRoute ? (
-									<Layout>
-										<Component {...pageProps} />
-									</Layout>
-								) : (
-									<>
-										<Component {...pageProps} />
-										<MessageChat isModule />
-									</>
-								)}
+								<Component {...pageProps} />
+								<MessageChat isModule />
 
 								<ToastContainer
 									limit={2}

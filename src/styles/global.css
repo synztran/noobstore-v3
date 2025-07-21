@@ -7,6 +7,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --primary-color: #c47b90;
+}
+
 *,
 *::before,
 *::after {

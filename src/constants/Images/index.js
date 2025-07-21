@@ -37,6 +37,7 @@ export const GIF_SUCCESS_1 = `/gif/success_1.gif`;
 export const GIF_SUCCESS_1_STATIC = `/gif/success_1_static.jpg`;
 export const GIF_SUCCESS_2 = `/gif/success_2.gif`;
 export const GIF_THANKS = `/gif/thanks.gif`;
+export const GIF_SHOPPING_CART = `/gif/shopping_cart.gif`;
 
 // lucky-wheel
 export const LUCKYWHEEL_BORDER = `/wheel/lucky-wheel/wheel-background.svg`;
@@ -103,3 +104,8 @@ export const GROUP_IMAGE_11 = "/images/community/11.jpg";
 export const GROUP_IMAGE_12 = "/images/community/12.jpg";
 export const GROUP_IMAGE_13 = "/images/community/13.jpg";
 export const GROUP_IMAGE_14 = "/images/community/14.jpg";
+
+// quick accesses
+export const QUICK_ACCESS_KEYCAPS_ICON = "/images/quickAccess/keycap.avif";
+export const QUICK_ACCESS_LUBRICANT_ICON = "/images/quickAccess/lube.png";
+export const QUICK_ACCESS_DESKMATS_ICON = "/images/quickAccess/deskmats.webp";

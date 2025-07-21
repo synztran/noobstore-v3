@@ -53,8 +53,8 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 					<Image
 						src={product.image}
 						alt={product.name}
-						layout="fill"
-						objectFit="cover"
+						fill
+						className="object-cover"
 					/>
 					<div className="flex flex-col mt-auto z-1">
 						<span className="text-lg font-bold text-white mt-auto">
@@ -126,8 +126,8 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 					<Image
 						src={product.image}
 						alt={product.name}
-						layout="fill"
-						objectFit="contain"
+						fill
+						className="object-contain"
 					/>
 				</div>
 				<div className="flex flex-col">

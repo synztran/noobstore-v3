@@ -33,10 +33,15 @@ import LogoStore from "../../public/assets/icons/logo.png";
 import styles from "./styles.module.css";
 import PopupLogOut from "@/components/PopupLogout";
 import { ShoppingCart } from "lucide-react";
+import { IAuthUser } from "@/interface/Context/auth";
 
 export default function Header() {
 	const router = useRouter();
-	const { user, logout, isAuthenticated }: any = useAuth();
+	const { user, logout, isAuthenticated } = useAuth() as unknown as {
+		user: IAuthUser;
+		logout: () => void;
+		isAuthenticated: boolean;
+	};
 	const { data: cart, isLoading: isIniting } = useCartQuery({
 		enabled: isAuthenticated || true,
 	});
@@ -47,9 +52,9 @@ export default function Header() {
 	const [isOpenModalCartItem, toggleModalCartItem] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const [openPopupLogout, setOpenPopupLogout] = useState(false);
-	const [serviceMenuOpen, setServiceMenuOpen] = useState(false);
-	const [newsMenuOpen, setNewsMenuOpen] = useState(false);
-	const [contactMenuOpen, setContactMenuOpen] = useState(false);
+	// const [serviceMenuOpen, setServiceMenuOpen] = useState(false);
+	// const [newsMenuOpen, setNewsMenuOpen] = useState(false);
+	// const [contactMenuOpen, setContactMenuOpen] = useState(false);
 
 	const open = Boolean(anchorEl);
 
@@ -72,10 +77,7 @@ export default function Header() {
 
 	return (
 		<header
-			className="backdrop-blur-sm sticky top-0 z-50"
-			style={{
-				backgroundColor: "rgba(255,255,255,0.8)",
-			}}
+			className="backdrop-blur-md sticky top-0 z-50 bg-[rgba(255,255,255,0.7)] px-6"
 			id="header">
 			<nav
 				className={`container mx-0 flex items-center justify-between p-3 max-w-full ${
@@ -109,19 +111,19 @@ export default function Header() {
 						<Link
 							href="/shop"
 							className={classNames(
-								`text-base font-semibold leading-6 text-gray-900`,
+								`text-lg font-semibold leading-6 text-gray-900`,
 								styles.bbEffect ?? ""
 							)}>
 							Shop
 						</Link>
-						<Link
+						{/* <Link
 							href="/used"
 							className={classNames(
-								`text-base font-semibold leading-6 text-gray-900`,
+								`text-lg font-semibold leading-6 text-gray-900`,
 								styles.bbEffect ?? ""
 							)}>
 							Shop 2nd
-						</Link>
+						</Link> */}
 						{/* service */}
 						<Popover className="relative">
 							{({ open, close }) => {
@@ -139,7 +141,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Dịch vụ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -160,12 +162,14 @@ export default function Header() {
 														(item: any) => (
 															<div
 																key={item.name}
-																className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-																<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-																	<item.icon
-																		className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
-																		aria-hidden="true"
-																	/>
+																className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm leading-6 hover:bg-gray-200">
+																<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-200 group-hover:bg-white">
+																	{item.icon && (
+																		<item.icon
+																			className="h-6 w-6 text-gray-900 group-hover:text-indigo-600"
+																			aria-hidden="true"
+																		/>
+																	)}
 																</div>
 																<div className="flex-auto">
 																	<a
@@ -178,9 +182,11 @@ export default function Header() {
 																		}
 																		<span className="absolute inset-0" />
 																	</a>
-																	{/* <p className="mt-1 text-gray-600">
-																	{item?.description}
-																</p> */}
+																	<p className="mt-1 text-gray-900">
+																		{
+																			item.description
+																		}
+																	</p>
 																</div>
 															</div>
 														)
@@ -209,7 +215,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Tin tức
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -229,10 +235,10 @@ export default function Header() {
 													{news.map((item) => (
 														<div
 															key={item.name}
-															className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+															className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm leading-6 hover:bg-gray-200">
+															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-200 group-hover:bg-white">
 																<item.icon
-																	className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+																	className="h-6 w-6 text-gray-900 group-hover:text-indigo-600"
 																	aria-hidden="true"
 																/>
 															</div>
@@ -245,7 +251,7 @@ export default function Header() {
 																	{item.name}
 																	<span className="absolute inset-0" />
 																</a>
-																<p className="mt-1 text-gray-600">
+																<p className="mt-1 text-gray-900">
 																	{
 																		item.description
 																	}
@@ -277,7 +283,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-base font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Liên hệ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -293,14 +299,14 @@ export default function Header() {
 											leaveFrom="opacity-100 translate-y-0"
 											leaveTo="opacity-0 translate-y-1">
 											<Popover.Panel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white shadow-lg ring-1 ring-gray-900/5">
-												<div className="p-4">
+												<div className="p-2">
 													{contact.map((item) => (
 														<div
 															key={item.name}
-															className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50">
-															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+															className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm leading-6 hover:bg-gray-50">
+															<div className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
 																<item.icon
-																	className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+																	className="h-6 w-6 text-gray-900 group-hover:text-indigo-600"
 																	aria-hidden="true"
 																/>
 															</div>
@@ -313,7 +319,7 @@ export default function Header() {
 																	{item.name}
 																	<span className="absolute inset-0" />
 																</a>
-																<p className="mt-1 text-gray-600">
+																<p className="mt-1 text-gray-900">
 																	{
 																		item.description
 																	}
@@ -344,7 +350,7 @@ export default function Header() {
 						{isSimpleHeader ? (
 							<a href="/cart" style={{ position: "relative" }}>
 								<ShoppingCart
-									className="h-6 w-6 text-gray-600 group-hover:text-indigo-600 cursor-pointer"
+									className="h-6 w-6 text-gray-900 group-hover:text-indigo-600 cursor-pointer"
 									aria-hidden="true"
 								/>
 							</a>
@@ -357,8 +363,8 @@ export default function Header() {
 										{user?.avatar ? (
 											<Box
 												position="relative"
-												width={45}
-												height={45}>
+												width={40}
+												height={40}>
 												<NextImage
 													src={user?.avatar}
 													alt="user avatar"
@@ -377,7 +383,7 @@ export default function Header() {
 												}}
 											/>
 										)}
-										<span className="hover:text-blue-500 text-base">
+										<span className="hover:text-blue-500 text-lg">
 											{user?.firstName} {user?.lastName}
 										</span>
 									</button>
@@ -426,7 +432,7 @@ export default function Header() {
 									className="relative p-1"
 									onClick={() => toggleModalCartItem(true)}>
 									<ShoppingCart
-										className="group text-gray-600 cursor-pointer transition-all m-auto"
+										className="group text-gray-900 cursor-pointer transition-all m-auto"
 										aria-hidden="true"
 										style={{ width: 24, height: 24 }}
 									/>
@@ -453,7 +459,7 @@ export default function Header() {
 						{isSimpleHeader ? (
 							<a href="/cart">
 								<ShoppingBagIcon
-									className="h-6 w-6 text-gray-600 group-hover:text-indigo-600 cursor-pointer"
+									className="h-6 w-6 text-gray-900 group-hover:text-indigo-600 cursor-pointer"
 									aria-hidden="true"
 								/>
 							</a>
@@ -524,7 +530,7 @@ export default function Header() {
 										<Disclosure as="div" className="-mx-3">
 											{({ open }) => (
 												<div>
-													<Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+													<Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 														Product
 														<ChevronDownIcon
 															className={classNames(
@@ -555,24 +561,24 @@ export default function Header() {
 										</Disclosure>
 										<a
 											href="#"
-											className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Features
 										</a>
 										<a
 											href="#"
-											className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Marketplace
 										</a>
 										<a
 											href="#"
-											className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Company
 										</a>
 									</div>
 									<div className="py-6">
 										<a
 											href="#"
-											className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+											className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
 											onClick={() =>
 												toggleDialogLogin(
 													Boolean(

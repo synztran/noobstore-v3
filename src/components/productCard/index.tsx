@@ -12,7 +12,6 @@ import ProductInfoBlock from "../ProductInfoBlock";
 import SliderSyncing from "../SliderSyncing";
 import { classNames } from "@/utils/AppConfig";
 
-const reviews = { href: "#", average: 4, totalCount: 117 };
 interface Props {
 	slug: string;
 }

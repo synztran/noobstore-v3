@@ -96,9 +96,7 @@ const MusicPlayList: React.FC<IProps> = ({ open, onClose, audioRef }) => {
 										alt="music icon"
 										fill
 										sizes="100vw"
-										style={{
-											objectFit: "cover",
-										}}
+										className="object-cover"
 									/>
 									{song.id === currentSong?.id ? (
 										<IconButton className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 !p-0.5 bg-black rounded-full hover:bg-black">

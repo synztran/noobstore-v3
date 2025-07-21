@@ -22,7 +22,7 @@ export const CATEGORY_API = {
 export const PRODUCTS_API = {
 	ALL_PRODUCT: `${PRODUCT_PREFIX}/get-all`,
 	DETAIL: `${PRODUCT_PREFIX}`, // {product_id}
-	ALL_DETAIL: `${PRODUCT_PREFIX}/all`, // {category_id}
+	ALL_DETAIL: `${PRODUCT_PREFIX}/all-products-by-category-id`, // {category_id}
 	PRODUCT_BY_PARAMS: `${PRODUCT_PREFIX}/get-by-params`, // {product_id, option_id}
 	PRODUCT_OPTIONS: `${PRODUCT_PREFIX}/product-options`, // {product_id}
 	DELETE_PRODUCT: `${PRODUCT_PREFIX}/delete`, // {product_id}

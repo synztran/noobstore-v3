@@ -21,6 +21,7 @@ import {
 	GROUP_IMAGE_14,
 	LOGO_STORE,
 } from "@/constants/Images";
+import DetailTooltip from "./detailTooltip";
 
 interface IPost {
 	src: string;
@@ -36,12 +37,25 @@ interface IProps {
 }
 
 // Example data for the grid
-const communityImages = [
+const communityImages: {
+	src: string;
+	owner: string;
+	info: string;
+	isVertical?: boolean;
+	details?: {
+		[x: string]: string;
+	};
+}[] = [
 	{
 		src: GROUP_IMAGE_1,
 		owner: "alex.keyboards",
 		info: "65% custom build, GMK keycaps, FR4 plate, lubed switches.",
 		isVertical: true,
+		details: {
+			Name: "TGR 910 Customize",
+			Keycaps: "GMK Doich",
+			Switches: "Cherry VB Black",
+		},
 	},
 	{
 		src: GROUP_IMAGE_2,
@@ -142,9 +156,8 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 							<Image
 								src={item.src}
 								alt={`Community build by ${item.owner}`}
-								layout="fill"
-								objectFit="cover"
-								className="transition-transform duration-300 group-hover:scale-105"
+								fill
+								className="transition-transform duration-300 group-hover:scale-105 object-cover"
 								priority={idx < 3}
 							/>
 							{/* Overlay for owner and info */}
@@ -152,11 +165,20 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 								<span className="text-white font-semibold text-sm flex items-center gap-1">
 									@{item.owner}
 								</span>
-								<Tooltip title={item.info} arrow>
-									<span className="inline-flex items-center justify-center bg-white/80 rounded-full p-1 hover:bg-white transition-colors cursor-pointer">
-										<Info className="w-4 h-4 text-gray-700" />
-									</span>
-								</Tooltip>
+								{item.details ? (
+									<Tooltip
+										placement="left-end"
+										title={
+											<DetailTooltip
+												detail={item.details || {}}
+											/>
+										}
+										arrow>
+										<span className="inline-flex items-center justify-center bg-white/80 rounded-full p-1 hover:bg-white transition-colors cursor-pointer">
+											<Info className="w-4 h-4 text-gray-700" />
+										</span>
+									</Tooltip>
+								) : null}
 							</div>
 						</div>
 					</div>
@@ -168,9 +190,8 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 						<Image
 							src={LOGO_STORE}
 							alt="Noob Assembly"
-							objectFit="cover"
-							layout="fill"
-							className="p-0.5 rounded-full"
+							fill
+							className="p-0.5 rounded-full object-cover"
 						/>
 					</div>
 					<div className="flex flex-col">

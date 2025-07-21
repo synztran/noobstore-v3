@@ -17,10 +17,17 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
 import InputQuantity from "../InputQuatity";
-import { NEW_MISSING_IMAGE } from "@/constants/Images";
-import { borderRadius } from "@material-ui/system";
+import {
+	GIF_SHOPPING_CART,
+	NEW_MISSING_IMAGE,
+	QUICK_ACCESS_KEYCAPS_ICON,
+	QUICK_ACCESS_LUBRICANT_ICON,
+	SERVICE_KEYBOARD_ICON,
+	SERVICE_NEW_SWITCH_ICON,
+} from "@/constants/Images";
+import { useState } from "react";
+import { MoveUpRight } from "lucide-react";
 
 interface Props {
 	open: boolean;
@@ -32,7 +39,7 @@ const modalStyle = {
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
-	width: "min(550px, 55vw)",
+	width: "min(450px, 55vw)",
 	bgcolor: "background.paper",
 	boxShadow: 24,
 	minHeight: "80vh",
@@ -41,6 +48,29 @@ const modalStyle = {
 	flexDirection: "column",
 	borderRadius: "0.5rem",
 };
+
+const quickAccess = [
+	{
+		icon: SERVICE_KEYBOARD_ICON,
+		title: "Bàn phím",
+		url: "/products/keyboards",
+	},
+	{
+		icon: SERVICE_NEW_SWITCH_ICON,
+		title: "Switches",
+		url: "/products/switches",
+	},
+	{
+		icon: QUICK_ACCESS_KEYCAPS_ICON,
+		title: "Keycaps",
+		url: "/products/keycaps",
+	},
+	{
+		icon: QUICK_ACCESS_LUBRICANT_ICON,
+		title: "Dầu lube",
+		url: "/products/lubricant",
+	},
+];
 
 const ModalCartItem = ({ open, handleClose }: Props) => {
 	const { data: cart } = useCartQuery();
@@ -93,7 +123,7 @@ const ModalCartItem = ({ open, handleClose }: Props) => {
 						cart?.products?.length === 0
 							? "justify-center align-middle"
 							: ""
-					} px-4 py-2 flex flex-col gap-4 w-full min-h-full max-h-full flex-1 overflow-y-auto`}>
+					} p-4 flex flex-col gap-4 w-full min-h-full max-h-full flex-1 overflow-y-auto`}>
 					{cart?.products?.length ? (
 						cart?.products.map(
 							(item: ICartProduct, index: number) => (
@@ -108,39 +138,77 @@ const ModalCartItem = ({ open, handleClose }: Props) => {
 							)
 						)
 					) : (
-						<Box>
+						<div className="relative flex flex-col items-center justify-center gap-4">
+							<Image
+								src={GIF_SHOPPING_CART}
+								alt="gif sc"
+								width={150}
+								height={50}
+							/>
 							<Typography variant="body1" className="text-center">
-								Giỏ hàng trống
+								Chưa có sản phẩm thêm vào giỏ!
+								<br />
+								<span className="text-sm text-gray-600">
+									Đã đến lúc tìm và thêm sản phẩm vào giỏ hàng
+									ngay
+								</span>
 							</Typography>
-						</Box>
+							<div className="flex flex-col gap-2 w-full max-w-[60%]">
+								{quickAccess.map((item) => (
+									<Link
+										key={item.title}
+										href={item.url}
+										className="flex items-center justify-between gap-2 rounded-lg border border-gray-300 p-2 w-full hover:bg-gray-100 hover:scale-105 transition-all duration-200 ease-in-out">
+										<div className="flex items-center gap-2">
+											<Image
+												src={item.icon}
+												alt={item.title}
+												width={40}
+												height={40}
+												className="bg-gray-400 rounded-full"
+											/>
+											<strong>{item.title}</strong>
+										</div>
+										<button className="border border-gray-300 rounded-full p-1">
+											<MoveUpRight className="w-5 h-5" />
+										</button>
+									</Link>
+								))}
+							</div>
+						</div>
 					)}
 				</div>
-				{/* borderTop="1px solid #e9e9e9" */}
-				<div className="w-full p-2 border-t border-gray-200">
-					<span className="text-sm text-gray-600">
-						<strong className="text-base">Phí và Giảm giá</strong>{" "}
-						sẽ được tính toán ở bước tiếp theo
-					</span>
-					<br />
-					<span className="text-sm  text-gray-600">
-						Đơn hàng từ{" "}
-						<strong className="text-base">
-							{formatCurrency(3000000)}
-						</strong>{" "}
-						sẽ được miễn phí vận chuyện nội thành{" "}
-						<strong className="text-base">Hồ Chí Mình</strong> từ
-						shop
-					</span>
-				</div>
-				<Button
-					fullWidth
-					className="p-4 bg-red-400 font-bold hover:bg-red-500 rounded-tr-none rounded-tl-none top-0.5"
-					onClick={handleCheckout}>
-					<span className="text-white">
-						{" "}
-						Thanh toán {formatCurrency(cart?.totalPrice || 0)}
-					</span>
-				</Button>
+				{cart?.products?.length ? (
+					<div className="w-full p-2 border-t border-gray-200">
+						<span className="text-sm text-gray-600">
+							<strong className="text-base">
+								Phí và Giảm giá
+							</strong>{" "}
+							sẽ được tính toán ở bước tiếp theo
+						</span>
+						<br />
+						<span className="text-sm  text-gray-600">
+							Đơn hàng từ{" "}
+							<strong className="text-base">
+								{formatCurrency(3000000)}
+							</strong>{" "}
+							sẽ được miễn phí vận chuyện nội thành{" "}
+							<strong className="text-base">Hồ Chí Mình</strong>{" "}
+							từ shop
+						</span>
+					</div>
+				) : null}
+				{cart?.products?.length ? (
+					<Button
+						fullWidth
+						className="p-4 bg-red-400 font-bold hover:bg-red-500 rounded-tr-none rounded-tl-none top-0.5"
+						onClick={handleCheckout}>
+						<span className="text-white">
+							{" "}
+							Thanh toán {formatCurrency(cart?.totalPrice || 0)}
+						</span>
+					</Button>
+				) : null}
 			</Box>
 		</Modal>
 	);
@@ -162,7 +230,7 @@ const CartItem = ({
 	cart: ICart;
 }) => {
 	return (
-		<>
+		<div key={item?.productId}>
 			<div
 				key={item?.productId}
 				className="grid grid-cols-12 gap-4 min-h-[115px]">
@@ -171,12 +239,9 @@ const CartItem = ({
 					<Image
 						src={item?.thumbnail || NEW_MISSING_IMAGE}
 						alt="product"
-						className="hover:scale-105 transition-all duration-200 ease-in-out rounded-10"
+						className="hover:scale-105 transition-all duration-200 ease-in-out rounded-10 object-cover"
 						fill
 						sizes="100vw"
-						style={{
-							objectFit: "cover",
-						}}
 					/>
 				</div>
 				{/* </Link> */}
@@ -239,6 +304,6 @@ const CartItem = ({
 			{index !== cart.products.length - 1 ? (
 				<Divider className="" />
 			) : null}
-		</>
+		</div>
 	);
 };

@@ -2,7 +2,6 @@ export interface IAuthUser {
 	accountId: number;
 	avatar: string;
 	cartId: string;
-	// cookiesValue: string;
 	createdAt: string; // ISO date string
 	customerId: number;
 	email: string;

@@ -67,21 +67,19 @@ const BlockText = ({
 
 const QuickCategory = () => {
 	return (
-        <div className="flex flex-col gap-10">
-            <div className="grid grid-cols-4 gap-4">
+		<div className="flex flex-col gap-10">
+			<div className="grid grid-cols-4 gap-4">
 				{CollectionArray?.sort((a, b) => a.idx - b.idx)?.map(
 					(item, index) => (
 						<div key={index} className="cursor-pointer">
 							<div className="relative w-full h-64 overflow-hidden">
 								<Image
-                                    className="hover:scale-105 transition duration-500 delay-150 object-cover"
-                                    src={item.imageUrl}
-                                    alt={item.text}
-                                    fill
-                                    sizes="100vw"
-                                    style={{
-                                        objectFit: "contain"
-                                    }} />
+									className="hover:scale-105 transition duration-500 delay-150 object-cover"
+									src={item.imageUrl}
+									alt={item.text}
+									fill
+									sizes="100vw"
+								/>
 							</div>
 							<p
 								className="text-center font-bold text-xl pt-4"
@@ -92,6 +90,6 @@ const QuickCategory = () => {
 					)
 				)}
 			</div>
-        </div>
-    );
+		</div>
+	);
 };

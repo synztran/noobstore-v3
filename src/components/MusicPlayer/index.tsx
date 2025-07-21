@@ -220,9 +220,7 @@ const MusicPlayer: React.FC<IProps> = ({ isAutoPlay = false }) => {
 							alt="music icon"
 							fill
 							sizes="100vw"
-							style={{
-								objectFit: "cover",
-							}}
+							className="object-cover"
 						/>
 					</div>
 					<div className="flex flex-col text-sm">

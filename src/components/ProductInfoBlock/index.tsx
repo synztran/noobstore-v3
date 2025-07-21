@@ -39,12 +39,12 @@ export default function ProductInfoBlock({
 	const { currentQuantity, triggerResetQuantity } = useStoreProductDetail();
 	const { toggleResetQuantity } = useStoreProductDetailAction();
 	const handleAddToCart = useAddToCartMutation();
-	const { collapseContent } = category || {};
+	const { collapseContent, rating } = category || {};
 
 	// sum of basePrice and selectedOption price
 	const totalPriceCurrentOpt = useMemo(() => {
 		const basePrice = products?.reduce((acc, product) => {
-			return acc + (product.salePrice || product.price || 0);
+			return acc + (product.salePrice || product.basePrice || 0);
 		}, 0);
 
 		const selectedPrice = selectedOpt
@@ -91,7 +91,7 @@ export default function ProductInfoBlock({
 				productId: product.productId,
 				productName: product.productName,
 				replaceProductName: product?.replaceProductName,
-				price: product?.salePrice || product?.price,
+				price: product?.salePrice || product?.basePrice,
 				categoryId: product?.categoryId,
 				productPart: product?.productPart,
 				productOptions: selectedOpt?.[product?.productPart] || [],
@@ -102,7 +102,7 @@ export default function ProductInfoBlock({
 
 	return (
 		<>
-			<div className="mb-4">
+			<div className="relative">
 				<h1 className="text-2xl font-bold tracking-tight text-gray-900 uppercase">
 					{category?.categoryName}
 				</h1>
@@ -111,13 +111,23 @@ export default function ProductInfoBlock({
 					style={{ letterSpacing: "1px" }}>
 					{category?.description}
 				</p>
-				<p className="text-xl tracking-tight text-black font-bold mt-2">
-					{formatCurrency(totalPriceCurrentOpt)}
+				<p className="text-xl tracking-tight font-bold mt-2 text-[#c88097]">
+					{totalPriceCurrentOpt > 0
+						? formatCurrency(totalPriceCurrentOpt)
+						: `${formatCurrency(category.minPrice)} ${
+								category.maxPrice > 0
+									? `- ${formatCurrency(category.maxPrice)}`
+									: ""
+						  }`}
 				</p>
 			</div>
 			{/* Options */}
-			<div className="mt-4 lg:row-span-1 lg:mt-0">
-				<RatingComponent star={3} reviewer={3} readonly />
+			<div className="mt-2 lg:row-span-1 lg:mt-0">
+				<RatingComponent
+					star={rating?.star || 0}
+					reviewer={rating?.rateMessages?.length || 0}
+					readonly
+				/>
 				{Object.keys(itemsOptions).length > 0 &&
 					Object.entries(itemsOptions)?.map((item, index) => (
 						<ItemSelectGroupBlock

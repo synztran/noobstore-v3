@@ -1,9 +1,10 @@
 import { ERROR_MESSAGES } from "@/constants/Errors";
 import { useAuth } from "@/context/Auth";
+import { IAuthUser } from "@/interface/Context/auth";
 import useCartQuery from "@/react-query/cart/api/useCartQueries";
 import { appQueryKeys } from "@/react-query/root";
 import { classNames } from "@/utils/AppConfig";
-import debounce300 from "@/utils/Debounce";
+import debounce300 from "@/utils/debounce";
 import NotifyUtils from "@/utils/NotifyUtils";
 import { useCartAction } from "@/zustand/useCart";
 import { useStoreProductDetailAction } from "@/zustand/useProductDetail";

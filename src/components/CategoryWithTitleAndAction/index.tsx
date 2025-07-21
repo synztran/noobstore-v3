@@ -94,6 +94,19 @@ const fakeItems: CategoryItem[] = [
 		reviews: 24,
 		quantity: 4,
 	},
+	{
+		id: 6,
+		brand: "Kinetic Labs",
+		name: "Gecko Silent Linear",
+		price: 5500,
+		image: "/images/filco.webp",
+		rating: {
+			stars: 5,
+			reviews: 24,
+		},
+		reviews: 24,
+		quantity: 4,
+	},
 ];
 
 const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
@@ -149,7 +162,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 				</IconButton>
 				{/* Swiper */}
 				<Swiper
-					slidesPerView={4}
+					slidesPerView={5}
 					spaceBetween={16}
 					loop={true}
 					onSwiper={(swiper) => {
@@ -204,10 +217,8 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 									<Image
 										src={item.image}
 										alt={item.name}
-										// width={120}
-										// height={120}
-										layout="fill"
-										objectFit="contain"
+										fill
+										className="object-contain"
 									/>
 								</div>
 								<div className="flex flex-col">

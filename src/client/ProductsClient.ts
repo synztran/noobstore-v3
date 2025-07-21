@@ -10,14 +10,6 @@ import { GET, POST, PUT } from ".";
 const getProductById = async ({ id }: { id: string }) => {
 	const url = PRODUCTS_API.DETAIL;
 	return GET({ url, isAuth: true, params: { id } });
-	// try {
-	// 	const response = await fetch(url + `/${id}`); // Replace with your actual backend endpoint
-	// 	const data = await response.json();
-	// 	return data;
-	// } catch (err) {
-	// 	// throw new Error(err.message);
-	// 	console.log(err.message);
-	// }
 };
 
 const getProductsByCategoryID = async ({

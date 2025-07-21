@@ -1,4 +1,4 @@
-export const hashCode = (text) => {
+export const hashCode = (text: string) => {
 	let hash = 0;
 	let i;
 	let chr;
@@ -15,10 +15,10 @@ export const hashCode = (text) => {
 	}
 	return hash;
 };
-export const encodeUrl = (url) => encodeURIComponent(url);
+export const encodeUrl = (url: string) => encodeURIComponent(url);
 export const phoneNumberPattern = /(84|0|\+84)+([0-9]{9})\b/g;
 
-export const changeAlias = (alias) => {
+export const changeAlias = (alias: string) => {
 	if (!alias || alias.length === 0) {
 		return "";
 	}
@@ -40,7 +40,7 @@ export const changeAlias = (alias) => {
 	str = str.trim();
 	return str;
 };
-const searchStringInStrings = (arr, str) => {
+const searchStringInStrings = (arr: any[], str: string) => {
 	if (!str || str.length === 0) {
 		return arr;
 	}
@@ -71,12 +71,12 @@ const searchStringInStrings = (arr, str) => {
 	return rsUnSigned;
 };
 
-export const firstUppercase = (string) =>
+export const firstUppercase = (string: string) =>
 	string.charAt(0).toUpperCase() + string.slice(1);
-export const capitalizeTextFirst = (text) =>
+export const capitalizeTextFirst = (text: string) =>
 	firstUppercase(text?.toLocaleLowerCase() || "");
 
-export const capitalizeText = (phrase) => {
+export const capitalizeText = (phrase: string) => {
 	if (phrase === undefined) {
 		return "";
 	}
@@ -87,33 +87,34 @@ export const capitalizeText = (phrase) => {
 		.join(" ");
 };
 
-export const trimText = (text) =>
+export const trimText = (text: string) =>
 	text
 		.trim()
 		.split(" ")
 		.filter((character) => character !== "")
 		.join(" ");
 
-export const trimNumber = (number) =>
+export const trimNumber = (number: string) =>
 	number
 		.trim()
 		.split(" ")
 		.filter((digit) => digit !== "")
 		.join("");
 
-const titleCase = (str) => {
-	const splitStr = str.toLowerCase().split(" ");
-	for (let i = 0; i < splitStr.length; i += 1) {
-		// You do not need to check if i is larger than splitStr length, as your for does that for you
-		// Assign it back to the array
-		splitStr[i] =
-			splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+const titleCase = (str: string) => {
+	const splitStr = str.toLowerCase().split(" ") || [];
+	if (splitStr.length === 0) {
+		return str;
 	}
-	// Directly return the joined string
+	for (let i = 0; i < splitStr.length; i += 1) {
+		splitStr[i] = splitStr[i]?.length
+			? splitStr[i]!.charAt(0).toUpperCase() + splitStr[i]!.slice(1)
+			: "";
+	}
 	return splitStr.join(" ");
 };
 
-export const capitalizeFirstOfEachWords = (text) => {
+export const capitalizeFirstOfEachWords = (text: string) => {
 	const splitStr = text?.trim()?.split(" ");
 	if (splitStr?.length > 0) {
 		const titleCaseArray = splitStr.map(
@@ -124,7 +125,7 @@ export const capitalizeFirstOfEachWords = (text) => {
 	return "";
 };
 
-export const truncateString = (text, length = 32, suffix = "...") => {
+export const truncateString = (text: string, length = 32, suffix = "...") => {
 	if (typeof text !== "string") {
 		throw Error("text must be a string");
 	}
@@ -133,22 +134,22 @@ export const truncateString = (text, length = 32, suffix = "...") => {
 		: text;
 };
 
-export const truncateFileName = (path, length = 32, suffix = "...") => {
+export const truncateFileName = (path: string, length = 32, suffix = "...") => {
 	if (typeof path !== "string") {
 		throw Error("path must be a string");
 	}
 	const pathInfo = path.split(".");
-	const extension = pathInfo.pop().toLowerCase();
+	const extension = pathInfo.pop()?.toLowerCase();
 	const fileName = pathInfo.join("");
 	return `${truncateString(fileName, length, suffix)}.${extension}`;
 };
 
-const toBase64 = (str) =>
+const toBase64 = (str: string) =>
 	typeof window === "undefined"
 		? Buffer.from(str).toString("base64")
 		: window.btoa(str);
 
-export const getSlugFromUrl = ({ url = "" }) => {
+export const getSlugFromUrl = ({ url = "" }: { url: string }) => {
 	if (!url) return "";
 	const urlSplits = url.split("/");
 	return urlSplits.length > 0 ? urlSplits[urlSplits.length - 1] : url;
@@ -158,10 +159,12 @@ export const minuteToHour = (
 	minute = 0,
 	hourUnit = "giờ",
 	minuteUnit = "phút"
-) => {
+): string | number => {
 	const hours = Math.floor(minute / 60);
 	const minutes = minute % 60;
-	return `${hours > 0 ? ` ${hours} ${hourUnit} ` : ""}${minutes > 0 ? ` ${minutes} ${minuteUnit}` : ""}`;
+	return `${hours > 0 ? ` ${hours} ${hourUnit} ` : ""}${
+		minutes > 0 ? ` ${minutes} ${minuteUnit}` : ""
+	}`;
 };
 
 export default {

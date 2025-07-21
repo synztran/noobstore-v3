@@ -7,9 +7,9 @@ import { ParsedUrlQuery } from "querystring";
 import { memo } from "react";
 import { Base } from "templates/Base";
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths = async (ctx) => {
 	try {
-		const categories = await CategoryClient.getAllValidCategory({
+		const categories = await CategoryClient.getAllCategory({
 			ctx: {},
 			isAuth: false,
 			params: {

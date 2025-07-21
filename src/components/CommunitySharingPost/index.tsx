@@ -113,8 +113,8 @@ const CommunitySharingPost: React.FC<CommunitySharingPostProps> = ({
 								e.currentTarget.style.backgroundImage =
 									"linear-gradient(white, white), linear-gradient(90deg, #5B8CFF 0%, #C26EFF 100%)";
 							}}>
-							<Hammer className="transition-transform duration-300 group-hover:rotate-45" />
-							Start building
+							<Hammer className="transition-transform duration-300 group-hover:rotate-12" />
+							Build ngay
 						</button>
 					)}
 					{onSeeMore && (
@@ -164,9 +164,8 @@ const CommunitySharingPost: React.FC<CommunitySharingPostProps> = ({
 							<Image
 								src={post.image}
 								alt={post.title}
-								layout="fill"
-								objectFit="cover"
-								className="group-hover:scale-[1.02] transition-all duration-300 rounded-lg"
+								fill
+								className="group-hover:scale-[1.02] transition-all duration-300 rounded-lg object-cover"
 							/>
 						</div>
 						{/* Footer: Likes */}
@@ -188,9 +187,8 @@ const CommunitySharingPost: React.FC<CommunitySharingPostProps> = ({
 								<Image
 									src={post.user.avatar}
 									alt={post.user.name}
-									objectFit="cover"
-									layout="fill"
-									className="rounded-full"
+									fill
+									className="rounded-full object-cover"
 								/>
 							</div>
 						</div>

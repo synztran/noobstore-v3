@@ -49,22 +49,24 @@ const Base = ({
 	}
 
 	return (
-		<div
-			className={classNames(
-				`text-gray-600 antialiased bg-gray-100 min-h-screen`,
-				`container mx-auto h-full`,
-				isNonStrutured
-					? `grid grid-rows-[${
-							appiedFixedLayout
-								? "130px_calc(100vh-130px-203px)_203px"
-								: "130px_1fr_203px"
-					  }] h-screen`
-					: ""
-			)}
-			id="webpage">
+		<div className="relative">
 			<Header />
-			{children}
-			<Footer />
+			<div
+				className={classNames(
+					`text-gray-600 antialiased bg-gray-100 min-h-screen`,
+					`container mx-auto h-full`,
+					isNonStrutured
+						? `grid grid-rows-[${
+								appiedFixedLayout
+									? "130px_calc(100vh-130px-203px)_203px"
+									: "130px_1fr_203px"
+						  }] h-screen`
+						: ""
+				)}
+				id="webpage">
+				{children}
+				<Footer />
+			</div>
 		</div>
 	);
 };

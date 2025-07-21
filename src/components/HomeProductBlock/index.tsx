@@ -98,6 +98,33 @@ const fakeItems: ProductItem[] = [
 			},
 		],
 	},
+	{
+		id: 5,
+		brand: "Kinetic Labs",
+		name: "Gecko Silent Linear",
+		price: 8000,
+		image: "/images/filco.webp",
+		rating: {
+			stars: 5,
+			reviews: 24,
+		},
+		reviews: 24,
+		quantity: 4,
+		tags: [
+			{
+				label: "PRO",
+				styles: {
+					background:
+						"linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%)",
+					color: "#fff",
+					border: "none",
+				},
+			},
+			{
+				label: "Free shipping",
+			},
+		],
+	},
 ];
 
 const HomeProductBlock: React.FC<IProps> = ({
@@ -126,7 +153,7 @@ const HomeProductBlock: React.FC<IProps> = ({
 					{action ? (
 						action
 					) : (
-						<button className="text-xs px-3 py-1 rounded-50 border border-gray-200 text-gray-700 hover:bg-gray-100 transition">
+						<button className="text-xs px-3 py-1 rounded-50 border border-gray-400 text-gray-700 hover:bg-gray-100 transition">
 							Khám phá thêm
 						</button>
 					)}
@@ -134,7 +161,7 @@ const HomeProductBlock: React.FC<IProps> = ({
 			</div>
 			{/* Swiper Controls */}
 			<div className="relative">
-				<div className="grid grid-cols-4 gap-4 mt-3 py-2">
+				<div className="grid grid-cols-5 gap-4 mt-3 py-2">
 					{fakeItems.map((item, idx) => (
 						<ProductBlock
 							isFirst={idx === 0}

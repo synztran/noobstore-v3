@@ -106,13 +106,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
 			const res = await UserService.getCurrentUser({});
 			if (res.status === "OK") {
-				const customerInfoData = getFirst(res);
-				const accountInfoRes = await AuthClient.getAccountInfo({});
-				customerInfoData.account =
-					getFirst(accountInfoRes)?.account || null;
-				customerInfoData.session =
-					getFirst(accountInfoRes)?.session || null;
-				setCustomerInfo(customerInfoData);
+				const customerInfoData = getFirst(res) || {
+					account: null,
+					session: null,
+				};
+				const customerInfoObj: any =
+					typeof customerInfoData === "object" &&
+					customerInfoData !== null
+						? { ...customerInfoData }
+						: {};
+				setCustomerInfo(customerInfoObj);
 				return res;
 			}
 			if (res.status === HTTP_STATUS.Unauthorized) {
@@ -129,6 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 	};
 
 	const setInfoUser = (userInfo: any) => {
+		console.log("userInfo", userInfo);
 		setUser(userInfo);
 		setIsAuthenticated(!!userInfo);
 		setIsLoading(false);
@@ -148,7 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 		async (callback?: (data: any) => void) => {
 			const respUser = await UserClient.getCurrentUser();
 			if (respUser?.status === "OK") {
-				const userInfo = getFirst(respUser, null);
+				const userInfo = respUser?.data;
 				const cookiesValue = Cookies.get(ACCESS_TOKEN);
 				if (cookiesValue && cookiesValue.length > 0) {
 					setCookies({ bearerToken: cookiesValue }, true);

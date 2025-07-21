@@ -208,12 +208,9 @@ const ChatComponent = ({ isModule = false }: IProps) => {
 										<Image
 											src={room.customerInfo.avatar}
 											alt="avatar"
-											className="rounded-full"
+											className="rounded-full object-cover"
 											fill
 											sizes="100vw"
-											style={{
-												objectFit: "cover",
-											}}
 										/>
 									</div>
 									<div className="col-span-3 flex flex-col">

@@ -158,7 +158,7 @@ export interface IProduct {
 	slug: string;
 	productPart: EnumProductType;
 	status: EnumSaleStatus;
-	price: number;
+	basePrice: number;
 	salePrice: number;
 	thumbnail: {
 		path: string;
@@ -191,6 +191,7 @@ export interface ICategory {
 	datePayment?: string;
 	minPrice: number;
 	maxPrice: number;
+	salePricePercent: number;
 	tax: number;
 	handle: number;
 	// specs?: string;
@@ -209,6 +210,17 @@ export interface ICategory {
 	collapseContent?: ICollapseContent[];
 	salePrice?: number;
 	content: string;
+	brand?: string;
+	rating?: {
+		star: number;
+		rateMessages: {
+			accountId: number;
+			star: number;
+			message: string;
+			createdAt: string;
+		}[];
+	};
+	tags?: ITag[];
 }
 
 export interface IOption {
@@ -315,4 +327,14 @@ export interface IProductOption {
 	createdAt?: Date;
 	updatedAt?: Date | null;
 	productPart?: EnumProductType;
+}
+
+export interface ITag {
+	label: string;
+	styles?: {
+		[x: string]: string;
+	};
+	icon?: string;
+	iconUrl?: string;
+	value: string;
 }
