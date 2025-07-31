@@ -109,3 +109,6 @@ export const GROUP_IMAGE_14 = "/images/community/14.jpg";
 export const QUICK_ACCESS_KEYCAPS_ICON = "/images/quickAccess/keycap.avif";
 export const QUICK_ACCESS_LUBRICANT_ICON = "/images/quickAccess/lube.png";
 export const QUICK_ACCESS_DESKMATS_ICON = "/images/quickAccess/deskmats.webp";
+
+// icons
+export const STAR_MEDAL_ICON = "/assets/icons/star_medal.png";

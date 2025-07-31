@@ -10,7 +10,7 @@ interface Props {
 const ProductTag = ({ tags }: Props) => {
 	const isShortDisplay = useMemo(() => tags.length > 2, [tags]);
 	return (
-		<div className="flex flex-wrap gap-1 min-h-[24px]">
+		<div className="flex flex-wrap gap-1 min-h-[26px]">
 			{tags.map((tag) => (
 				<Tooltip
 					title={isShortDisplay ? tag.label : ""}

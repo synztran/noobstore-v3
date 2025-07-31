@@ -44,7 +44,7 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 			<SaleTag salePricePercent={salePricePercent} />
 			<Link
 				href={`/product/${slug}`}
-				className="bg-gray-200 rounded-xl p-2 flex flex-col relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[420px] cursor-pointer">
+				className="bg-[#f7f6f3] shadow-sm rounded-xl p-2 flex flex-col relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[420px] cursor-pointer">
 				<div className="flex flex-col">
 					<div className="flex items-center justify-between">
 						<span className="text-base text-gray-600 font-bold">

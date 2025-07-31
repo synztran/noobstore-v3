@@ -1,14 +1,14 @@
+import { STAR_MEDAL_ICON } from "@/constants/Images";
+import { classNames } from "@/utils/AppConfig";
 import { Box } from "@material-ui/core";
-import StarIcon from "@mui/icons-material/Star";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import { Rating } from "@mui/material";
-import { useState } from "react";
+import { Star } from "lucide-react";
 
 interface Props {
 	star: number;
 	reviewer?: number;
 	disabled?: boolean;
 	readonly?: boolean;
+	isVertical?: boolean;
 }
 
 const RatingComponent = ({
@@ -16,37 +16,59 @@ const RatingComponent = ({
 	reviewer = 0,
 	disabled = false,
 	readonly = false,
+	isVertical = false,
 }: Props) => {
-	const [ratingStart, setRatingStart] = useState<number>(star);
-
-	console.log("ratingStart", ratingStart);
+	if (isVertical) {
+		return (
+			<div className="flex flex-col items-center">
+				<div className="flex items-center gap-1">
+					<img src={STAR_MEDAL_ICON} alt="star" className="w-6 h-6" />
+					<span className="text-lg font-bold">{star}</span>
+				</div>
+				<span className="text-base">Đánh giá</span>
+			</div>
+		);
+	}
 
 	return (
 		<Box className="flex align-middle gap-2">
-			<Rating
-				icon={
-					<StarIcon
-						style={{ fill: "#ff3833", width: 18, height: 18 }}
-					/>
-				}
-				emptyIcon={
-					<StarBorderIcon
-						style={{ fill: "black", width: 18, height: 18 }}
-					/>
-				}
-				className="text-yellow-400 my-auto"
-				name="simple-controlled"
-				value={ratingStart}
-				precision={0.5}
-				onChange={(_, newValue) => {
-					if (typeof newValue === "number") {
-						setRatingStart(newValue);
-					}
-				}}
-				size="small"
-				disabled={disabled}
-				readOnly={readonly}
-			/>
+			<div className="flex items-center">
+				{[...Array(5)].map((_, i) => {
+					const full = i + 1 <= Math.floor(star);
+					const half = !full && i < star && star % 1 >= 0.5;
+					return (
+						<span key={i} className="relative w-4 h-4 inline-block">
+							<Star
+								className={classNames(
+									"w-4 h-4",
+									full
+										? "fill-yellow-400"
+										: half
+										? "fill-yellow-400"
+										: "fill-gray-300"
+								)}
+								style={
+									half
+										? {
+												clipPath:
+													"polygon(0 0, 50% 0, 50% 100%, 0 100%)",
+										  }
+										: undefined
+								}
+							/>
+							{half && (
+								<Star
+									className="w-4 h-4 fill-gray-300 absolute top-0 left-0"
+									style={{
+										clipPath:
+											"polygon(50% 0, 100% 0, 100% 100%, 50% 100%)",
+									}}
+								/>
+							)}
+						</span>
+					);
+				})}
+			</div>
 			<div
 				style={{ lineHeight: "18px", paddingTop: 2 }}
 				className="text-sm">

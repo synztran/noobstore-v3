@@ -70,12 +70,14 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				nunito: ['"Nunito"', "sans-serif"],
+				roboto: ['"Roboto Mono"', "sans-serif"],
 			},
 			screens: {
 				xs: "320px",
 				sm: "576px",
 				md: "960px",
 				lg: "1440px",
+				xl: "1920px",
 			},
 			colors: {
 				primary: {

@@ -117,10 +117,10 @@ const SearchableSelect: React.FC<IProps> = ({
 					placeholder={placeholder}
 					className={`${className} w-full shadow-none outline-none border-none focus:border-none focus:shadow-none`}
 					InputLabelProps={{
-						className: "!text-sm bg-[#f4f4f5] max-w-max",
+						className: "!text-sm !bg-[#f7fafc] max-w-max",
 					}}
 					inputProps={{
-						className: "!text-sm",
+						className: "!text-sm bg-[#f7fafc]",
 					}}
 				/>
 

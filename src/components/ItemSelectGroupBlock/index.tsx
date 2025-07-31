@@ -72,8 +72,8 @@ const ItemSelectGroupBlock = ({
 	}, [itemSelected]);
 
 	return (
-        <div className={styles.container}>
-            <div className={classNames("flex gap-2")}>
+		<div className={styles.container}>
+			<div className={classNames("flex gap-2")}>
 				<span className="text-lg uppercase font-bold text-gray-600">
 					{
 						LabelItemSelectedBlock[
@@ -109,7 +109,7 @@ const ItemSelectGroupBlock = ({
 					</>
 				) : null}
 			</div>
-            <ToggleButtonGroup
+			<ToggleButtonGroup
 				value={itemSelected}
 				exclusive
 				onChange={handelSelectedItem}
@@ -134,17 +134,18 @@ const ItemSelectGroupBlock = ({
 								disabled={option.quantity === 0}>
 								{option.thumbnail ? (
 									<Image
-                                        src={
+										src={
 											option.thumbnail ||
 											NEW_MISSING_IMAGE
 										}
-                                        width={40}
-                                        height={40}
-                                        alt={option.name || ""}
-                                        style={{
-                                            maxWidth: "100%",
-                                            height: "auto"
-                                        }} />
+										width={40}
+										height={40}
+										alt={option.name || ""}
+										style={{
+											maxWidth: "100%",
+											height: "auto",
+										}}
+									/>
 								) : (
 									<span>{option.name}</span>
 								)}
@@ -163,8 +164,8 @@ const ItemSelectGroupBlock = ({
 					)
 				)}
 			</ToggleButtonGroup>
-        </div>
-    );
+		</div>
+	);
 };
 
 export default ItemSelectGroupBlock;
