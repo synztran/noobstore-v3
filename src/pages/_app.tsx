@@ -100,7 +100,7 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
 
 							<LoadingRoute>
 								<Component {...pageProps} />
-								<MessageChat isModule />
+								{/* <MessageChat isModule /> */}
 
 								<ToastContainer
 									limit={2}

@@ -51,7 +51,7 @@ const ShopPage = () => {
 						</div>
 					) : null}
 					{!isLoading && categoryList && categoryList?.length > 0 ? (
-						<div className="grid gap-2 grid-cols-3 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  w-full">
+						<div className="grid gap-2 grid-cols-3 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-3  w-full">
 							{categoryList?.map(
 								(child: ICategory, index: number) => (
 									<CategoryCardV2

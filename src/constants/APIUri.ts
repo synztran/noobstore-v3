@@ -79,3 +79,7 @@ export const LUCKY_WHEEL_API = {
 	SPIN: `${LUCKY_WHEEL_PREFIX}/spin`,
 	GET: `${LUCKY_WHEEL_PREFIX}`,
 };
+
+export const PRODUCT_OPTIONS_API = {
+	GET: `${PRODUCT_PREFIX}/product-option/get`,
+};

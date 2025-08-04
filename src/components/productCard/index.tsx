@@ -28,6 +28,8 @@ const ProductCard = ({ slug }: Props) => {
 		products: [],
 	};
 
+	console.log("productData", productData);
+
 	const { images = [] } = categoryDetail || {};
 	const [selectedOpt, setSelectedOpt] = useState<
 		Record<EnumProductType, IProductOption[]>
@@ -58,6 +60,8 @@ const ProductCard = ({ slug }: Props) => {
 				(product: IProduct) => product?.productOpts
 			);
 
+			console.log("producOptions", producOptions);
+
 			const mappingOptions = producOptions?.reduce(
 				(acc, opts) => {
 					opts?.forEach((opt) => {
@@ -77,42 +81,44 @@ const ProductCard = ({ slug }: Props) => {
 		}, [products]);
 
 	return (
-		<div className="">
-			<div className="grid grid-cols-5 gap-2">
-				{/* Image gallery */}
-				<div className="mb-auto w-full col-span-3">
-					{isLoading ? (
-						<SkeletonBlock className="col-span-3" />
-					) : (
-						<div className="lg:grid lg:grid-cols-1 lg:gap-y-8">
-							<SliderSyncing
-								imageList={images?.map((pic, index) => ({
-									src: pic.path,
-									alt: "",
-									id: pic.id || index + 1,
-								}))}
-							/>
-						</div>
-					)}
-				</div>
-
-				{/* Product info */}
+		<div className="grid grid-cols-12 gap-8 px-12">
+			<div className="mb-auto w-full col-span-6 bg-white rounded-lg shadow-md p-4">
 				{isLoading ? (
-					<SkeletonBlock className="col-span-2" />
+					<SkeletonBlock className="col-span-6" />
 				) : (
-					<div className="max-w-full p-4 rounded-md col-span-2">
-						{Object.values(categoryDetail)?.length ? (
-							<ProductInfoBlock
-								products={products}
-								category={categoryDetail as ICategory}
-								itemsOptions={itemsOptions}
-								selectedOpt={selectedOpt}
-								setSelectedOpt={setSelectedOpt}
-							/>
-						) : null}
-					</div>
+					<SliderSyncing
+						imageList={images?.map((pic, index) => ({
+							src: pic.path,
+							alt: "",
+							id: index + 1,
+						}))}
+					/>
 				)}
 			</div>
+
+			{/* Product info */}
+			{isLoading ? (
+				<SkeletonBlock className="col-span-5" />
+			) : (
+				<div className="max-w-full p-4 rounded-lg col-span-5 bg-white shadow-md">
+					{Object.values(categoryDetail)?.length ? (
+						<ProductInfoBlock
+							products={products}
+							category={categoryDetail as ICategory}
+							itemsOptions={itemsOptions}
+							selectedOpt={selectedOpt}
+							setSelectedOpt={setSelectedOpt}
+						/>
+					) : null}
+				</div>
+			)}
+			{isLoading ? (
+				<SkeletonBlock className="col-span-1" />
+			) : (
+				<div className="max-w-max max-h-max p-4 rounded-lg col-span-1 bg-white shadow-md">
+					<h1>{categoryDetail?.author}</h1>
+				</div>
+			)}
 		</div>
 	);
 };

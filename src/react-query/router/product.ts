@@ -1,5 +1,6 @@
 import { getData, getFirst, isValid } from "@/client";
 import CategoryClient from "@/client/CategoryClient";
+import ProductOptionClient from "@/client/ProductOptionClient";
 import ProductClient from "@/client/ProductsClient";
 import { HTTP_STATUS } from "@/constants/Enums/https";
 import { IResponse } from "@/interface/Client/interface";
@@ -31,6 +32,20 @@ export const productQueryKeys = createQueryKeys("product", {
 				});
 			const categoryDetail = getFirst(respCategoryDetail);
 			const products = respProductDetail.data || [];
+			const productOptionIds = products
+				.map((product) => product.optionGroups?.optionIds)
+				.flat();
+			console.log("productOptionIds", productOptionIds);
+
+      const signal = AbortSignal.timeout(10000);
+			const respProductOptions = await ProductOptionClient.getProductOptions({
+				body: {
+					productOptionIds: productOptionIds,
+				},
+				signal,
+      });
+      
+      console.log(respProductOptions)
 
 			const data = {
 				categoryDetail,

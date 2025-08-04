@@ -100,18 +100,31 @@ export default function ProductInfoBlock({
 		);
 	}, [selectedOpt, products, currentQuantity]);
 
+	console.log("itemsOptions", itemsOptions);
+
 	return (
 		<>
-			<div className="relative">
-				<h1 className="text-2xl font-bold tracking-tight text-gray-900 uppercase">
+			<div className="relative mt-2">
+				<span className="text-xl font-bold tracking-tight text-gray-900">
 					{category?.categoryName}
-				</h1>
-				<p
+				</span>
+				<div className="flex items-center gap-2">
+					<RatingComponent
+						star={rating?.star || 0}
+						reviewer={rating?.rateMessages?.length || 0}
+						readonly
+					/>
+					<div className="inline-flex items-center gap-1">
+						<span className="w-2 h-2 bg-gray-600 rounded-full" />
+						<span>Hồ Chí Minh, Việt Nam</span>
+					</div>
+				</div>
+				{/* <p
 					className="uppercase text-sm text-gray-600"
 					style={{ letterSpacing: "1px" }}>
 					{category?.description}
-				</p>
-				<p className="text-xl tracking-tight font-bold mt-2 text-[#c88097]">
+				</p> */}
+				<p className="text-xl tracking-tight font-bold mt-4 text-[#ec97b2]">
 					{totalPriceCurrentOpt > 0
 						? formatCurrency(totalPriceCurrentOpt)
 						: `${formatCurrency(category.minPrice)} ${
@@ -123,11 +136,11 @@ export default function ProductInfoBlock({
 			</div>
 			{/* Options */}
 			<div className="mt-2 lg:row-span-1 lg:mt-0">
-				<RatingComponent
+				{/* <RatingComponent
 					star={rating?.star || 0}
 					reviewer={rating?.rateMessages?.length || 0}
 					readonly
-				/>
+				/> */}
 				{Object.keys(itemsOptions).length > 0 &&
 					Object.entries(itemsOptions)?.map((item, index) => (
 						<ItemSelectGroupBlock

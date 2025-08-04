@@ -77,12 +77,12 @@ const GuildAndTutorials = () => {
 			{/* Main Card */}
 			<div className="bg-black rounded-2xl p-4 flex flex-col gap-4">
 				{/* Guides Row */}
-				<div className="flex flex-row gap-2">
+				<div className="flex flex-row gap-2 overflow-hidden overflow-x-auto scrollbar-hide py-2">
 					{guides.map((guide, idx) => (
 						<Link
 							href={guide.url || ""}
 							key={idx}
-							className="bg-[#18181b] rounded-xl p-3 flex flex-row w-[340px] min-w-[260px] max-w-[360px] shadow-md items-center hover:shadow-sm hover:shadow-white transition-all duration-300">
+							className="bg-[#18181b] rounded-xl p-3 flex flex-row w-[340px] min-w-[260px] max-w-[360px] shadow-sm items-center hover:shadow-md hover:shadow-gray-600 transition-all duration-300">
 							<div className="relative w-[72px] h-[72px] rounded-lg overflow-hidden flex-shrink-0">
 								{guide.emoji ? (
 									<div className="flex items-center justify-center w-full h-full text-4xl">
@@ -115,7 +115,7 @@ const GuildAndTutorials = () => {
 										{guide.author}
 									</span>
 								</div>
-								<div className="font-semibold text-white text-base leading-tight mb-1">
+								<div className="font-semibold text-white text-base leading-tight mb-1 line-clamp-3">
 									{guide.title}
 								</div>
 								<div className="text-xs text-gray-400">

@@ -7,10 +7,14 @@ import { ParsedUrlQuery } from "querystring";
 import { memo } from "react";
 import { Base } from "templates/Base";
 
+interface ProductPageProps {
+	category: ICategory;
+}
+
 export const getStaticPaths: GetStaticPaths = async (ctx) => {
 	try {
 		const categories = await CategoryClient.getAllCategory({
-			ctx: {},
+			ctx: ctx,
 			isAuth: false,
 			params: {
 				isValidate: false,
@@ -75,10 +79,6 @@ export const getStaticProps: GetStaticProps<
 	}
 };
 
-interface ProductPageProps {
-	category: ICategory;
-}
-
 const ProductPage = ({ category }: ProductPageProps) => {
 	if (!category) {
 		return (
@@ -95,10 +95,6 @@ const ProductPage = ({ category }: ProductPageProps) => {
 	return (
 		<Base>
 			<div className="mx-w-full pb-6 relative z-1">
-				{/* <Breadcumb
-					mainRoot={BreadcumbTitle["products"] as string}
-					subRoot={categoryDetail?.category_name as string}
-				/> */}
 				<article className="mt-4 h-full gap-4">
 					<ProductCard slug={slug as string} />
 				</article>
