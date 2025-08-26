@@ -9,6 +9,7 @@ interface IProps {
 	children?: React.ReactNode;
 	name: string;
 	containerClassName?: string;
+	options: { label: string; value: string }[];
 }
 
 const CheckboxWithSelect: React.FC<IProps> = (props) => {
@@ -21,6 +22,7 @@ const CheckboxWithSelect: React.FC<IProps> = (props) => {
 		onChange,
 		name,
 		containerClassName,
+		options,
 	} = props;
 	const [selectedOption, setSelectedOption] = useState<string | null>(null);
 	const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -53,8 +55,8 @@ const CheckboxWithSelect: React.FC<IProps> = (props) => {
 						Select an option
 					</option>
 					{options.map((option, index) => (
-						<option key={index} value={option}>
-							{option}
+						<option key={index} value={option.value}>
+							{option.label}
 						</option>
 					))}
 				</select>

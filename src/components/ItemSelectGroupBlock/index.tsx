@@ -1,6 +1,10 @@
 import { LabelItemSelectedBlock } from "@/constants";
-import { NEW_MISSING_IMAGE } from "@/constants/Images";
-import { EnumProductType, IProductOption } from "@/interface/interface";
+import { NEW_MISSING_IMAGE, SOLD_OUT_ICON } from "@/constants/Images";
+import {
+	EnumProductType,
+	IProduct,
+	IProductOption,
+} from "@/interface/interface";
 import { classNames } from "@/utils/AppConfig";
 import { formatCurrency } from "@/utils/FormatNumber";
 import { useStoreProductDetailAction } from "@/zustand/useProductDetail";
@@ -13,7 +17,8 @@ import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
 import styles from "./styles.module.css";
 
 interface Props {
-	options: [string, IProductOption[]];
+	product: IProduct;
+	productOptions: IProductOption[];
 	selectedOpt?: Record<EnumProductType, IProductOption[]>;
 	setSelectedOpt?: Dispatch<
 		SetStateAction<Record<EnumProductType, IProductOption[]>>
@@ -29,29 +34,29 @@ const CustomToggleButton = styled(ToggleButton)({
 });
 
 const ItemSelectGroupBlock = ({
-	options,
+	product,
+	productOptions,
 	selectedOpt,
 	setSelectedOpt,
 	toggleResetQuantity,
 	isMultipleSelection = false,
 }: Props) => {
-	const productOptionName = options?.[0] || "";
-	const productOptionValues = options?.[1] || [];
+	const { productPart, productName } = product || {};
 	const { updateOptSelected } = useStoreProductDetailAction();
 	const itemSelected = useMemo(() => {
-		return selectedOpt?.[productOptionName as EnumProductType]?.[0];
+		return selectedOpt?.[productPart as EnumProductType]?.[0];
 	}, [selectedOpt]);
-
-	const productType =
-		options?.map((option: any) => option.productType)?.[0] || "";
 
 	const handelSelectedItem = (
 		event: React.MouseEvent<HTMLElement>,
 		newValue: IProductOption
 	) => {
-		if (newValue !== null && itemSelected?.id !== newValue?.id) {
+		if (
+			newValue !== null &&
+			itemSelected?.productOptionId !== newValue?.productOptionId
+		) {
 			const selectedOpt = {
-				[productOptionName]: [newValue],
+				[productPart]: [newValue],
 			};
 			setSelectedOpt?.((prev) => ({
 				...prev,
@@ -61,7 +66,7 @@ const ItemSelectGroupBlock = ({
 		} else {
 			setSelectedOpt?.((prev) => {
 				const newSelectedOpt = { ...prev };
-				delete newSelectedOpt[productOptionName as EnumProductType];
+				delete newSelectedOpt[productPart as EnumProductType];
 				return newSelectedOpt;
 			});
 		}
@@ -72,14 +77,10 @@ const ItemSelectGroupBlock = ({
 	}, [itemSelected]);
 
 	return (
-		<div className={styles.container}>
+		<div className={classNames(styles.container || "", "!mt-0")}>
 			<div className={classNames("flex gap-2")}>
 				<span className="text-lg uppercase font-bold text-gray-600">
-					{
-						LabelItemSelectedBlock[
-							productOptionName as EnumProductType
-						]
-					}
+					{productName}
 				</span>
 				{itemSelected ? (
 					<>
@@ -114,55 +115,68 @@ const ItemSelectGroupBlock = ({
 				exclusive
 				onChange={handelSelectedItem}
 				className={classNames("flex items-center gap-2")}>
-				{productOptionValues?.map(
-					(option: IProductOption, idx: number) => (
-						<div className="relative font-nunito" key={idx}>
-							<ToggleButton
-								style={{
-									borderLeft: "1px solid rgb(113 128 150)",
-								}}
-								value={option}
-								className={classNames(
-									"relative max-w-max border border-gray-600 overflow-hidden capitalize disabled:!border-l-gray-400",
-									option.thumbnail
-										? "p-0 !rounded-full disabled:before:content-[''] disabled:before:bg-black disabled:before:rotate-45 disabled:before:w-12 disabled:before:h-[3px] disabled:before:absolute disabled:before:top-1/2 disabled:before:left-0 disabled:opacity-80 bg-white"
-										: "!rounded-sm min-w-[70px] p-1",
-									itemSelected?.id === option.id
-										? "!border-green-600"
-										: ""
-								)}
-								disabled={option.quantity === 0}>
-								{option.thumbnail ? (
-									<Image
-										src={
-											option.thumbnail ||
-											NEW_MISSING_IMAGE
-										}
-										width={40}
-										height={40}
-										alt={option.name || ""}
-										style={{
-											maxWidth: "100%",
-											height: "auto",
-										}}
-									/>
-								) : (
-									<span>{option.name}</span>
-								)}
-							</ToggleButton>
-							{itemSelected?.id === option?.id ? (
-								<Check
-									className={classNames(
-										"absolute text-green-600 w-4 h-4 border border-green-600 rounded-full bg-white p-0.5",
-										option.thumbnail
-											? "-top-1 -right-1"
-											: "-top-2 -right-2"
-									)}
+				{productOptions?.map((option: IProductOption, idx: number) => (
+					<div className="relative font-nunito" key={idx}>
+						<ToggleButton
+							style={{
+								borderLeft: "1px solid rgb(113 128 150)",
+							}}
+							value={option}
+							className={classNames(
+								"relative max-w-max border border-gray-600 capitalize disabled:!border-l-gray-400",
+								option.thumbnail
+									? "p-2 !rounded-10 bg-white"
+									: "!rounded-sm min-w-[70px] p-1",
+								itemSelected?.productOptionId ===
+									option.productOptionId
+									? "!border-green-600"
+									: "",
+								option.quantity === 0
+									? "!border-gray-400 !text-gray-400"
+									: ""
+							)}
+							disabled={option.quantity === 0}>
+							{option.thumbnail && option.quantity === 0 && (
+								<Image
+									src={SOLD_OUT_ICON}
+									alt="sold out"
+									width={100}
+									height={100}
+									className="absolute aspect-auto top-0 left-1/2 z-1 -translate-x-1/2"
 								/>
-							) : null}
-						</div>
-					)
-				)}
+							)}
+							{option.thumbnail ? (
+								<Image
+									src={
+										option.thumbnail?.path ||
+										NEW_MISSING_IMAGE
+									}
+									width={80}
+									height={80}
+									alt={option.name || ""}
+									style={{
+										maxWidth: "100%",
+										height: "auto",
+										minHeight: 80,
+									}}
+								/>
+							) : (
+								<span>{option.name}</span>
+							)}
+						</ToggleButton>
+						{itemSelected?.productOptionId ===
+						option?.productOptionId ? (
+							<Check
+								className={classNames(
+									"absolute text-green-600 w-5 h-5 border border-green-600 rounded-full bg-white p-0.5",
+									option.thumbnail
+										? "-top-1.5 -right-1.5"
+										: "-top-2.5 -right-2.5"
+								)}
+							/>
+						) : null}
+					</div>
+				))}
 			</ToggleButtonGroup>
 		</div>
 	);

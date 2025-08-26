@@ -1,4 +1,3 @@
-import { CategoryStatus } from "@/constants";
 import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { ICategory } from "@/interface/interface";
 import { formatCurrency } from "@/utils/FormatNumber";
@@ -9,7 +8,6 @@ import ProductTag from "../productTags";
 import { FavoriteBorder } from "@mui/icons-material";
 import { Star } from "lucide-react";
 import { classNames } from "@/utils/AppConfig";
-import { error } from "console";
 import SaleTag from "../SaleTag";
 
 interface Props {
@@ -17,16 +15,16 @@ interface Props {
 	isWithoutProducts?: boolean;
 }
 
-const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
+const CategoryCard = ({ category }: Props) => {
 	const {
 		thumbnail,
 		categoryName,
 		slug,
-		status,
+		// status,
 		minPrice,
 		maxPrice,
 		description,
-		salePrice,
+		// salePrice,
 		salePricePercent,
 		isActive,
 		categoryId,

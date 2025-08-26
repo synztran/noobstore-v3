@@ -26,9 +26,13 @@ const CheckboxWithPrice = (props: IProps) => {
 	return (
 		<div className={`flex flex-col gap-2 items-start w-full`}>
 			<div
-				className={`flex gap-2 items-center w-full ${containerClassName ?? ""}`}>
+				className={`flex gap-2 items-center w-full ${
+					containerClassName ?? ""
+				}`}>
 				<div
-					className={`flex ${subLabel ? "items-start" : "items-center"} gap-2`}>
+					className={`flex ${
+						subLabel ? "items-start" : "items-center"
+					} gap-2`}>
 					<Checkbox
 						checked={value}
 						onChange={(e) => {
@@ -39,7 +43,9 @@ const CheckboxWithPrice = (props: IProps) => {
 						size="small"
 					/>
 					<div className="flex flex-col">
-						<label className="text-sm text-gray-700">{label}</label>
+						<label htmlFor={name} className="text-sm text-gray-700">
+							{label}
+						</label>
 						{subLabel ? (
 							<span className="text-xs text-gray-500">
 								{subLabel}

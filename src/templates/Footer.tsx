@@ -20,7 +20,9 @@ const Footer = () => {
 	}
 
 	return (
-		<footer className="bg-gray-100 relative bottom-0 h-[280px]" id="footer">
+		<footer
+			className="bg-gray-100 relative bottom-0 h-[280px] container"
+			id="footer">
 			<div className="container py-4 mx-auto max-w-full border-t border-gray-400 h-full">
 				<div className="grid grid-cols-7 gap-8">
 					<div className="col-span-3">

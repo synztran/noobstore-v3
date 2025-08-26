@@ -36,6 +36,7 @@ const deliveryNote =
 const CheckoutPage = () => {
 	const router = useRouter();
 	const { data: cart, isPending } = useCartQuery();
+	console.log("cart", cart);
 	const { user } = useAuth() as unknown as {
 		user: { customerId: number; email: string };
 	};

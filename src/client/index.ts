@@ -22,7 +22,7 @@ export function isValid<T>(resp: IResponse<T>) {
 		: false;
 }
 
-export function getFirst<T>(resp: IResponse<T>, def = null) {
+export function getFirst<T>(resp: IResponse<T>) {
 	return (
 		resp &&
 		resp.status &&

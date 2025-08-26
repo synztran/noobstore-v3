@@ -27,7 +27,7 @@ const tempData = {
 	delivery: {
 		name: "Giao nhận 2 chiều",
 		code: "SM-SPU-001",
-		icon: <Truck size={18} />,
+		icon: <Truck size={20} />,
 		price: 60000,
 	},
 	pickup: {
@@ -35,7 +35,7 @@ const tempData = {
 		name: "Nguyễn Văn A",
 		phone: "0123456789",
 		date: "21 Dec, 2022 - 8:30 sáng",
-		icon: <CalendarRange size={18} />,
+		icon: <CalendarRange size={20} />,
 	},
 	receiver: {
 		address: "123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh",
@@ -46,7 +46,7 @@ const tempData = {
 	dateTime: {
 		pickup: "21 Dec, 2022 - 8:30 AM",
 		delivery: "24 Dec, 2022 - 8:30 AM",
-		icon: <CalendarRange size={18} />,
+		icon: <CalendarRange size={20} />,
 	},
 	services: {
 		keyboards: [
@@ -127,7 +127,7 @@ const tempData = {
 				],
 			},
 		],
-		icon: <Package size={18} />,
+		icon: <Package size={20} />,
 		price: 1250000,
 	},
 	quote: "This is a short term quote for this service",
@@ -154,10 +154,10 @@ const SummaryService: React.FC = () => {
 	return (
 		<div className="border-2 border-gray-600 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4">
 			<div className="flex flex-col">
-				<strong className="text-lg">
+				<strong className="text-xl">
 					{selectedOpt?.name ?? "Vui lòng chọn gói dịch vụ"}
 				</strong>
-				<span className="text-xs text-gray-500">{text.location}</span>
+				<span className="text-sm text-gray-600">{text.location}</span>
 			</div>
 			<div className="flex flex-col gap-2">
 				<div>
@@ -167,21 +167,13 @@ const SummaryService: React.FC = () => {
 						subTitle={tempData.delivery.code}
 						endContent={
 							<div className="flex items-center gap-2">
-								<span>
+								<span className="text-lg">
 									{formatCurrency(tempData.delivery.price)}
 								</span>
-								{/* <ChevronDown
-									size={16}
-									onClick={() => handleCollapse("delivery")}
-									className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 transform ${isCollapse.delivery ? "-scale-y-100" : ""}`}
-								/> */}
 							</div>
 						}
 						headClasses="font-bold"
 					/>
-					{/* <SummaryServiceCollapse isCollapse={isCollapse.delivery}>
-						<DeliveryInfo />
-					</SummaryServiceCollapse> */}
 				</div>
 				<DetailContent
 					icon={tempData.pickup.icon}
@@ -199,17 +191,9 @@ const SummaryService: React.FC = () => {
 								<span>
 									{formatCurrency(tempData.services.price)}
 								</span>
-								{/* <ChevronDown
-									size={16}
-									onClick={() => handleCollapse("services")}
-									className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 transform ${isCollapse.services ? "-scale-y-100" : ""}`}
-								/> */}
 							</div>
 						}
 					/>
-					{/* <SummaryServiceCollapse isCollapse={isCollapse.services}>
-						<ServicesInfo />
-					</SummaryServiceCollapse> */}
 				</div>
 			</div>
 			<Divider />
@@ -237,26 +221,35 @@ const SummaryService: React.FC = () => {
 				</SummaryServiceCollapse>
 				<div className="flex flex-col gap-1">
 					<DetailContent
+						type="dicount"
 						headContent="Giám giá:"
 						subTitle="DS001"
-						endContent={tempData.price.discount}
-						endClasses="text-lg text-green-700"
+						endContent={
+							tempData.price.discount > 0
+								? `-${formatCurrency(tempData.price.discount)}`
+								: "0"
+						}
+						itemEndClasses="text-base text-green-700"
+						parentClasses="items-start"
 					/>
 					<DetailContent
 						headContent="Tổng tiền:"
 						endContent={tempData.price.total}
-						endClasses="text-2xl font-bold"
-						headClasses="text-base font-bold"
+						itemEndClasses="text-lg font-bold"
+						headClasses="text-lg font-bold"
+						parentClasses="items-center"
 					/>
 					<DetailContent
-						headContent="Bao gồm phí dịch vụ 4%:"
-						headClasses="!text-xs text-gray-500"
+						headContent="Bao gồm phí dịch vụ & nền tảng 2%:"
+						headClasses="!text-sm text-gray-600"
 						endContent={tempData.price.fee}
-						endClasses="text-base"
+						itemEndClasses="text-base"
+						endClasses="items-center"
+						parentClasses="items-center"
 					/>
 				</div>
-				<Button className="bg-red-400 rounded-md text-white text-lg w-full my-2 hover:bg-red-500 font-bold normal-case">
-					Đặt lịch
+				<Button className="bg-red-400 rounded-md text-white w-full my-2 hover:bg-red-500 font-bold normal-case">
+					<span className="text-white text-xl">Đặt lịch</span>
 				</Button>
 				<small className="px-2 text-center break-keep">
 					Khi bạn nhấn vào nút{" "}
@@ -273,43 +266,84 @@ const SummaryService: React.FC = () => {
 export default SummaryService;
 
 export const DetailContent = ({
+	type,
 	icon,
 	headContent = "",
 	subTitle = "",
 	endContent = "",
 	headClasses = "",
 	endClasses = "",
+	itemEndClasses = "",
+	parentClasses = "",
 }: {
+	type?: "dicount" | "total" | "fee";
 	icon?: React.ReactNode;
 	headContent?: string | React.ReactNode;
 	subTitle?: string | React.ReactNode;
 	endContent?: string | React.ReactNode;
 	headClasses?: string;
 	endClasses?: string;
+	itemEndClasses?: string;
+	parentClasses?: string;
 }) => {
+	const [isCollapsed, setIsCollapsed] = React.useState(true);
 	return (
-		<div className="flex items-center gap-2">
+		<div className={`flex gap-2 ${parentClasses}`}>
 			<div className="flex gap-2">
 				{icon ? <div className="select-none">{icon}</div> : null}
-				<div>
-					<div className={`text-sm ${headClasses}`}>
-						{headContent}
+				<div className="flex flex-col gap-0.5">
+					<div className={`text-base ${headClasses}`}>
+						<div className="flex items-center gap-1">
+							{headContent}
+							{subTitle ? (
+								<button
+									type="button"
+									className="ml-1 text-xs text-gray-600 hover:text-gray-800 rounded px-1 py-0.5 border border-gray-300 leading-none"
+									onClick={() =>
+										setIsCollapsed((prev) => !prev)
+									}
+									aria-label={
+										isCollapsed ? "Expand" : "Collapse"
+									}>
+									<span className="select-none">e/c</span>
+								</button>
+							) : null}
+						</div>
 					</div>
-					{subTitle ? (
-						<div className="text-xs text-gray-500">{subTitle}</div>
+					{subTitle && !isCollapsed ? (
+						<div
+							className={`text-sm text-gray-600 ${
+								type === "dicount"
+									? "border border-gray-600 rounded-md px-2 py-1 text-center leading-[1]"
+									: ""
+							}`}>
+							{subTitle}
+						</div>
 					) : null}
 				</div>
 			</div>
 			{endContent ? (
-				<div className={`ml-auto ${endClasses}`}>
+				<div className={`ml-auto flex ${endClasses}`}>
 					{typeof endContent === "string" ? (
-						<span>{endContent}</span>
+						<span
+							className={`${itemEndClasses} ${
+								type === "dicount" ? "text-red-600" : ""
+							}`}>
+							{endContent}
+						</span>
 					) : null}
 					{typeof endContent === "number" ? (
-						<span>{formatCurrency(endContent)}</span>
+						<span
+							className={`${itemEndClasses} ${
+								type === "dicount" ? "text-red-600" : ""
+							}`}>
+							{formatCurrency(endContent)}
+						</span>
 					) : null}
 					{typeof endContent === "object" ? (
-						<span>{endContent}</span>
+						<span className={`${itemEndClasses}`}>
+							{endContent}
+						</span>
 					) : null}
 				</div>
 			) : null}
@@ -378,20 +412,21 @@ const DeliveryInfo = () => {
 
 const ServicesInfo = () => {
 	return (
-        <div
+		<div
 			className={`grid grid-rows-${3} border-l-2 border-gray-300 mx-7 pl-4`}>
-            {tempData.services.keyboards?.length ? (
+			{tempData.services.keyboards?.length ? (
 				<div className="flex items-start gap-2 mt-2">
 					<Image
-                        src={SERVICE_KEYBOARD_ICON}
-                        width={32}
-                        height={32}
-                        alt="switch icon"
-                        className="select-none"
-                        style={{
-                            maxWidth: "100%",
-                            height: "auto"
-                        }} />
+						src={SERVICE_KEYBOARD_ICON}
+						width={32}
+						height={32}
+						alt="switch icon"
+						className="select-none"
+						style={{
+							maxWidth: "100%",
+							height: "auto",
+						}}
+					/>
 					<div className="grid grid-cols-1 gap-4 w-full">
 						<div className="flex flex-col items-start text-xs">
 							{tempData.services.keyboards.map((data, index) => (
@@ -415,18 +450,19 @@ const ServicesInfo = () => {
 					</div>
 				</div>
 			) : null}
-            {tempData.services.switches?.length ? (
+			{tempData.services.switches?.length ? (
 				<div className="flex items-start gap-2 mt-2">
 					<Image
-                        src={SERVICE_NEW_SWITCH_ICON}
-                        width={32}
-                        height={32}
-                        alt="switch icon"
-                        className="select-none"
-                        style={{
-                            maxWidth: "100%",
-                            height: "auto"
-                        }} />
+						src={SERVICE_NEW_SWITCH_ICON}
+						width={32}
+						height={32}
+						alt="switch icon"
+						className="select-none"
+						style={{
+							maxWidth: "100%",
+							height: "auto",
+						}}
+					/>
 					<div className="grid grid-cols-1 gap-4 w-full">
 						<div className="flex flex-col items-start text-xs">
 							{tempData.services.switches.map((data, index) => (
@@ -450,7 +486,7 @@ const ServicesInfo = () => {
 					</div>
 				</div>
 			) : null}
-            {tempData.services.others?.length ? (
+			{tempData.services.others?.length ? (
 				<div className="flex items-start gap-2 mt-2">
 					<LayoutList size={32} />
 					<div className="grid grid-cols-1 gap-4 w-full">
@@ -476,6 +512,6 @@ const ServicesInfo = () => {
 					</div>
 				</div>
 			) : null}
-        </div>
-    );
+		</div>
+	);
 };

@@ -18,7 +18,7 @@ const CollapseText = ({
 	const [open, setOpen] = useState(false);
 
 	return (
-		<section className="grid place-items-center mt-4">
+		<section className="grid place-items-center mt-4 relative">
 			<div className="w-full" style={{ backgroundColor: `${bgc}` }}>
 				<button
 					type="button"
@@ -42,8 +42,8 @@ const CollapseText = ({
 				<div
 					id={id}
 					className={classNames(
-						"overflow-hidden transition-all duration-300 px-4",
-						open ? "max-h-[1000px] py-2" : "max-h-0 py-0"
+						"overflow-hidden transition-all duration-100 px-4 shadow-md rounded-br-lg rounded-bl-lg relative -top-2 overflow-y-auto",
+						open ? "max-h-[30vh] py-2 " : "max-h-0 py-0"
 					)}
 					style={{
 						backgroundColor: `${bgc}`,

@@ -1,6 +1,7 @@
 import {
 	EnumProductType,
 	ICategory,
+	ICollapseContent,
 	IProduct,
 	IProductOption,
 } from "@/interface/interface";
@@ -11,6 +12,9 @@ import { useMemo, useState } from "react";
 import ProductInfoBlock from "../ProductInfoBlock";
 import SliderSyncing from "../SliderSyncing";
 import { classNames } from "@/utils/AppConfig";
+import CollapseText from "../collapse";
+import SideUtilities from "../SideUtilities";
+import DetailRating from "../DetailRating";
 
 interface Props {
 	slug: string;
@@ -23,14 +27,13 @@ const ProductCard = ({ slug }: Props) => {
 			enabled: !!slug,
 		}
 	);
-	const { categoryDetail, products } = productData || {
+	const { categoryDetail, products, productOptions } = productData || {
 		categoryDetail: {},
 		products: [],
+		productOptions: {},
 	};
-
-	console.log("productData", productData);
-
 	const { images = [] } = categoryDetail || {};
+
 	const [selectedOpt, setSelectedOpt] = useState<
 		Record<EnumProductType, IProductOption[]>
 	>(() => {
@@ -54,71 +57,121 @@ const ProductCard = ({ slug }: Props) => {
 
 		return initialSelectedOpt;
 	});
-	const itemsOptions: Record<EnumProductType, IProductOption[]> =
-		useMemo(() => {
-			const producOptions = products?.map(
-				(product: IProduct) => product?.productOpts
-			);
+	// const itemsOptions: Record<EnumProductType, IProductOption[]> =
+	// 	useMemo(() => {
+	// 		// const producOptions = products?.map(
+	// 		// 	(product: IProduct) => product?.productOpts
+	// 		// );
 
-			console.log("producOptions", producOptions);
+	// 		// console.log("producOptions", producOptions);
+	// 		// const mappingOptions = productOptions?.reduce(
+	// 		// 	(
+	// 		// 		acc: Record<EnumProductType, IProductOption[]>,
+	// 		// 		opts: IProductOption[]
+	// 		// 	) => {
+	// 		// 		opts?.forEach((opt) => {
+	// 		// 			if (opt.productPart) {
+	// 		// 				if (!acc[opt.productPart]) {
+	// 		// 					acc[opt.productPart] = [];
+	// 		// 				}
+	// 		// 				acc[opt.productPart].push(opt);
+	// 		// 			}
+	// 		// 		});
+	// 		// 		return acc;
+	// 		// 	},
+	// 		// 	{} as Record<EnumProductType, IProductOption[]>
+	// 		// );
 
-			const mappingOptions = producOptions?.reduce(
-				(acc, opts) => {
-					opts?.forEach((opt) => {
-						if (opt.productPart) {
-							if (!acc[opt.productPart]) {
-								acc[opt.productPart] = [];
-							}
-							acc[opt.productPart].push(opt);
-						}
-					});
-					return acc;
-				},
-				{} as Record<EnumProductType, IProductOption[]>
-			);
+	// 		// console.log("mappingOptions", mappingOptions);
 
-			return mappingOptions || {};
-		}, [products]);
+	// 		// return mappingOptions || {};
+	// 		return {};
+	// 	}, [products]);
 
 	return (
-		<div className="grid grid-cols-12 gap-8 px-12">
-			<div className="mb-auto w-full col-span-6 bg-white rounded-lg shadow-md p-4">
+		<div className="grid grid-cols-12 gap-8 px-4">
+			<div className="mb-auto w-full col-span-6">
 				{isLoading ? (
-					<SkeletonBlock className="col-span-6" />
+					<>
+						<SkeletonBlock className="col-span-6" />
+						<SkeletonBlock className="col-span-6" />
+					</>
 				) : (
-					<SliderSyncing
-						imageList={images?.map((pic, index) => ({
-							src: pic.path,
-							alt: "",
-							id: index + 1,
-						}))}
-					/>
+					<div className="flex flex-col gap-8">
+						<SliderSyncing
+							imageList={images?.map((pic, index) => ({
+								src: pic.path,
+								alt: "",
+								id: index + 1,
+							}))}
+						/>
+						<DetailRating
+							averageRating={4.99}
+							totalReviews={215}
+							ratingBreakdown={[
+								{
+									stars: 5,
+									percentage: 85,
+									count: 215,
+								},
+								{
+									stars: 4,
+									percentage: 10,
+									count: 215,
+								},
+								{
+									stars: 3,
+									percentage: 1,
+									count: 215,
+								},
+								{
+									stars: 2,
+									percentage: 1,
+									count: 215,
+								},
+								{
+									stars: 1,
+									percentage: 3,
+									count: 215,
+								},
+							]}
+							showRatingMethodology={true}
+						/>
+					</div>
 				)}
 			</div>
 
 			{/* Product info */}
-			{isLoading ? (
-				<SkeletonBlock className="col-span-5" />
-			) : (
-				<div className="max-w-full p-4 rounded-lg col-span-5 bg-white shadow-md">
-					{Object.values(categoryDetail)?.length ? (
+			<div className="col-span-6 gap-12 grid grid-cols-12">
+				{isLoading ? (
+					<SkeletonBlock className="col-span-5" />
+				) : (
+					<div className="max-w-full p-4 rounded-lg col-span-10 bg-white shadow-md max-h-max">
 						<ProductInfoBlock
 							products={products}
 							category={categoryDetail as ICategory}
-							itemsOptions={itemsOptions}
+							productOptions={
+								productOptions as Record<
+									EnumProductType,
+									IProductOption[]
+								>
+							}
 							selectedOpt={selectedOpt}
 							setSelectedOpt={setSelectedOpt}
 						/>
-					) : null}
+					</div>
+				)}
+				<div className="col-span-2">
+					{isLoading ? (
+						<SkeletonBlock className="col-span-1" />
+					) : (
+						<SideUtilities
+							showAvatar={true}
+							avatarUrl={categoryDetail?.author}
+						/>
+					)}
 				</div>
-			)}
-			{isLoading ? (
-				<SkeletonBlock className="col-span-1" />
-			) : (
-				<div className="max-w-max max-h-max p-4 rounded-lg col-span-1 bg-white shadow-md">
-					<h1>{categoryDetail?.author}</h1>
-				</div>
-			)}
+			</div>
 		</div>
 	);
 };

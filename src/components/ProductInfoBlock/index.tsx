@@ -22,7 +22,7 @@ import styles from "./styles.module.css";
 interface Props {
 	products: IProduct[];
 	category: ICategory;
-	itemsOptions: Record<EnumProductType, IProductOption[]>;
+	productOptions: Record<EnumProductType, IProductOption[]>;
 	selectedOpt: Record<EnumProductType, IProductOption[]>;
 	setSelectedOpt: Dispatch<
 		SetStateAction<Record<EnumProductType, IProductOption[]>>
@@ -32,7 +32,7 @@ interface Props {
 export default function ProductInfoBlock({
 	products,
 	category,
-	itemsOptions,
+	productOptions,
 	selectedOpt,
 	setSelectedOpt,
 }: Props) {
@@ -73,7 +73,9 @@ export default function ProductInfoBlock({
 
 		if (totalProduct === quantityAllProductOpt?.length) {
 			return Math.min(
-				...quantityAllProductOpt.filter((item) => item !== undefined)
+				...quantityAllProductOpt?.filter(
+					(item): item is number => item !== undefined
+				)
 			);
 		}
 
@@ -86,6 +88,7 @@ export default function ProductInfoBlock({
 			Object.keys(selectedOpt)?.length < products?.length
 		)
 			return [];
+
 		return (
 			products.map((product) => ({
 				productId: product.productId,
@@ -100,12 +103,14 @@ export default function ProductInfoBlock({
 		);
 	}, [selectedOpt, products, currentQuantity]);
 
-	console.log("itemsOptions", itemsOptions);
+	console.log("productOptions", productOptions);
+	console.log("totalPriceCurrentOpt", totalPriceCurrentOpt);
+	console.log("selectedOpt", selectedOpt);
 
 	return (
 		<>
 			<div className="relative mt-2">
-				<span className="text-xl font-bold tracking-tight text-gray-900">
+				<span className="text-[22px] font-bold tracking-tight text-gray-900">
 					{category?.categoryName}
 				</span>
 				<div className="flex items-center gap-2">
@@ -115,7 +120,7 @@ export default function ProductInfoBlock({
 						readonly
 					/>
 					<div className="inline-flex items-center gap-1">
-						<span className="w-2 h-2 bg-gray-600 rounded-full" />
+						<span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
 						<span>Hồ Chí Minh, Việt Nam</span>
 					</div>
 				</div>
@@ -124,7 +129,7 @@ export default function ProductInfoBlock({
 					style={{ letterSpacing: "1px" }}>
 					{category?.description}
 				</p> */}
-				<p className="text-xl tracking-tight font-bold mt-4 text-[#ec97b2]">
+				<p className="text-2xl tracking-tight font-bold mt-4 text-[#ec97b2]">
 					{totalPriceCurrentOpt > 0
 						? formatCurrency(totalPriceCurrentOpt)
 						: `${formatCurrency(category.minPrice)} ${
@@ -136,16 +141,22 @@ export default function ProductInfoBlock({
 			</div>
 			{/* Options */}
 			<div className="mt-2 lg:row-span-1 lg:mt-0">
-				{/* <RatingComponent
-					star={rating?.star || 0}
-					reviewer={rating?.rateMessages?.length || 0}
-					readonly
-				/> */}
-				{Object.keys(itemsOptions).length > 0 &&
-					Object.entries(itemsOptions)?.map((item, index) => (
+				{/* {Object.keys(productOptions).length > 0 &&
+					Object.entries(productOptions)?.map((item, index) => (
 						<ItemSelectGroupBlock
 							key={index}
 							options={item}
+							selectedOpt={selectedOpt}
+							setSelectedOpt={setSelectedOpt}
+							toggleResetQuantity={toggleResetQuantity}
+						/>
+					))} */}
+				{products &&
+					products?.map((product) => (
+						<ItemSelectGroupBlock
+							key={product.productId}
+							product={product}
+							productOptions={productOptions[product.productPart]}
 							selectedOpt={selectedOpt}
 							setSelectedOpt={setSelectedOpt}
 							toggleResetQuantity={toggleResetQuantity}
@@ -161,35 +172,41 @@ export default function ProductInfoBlock({
 						maxQuantity={maxQuantityCurrentOpt || 0}
 					/>
 					{maxQuantityCurrentOpt && maxQuantityCurrentOpt < 10 ? (
-						<span className="text-xs text-gray-500">
+						<span className="text-sm text-gray-600">
 							Còn lại {maxQuantityCurrentOpt} sản phẩm
 						</span>
 					) : null}
 				</Box>
 				<div className="mt-4 flex flex-col gap-4">
-					{maxQuantityCurrentOpt === 0 ? (
-						<div className="flex items-center gap-2 font-bold uppercase">
-							<span
-								className={classNames(
-									"block relative rounded-2xl w-2 h-2 bg-red-400"
+					<div>
+						{Object.keys(selectedOpt)?.length > 0 ? (
+							<>
+								{maxQuantityCurrentOpt === 0 ? (
+									<div className="flex items-center gap-2 font-bold uppercase">
+										<span
+											className={classNames(
+												"block relative rounded-2xl w-2 h-2 bg-red-400"
+											)}
+										/>
+										Sản phẩm hết hàng
+									</div>
+								) : (
+									<div className="flex items-center gap-2 font-bold uppercase">
+										<span
+											className={classNames(
+												"block relative rounded-2xl w-2 h-2 bg-green-400",
+												styles.pulseIn || ""
+											)}
+										/>
+										Sản phẩm còn hàng
+									</div>
 								)}
-							/>
-							Sản phẩm hết hàng
-						</div>
-					) : (
-						<div className="flex items-center gap-2 font-bold uppercase">
-							<span
-								className={classNames(
-									"block relative rounded-2xl w-2 h-2 bg-green-400",
-									styles.pulseIn || ""
-								)}
-							/>
-							Sản phẩm còn hàng
-						</div>
-					)}
+							</>
+						) : null}
+					</div>
 					<Button
 						className={classNames(
-							"flex w-full items-center justify-center rounded-md border-2 border-solid border-red-400 bg-transparent px-auto py-3 text-base font-medium text-red-400 focus:ring-2 disabled:opacity-[0.5] hover:animate-scaleUpDown",
+							"flex w-full items-center justify-center rounded-md border-2 border-solid border-red-400 bg-transparent px-auto py-3 text-base font-medium text-red-400 focus:ring-2 disabled:opacity-[0.5]",
 							maxQuantityCurrentOpt === null
 								? "cursor-not-allowed opacity-50 select-none pointer-events-none"
 								: "",
@@ -239,7 +256,6 @@ export default function ProductInfoBlock({
 					</Button>
 				</div>
 			</div>
-
 			<div className="lg:col-span-2 lg:col-start-1 mt-2">
 				<div>
 					<h3 className="sr-only">Description</h3>
@@ -262,7 +278,7 @@ export function CollapseContents({
 				<h3 className="sr-only">Description</h3>
 			</div>
 			{collapseContent ? (
-				<div>
+				<>
 					{collapseContent?.map(({ content, title }, idx) => (
 						<CollapseText
 							key={idx}
@@ -271,7 +287,7 @@ export function CollapseContents({
 							id={`collapse-${idx}`}
 						/>
 					))}
-				</div>
+				</>
 			) : null}
 		</div>
 	);

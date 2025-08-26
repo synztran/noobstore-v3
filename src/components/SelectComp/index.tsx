@@ -26,7 +26,7 @@ interface IProps {
 		name: string;
 		option: IOptionSelection | null;
 	}) => void;
-	onAddNew: ({
+	onAddNew?: ({
 		name,
 		newOption,
 	}: {
@@ -37,6 +37,7 @@ interface IProps {
 	className?: string;
 	label: string;
 	isAddOn?: boolean;
+	value?: string | null;
 }
 
 // SearchableSelect Component
@@ -49,6 +50,7 @@ const SearchableSelect: React.FC<IProps> = ({
 	label = "",
 	name = "",
 	isAddOn = false,
+	value = null,
 }: IProps) => {
 	const [isOpen, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
@@ -77,6 +79,14 @@ const SearchableSelect: React.FC<IProps> = ({
 			document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	useEffect(() => {
+		const found = options.find((option) => option.value === value);
+		console.log("found,", found);
+		if (found) {
+			setSearch(found.label);
+		}
+	}, [value]);
+
 	const handleSelect = (name: string, option: IOptionSelection) => {
 		onSelect({ name, option });
 		setSearch(option.label);
@@ -90,15 +100,13 @@ const SearchableSelect: React.FC<IProps> = ({
 				label: newOption,
 				index: options.length + 1,
 			};
-			onAddNew({ name, newOption: formatNewOption });
+			onAddNew?.({ name, newOption: formatNewOption });
 			setSearch(newOption.trim());
 			setNewOption("");
 			setAdding(false);
 			setOpen(false);
 		}
 	};
-
-	console.log(search);
 
 	return (
 		<div className="w-full relative" ref={wrapperRef}>
@@ -122,6 +130,7 @@ const SearchableSelect: React.FC<IProps> = ({
 					inputProps={{
 						className: "!text-sm bg-[#f7fafc]",
 					}}
+					name={name}
 				/>
 
 				<button

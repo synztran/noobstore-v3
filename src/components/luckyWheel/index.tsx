@@ -266,16 +266,7 @@ const defaultvalueSpinnerLog = {
 	total: 0,
 };
 
-const LuckyWheelPrizeTooltip = styled(
-	({ className, ...props }: TooltipProps) => (
-		// eslint-disable-next-line react/no-children-prop
-		(<Tooltip
-			classes={{ popper: className }}
-			children={props.children}
-			title={props.title as string}
-		/>)
-	)
-)(({ theme }) => ({
+const LuckyWheelPrizeTooltip = styled(Tooltip)(({ theme }) => ({
 	[`& .${tooltipClasses.tooltip}`]: {
 		backgroundColor: theme.palette.common.white,
 		boxShadow: "0px 4px 4px 0px #0000001F;",
@@ -974,7 +965,7 @@ const LuckyWheelContainer = (): JSX.Element => {
 					imageTitleWeb,
 					backgroundWeb,
 					turns,
-				} = fakeData[0] as IGetSelfWheelData;
+				} = fakeData[0] as any;
 
 				// const selfLogRes: IGetLuckyUserLog = await getLogSelfLuckyWheel(
 				// 	{ luckyWheelCode: code, limit: PAGE_DEFAULT * 20 }
@@ -1022,7 +1013,7 @@ const LuckyWheelContainer = (): JSX.Element => {
 						])
 				);
 
-				setRewardIdxMap(newSpinnerIdxMap);
+				setRewardIdxMap(newSpinnerIdxMap as Map<string, number>);
 
 				// if (isValid(selfLogRes)) {
 				// 	const { data, total }: IGetSpinnerLog = selfLogRes;
@@ -1167,15 +1158,21 @@ const LuckyWheelContainer = (): JSX.Element => {
 		url: string;
 	}): JSX.Element => {
 		return (
-            <Box className={styles.tooltipPrizeWrapper}>
-                <Box className={styles.tooltipImageWrapper}>
-					<NextImage src={url} alt={name} className="object-contain" fill sizes="100vw" />
+			<Box className={styles.tooltipPrizeWrapper}>
+				<Box className={styles.tooltipImageWrapper}>
+					<NextImage
+						src={url}
+						alt={name}
+						className="object-contain"
+						fill
+						sizes="100vw"
+					/>
 				</Box>
-                <Typography variant="body2" className={styles.tooltipPrizeText}>
+				<Typography variant="body2" className={styles.tooltipPrizeText}>
 					{name}
 				</Typography>
-            </Box>
-        );
+			</Box>
+		);
 	};
 
 	const TempPrizeElement = (props: ItempPrizeElement) => {
@@ -1290,8 +1287,8 @@ const LuckyWheelContainer = (): JSX.Element => {
 	}
 
 	return (
-        <div id="spinnerWrapper" className={styles.spinnerReward_wrapper}>
-            <Grid
+		<div id="spinnerWrapper" className={styles.spinnerReward_wrapper}>
+			<Grid
 				container
 				className={styles.luckyWheel_container}
 				// style={{
@@ -1504,21 +1501,23 @@ const LuckyWheelContainer = (): JSX.Element => {
 															styles.boardItem_imageWrapper
 														}>
 														<NextImage
-                                                            // src={getLinkProxyCDN(
-                                                            // 	item.itemImage ??
-                                                            // 		""
-                                                            // )}
-                                                            src={
+															// src={getLinkProxyCDN(
+															// 	item.itemImage ??
+															// 		""
+															// )}
+															src={
 																item.itemImage ??
 																""
 															}
-                                                            width={80}
-                                                            height={40}
-                                                            alt=""
-                                                            style={{
-                                                                maxWidth: "100%",
-                                                                height: "auto"
-                                                            }} />
+															width={80}
+															height={40}
+															alt=""
+															style={{
+																maxWidth:
+																	"100%",
+																height: "auto",
+															}}
+														/>
 													</Grid>
 													<Grid item md={9}>
 														<Typography
@@ -1745,23 +1744,25 @@ const LuckyWheelContainer = (): JSX.Element => {
 																				mở
 																				khoá{" "}
 																				<NextImage
-                                                                                    // src={
-                                                                                    // 	LUCKYWHEEL_BLOCKED_ICON
-                                                                                    // }
-                                                                                    src={
+																					// src={
+																					// 	LUCKYWHEEL_BLOCKED_ICON
+																					// }
+																					src={
 																						""
 																					}
-                                                                                    width={
+																					width={
 																						15
 																					}
-                                                                                    height={
+																					height={
 																						20
 																					}
-                                                                                    alt=""
-                                                                                    style={{
-                                                                                        maxWidth: "100%",
-                                                                                        height: "auto"
-                                                                                    }} />{" "}
+																					alt=""
+																					style={{
+																						maxWidth:
+																							"100%",
+																						height: "auto",
+																					}}
+																				/>{" "}
 																			</span>
 																		) : (
 																			item
@@ -1881,8 +1882,8 @@ const LuckyWheelContainer = (): JSX.Element => {
 					reRenderMission={reRenderMission}
 				/> */}
 			</Grid>
-        </div>
-    );
+		</div>
+	);
 };
 
 interface IButtonSpin {
@@ -2096,8 +2097,8 @@ const PopupGotPrize = ({ open, handleClose, reward }: IPopupGotPrize) => {
 		) ?? reward?.message;
 
 	return (
-        <Modal open={open}>
-            <Box sx={style} style={{ outline: 0 }}>
+		<Modal open={open}>
+			<Box sx={style} style={{ outline: 0 }}>
 				{reward?.reward && reward.reward.length > 0 && RenderFireWork()}
 				<Box>
 					{reward?.itemUrl && (
@@ -2107,7 +2108,13 @@ const PopupGotPrize = ({ open, handleClose, reward }: IPopupGotPrize) => {
 								width: "100%",
 								height: "50px",
 							}}>
-							<NextImage src={reward.itemUrl} alt="" className="object-contain" fill sizes="100vw" />
+							<NextImage
+								src={reward.itemUrl}
+								alt=""
+								className="object-contain"
+								fill
+								sizes="100vw"
+							/>
 						</Box>
 					)}
 					<Typography
@@ -2148,8 +2155,8 @@ const PopupGotPrize = ({ open, handleClose, reward }: IPopupGotPrize) => {
 					</Button>
 				</Box>
 			</Box>
-        </Modal>
-    );
+		</Modal>
+	);
 };
 interface ICountDownLuckyUser {
 	code: string;

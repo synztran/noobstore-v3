@@ -9,6 +9,8 @@ const ACCOUNT_PREFIX = `${DOMAIN_PREFIX}/account`;
 const UPLOAD_PREFIX = `${DOMAIN_PREFIX}/upload`;
 const USED_PRODUCT_PREFIX = `${DOMAIN_PREFIX}/used-product`;
 const LUCKY_WHEEL_PREFIX = `${DOMAIN_PREFIX}/lucky-wheel`;
+const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`;
+const SERVICE_PREFIX = `${DOMAIN_PREFIX}/service`;
 
 export const CATEGORY_API = {
 	ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
@@ -81,5 +83,13 @@ export const LUCKY_WHEEL_API = {
 };
 
 export const PRODUCT_OPTIONS_API = {
-	GET: `${PRODUCT_PREFIX}/product-option/get`,
+	GET: `${PRODUCT_OPTION_PREFIX}/get`,
+};
+
+export const SERVICE_API = {
+	GET_DEFINITIONS: `${SERVICE_PREFIX}/definitions`,
+	GET_PLANS: `${SERVICE_PREFIX}/plans`,
+	GET_TASKS: `${SERVICE_PREFIX}/tasks`,
+	GET_BOOKING: `${SERVICE_PREFIX}/booking`,
+	UPSERT_BOOKING: `${SERVICE_PREFIX}/booking`,
 };

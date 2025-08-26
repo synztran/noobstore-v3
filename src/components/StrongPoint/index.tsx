@@ -6,7 +6,7 @@ const strongPoints = [
 		icon: (
 			<div className="flex items-center gap-4">
 				<Package className="w-7 h-7 text-purple-500" />
-				<strong>Đóng gói</strong>
+				<strong className="text-lg">Đóng gói</strong>
 			</div>
 		),
 		title: (
@@ -35,7 +35,7 @@ const strongPoints = [
 		icon: (
 			<div className="flex items-center gap-4">
 				<CalendarClock className="w-7 h-7 text-blue-500" />
-				<strong>Vận chuyển</strong>
+				<strong className="text-lg">Vận chuyển</strong>
 			</div>
 		),
 		title: (
@@ -55,7 +55,7 @@ const strongPoints = [
 		icon: (
 			<div className="flex items-center gap-4">
 				<CreditCard className="w-7 h-7 text-green-500" />
-				<strong>Thanh toán</strong>
+				<strong className="text-lg">Thanh toán</strong>
 			</div>
 		),
 		title: (
@@ -75,7 +75,7 @@ const strongPoints = [
 		icon: (
 			<div className="flex items-center gap-4">
 				<PencilRuler className="w-7 h-7 text-pink-500" />
-				<strong>Tùy chỉnh</strong>
+				<strong className="text-lg">Tùy chỉnh</strong>
 			</div>
 		),
 		title: (

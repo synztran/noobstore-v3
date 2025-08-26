@@ -1,4 +1,4 @@
-import { ICategory, IProduct } from "@/interface/interface";
+import { ICategory, IProduct, IProductOption } from "@/interface/interface";
 import { queryPresets } from "@/react-query/configs";
 import { appQueryKeys } from "@/react-query/root";
 import {
@@ -15,6 +15,7 @@ type QueryOptions = {
 interface IProductData {
 	products: IProduct[];
 	categoryDetail: ICategory;
+	productOptions: Record<string, IProductOption[]>;
 }
 
 export default function useProductQuery(

@@ -122,6 +122,11 @@ export enum ENUM_FILM_TYPE {
 	"UNKNOWN" = 1,
 }
 
+export enum EnumSwitchStatus {
+	NEW = "NEW",
+	USED = "USED",
+}
+
 export interface ICartProduct {
 	type: string;
 	productId: string;
@@ -131,7 +136,10 @@ export interface ICartProduct {
 	price: number;
 	total: number;
 	categoryId: string;
-	thumbnail: string;
+	thumbnail: {
+		path: string;
+		size: number;
+	};
 	categoryName: string;
 	slug: string;
 	productOptions: IProductOption[];
@@ -315,18 +323,27 @@ export interface IUsedProduct {
 }
 
 export interface IProductOption {
-	id?: string; // Assuming PyObjectId is a string representation
+	// id?: string; // Assuming PyObjectId is a string representation
 	name?: string;
 	price?: number;
 	salePrice?: number;
 	description?: string;
 	status?: EnumProductOptStatus; // Assuming ENUM_STATUS maps to EnumProductOptStatus
 	quantity?: number;
-	thumbnail?: string;
+	thumbnail?: {
+		path?: string;
+		alt?: string;
+	};
 	isActive?: boolean;
 	createdAt?: Date;
 	updatedAt?: Date | null;
 	productPart?: EnumProductType;
+	productId?: string;
+	productOptionId?: string;
+	barCode?: string;
+	attributes?: {
+		[key: string]: string;
+	};
 }
 
 export interface ITag {

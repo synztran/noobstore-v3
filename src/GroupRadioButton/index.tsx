@@ -226,10 +226,8 @@ export default function GroupRadioButton(props: Props) {
 
 const CollapseNewBillingAddress = ({
 	checked = false,
-	setValues,
 }: {
 	checked: boolean;
-	setValues?: any;
 }) => {
 	console.log("checked", checked);
 	return (

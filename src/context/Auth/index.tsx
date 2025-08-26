@@ -132,7 +132,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 	};
 
 	const setInfoUser = (userInfo: any) => {
-		console.log("userInfo", userInfo);
 		setUser(userInfo);
 		setIsAuthenticated(!!userInfo);
 		setIsLoading(false);

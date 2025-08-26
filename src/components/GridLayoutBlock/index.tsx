@@ -161,7 +161,7 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 								priority={idx < 3}
 							/>
 							{/* Overlay for owner and info */}
-							<div className="absolute bottom-0 left-0 w-full flex items-center justify-between px-3 py-2 bg-gradient-to-t from-black/70 to-transparent">
+							<div className="absolute bottom-0 left-0 w-full flex items-center justify-between px-3 py-2 bg-gradient-to-t from-black/70 to-transparent backdrop-blur-[5px]">
 								<span className="text-white font-semibold text-sm flex items-center gap-1">
 									@{item.owner}
 								</span>
@@ -186,7 +186,7 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 			</div>
 			<div className="mt-8 flex flex-col items-center justify-center gap-4">
 				<div className="flex items-center gap-4">
-					<div className="w-12 h-12 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600  ">
+					<div className="w-24 h-24 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600  ">
 						<Image
 							src={LOGO_STORE}
 							alt="Noob Assembly"
@@ -195,7 +195,7 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 						/>
 					</div>
 					<div className="flex flex-col">
-						<span className="text-black text-lg font-bold">
+						<span className="text-black text-2xl font-bold">
 							NoobStore
 						</span>
 						<div className="flex gap-2">
@@ -217,17 +217,22 @@ const GridLayoutBlock: React.FC<IProps> = ({ images }) => {
 						href="https://www.facebook.com/noobassembly"
 						target="_blank"
 						rel="noopener noreferrer">
-						<button className="bg-blue-600 text-white px-6 py-2 rounded-50 hover:scale-105 transition-all duration-300">
+						<button className="bg-blue-600 text-white px-6 py-2 rounded-50 hover:scale-105 transition-all duration-300 text-lg">
 							Follow us
 						</button>
 					</a>
 				</div>
 
-				<div className="text-black text-base max-w-md text-center">
-					Chia sẻ ảnh và video on instagram với hashtag{" "}
-					<strong className="text-blue-600">#noobstore</strong> hoặc{" "}
-					<strong className="text-blue-600">@noobstore</strong> để có
-					cơ hội phô diễn ở đây nhé
+				<div className="text-black text-xl max-w-lg text-center">
+					Chia sẻ ảnh và video trên instagram với hashtag{" "}
+					<strong className="text-blue-600 text-xl">
+						#noobstore
+					</strong>{" "}
+					hoặc{" "}
+					<strong className="text-blue-600 text-xl">
+						@noobstore
+					</strong>{" "}
+					để có cơ hội chia sẻ với mọi người ở đây nhé ♥️
 				</div>
 			</div>
 		</div>

@@ -14,11 +14,10 @@ export const login = async ({
 	refUrl?: string;
 	redirectUrl?: string;
 }) => {
-	const data = {
+	const authRes = await AuthClient.postLogin({
 		email,
-		password,
-	};
-	const authRes = await AuthClient.postLogin(data);
+		password: password || "",
+	});
 	if (!isValid(authRes)) {
 		return authRes;
 	}

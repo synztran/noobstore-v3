@@ -112,7 +112,7 @@ const ServicePage = () => {
 				<div className="relative w-full">
 					<OverSizeBanner classes="absolute left-0 top-0 -transform-x-1/2 -transform-y-1/2" />
 					<div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4">
-						<div className="text-center text-white">
+						<div className="text-center text-white text-lg">
 							Đăng ký dịch vụ NoobStore tại...
 						</div>
 						<div className="text-2xl font-bold text-white">
@@ -120,7 +120,9 @@ const ServicePage = () => {
 						</div>
 						<div className="text-center mt-4">
 							<Button className="text-white bg-[rgba(255,255,255,0.2)] normal-case rounded-sm px-4 backdrop-blur-[10px] hover:bg-[rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-150">
-								Kiểm tra thông tin dịch vụ
+								<span className="text-white">
+									Kiểm tra thông tin dịch vụ
+								</span>
 							</Button>
 						</div>
 					</div>
@@ -129,12 +131,15 @@ const ServicePage = () => {
 					<div className="col-span-2 relative -top-[5rem] flex flex-col gap-4">
 						<GroupSelectServiceDate />
 						<MultiServiceForm />
-						{/* <ServiceCustomerInfo /> */}
-						<ServiceLocationTime />
-						<ServiceContactInfo />
+						{/* <ServiceLocationTime />
+						<ServiceContactInfo /> */}
 					</div>
-					<div className="cols-span-1">
+					<div className="cols-span-1 flex flex-col gap-4">
 						<SummaryService />
+						<div className="col-span-2 relative -top-[5rem] flex flex-col gap-4">
+							<ServiceLocationTime />
+							<ServiceContactInfo />
+						</div>
 					</div>
 				</div>
 			</>

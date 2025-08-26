@@ -22,10 +22,12 @@ const CategoryDetailPage = () => {
 		console.log("id", id);
 		if (id) {
 			(async () => {
-				const resp = await CategoryClient.getCategoryById({ id });
+				const resp = await CategoryClient.getCategoryById({
+					id: id as string,
+				});
 				console.log("resp", resp, getFirst(resp));
 				if (isValid(resp)) {
-					setCategoryDetail(getFirst(resp));
+					setCategoryDetail(getFirst(resp) as ICategory);
 				}
 			})();
 		}
@@ -35,7 +37,7 @@ const CategoryDetailPage = () => {
 		<Base>
 			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
 				<Breadcumb
-					mainRoot={BreadcumbTitle["products"]}
+					mainRoot={BreadcumbTitle["products"] || ""}
 					subRoot={id as string}
 				/>
 				<article className="flex mt-4 h-80 gap-4">
@@ -45,7 +47,7 @@ const CategoryDetailPage = () => {
 					<div className="flex-auto w-28 h-full border-red-200 border p-4">
 						<div className="bg-white w-full h-full border-gray-300-300 border rounded-sm">
 							<span className="text-2xl text-red-600">
-								{categoryDetail?.category_name}
+								{categoryDetail?.categoryName}
 							</span>
 						</div>
 					</div>

@@ -7,14 +7,15 @@ import { Field, Form, Formik } from "formik";
 import React from "react";
 import * as Yup from "yup";
 import SimpleDivider from "../SimpleDivider";
+import { IAuthUser } from "@/interface/Context/auth";
 
 const ServiceContactInfo: React.FC = () => {
 	const { user, isAuthenticated } = useAuth() as unknown as {
 		user: IAuthUser | null;
 		isAuthenticated: boolean;
 	};
+
 	const { toggleDialogLogin } = useDialogLoginAction();
-	console.log(isAuthenticated);
 
 	const ServiceSchema = Yup.object().shape({
 		email: user?.email
@@ -22,12 +23,12 @@ const ServiceContactInfo: React.FC = () => {
 			: Yup.string()
 					.email("Có vẻ sai định dạng rồi ạ")
 					.required("Vui lòng nhập địa chỉ email"),
-		firstName: Yup.string().required("Vui lòng nhập họ"),
+		// firstName: Yup.string().required("Vui lòng nhập họ"),
 		lastName: Yup.string().required("Vui lòng nhập tên"),
 		phoneNumber: Yup.string().required("Vui lòng nhập số điện thoại"),
 	});
 	return (
-		<div className="border-gray-300 rounded-xl border-2 p-4">
+		<div className="border-gray-600 rounded-xl border-2 p-4 bg-white">
 			<div className="flex flex-col">
 				<div className="text-lg font-bold">Thông tin liên lạc</div>
 				<small>
@@ -57,9 +58,9 @@ const ServiceContactInfo: React.FC = () => {
 				<Formik
 					initialValues={{
 						email: user?.email || "",
-						firstName: "",
-						lastName: "",
-						phoneNumber: "",
+						firstName: user?.firstName || "",
+						lastName: user?.lastName || "",
+						phoneNumber: user?.phoneNumber || "",
 					}}
 					validationSchema={ServiceSchema}
 					onSubmit={(values) => {
@@ -67,40 +68,36 @@ const ServiceContactInfo: React.FC = () => {
 						// handleCheckout(values);
 					}}
 					enableReinitialize>
-					{({ errors, touched, setFieldValue, values }) => (
+					{({ errors }) => (
 						<Form className="flex flex-col gap-2">
-							<div className="flex gap-4">
-								<div className="flex flex-col w-1/2">
-									<FormGroup>
-										<label>Họ</label>
-										<Field
-											name="firstName"
-											type="text"
-											placeholder="Họ"
-											className="h-10 rounded-md border border-gray-400 px-4 py-2"
-										/>
-										<FormHelperText className="text-red-500">
-											{errors?.firstName}
-										</FormHelperText>
-									</FormGroup>
-								</div>
-								<div className="flex flex-col w-1/2">
-									<FormGroup>
-										<label>Tên</label>
-										<Field
-											name="lastName"
-											type="text"
-											placeholder="Tên"
-											className="h-10 rounded-md border border-gray-400 px-4 py-2"
-										/>
-										<FormHelperText className="text-red-500">
-											{errors?.lastName}
-										</FormHelperText>
-									</FormGroup>
-								</div>
+							<div className="flex gap-2 w-full">
+								{/* <FormGroup className="flex-1 min-w-0">
+									<label>Họ</label>
+									<Field
+										name="firstName"
+										type="text"
+										placeholder="Họ"
+										className="h-10 rounded-md border border-gray-400 px-4 py-2 w-full"
+									/>
+									<FormHelperText className="text-red-500">
+										{errors?.firstName}
+									</FormHelperText>
+								</FormGroup> */}
+								<FormGroup className="flex-1 min-w-0">
+									<label>Tên khách hàng</label>
+									<Field
+										name="lastName"
+										type="text"
+										placeholder="Tên"
+										className="h-10 rounded-md border border-gray-400 px-4 py-2 w-full"
+									/>
+									<FormHelperText className="text-red-500">
+										{errors?.lastName}
+									</FormHelperText>
+								</FormGroup>
 							</div>
-							<div className="flex w-full gap-2">
-								<FormGroup className="w-1/2">
+							<div className="flex flex-col w-full gap-2">
+								<FormGroup className="w-full">
 									<label>Email</label>
 									<Field
 										value={user?.email}
@@ -108,13 +105,13 @@ const ServiceContactInfo: React.FC = () => {
 										name="email"
 										type="email"
 										placeholder="Email"
-										className="h-10 rounded-md border border-gray-400 px-4 py-2 disabled:bg-gray-300"
+										className="h-10 rounded-md border border-gray-400 px-4 py-2 disabled:bg-gray-200"
 									/>
 									<FormHelperText className="text-red-500">
 										{errors?.email as string}
 									</FormHelperText>
 								</FormGroup>
-								<FormGroup className="w-1/2">
+								<FormGroup className="w-full">
 									<label>Số điện thoại</label>
 									<Field
 										name="phoneNumber"

@@ -5,6 +5,7 @@ import { configQueryKeys } from "./router/config";
 import { orderQueryKeys } from "./router/order";
 import { productQueryKeys } from "./router/product";
 import { userQueryKeys } from "./router/user";
+import { serviceQueryKeys } from "./router/service";
 
 export const appQueryKeys = mergeQueryKeys(
 	cartQueryKeys,
@@ -12,7 +13,8 @@ export const appQueryKeys = mergeQueryKeys(
 	categoryQueryKeys,
 	productQueryKeys,
 	configQueryKeys,
-	orderQueryKeys
+	orderQueryKeys,
+	serviceQueryKeys
 );
 
 export type AppQueryKeys = typeof appQueryKeys;

@@ -14,7 +14,7 @@ interface Props {
 	isWithoutProducts?: boolean;
 }
 
-const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
+const CategoryCard = ({ category }: Props) => {
 	const router = useRouter();
 	const {
 		thumbnail,
@@ -65,7 +65,7 @@ const CategoryCard = ({ category, isWithoutProducts = false }: Props) => {
 					<RatingComponent star={rating?.star || 0} />
 					<ProductTag tags={tags || []} />
 					<div
-						className="line-clamp-2 text-sm min-h-[46px]"
+						className="line-clamp-2 text-sm min-h-[44px]"
 						dangerouslySetInnerHTML={{ __html: description }}
 					/>
 

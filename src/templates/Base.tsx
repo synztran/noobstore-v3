@@ -10,7 +10,7 @@ const Base = ({
 	children,
 	isLoading = false,
 	styles,
-	isNonStrutured = false,
+	isNonStrutured = true,
 }: {
 	children?: JSX.Element | null;
 	isLoading?: boolean;
@@ -49,25 +49,27 @@ const Base = ({
 	}
 
 	return (
-		<div className="relative">
+		<>
 			<Header />
 			<div
 				className={classNames(
-					`text-gray-600 antialiased bg-gray-100 min-h-screen`,
-					`container mx-auto h-full`,
-					isNonStrutured
-						? `grid grid-rows-[${
-								appiedFixedLayout
-									? "130px_calc(100vh-130px-203px)_203px"
-									: "130px_1fr_203px"
-						  }] h-screen`
-						: ""
+					`text-gray-600 antialiased bg-gray-100 container mx-auto`
+					// isNonStrutured
+					// 	? `grid grid-rows-[${
+					// 			appiedFixedLayout
+					// 				? "120px_calc(100vh-120px-280px)_280px"
+					// 				: "120px_1fr_280px"
+					// 	  }]`
+					// 	: ""
 				)}
-				id="webpage">
+				id="webpage"
+				style={{
+					minHeight: "calc(100vh - 120px - 280px)",
+				}}>
 				{children}
-				<Footer />
 			</div>
-		</div>
+			<Footer />
+		</>
 	);
 };
 

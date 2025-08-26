@@ -1,6 +1,7 @@
 import React from "react";
 import ProductBlock from "./ProductBlock";
 import { GROUP_IMAGE_1 } from "@/constants/Images";
+import useProductBlockLimit from "@/hook/useScreen";
 
 export interface ProductItem {
 	id: string | number;
@@ -135,6 +136,7 @@ const HomeProductBlock: React.FC<IProps> = ({
 	id,
 	icon,
 }) => {
+	const { limitHomeProductBlock } = useProductBlockLimit();
 	return (
 		<div className="w-full rounded-xl shadow-none" id={id}>
 			<div className="flex items-center justify-between mb-2 px-2">
@@ -161,14 +163,16 @@ const HomeProductBlock: React.FC<IProps> = ({
 			</div>
 			{/* Swiper Controls */}
 			<div className="relative">
-				<div className="grid grid-cols-5 gap-4 mt-3 py-2">
-					{fakeItems.map((item, idx) => (
-						<ProductBlock
-							isFirst={idx === 0}
-							product={item}
-							key={item.id}
-						/>
-					))}
+				<div className="grid grid-cols-4 lg:grid-cols-5 gap-4 mt-3 py-2">
+					{fakeItems
+						?.slice(0, limitHomeProductBlock)
+						.map((item, idx) => (
+							<ProductBlock
+								isFirst={idx === 0}
+								product={item}
+								key={item.id}
+							/>
+						))}
 				</div>
 			</div>
 		</div>

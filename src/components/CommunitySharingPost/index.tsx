@@ -127,7 +127,7 @@ const CommunitySharingPost: React.FC<CommunitySharingPostProps> = ({
 				</div>
 			</div>
 			{/* Posts */}
-			<div className="grid grid-cols-4 gap-4">
+			<div className="grid grid-cols-3 lg:grid-cols-4 gap-4">
 				{fakePosts.map((post) => (
 					<div
 						key={post.id}
@@ -172,18 +172,18 @@ const CommunitySharingPost: React.FC<CommunitySharingPostProps> = ({
 						<div className="flex items-center p-2 absolute bottom-0 left-0 w-full">
 							<Heart className="w-4 h-4 fill-red-500" />
 							&nbsp;
-							<span className="text-xs text-white font-medium drop-shadow-md">
+							<span className="text-sm text-white font-medium drop-shadow-md">
 								{post.likes}
 							</span>
 						</div>
 						<div className="absolute bottom-0 right-0 p-2">
-							<span className="text-xs text-white font-medium drop-shadow-md">
+							<span className="text-sm text-white font-medium drop-shadow-md">
 								{post.createdAt}
 							</span>
 						</div>
 						{/* User Avatar */}
 						<div className="absolute left-1/2 -bottom-7 -translate-x-1/2 z-20">
-							<div className="w-12 h-12 rounded-full border-2 border-white bg-white shadow-md relative overflow-hidden">
+							<div className="w-20 h-20 rounded-full border-2 border-white bg-white shadow-md relative overflow-hidden">
 								<Image
 									src={post.user.avatar}
 									alt={post.user.name}

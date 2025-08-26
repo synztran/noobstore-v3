@@ -81,7 +81,7 @@ const BannerTagPriceName = () => {
 						"linear-gradient(135deg, #fee2e2 0%, #fef2f2 60%, #fee2e2 100%)",
 				}}>
 				<div className="relative mr-auto">
-					<span className="bg-white text-black text-[10px] font-bold px-3 py-1 rounded-lg shadow-sm border border-gray-400">
+					<span className="bg-white text-black text-[12px] font-bold px-3 py-1 rounded-lg shadow-sm border border-gray-400">
 						{featuredProduct.tag}
 					</span>
 				</div>
@@ -90,11 +90,11 @@ const BannerTagPriceName = () => {
 					style={{ lineHeight: 1 }}>
 					{featuredProduct.title}
 				</div>
-				<div className="text-gray-500 font-bold text-base">
+				<div className="text-gray-500 font-bold text-xl">
 					{featuredProduct.price}
 				</div>
 
-				<div className="w-full flex-1 flex items-end justify-center relative mt-6">
+				<div className="w-full flex-1 flex items-end justify-center relative mt-4">
 					<Image
 						src={featuredProduct.image}
 						alt={featuredProduct.title}
@@ -125,8 +125,8 @@ const BannerTagPriceName = () => {
 					{featuredSwitches.map((sw, idx) => (
 						<div
 							key={idx}
-							className="grid grid-cols-[60px_1fr] items-center bg-white rounded-md shadow-sm p-1 gap-2 cursor-pointer hover:shadow-lg transition-all duration-300">
-							<div className="relative rounded-md bg-gray-200 p-2 w-full h-full min-h-[60px]">
+							className="grid grid-cols-[80px_1fr] items-center bg-white rounded-md shadow-sm p-1 gap-2 cursor-pointer hover:shadow-lg transition-all duration-300">
+							<div className="relative rounded-md bg-gray-200 p-2 w-full h-full min-h-[80px]">
 								<Image
 									src={sw.image}
 									alt={sw.name}
@@ -136,25 +136,27 @@ const BannerTagPriceName = () => {
 							</div>
 							<div className="flex-1">
 								<div className="flex items-center gap-2">
-									<div className="text-xs text-gray-500 font-bold">
+									<div
+										className="text-sm text-gray-500 font-bold"
+										style={{ lineHeight: 1 }}>
 										{sw.brand}
 									</div>
 									<div
-										className="flex items-center gap-1 text-[10px]"
+										className="flex items-center gap-1 text-sm"
 										style={{ lineHeight: 1 }}>
 										<Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-										<span className="text-[10px]">
+										<span className="text-sm">
 											{sw.rating.stars}
 										</span>
-										<span className="text-[10px]">
+										<span className="text-sm">
 											({sw.rating.reviews})
 										</span>
 									</div>
 								</div>
-								<div className="font-medium text-sm">
+								<div className="font-medium text-base">
 									{sw.name}
 								</div>
-								<div className="text-xs text-gray-700 font-bold">
+								<div className="text-sm text-gray-700 font-bold">
 									{formatCurrency(sw.price)}
 								</div>
 							</div>
@@ -164,17 +166,19 @@ const BannerTagPriceName = () => {
 
 				{/* Help section */}
 				<div className="flex items-center justify-center gap-4 my-4">
-					<div className="relative w-10 h-10">
+					<div className="relative w-16 h-16">
 						<Image
 							src={LOGO_STORE}
 							alt="help"
 							fill
 							style={{ objectFit: "cover" }}
-							className="rounded-full object-cover"
+							className="rounded-full object-contain"
 						/>
 					</div>
 					<div className="flex flex-col">
-						<span className="font-semibold">Need some help?</span>
+						<span className="font-semibold text-lg">
+							Need some help?
+						</span>
 						<a
 							href="#"
 							className="decoration-none text-blue-500 font-bold text-sm"
@@ -205,7 +209,7 @@ const BannerTagPriceName = () => {
 					<div className="text-xl font-bold mb-4 text-center">
 						{customizeSection.title}
 					</div>
-					<div className="text-center text-gray-600 mb-4">
+					<div className="text-center text-gray-600 mb-4 text-lg">
 						{customizeSection.description}
 					</div>
 					<div className="flex justify-center">

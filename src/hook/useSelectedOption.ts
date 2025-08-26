@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type TProps = {
 	initialSwitchTypeOptions: IOptionSelection[];
-	initialSwitchBrandOptions: IOptionSelection[];
+	// initialSwitchBrandOptions: IOptionSelection[];
 	initialSwitchStatusOptions: IOptionSelection[];
 };
 
@@ -61,7 +61,7 @@ const useSelectedOption = (props: TProps) => {
 		},
 	});
 	const [serviceKeyboardSelected, setKeyboardSelected] = useState<{
-		type: EnumKeyboardType | string;
+		type: EnumSwitchType | string;
 		brand: string;
 		name: string;
 		quantity: number;
@@ -73,11 +73,11 @@ const useSelectedOption = (props: TProps) => {
 	});
 	const [switchOptions, setSwitchOptions] = useState<{
 		type: any[];
-		brand: any[];
+		// brand: any[];
 		status: any[];
 	}>({
 		type: props.initialSwitchTypeOptions,
-		brand: props.initialSwitchBrandOptions,
+		// brand: props.initialSwitchBrandOptions,
 		status: props.initialSwitchStatusOptions,
 	});
 

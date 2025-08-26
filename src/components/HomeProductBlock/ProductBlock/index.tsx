@@ -4,6 +4,7 @@ import { ProductItem } from "..";
 import { formatCurrency } from "@/utils/FormatNumber";
 import { Star } from "lucide-react";
 import { FavoriteBorder } from "@mui/icons-material";
+import RatingComponent from "@/components/productCard/rating";
 
 interface ProductBlockProps {
 	isFirst: boolean;
@@ -20,33 +21,17 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 				<div className="rounded-xl px-2 py-4 flex flex-col relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[380px] cursor-pointer overflow-hidden">
 					<div className="flex flex-col gap-1 z-1">
 						<div className="flex items-center justify-between">
-							<span className="text-xs text-gray-300 font-bold">
+							<span className="text-sm text-gray-300 font-bold">
 								{product.brand}
 							</span>
 						</div>
-						<span className="text-sm font-semibold text-white leading-tight">
+						<span className="text-base font-semibold text-white leading-tight">
 							{product.name}
 						</span>
-						{product.rating && (
-							<div className="flex items-center">
-								{[...Array(5)].map((_, i) => (
-									<span
-										key={i}
-										className={
-											i < Math.round(product.rating.stars)
-												? "text-black"
-												: "text-gray-300"
-										}>
-										<Star className="fill-yellow-400 w-4 h-4" />
-									</span>
-								))}
-								<span
-									className="text-xs text-white font-medium ml-1"
-									style={{ lineHeight: 1 }}>
-									{product.rating.reviews}
-								</span>
-							</div>
-						)}
+						<RatingComponent
+							star={product.rating.stars}
+							reviewer={product.rating.reviews || 0}
+						/>
 					</div>
 
 					{/* Product Image */}
@@ -71,7 +56,7 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 			<div className="bg-gray-200 rounded-xl p-2 flex flex-col relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[380px] cursor-pointer">
 				<div className="flex flex-col">
 					<div className="flex items-center justify-between">
-						<span className="text-xs text-gray-500 font-bold">
+						<span className="text-sm text-gray-500 font-bold">
 							{product.brand}
 						</span>
 						<button className="rounded-full">
@@ -81,34 +66,18 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 							/>
 						</button>
 					</div>
-					<span className="text-sm font-semibold text-black leading-tight">
+					<span className="text-base font-semibold text-black leading-tight">
 						{product.name}
 					</span>
-					{product.rating && (
-						<div className="flex items-center">
-							{[...Array(5)].map((_, i) => (
-								<span
-									key={i}
-									className={
-										i < Math.round(product.rating.stars)
-											? "text-black"
-											: "text-gray-300"
-									}>
-									<Star className="fill-yellow-400 w-4 h-4" />
-								</span>
-							))}
-							<span
-								className="text-xs text-black font-bold ml-1"
-								style={{ lineHeight: 1 }}>
-								{product.rating.reviews}
-							</span>
-						</div>
-					)}
+					<RatingComponent
+						star={product.rating.stars}
+						reviewer={product.rating.reviews || 0}
+					/>
 					<div className="flex flex-wrap gap-1 mt-2">
 						{product.tags?.map((tag, idx) => (
 							<div
 								key={idx}
-								className="px-2 py-0.5 rounded-sm text-xs font-bold flex items-center"
+								className="px-2 py-0.5 rounded-sm text-sm font-bold flex items-center"
 								style={{
 									lineHeight: 1,
 									color: "#000",
@@ -132,7 +101,7 @@ const ProductBlock: React.FC<ProductBlockProps> = ({
 				</div>
 				<div className="flex flex-col">
 					{product.quantity && (
-						<span className="text-xs text-gray-600">
+						<span className="text-sm text-gray-600">
 							{product.quantity} stocks
 						</span>
 					)}

@@ -3,7 +3,7 @@ import CategoryCard from "@/components/categoryCard";
 import FilterSection from "@/components/filter";
 import { BreadcumbTitle, sortOptions } from "@/constants";
 import { Base } from "@/templates/Base";
-import { temp } from "@/templates/Home";
+// import { temp } from "@/templates/Home";
 import { classNames } from "@/utils/AppConfig";
 import { Menu, Transition } from "@headlessui/react";
 import {
@@ -30,7 +30,7 @@ const CollectionPage = ({ title }: Props) => {
 		<Base>
 			<div className="mx-w-full bg-white p-6 sm:py-6 lg:px-8 relative z-1">
 				<Breadcumb
-					mainRoot={BreadcumbTitle["collection"]}
+					mainRoot={BreadcumbTitle["collection"] || ""}
 					subRoot={id as string}
 				/>
 				<HeadSection
@@ -42,7 +42,7 @@ const CollectionPage = ({ title }: Props) => {
 						isMobileOpen={mobileFiltersOpen}
 						setMobileOpen={setMobileFiltersOpen}
 					/>
-					<div className="grid gap-x-2 gap-y-4 col-span-1 grid-cols-1 sm:grid-cols-3 sm:col-span-3 justify-items-center">
+					{/* <div className="grid gap-x-2 gap-y-4 col-span-1 grid-cols-1 sm:grid-cols-3 sm:col-span-3 justify-items-center">
 						<CategoryCard category={temp} />
 						<CategoryCard category={temp} />
 						<CategoryCard category={temp} />
@@ -52,7 +52,7 @@ const CollectionPage = ({ title }: Props) => {
 						<CategoryCard category={temp} />
 						<CategoryCard category={temp} />
 						<CategoryCard category={temp} />
-					</div>
+					</div> */}
 				</article>
 			</div>
 		</Base>

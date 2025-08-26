@@ -1,8 +1,5 @@
-import TextEditor from "@/adminComponents/Texteditor";
-import Breadcumb from "@/components/breadcumb";
 import { Base } from "@/templates/Base";
 import { useState } from "react";
-import ReactQuill from "react-quill";
 
 export default function Contact() {
 	const [agreed, setAgreed] = useState(false);
@@ -68,10 +65,11 @@ export default function Contact() {
 							<label className="block text-sm font-semibold text-gray-900">
 								Nội dung
 							</label>
-							<TextEditor
-								value={content}
-								onChange={setContent}
+							<textarea
+								className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
 								placeholder="Chúng tôi luôn lắng nghe ý kiến của bạn..."
+								value={content}
+								onChange={(e) => setContent(e.target.value)}
 							/>
 						</div>
 

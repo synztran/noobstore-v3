@@ -1,4 +1,5 @@
-import { IProductOption } from "@/interface/interface";
+import { EnumProductType, IProductOption } from "@/interface/interface";
+import NotifyUtils from "@/utils/NotifyUtils";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -15,9 +16,15 @@ interface InitialProductDetailState {
 	triggerResetQuantity: number;
 }
 
+interface IInitialState {
+	optSelected: Record<EnumProductType, IProductOption[]> | null; // key is product_id
+	currentQuantity: number;
+	triggerResetQuantity: number;
+}
+
 type ProductDetailState = InitialProductDetailState & { actions: Actions };
 
-const InitialState = {
+const InitialState: IInitialState = {
 	optSelected: null,
 	currentQuantity: 1,
 	triggerResetQuantity: 0,
@@ -28,8 +35,15 @@ const useStoreProductDetail = create<ProductDetailState>()(
 		...InitialState,
 		actions: {
 			updateOptSelected: (payload) => {
+				if (!payload.productId) {
+					NotifyUtils.error("Thiếu thông tin. Vui long kiểm tra lại");
+					return;
+				}
 				set({
-					optSelected: payload,
+					optSelected: {
+						...get().optSelected,
+						[payload.productPart || ""]: [payload],
+					},
 				});
 			},
 			updateQuantity: (payload) => {

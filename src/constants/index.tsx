@@ -341,7 +341,7 @@ export const tempSwitchTypeOptions = [
 	{
 		index: 0,
 		value: EnumSwitchType.LINEAR,
-		label: "Linear (Không khấc, không clicky",
+		label: "Linear (Không khấc, không clicky)",
 	},
 	{
 		index: 1,
@@ -1123,12 +1123,12 @@ export const UploadStatusProperty: Record<
 	[EnumUploadStatus.DONE]: {
 		color: "text-green-500",
 		text: "Hoàn thành",
-		icon: <CircleCheck className="text-green-500" size={18} />,
+		icon: <CircleCheck className="stroke-green-500" size={18} />,
 	},
 	[EnumUploadStatus.ERROR]: {
 		color: "text-red-500",
 		text: "Không thể tải lên",
-		icon: <CircleX className="text-red-500" size={18} />,
+		icon: <CircleX className="stroke-red-500" size={18} />,
 	},
 };
 

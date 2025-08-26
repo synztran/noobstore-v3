@@ -200,8 +200,10 @@ const MusicPlayer: React.FC<IProps> = ({ isAutoPlay = false }) => {
 							}
 							placement="top"
 							arrow
-							classes={{
-								tooltip: "!mb-2",
+							sx={{
+								"& .MuiTooltip-tooltip": {
+									marginBottom: "8px",
+								},
 							}}>
 							<div>
 								{volume === 0 ? (

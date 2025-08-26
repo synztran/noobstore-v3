@@ -39,6 +39,11 @@ const CartPage = (props: unknown) => {
 	const router = useRouter();
 	const { data: cart, isPending } = useCartQuery();
 	const { products } = cart || {};
+
+	if (!cart) {
+		return <div>Không có giỏ hàng</div>;
+	}
+
 	return (
 		<Base>
 			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
@@ -184,7 +189,8 @@ const TableCart = (data: ICart) => {
 												height={90}>
 												<Image
 													src={
-														product?.thumbnail ||
+														product?.thumbnail
+															?.path ||
 														NEW_MISSING_IMAGE
 													}
 													alt="product image"

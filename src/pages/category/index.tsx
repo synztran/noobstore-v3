@@ -21,14 +21,14 @@ interface Props {
 
 const CollectionPage = ({ title }: Props) => {
 	const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-	const [categoryDetail, setCategoryDetail] = useState<ICategory[]>([]);
+	const [categories, setCategories] = useState<ICategory[]>([]);
 
 	useEffect(() => {
 		(async () => {
 			const resp = await CategoryClient.getAllCategory({});
 			console.log("resp", resp);
 			if (isValid(resp)) {
-				setCategoryDetail(getFirst(resp));
+				setCategories(getFirst(resp) as unknown as ICategory[]);
 			}
 		})();
 	}, []);
@@ -36,7 +36,7 @@ const CollectionPage = ({ title }: Props) => {
 	return (
 		<Base>
 			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
-				<Breadcumb mainRoot={BreadcumbTitle["collection"]} />
+				<Breadcumb mainRoot={BreadcumbTitle["collection"] || ""} />
 				<HeadSection
 					title="Danh mục"
 					setMobileFiltersOpen={setMobileFiltersOpen}
@@ -47,7 +47,7 @@ const CollectionPage = ({ title }: Props) => {
 						setMobileOpen={setMobileFiltersOpen}
 					/>
 					<div className="grid gap-x-2 gap-y-4 col-span-1 grid-cols-1 sm:grid-cols-3 sm:col-span-3 justify-items-center">
-						{categoryDetail?.map((child) => (
+						{categories?.map((child) => (
 							<CategoryCard category={child} />
 						))}
 					</div>

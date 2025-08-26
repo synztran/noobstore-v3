@@ -86,7 +86,7 @@ const VerifyPage = () => {
 							label: "text-white",
 						}}
 						onClick={() =>
-							toggleDialogLogin(EnumStatusDialog.OPEN)
+							toggleDialogLogin(Boolean(EnumStatusDialog.OPEN))
 						}>
 						Đăng nhập ngay
 					</Button>

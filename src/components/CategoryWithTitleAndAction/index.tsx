@@ -5,8 +5,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import Image from "next/image";
 import clsx from "classnames";
-import { Star } from "lucide-react";
 import { formatCurrency } from "@/utils/FormatNumber";
+import RatingComponent from "../productCard/rating";
 
 interface CategoryItem {
 	id: string | number;
@@ -124,7 +124,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 					<span className="font-semibold text-xl text-black">
 						{title}
 					</span>
-					<span className="text-gray-400 text-lg font-normal">
+					<span className="text-gray-500 text-lg font-normal">
 						from each category
 					</span>
 				</div>
@@ -132,7 +132,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 					{action ? (
 						action
 					) : (
-						<button className="text-xs px-3 py-1 rounded-50 border border-gray-200 text-gray-700 hover:bg-gray-100 transition">
+						<button className="text-sm px-3 py-1 rounded-50 border border-gray-200 text-gray-700 hover:bg-gray-100 transition">
 							Shop all
 						</button>
 					)}
@@ -162,8 +162,14 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 				</IconButton>
 				{/* Swiper */}
 				<Swiper
-					slidesPerView={5}
-					spaceBetween={16}
+					breakpoints={{
+						320: { slidesPerView: 1.2 },
+						480: { slidesPerView: 2 },
+						640: { slidesPerView: 2.5 },
+						768: { slidesPerView: 3.5 },
+						1440: { slidesPerView: 5 },
+					}}
+					spaceBetween={8}
 					loop={true}
 					onSwiper={(swiper) => {
 						swiperRef.current = swiper;
@@ -171,10 +177,10 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 					className="mt-3 !py-2">
 					{fakeItems.map((item) => (
 						<SwiperSlide key={item.id} className="p-0.5">
-							<div className="bg-[#f6f5f8] rounded-xl p-2 flex flex-col gap-3 relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[340px] cursor-pointer">
+							<div className="bg-[#f6f5f8] rounded-xl p-2 flex flex-col gap-3 relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[420px] cursor-pointer">
 								<div>
 									<div className="flex items-center justify-between">
-										<span className="text-xs text-gray-500 font-bold">
+										<span className="text-sm text-gray-500 font-bold">
 											{item.brand}
 										</span>
 										<button className="rounded-full">
@@ -184,32 +190,13 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 											/>
 										</button>
 									</div>
-									<span className="text-sm font-semibold text-black leading-tight">
+									<span className="text-base font-semibold text-black leading-tight">
 										{item.name}
 									</span>
-									{item.rating && (
-										<div className="flex items-center">
-											{[...Array(5)].map((_, i) => (
-												<span
-													key={i}
-													className={
-														i <
-														Math.round(
-															item.rating.stars
-														)
-															? "text-black"
-															: "text-gray-300"
-													}>
-													<Star className="fill-yellow-400 w-4 h-4" />
-												</span>
-											))}
-											<span
-												className="text-xs text-black font-medium ml-1"
-												style={{ lineHeight: 1 }}>
-												{item.rating.reviews}
-											</span>
-										</div>
-									)}
+									<RatingComponent
+										star={item.rating.stars}
+										reviewer={item.rating.reviews || 0}
+									/>
 								</div>
 
 								{/* Product Image */}
@@ -223,7 +210,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 								</div>
 								<div className="flex flex-col">
 									{item.quantity && (
-										<span className="text-xs text-gray-600">
+										<span className="text-sm text-gray-600">
 											{item.quantity} stocks
 										</span>
 									)}

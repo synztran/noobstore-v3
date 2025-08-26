@@ -112,3 +112,4 @@ export const QUICK_ACCESS_DESKMATS_ICON = "/images/quickAccess/deskmats.webp";
 
 // icons
 export const STAR_MEDAL_ICON = "/assets/icons/star_medal.png";
+export const SOLD_OUT_ICON = "/assets/icons/oos_icon.png";

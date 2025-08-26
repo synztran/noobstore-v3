@@ -105,9 +105,19 @@ const InputQuantity = ({
 		[handleDecreaseQuantityCart]
 	);
 
-	const handleOnChange = async (quantity: number) => {
+	const handleOnChange = async (
+		quantity: number,
+		notValidCallback?: () => void
+	) => {
 		if (quantity <= 0) return;
 		if (!quantity) return;
+		if (maxQuantity && quantity > maxQuantity) {
+			NotifyUtils.error(
+				"Số lượng sản phẩm không được lớn hơn số lượng tồn kho"
+			);
+			if (notValidCallback) notValidCallback();
+			return;
+		}
 		setCurrentQuantity(quantity);
 		updateQuantity(quantity);
 
@@ -196,7 +206,10 @@ const ProductQuantity = memo(
 		handleOnChange,
 	}: {
 		quantity: number;
-		handleOnChange: (quantity: number) => void;
+		handleOnChange: (
+			quantity: number,
+			notValidCallback?: () => void
+		) => void;
 	}) => {
 		const [tempQuantity, setTempQuantity] = useState(quantity);
 
@@ -216,15 +229,20 @@ const ProductQuantity = memo(
 			}
 		};
 
+		const rollbackQuantity = () => {
+			setTempQuantity(quantity);
+		};
+
 		const handleBlur = () => {
 			if (tempQuantity === quantity) return;
 			if (tempQuantity === 0) {
+				// TODO: have modal request delete product outof cart
 				setTempQuantity(1);
 				if (tempQuantity !== quantity) {
 					handleOnChange(1);
 				}
 			} else {
-				handleOnChange(tempQuantity);
+				handleOnChange(tempQuantity, rollbackQuantity);
 			}
 		};
 
@@ -233,7 +251,7 @@ const ProductQuantity = memo(
 				type="text"
 				classes={{
 					root: "w-12 bg-transparent !h-[40px]",
-					input: "px-0 text-center bg-transparent",
+					input: "px-0 text-center bg-transparent leading-none",
 					focused: "!border-gray-400",
 				}}
 				disableUnderline
@@ -241,6 +259,12 @@ const ProductQuantity = memo(
 				value={tempQuantity}
 				onChange={handleChange}
 				onBlur={handleBlur}
+				id="input-quantity"
+				name="quantity"
+				inputProps={{
+					min: 1,
+					max: 99,
+				}}
 			/>
 		);
 	}

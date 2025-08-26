@@ -1,4 +1,4 @@
-import TextEditor from "@/adminComponents/Texteditor";
+// import TextEditor from "@/adminComponents/Texteditor";
 import ProductsClient from "@/client/ProductsClient";
 import UploadImage from "@/components/InputComponents/UploadImage";
 import {
@@ -185,7 +185,11 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 		<div>
 			<Modal open={open}>
 				<Box
-					className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[70vw] max-h-[90vh] bg-white shadow-lg px-8 pt-8 pb-4 rounded-lg ${formik.isSubmitting ? "overflow-hidden" : "overflow-y-auto"}`}>
+					className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[70vw] max-h-[90vh] bg-white shadow-lg px-8 pt-8 pb-4 rounded-lg ${
+						formik.isSubmitting
+							? "overflow-hidden"
+							: "overflow-y-auto"
+					}`}>
 					<Typography
 						variant="h6"
 						component="h1"
@@ -348,7 +352,7 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 							</Grid>
 						) : null}
 						<ProductOptions formik={formik} />
-						<TextEditor
+						{/* <TextEditor
 							id="ql-short-editor"
 							value={formik.values.shortDescription}
 							onChange={(value) =>
@@ -382,7 +386,7 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 									: ""
 							}
 							maxContent={2000}
-						/>
+						/> */}
 						<MoreAddonService formik={formik} />
 						<UploadImage
 							label="Ảnh chi tiết sản phẩm"
@@ -408,7 +412,12 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 										Giá bán
 									</span>
 									<span
-										className={`text-gray-500 text-sm ${formik.values.salePrice !== "" && formik.values.salePrice !== "0" ? "line-through" : ""}`}>
+										className={`text-gray-500 text-sm ${
+											formik.values.salePrice !== "" &&
+											formik.values.salePrice !== "0"
+												? "line-through"
+												: ""
+										}`}>
 										{formatCurrency(
 											parseInt(
 												String(formik.values.ogPrice),

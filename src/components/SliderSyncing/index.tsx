@@ -34,6 +34,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 		speed: 500,
 		slidesToShow: 1,
 		slidesToScroll: 1,
+		arrow: false,
 		// nextArrow: <SyncSlickArrowNext />,
 		// prevArrow: <SyncSlickArrowPrev />,
 		beforeChange: (oldIndex: number, newIndex: number) => {
@@ -76,10 +77,10 @@ const SliderSyncing = ({ imageList }: Props) => {
 	}, [navMain, isNavigating, currentImageIdx, imageList.length]);
 
 	return (
-		<div className="flex gap-4">
+		<div className="flex gap-4 bg-white rounded-lg shadow-md p-4">
 			<div className="grid grid-cols-1 gap-1 w-1/5 relative place-items-center">
 				<div
-					className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer border border-gray-500 rounded-full p-0.5 transition-colors bg-white ${
+					className={`w-7 h-7 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center ${
 						isNavigating
 							? "opacity-50 cursor-not-allowed"
 							: "hover:bg-gray-400"
@@ -90,7 +91,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 				{imageList?.map((child) => (
 					<div
 						key={child.id}
-						className={`overflow-hidden rounded-lg my-auto cursor-pointer justify-center flex align-middle bg-gray-200 w-[80px] h-[80px] ${
+						className={`overflow-hidden rounded-lg my-auto cursor-pointer justify-center flex align-middle bg-gray-200 w-[90px] h-[90px] ${
 							currentImageIdx === child.id
 								? "border-2 border-black"
 								: ""
@@ -100,8 +101,8 @@ const SliderSyncing = ({ imageList }: Props) => {
 							src={child?.src}
 							alt={child?.alt}
 							className="object-cover select-none rounded-lg"
-							width={80}
-							height={80}
+							width={90}
+							height={90}
 							style={{
 								maxWidth: "100%",
 								height: "auto",
@@ -110,7 +111,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 					</div>
 				))}
 				<div
-					className={`absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-pointer border border-gray-500 rounded-full p-0.5 transition-colors bg-white ${
+					className={`w-7 h-7 absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center ${
 						isNavigating
 							? "opacity-50 cursor-not-allowed"
 							: "hover:bg-gray-400"
@@ -121,6 +122,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 			</div>
 			<div className="w-4/5 relative">
 				<Slider
+					className="h-full flex items-center"
 					asNavFor={navSub}
 					ref={(slider) => (slider1 = slider)}
 					{...settingMainSlide}>
@@ -138,8 +140,8 @@ const SliderSyncing = ({ imageList }: Props) => {
 						</div>
 					))}
 				</Slider>
-				<div className="absolute max-w-max px-2 py-0.5 bg-gray-400 bottom-3 right-2">
-					{currentImageIdx}
+				<div className="absolute max-w-max px-3 py-0 bg-gray-400 bottom-4 right-2 text-gray-800 rounded-60 text-[16px] leading-tight">
+					{currentImageIdx}/{imageList?.length}
 				</div>
 			</div>
 			{/* <Grid container spacing={2} style={{ marginTop: "1rem" }}>

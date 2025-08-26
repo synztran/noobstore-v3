@@ -1,6 +1,6 @@
 import NotifyUtils from '@/utils/NotifyUtils';
 import AuthClient from 'client/AuthClient';
-import { PAGE_LINK } from "components/constants";
+import { PAGE_LINK } from "@/constants";
 import { Field, Form, Formik } from "formik";
 import { useRouter } from "next/router";
 import { Base } from "templates/Base";

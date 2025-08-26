@@ -5,7 +5,7 @@ import { formatCurrency } from "@/utils/FormatNumber";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import Tag from "../productTags";
+// import Tag from "../productTags";
 
 interface IProps {
 	usedProduct: IUsedProduct;
@@ -57,10 +57,10 @@ const UsedProductCard: React.FC<IProps> = ({ usedProduct }) => {
 							</div>
 						) : null}
 						<div>
-							<Tag
-								text={UsedProductStatus[status]}
+							{/* <Tag
+								text={usedProduct}
 								status={status}
-							/>
+							/> */}
 						</div>
 					</div>
 				</div>

@@ -27,7 +27,7 @@ const categories = [
 		url: "/products/keycaps",
 	},
 	{
-		label: "Desk Mats",
+		label: "Deskmats",
 		icon: QUICK_ACCESS_DESKMATS_ICON,
 		url: "/products/desk-mats",
 	},
@@ -74,7 +74,7 @@ const TitleWithMenuQuickAccess = () => (
 							className="object-contain rounded-full bg-gray-400"
 						/>
 					</div>
-					<span className="text-base text-gray-800 font-bold">
+					<span className="text-lg text-gray-800 font-bold">
 						{cat.label}
 					</span>
 				</Link>

@@ -39,7 +39,14 @@ const ProductOptions: React.FC<IProps> = (props) => {
 		value: string
 	) => {
 		const updatedOptions = [...options];
-		updatedOptions[index][field] = value;
+		updatedOptions[index] = {
+			...(updatedOptions[index] || {
+				part: "",
+				material: "",
+				price: "",
+			}),
+			[field as keyof (typeof updatedOptions)[number]]: value,
+		} as any;
 		setOptions(updatedOptions);
 		formik.setFieldValue("productOptions", updatedOptions);
 	};

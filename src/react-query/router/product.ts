@@ -4,7 +4,12 @@ import ProductOptionClient from "@/client/ProductOptionClient";
 import ProductClient from "@/client/ProductsClient";
 import { HTTP_STATUS } from "@/constants/Enums/https";
 import { IResponse } from "@/interface/Client/interface";
-import { EnumProductType, ICategory } from "@/interface/interface";
+import {
+	EnumProductType,
+	ICategory,
+	IProductOption,
+} from "@/interface/interface";
+import NotifyUtils from "@/utils/NotifyUtils";
 import { createQueryKeys } from "@lukemorales/query-key-factory";
 
 export const productQueryKeys = createQueryKeys("product", {
@@ -24,32 +29,53 @@ export const productQueryKeys = createQueryKeys("product", {
 				return {};
 			}
 
+			const categoryDetail = getFirst(respCategoryDetail) as ICategory;
 			const categoryId = (getFirst(respCategoryDetail) as ICategory)
 				?.categoryId;
+
 			const respProductDetail =
 				await ProductClient.getProductsByCategoryID({
 					categoryId: categoryId as string,
 				});
-			const categoryDetail = getFirst(respCategoryDetail);
+
 			const products = respProductDetail.data || [];
 			const productOptionIds = products
 				.map((product) => product.optionGroups?.optionIds)
 				.flat();
-			console.log("productOptionIds", productOptionIds);
 
-      const signal = AbortSignal.timeout(10000);
-			const respProductOptions = await ProductOptionClient.getProductOptions({
-				body: {
-					productOptionIds: productOptionIds,
-				},
-				signal,
-      });
-      
-      console.log(respProductOptions)
+			const signal = AbortSignal.timeout(10000);
+			const respProductOptions =
+				await ProductOptionClient.getProductOptions({
+					body: {
+						productOptionIds: productOptionIds,
+					},
+					signal,
+				});
+
+			let productOptions: Record<string, IProductOption[]> = {};
+
+			if (respProductOptions.status !== HTTP_STATUS.Ok) {
+				NotifyUtils.error(respProductOptions.message);
+			} else {
+				productOptions =
+					getData(respProductOptions)?.reduce(
+						(acc, curr) => {
+							if (curr.productPart) {
+								acc[curr.productPart] = [
+									...(acc[curr.productPart] || []),
+									curr,
+								];
+							}
+							return acc;
+						},
+						{} as Record<string, IProductOption[]>
+					) || {};
+			}
 
 			const data = {
 				categoryDetail,
 				products,
+				productOptions,
 			};
 
 			console.log("data", data);

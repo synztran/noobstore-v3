@@ -65,7 +65,10 @@ export interface IOrderProduct {
 	price: number;
 	categoryId: string;
 	categoryName: string;
-	thumbnail: string;
+	thumbnail: {
+		path: string;
+		alt: string;
+	};
 	slug: string;
 	productOptions: IProductOption[];
 	totalPrice: number;

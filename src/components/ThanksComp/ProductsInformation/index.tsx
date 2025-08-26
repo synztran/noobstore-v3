@@ -17,7 +17,7 @@ const ProductsInformation: React.FC<{ orderId: string }> = ({ orderId }) => {
 							<CartItemBlock cartItem={item} key={index} />
 						)
 					)}
-					<BillInformation orderInfo={orderInfo} />
+					<BillInformation orderInfo={orderInfo as any} />
 				</Box>
 			</div>
 		</div>

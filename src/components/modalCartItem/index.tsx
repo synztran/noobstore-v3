@@ -39,7 +39,7 @@ const modalStyle = {
 	top: "50%",
 	left: "50%",
 	transform: "translate(-50%, -50%)",
-	width: "min(450px, 55vw)",
+	width: "min(600px, 55vw)",
 	bgcolor: "background.paper",
 	boxShadow: 24,
 	minHeight: "80vh",
@@ -74,6 +74,7 @@ const quickAccess = [
 
 const ModalCartItem = ({ open, handleClose }: Props) => {
 	const { data: cart } = useCartQuery();
+	console.log("cart", cart);
 	const router = useRouter();
 	const handleRemoveProduct = useRemoveItemMutation();
 	const [isRemoving, setRemoving] = useState(false);
@@ -229,81 +230,85 @@ const CartItem = ({
 	index: number;
 	cart: ICart;
 }) => {
+	if (!item?.productOptions?.length) return;
 	return (
 		<div key={item?.productId}>
-			<div
-				key={item?.productId}
-				className="grid grid-cols-12 gap-4 min-h-[115px]">
-				{/* <Link href={item?.slug ? `/product/${item.slug}` : ""}> */}
-				<div className="relative col-span-3 min-w-[120px] min-h-[115px]">
-					<Image
-						src={item?.thumbnail || NEW_MISSING_IMAGE}
-						alt="product"
-						className="hover:scale-105 transition-all duration-200 ease-in-out rounded-10 object-cover"
-						fill
-						sizes="100vw"
-					/>
-				</div>
-				{/* </Link> */}
-				<div className="col-span-5 flex flex-col justify-between">
-					{/* <Link href={item?.slug ? `/product/${item.slug}` : ""}> */}
-					<Typography className="text-lg text-ellipsis overflow-hidden text-blue-500">
-						{item.categoryName || ""}
-					</Typography>
-					{/* </Link> */}
-					<Typography
-						className="text-sm"
-						style={{ color: "#656461" }}>
-						<span className="text-base">{item.productName}:</span>{" "}
-						<strong>
-							{item.productOptions
-								.map((option) => option.name)
-								.join(", ")}
-						</strong>
-					</Typography>
-					<Typography className="text-sm">
-						{formatCurrency(
-							item?.price +
-								item?.productOptions.reduce(
-									(acc, option) => acc + (option.price || 0),
-									0
-								)
-						)}
-					</Typography>
-					<InputQuantity
-						quantity={item?.quantity}
-						productId={item?.productId}
-						productOptionId={item?.productOptions?.[0]?.id || "123"}
-					/>
-				</div>
-				<div className="col-span-4 relative w-full flex">
-					<div className="absolute top-0 right-0">
-						{isRemoving ? (
-							<CircularProgress size={12} color="primary" />
-						) : (
-							<IconButton
-								className="p-0.5"
-								onClick={() =>
-									handleRemoveItemCart(
-										item.productId,
-										item.productName
-									)
-								}>
-								<DeleteOutlineOutlinedIcon className="text-red-400" />
-							</IconButton>
-						)}
+			{item?.productOptions?.map((opt) => (
+				<>
+					<div
+						key={opt.productOptionId}
+						className="grid grid-cols-12 gap-4 min-h-[115px]">
+						<div className="relative col-span-3 min-w-[120px] min-h-[115px]">
+							<Image
+								src={opt?.thumbnail?.path || NEW_MISSING_IMAGE}
+								alt={opt?.thumbnail?.alt || "product"}
+								className="hover:scale-105 transition-all duration-200 ease-in-out rounded-10 object-cover"
+								fill
+								sizes="100vw"
+							/>
+						</div>
+						<div className="col-span-5 flex flex-col justify-between">
+							<Typography className="text-lg text-ellipsis overflow-hidden text-blue-500 font-bold">
+								{item.categoryName || ""}
+							</Typography>
+							<Typography
+								className="text-sm"
+								style={{ color: "#656461" }}>
+								{item.productName}:&nbsp;
+								<strong>{opt.name || ""}</strong>
+							</Typography>
+							<Typography>
+								{formatCurrency(
+									item?.price +
+										item?.productOptions.reduce(
+											(acc, option) =>
+												acc + (option.price || 0),
+											0
+										)
+								)}
+							</Typography>
+							<InputQuantity
+								quantity={item?.quantity}
+								productId={item?.productId}
+								productOptionId={
+									item?.productOptions?.[0]
+										?.productOptionId || ""
+								}
+							/>
+						</div>
+						<div className="col-span-4 relative w-full flex">
+							<div className="absolute top-0 right-0">
+								{isRemoving ? (
+									<CircularProgress
+										size={12}
+										color="primary"
+									/>
+								) : (
+									<IconButton
+										className="p-0.5"
+										onClick={() =>
+											handleRemoveItemCart(
+												item.productId,
+												item.productName
+											)
+										}>
+										<DeleteOutlineOutlinedIcon className="fill-red-400" />
+									</IconButton>
+								)}
+							</div>
+							<div className="ml-auto mt-auto text-sm flex flex-col">
+								<span className="ml-auto">Tạm tính</span>
+								<strong className="text-lg text-right">
+									{formatCurrency(item?.totalPrice)}
+								</strong>
+							</div>
+						</div>
 					</div>
-					<div className="ml-auto mt-auto text-sm flex flex-col">
-						<span className="ml-auto">Tạm tính</span>
-						<strong className="text-lg text-right">
-							{formatCurrency(item?.totalPrice)}
-						</strong>
-					</div>
-				</div>
-			</div>
-			{index !== cart.products.length - 1 ? (
-				<Divider className="" />
-			) : null}
+					{index !== cart.products.length - 1 ? (
+						<Divider className="" />
+					) : null}
+				</>
+			))}
 		</div>
 	);
 };

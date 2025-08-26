@@ -1,15 +1,18 @@
 import {
 	SERVICE_KEYBOARD_ICON,
 	SERVICE_NEW_SWITCH_ICON,
+	SERVICE_STABILIZER_ICON,
 } from "@/constants/Images";
 import { EnumServiceType } from "@/interface/interface";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Image from "next/image";
-import { useState } from "react";
+import useServices, { useServiceAction } from "@/zustand/useServices";
+import { Button as MUIButton } from "@material-ui/core";
 import ServiceKeyboardForm from "./keyboardForm";
 import ServicesSwitchesForm from "./switchesForm";
+import { Plus, X } from "lucide-react";
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -22,14 +25,15 @@ const TabInfo = [
 		name: "Bàn phím",
 		icon: (
 			<Image
-                src={SERVICE_KEYBOARD_ICON}
-                width={24}
-                height={22}
-                alt="kb icon"
-                style={{
-                    maxWidth: "100%",
-                    height: "auto"
-                }} />
+				src={SERVICE_KEYBOARD_ICON}
+				width={32}
+				height={26}
+				alt="kb icon"
+				style={{
+					maxWidth: "100%",
+					height: "auto",
+				}}
+			/>
 		),
 		id: 0,
 	},
@@ -37,36 +41,60 @@ const TabInfo = [
 		name: "Switches",
 		icon: (
 			<Image
-                src={SERVICE_NEW_SWITCH_ICON}
-                width={24}
-                height={24}
-                alt="switch icon"
-                style={{
-                    maxWidth: "100%",
-                    height: "auto"
-                }} />
+				src={SERVICE_NEW_SWITCH_ICON}
+				width={32}
+				height={32}
+				alt="switch icon"
+				style={{
+					maxWidth: "100%",
+					height: "auto",
+				}}
+			/>
 		),
 		id: 1,
 	},
 	{
+		name: "Stabilizer",
+		icon: (
+			<Image
+				src={SERVICE_STABILIZER_ICON}
+				width={32}
+				height={26}
+				alt="stabilizer icon"
+				style={{
+					maxWidth: "100%",
+					height: "auto",
+				}}
+			/>
+		),
+		id: 3,
+	},
+	{
 		name: "Khác",
 		icon: "",
-		id: 2,
+		id: 4,
 	},
 ];
 
 const MultiServiceForm: React.FC = () => {
-	const [value, setValue] = useState(0);
+	const { activeTabIndex, keyboardItems, switchItems } = useServices();
+	const {
+		setActiveTabIndex,
+		addKeyboardItem,
+		removeKeyboardItem,
+		addSwitchItem,
+		removeSwitchItem,
+	} = useServiceAction();
 
-	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-		setValue(newValue);
+	const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+		setActiveTabIndex(newValue);
 	};
 
 	return (
 		<Box sx={{ width: "100%" }}>
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs
-					value={value}
+					value={activeTabIndex}
 					onChange={handleChange}
 					aria-label="basic tabs example">
 					{TabInfo.map((tab, index) => (
@@ -82,15 +110,89 @@ const MultiServiceForm: React.FC = () => {
 					))}
 				</Tabs>
 			</Box>
-			<CustomTabPanel value={value} index={0}>
-				<ServiceKeyboardForm serviceType={EnumServiceType.KEYBOARD} />
+			<CustomTabPanel value={activeTabIndex} index={0}>
+				<div className="flex flex-col gap-3">
+					<div className="flex justify-between items-center">
+						<strong className="text-xl">
+							Danh sách dịch vụ bàn phím
+						</strong>
+						<MUIButton
+							className="!normal-case !px-3 !py-1 bg-blue-600"
+							variant="contained"
+							color="default"
+							onClick={() => addKeyboardItem()}>
+							<span className="text-white flex items-center gap-2">
+								<Plus className="stroke-white" /> Thêm mới
+							</span>
+						</MUIButton>
+					</div>
+					{keyboardItems.length === 0 ? (
+						<div className="text-sm text-gray-500">
+							Chưa có mục nào. Nhấn "Thêm mới" để bắt đầu.
+						</div>
+					) : null}
+					{keyboardItems.map((item) => (
+						<div
+							key={item.id}
+							className="border rounded-md p-3 relative border-gray-600">
+							<button
+								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
+								onClick={() => removeKeyboardItem(item.id)}
+								aria-label="Remove">
+								<X className="hover:scale-110 transition-all duration-300 w-4 h-4 stroke-red-500" />
+							</button>
+							<ServiceKeyboardForm
+								itemId={item.id}
+								serviceType={EnumServiceType.KEYBOARD}
+								value={item}
+							/>
+						</div>
+					))}
+				</div>
 			</CustomTabPanel>
-			<CustomTabPanel value={value} index={1}>
-				<ServicesSwitchesForm serviceType={EnumServiceType.SWITCHES} />
+			<CustomTabPanel value={activeTabIndex} index={1}>
+				<div className="flex flex-col gap-3">
+					<div className="flex justify-between items-center">
+						<strong className="text-base">Danh sách switch</strong>
+						<MUIButton
+							className="!normal-case !px-3 !py-1 bg-blue-600"
+							variant="contained"
+							color="default"
+							onClick={() => addSwitchItem()}>
+							<span className="text-white flex items-center gap-2">
+								<Plus className="stroke-white" /> Thêm mới
+							</span>
+						</MUIButton>
+					</div>
+					{switchItems.length === 0 ? (
+						<div className="text-sm text-gray-500">
+							Chưa có mục nào. Nhấn "Thêm switch" để bắt đầu.
+						</div>
+					) : null}
+					{switchItems.map((item) => (
+						<div
+							key={item.id}
+							className="border border-gray-600  rounded-md p-3 relative">
+							<button
+								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
+								onClick={() => removeSwitchItem(item.id)}
+								aria-label="Remove">
+								<X className="hover:scale-110 transition-all duration-300 w-4 h-4 stroke-red-500" />
+							</button>
+							<ServicesSwitchesForm
+								itemId={item.id}
+								serviceType={EnumServiceType.SWITCHES}
+								value={item}
+							/>
+						</div>
+					))}
+				</div>
 			</CustomTabPanel>
-			<CustomTabPanel value={value} index={2}>
-				{/* <ServiceForm serviceType={EnumServiceType.OTHER} /> */}
+			<CustomTabPanel value={activeTabIndex} index={2}>
 				Item Three
+			</CustomTabPanel>
+			<CustomTabPanel value={activeTabIndex} index={3}>
+				Item Four
 			</CustomTabPanel>
 		</Box>
 	);

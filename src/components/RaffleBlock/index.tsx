@@ -142,7 +142,9 @@ export default function EnhancedRaffleSystem() {
 				</div>
 			</div>
 
-			<Dialog open={showRaffleModal} onOpenChange={setShowRaffleModal}>
+			<Dialog
+				open={showRaffleModal}
+				onChange={(e) => setShowRaffleModal(!showRaffleModal)}>
 				<DialogContent className="sm:max-w-[425px]">
 					<DialogTitle>
 						Enter the Exclusive Raffle You're one step away from the
@@ -206,7 +208,9 @@ export default function EnhancedRaffleSystem() {
 				</DialogContent>
 			</Dialog>
 
-			<Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+			<Dialog
+				open={showSuccessModal}
+				onChange={(e) => setShowSuccessModal(!showSuccessModal)}>
 				<DialogContent>
 					<DialogTitle>
 						Congratulations! Your raffle entry has been submitted.

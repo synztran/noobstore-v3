@@ -28,8 +28,8 @@ const info = (text: string, options?: ShowOptions): void => {
 	show(text, "info", options);
 };
 
-const success = (text: string, options?: ShowOptions): void => {
-	show(text, "success", options);
+const success = (text: string | JSX.Element, options?: ShowOptions): void => {
+	show(typeof text === "string" ? text : text.toString(), "success", options);
 };
 
 const dark = (text: string, options?: ShowOptions): void => {

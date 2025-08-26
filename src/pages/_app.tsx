@@ -11,9 +11,10 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { MuiThemeProvider } from "@material-ui/core";
+// import { MuiThemeProvider } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { StylesProvider } from "@material-ui/core/styles";
+import ThemeProvider from "@/theme/ThemeProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-toastify/dist/ReactToastify.css"; //add this line
 import { ThemeProvider as StyledTheme } from "styled-components";
@@ -78,42 +79,39 @@ const MyApp = ({ Component, pageProps }: AppPropsWithLayout) => {
 				/>
 			</Head>
 			<StylesProvider injectFirst>
-				<StyledTheme theme={theme}>
-					<MuiThemeProvider theme={theme}>
-						<CssBaseline />
-						<ContextProviderCompose
-							contextProviders={[
-								<QueryClientProvider
-									key="QueryClientProvider"
-									client={queryClient}
-								/>,
-								<AuthProvider
-									key="authProvider"
-									token={token as string}
-									redirectUrl={redirectUrl as string}
-									initUser={user}
-									source={source as string}
-									children={undefined}
-								/>,
-							]}>
-							{/* <ReactQueryDevtools initialIsOpen={false} /> */}
+				<ThemeProvider>
+					<ContextProviderCompose
+						contextProviders={[
+							<QueryClientProvider
+								key="QueryClientProvider"
+								client={queryClient}
+							/>,
+							<AuthProvider
+								key="authProvider"
+								token={token as string}
+								redirectUrl={redirectUrl as string}
+								initUser={user}
+								source={source as string}
+								children={undefined}
+							/>,
+						]}>
+						{/* <ReactQueryDevtools initialIsOpen={false} /> */}
 
-							<LoadingRoute>
-								<Component {...pageProps} />
-								{/* <MessageChat isModule /> */}
+						<LoadingRoute>
+							<Component {...pageProps} />
+							{/* <MessageChat isModule /> */}
 
-								<ToastContainer
-									limit={2}
-									pauseOnHover={false}
-									hideProgressBar
-									autoClose={2000}
-									closeOnClick
-								/>
-							</LoadingRoute>
-						</ContextProviderCompose>
-						{/* <MusicPlayer /> */}
-					</MuiThemeProvider>
-				</StyledTheme>
+							<ToastContainer
+								limit={2}
+								pauseOnHover={false}
+								hideProgressBar
+								autoClose={2000}
+								closeOnClick
+							/>
+						</LoadingRoute>
+					</ContextProviderCompose>
+					{/* <MusicPlayer /> */}
+				</ThemeProvider>
 			</StylesProvider>
 		</>
 	);

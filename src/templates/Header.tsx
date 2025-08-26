@@ -77,10 +77,10 @@ export default function Header() {
 
 	return (
 		<header
-			className="backdrop-blur-md sticky top-0 z-50 bg-[rgba(255,255,255,0.7)] px-6"
+			className="backdrop-blur-md sticky top-0 z-50 bg-[rgba(255,255,255,0.7)] px-6 h-[120px]"
 			id="header">
 			<nav
-				className={`container mx-0 flex items-center justify-between p-3 max-w-full ${
+				className={`container mx-0 flex items-center justify-between p-3 max-w-full h-full ${
 					isSimpleHeader ? "px-12" : ""
 				}`}
 				aria-label="Global">
@@ -98,8 +98,8 @@ export default function Header() {
 						<span className="sr-only">NoobStore</span>
 						<NextImage
 							src={LogoStore}
-							width={80}
-							height={80}
+							width={145}
+							height={70}
 							alt="NoobStore"
 							quality={100}
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -111,7 +111,7 @@ export default function Header() {
 						<Link
 							href="/shop"
 							className={classNames(
-								`text-lg font-semibold leading-6 text-gray-900`,
+								`text-xl font-semibold leading-6 text-gray-900`,
 								styles.bbEffect ?? ""
 							)}>
 							Shop
@@ -141,7 +141,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Dịch vụ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -215,7 +215,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Tin tức
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -283,7 +283,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Liên hệ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -303,8 +303,8 @@ export default function Header() {
 													{contact.map((item) => (
 														<div
 															key={item.name}
-															className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm leading-6 hover:bg-gray-50">
-															<div className="flex h-8 w-8 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+															className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm leading-6 hover:bg-gray-200">
+															<div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-200 group-hover:bg-white">
 																<item.icon
 																	className="h-6 w-6 text-gray-900 group-hover:text-indigo-600"
 																	aria-hidden="true"
@@ -378,8 +378,8 @@ export default function Header() {
 											<AccountCircleIcon
 												className="hover:fill-blue-500"
 												style={{
-													width: 24,
-													height: 24,
+													width: 40,
+													height: 40,
 												}}
 											/>
 										)}
@@ -508,7 +508,7 @@ export default function Header() {
 										Your Company
 									</span>
 									<img
-										className="h-8 w-auto"
+										className="h-11 w-auto"
 										src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
 										alt=""
 									/>

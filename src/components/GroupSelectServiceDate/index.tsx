@@ -26,7 +26,7 @@ const defaultOptions = [
 		name: "Gói dịch vụ cơ bản",
 		subName: "Sub Option 1",
 		price: 0,
-		dateTime: "Thứ 5, 12/12",
+		dateTime: "5-7 ngày",
 		// isSelected: false,
 		isActive: true,
 	},
@@ -35,19 +35,10 @@ const defaultOptions = [
 		name: "Gói dịch vụ đặc biệt",
 		subName: "Sub Option 2",
 		price: 200,
-		dateTime: "Hôm nay",
+		dateTime: "1-3 ngày",
 		// isSelected: false,
 		isActive: true,
 	},
-	// {
-	// 	value: 3,
-	// 	name: "Option 3",
-	// 	subName: "Sub Option 3",
-	// 	price: 300,
-	// 	dateTime: "2022-12-12T12:00:00Z",
-	// 	isSelected: false,
-	// 	isActive: false,
-	// },
 ];
 
 const GroupSelectServiceDate = (props: IProps) => {
@@ -113,7 +104,9 @@ const Wrapper = ({
 	const { updateSelectedOpt } = useServiceAction();
 	return (
 		<div
-			className={`w-full min-h-[160px] rounded-xl p-4 border-2 shadow-lg bg-gray-100 flex flex-col justify-between cursor-pointer hover:border-blue-500 hover:shadow-lg ${option.value === selectedOpt?.value ? "border-blue-700" : ""}`}
+			className={`w-full min-h-[160px] rounded-xl p-4 border-2 shadow-lg bg-gray-100 flex flex-col justify-between cursor-pointer hover:border-blue-500 hover:shadow-lg ${
+				option.value === selectedOpt?.value ? "border-blue-700" : ""
+			}`}
 			onClick={() => updateSelectedOpt(option)}>
 			<div className="flex justify-between items-center">
 				<span className="text-lg font-bold">{option.name}</span>

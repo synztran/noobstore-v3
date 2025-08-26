@@ -5,32 +5,44 @@ import {
 	tempSwitchTypeOptions,
 } from "@/constants";
 import useSelectedOption from "@/hook/useSelectedOption";
-import { EnumServiceType } from "@/interface/interface";
+import {
+	EnumServiceType,
+	EnumSwitchStatus,
+	EnumUploadStatus,
+} from "@/interface/interface";
 import { Divider } from "@material-ui/core";
 import React from "react";
 import CheckboxWithPrice from "../CheckboxWithPrice";
 import MiniUploadImage from "../MiniUploadImage";
 import SearchableSelect from "../SelectComp";
+import type { IOptionSelection } from "../SelectComp";
+import { ISwitchFormItem, useServiceAction } from "@/zustand/useServices";
+import UploadImage from "../InputComponents/UploadImage";
 
 interface IProps {
 	serviceType: EnumServiceType;
+	itemId?: string;
+	value: ISwitchFormItem;
 }
 
 const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
-	const { serviceType } = props;
+	const { serviceType, itemId } = props;
 	const { title, subTitle } = serviceFormText?.[serviceType];
 	const {
-		serviceSwitchSelected,
-		serviceKeyboardSelected,
+		// serviceSwitchSelected,
+		// serviceKeyboardSelected,
 		switchOptions,
 		handleAddNewOption,
 		handleChangeOption,
-		handleUseService,
+		// handleUseService,
 	} = useSelectedOption({
 		initialSwitchTypeOptions: tempSwitchTypeOptions,
-		initialSwitchBrandOptions: tempSwitchBrandOptions,
+		// initialSwitchBrandOptions: tempSwitchBrandOptions,
 		initialSwitchStatusOptions: tempSwitchStatusOptions,
 	});
+	const { updateSwitchItem } = useServiceAction();
+
+	console.log("switchOptions,", switchOptions);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -45,10 +57,44 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 						name="type"
 						label="Loại switch"
 						options={switchOptions.type}
-						onAddNew={handleAddNewOption}
-						onSelect={handleChangeOption}
+						onSelect={({
+							name,
+							option,
+						}: {
+							name: string;
+							option: IOptionSelection;
+						}) => {
+							handleChangeOption({ name, option });
+							if (itemId) {
+								updateSwitchItem(itemId, {
+									switchType: option?.value || "",
+									name: option?.label || "",
+								});
+							}
+						}}
 						placeholder="Tìm, chọn hoặc thêm mới"
-						isAddOn
+						value={props.value.switchType}
+					/>
+					<SearchableSelect
+						name="status"
+						label="Trạng thái"
+						options={switchOptions.status}
+						onSelect={({
+							name,
+							option,
+						}: {
+							name: string;
+							option: IOptionSelection;
+						}) => {
+							handleChangeOption({ name, option });
+							if (itemId) {
+								updateSwitchItem(itemId, {
+									status: option?.value as EnumSwitchStatus,
+								});
+							}
+						}}
+						placeholder="Tìm, chọn hoặc thêm mới"
+						value={props.value.status}
 					/>
 				</div>
 			</div>
@@ -58,10 +104,9 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 				<div className="flex flex-col gap-4">
 					<div className="flex items-center justify-between">
 						<CheckboxWithPrice
-							label="Hàn phím"
+							label=""
 							price={100}
-							// value={.lubeService.isUse}
-							// onChange={handleUseService}
+							value={false}
 							name="solder"
 							containerClassName="justify-between gap-12"
 							subLabel="Đã bao gồm vệ sinh thiếc hàn"
@@ -75,7 +120,7 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 						<CheckboxWithPrice
 							label="Rã phím"
 							price={100}
-							// value={serviceSwitchSelected.desolder.value}
+							value={false}
 							// onChange={handleChecked}
 							name="desolder"
 							containerClassName="justify-between gap-12"
@@ -87,7 +132,7 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 					<CheckboxWithPrice
 						label="Vệ sinh phím"
 						price={100}
-						// value={selected.clean.value}
+						value={false}
 						// onChange={handleChecked}
 						name="clean"
 						containerClassName="justify-between gap-12"
@@ -111,7 +156,27 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 							sẽ liên hệ bạn sau
 						</span>
 					</div>
-					<MiniUploadImage onUpload={() => console.log(1)} />
+					{/* <MiniUploadImage onUpload={() => console.log(1)} /> */}
+					<UploadImage
+						label="Tải lên hiện trạng của phím"
+						subLabel="Bạn có thể tải lên hình ảnh của phím ngay, hoặc shop sẽ liên hệ bạn sau"
+						files={props.value.attachments.map((item) => ({
+							preview: item.publicUrl || "",
+							status: EnumUploadStatus.DONE,
+							publicUrl: item.publicUrl || "",
+						}))}
+						handleSyncData={(data) => {
+							console.log(data);
+							if (itemId) {
+								updateSwitchItem(itemId, {
+									attachments: [
+										...props.value.attachments,
+										data,
+									],
+								});
+							}
+						}}
+					/>
 				</div>
 			</div>
 		</div>

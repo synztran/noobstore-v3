@@ -35,7 +35,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 	};
 
 	return (
-		<div className="border-gray-300 rounded-xl border-2 p-4">
+		<div className="border-gray-600 rounded-xl border-2 p-4 bg-white">
 			<div className="flex flex-col">
 				<div className="text-xl font-bold">Địa chỉ và thời gian</div>
 				<small>
@@ -54,10 +54,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 							placeholder="Địa chỉ giao hàng"
 							className="rounded-md"
 							inputProps={{
-								className: "rounded-md h-[24px]",
-							}}
-							InputProps={{
-								className: "border-gray-400 border rounded-md",
+								className: "rounded-md h-[24px] bg-transparent",
 							}}
 						/>
 					</div>
@@ -78,16 +75,17 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 								}}
 								sx={{
 									"& .MuiInputBase-root": {
-										border: "1px solid #E5E7EB",
+										// border: "1px solid #E5E7EB",
 										backgroundColor: "#fff",
 									},
 									"& .MuiInputBase-root:hover": {
-										border: "1px solid #e5e7eb",
+										// border: "1px solid #e5e7eb",
 									},
 									"& .MuiInputBase-input": {
 										padding: "8px 12px",
 										borderRadius: "4px",
 										fontSize: "1rem",
+										backgroundColor: "#fff",
 									},
 								}}
 							/>
@@ -121,7 +119,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 								/>
 							</div>
 							<div className="flex flex-col">
-								<label>Thời gian giao hàng</label>
+								<label>Thời gian lấy hàng</label>
 								<LocalizationProvider
 									dateAdapter={AdapterDayjs}
 									localeText={
