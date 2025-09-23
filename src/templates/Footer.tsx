@@ -26,7 +26,7 @@ const Footer = () => {
 			<div className="container py-4 mx-auto max-w-full border-t border-gray-400 h-full">
 				<div className="grid grid-cols-7 gap-8">
 					<div className="col-span-3">
-						<h1 className="text-base font-semibold tracking-tight text-gray-800 xl:text-2x">
+						<h1 className="text-lg font-semibold tracking-tight text-gray-800 xl:text-2x">
 							Đăng ký nhận thông tin.
 						</h1>
 						<span className="text-gray-800 text-base">
@@ -62,7 +62,7 @@ const Footer = () => {
 					</div>
 
 					<div className="col-span-2">
-						<p className="font-semibold text-gray-800 text-base">
+						<p className="font-semibold text-gray-800 text-lg">
 							Thông tin
 						</p>
 
@@ -70,7 +70,7 @@ const Footer = () => {
 							<Link
 								href="/documents"
 								target="_blank"
-								className="text-gray-600 transition-colors duration-300 hover:text-blue-500 pointer-events-none">
+								className="text-gray-600 transition-colors duration-300 hover:text-blue-500 ">
 								Tài liệu xử lý sự cố
 							</Link>
 							<Link
@@ -89,7 +89,7 @@ const Footer = () => {
 					</div>
 
 					<div className="col-span-2">
-						<p className="font-semibold text-gray-800 text-base">
+						<p className="font-semibold text-gray-800 text-lg">
 							Địa chỉ
 						</p>
 

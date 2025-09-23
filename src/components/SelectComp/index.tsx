@@ -1,19 +1,22 @@
-import { Button, Input } from "@material-ui/core";
+import { formatCurrency } from "@/utils/FormatNumber";
+import { Button, Input, CircularProgress } from "@material-ui/core";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
-	"& .MuiInputBase-root": {
-		minHeight: 40,
-	},
+	// "& .MuiInputBase-root": {
+	// 	minHeight: 40,
+	// },
 }));
 
 export interface IOptionSelection {
 	value: string;
 	label: string;
-	index: number;
+	id: number;
+	price?: number;
+	description?: string;
 }
 
 interface IProps {
@@ -38,6 +41,9 @@ interface IProps {
 	label: string;
 	isAddOn?: boolean;
 	value?: string | null;
+	isLoading?: boolean;
+	hidePrice?: boolean;
+	note?: string;
 }
 
 // SearchableSelect Component
@@ -51,6 +57,9 @@ const SearchableSelect: React.FC<IProps> = ({
 	name = "",
 	isAddOn = false,
 	value = null,
+	isLoading = false,
+	hidePrice = false,
+	note = "",
 }: IProps) => {
 	const [isOpen, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
@@ -58,9 +67,27 @@ const SearchableSelect: React.FC<IProps> = ({
 	const [newOption, setNewOption] = useState<string>("");
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 
+	// Track the value at the time of onBlur
+	const valueRef = useRef<string | null>(value);
+
+	const ignoreBlurRef = useRef(false);
+
 	const filteredOptions = options.filter((option) =>
 		option.label.toLowerCase().includes(search.toLowerCase())
 	);
+
+	// Helper to get the display string for the current value
+	const getDisplayValue = (val: string | null) => {
+		const found = options.find((option) => option.value === val);
+		if (found) {
+			if (found.price && !hidePrice) {
+				return found.label + ` +${formatCurrency(found.price || 0)}`;
+			} else {
+				return found.label;
+			}
+		}
+		return "";
+	};
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -70,7 +97,6 @@ const SearchableSelect: React.FC<IProps> = ({
 			) {
 				setOpen(false);
 				setAdding(false);
-				// setSearch("");
 			}
 		};
 
@@ -79,40 +105,62 @@ const SearchableSelect: React.FC<IProps> = ({
 			document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
+	// Fix: When value or options change, update search to reflect the selected value
 	useEffect(() => {
-		const found = options.find((option) => option.value === value);
-		console.log("found,", found);
-		if (found) {
-			setSearch(found.label);
-		}
-	}, [value]);
+		setSearch(getDisplayValue(value));
+		valueRef.current = value; // keep valueRef in sync with value
+	}, [value, options]);
 
 	const handleSelect = (name: string, option: IOptionSelection) => {
+		ignoreBlurRef.current = true; // Prevent blur logic
 		onSelect({ name, option });
-		setSearch(option.label);
+		// Update valueRef to the selected value immediately
+		valueRef.current = option.value;
 		setOpen(false);
+		setAdding(false);
+		setTimeout(() => {
+			ignoreBlurRef.current = false;
+		}, 0);
 	};
 
 	const handleAddNew = () => {
 		if (newOption.trim()) {
+			ignoreBlurRef.current = true; // Prevent blur logic
 			const formatNewOption = {
 				value: newOption.trim(),
 				label: newOption,
-				index: options.length + 1,
+				id: options.length + 1,
 			};
 			onAddNew?.({ name, newOption: formatNewOption });
-			setSearch(newOption.trim());
 			setNewOption("");
 			setAdding(false);
 			setOpen(false);
+			setTimeout(() => {
+				ignoreBlurRef.current = false;
+			}, 0);
 		}
 	};
+
+	// Handle onBlur: if not selecting a new option, reset to current value
+	const handleBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+		// Because handleBlur is executed before handleSelect,
+		// we use ignoreBlurRef to skip blur logic if a select is happening
+		const currentValue = valueRef.current;
+		setTimeout(() => {
+			if (ignoreBlurRef.current) return;
+			if (!wrapperRef.current?.contains(document.activeElement)) {
+				setSearch(getDisplayValue(currentValue));
+				setOpen(false);
+				setAdding(false);
+			}
+		}, 100);
+	}, []);
 
 	return (
 		<div className="w-full relative" ref={wrapperRef}>
 			<div className="relative">
 				<CustomTextField
-					size="small"
+					size="medium"
 					label={label}
 					variant="outlined"
 					value={search}
@@ -122,35 +170,60 @@ const SearchableSelect: React.FC<IProps> = ({
 					}}
 					autoComplete="off"
 					onFocus={() => setOpen(true)}
+					onBlur={handleBlur}
 					placeholder={placeholder}
 					className={`${className} w-full shadow-none outline-none border-none focus:border-none focus:shadow-none`}
 					InputLabelProps={{
-						className: "!text-sm !bg-[#f7fafc] max-w-max",
+						className:
+							"!text-lg !bg-[#f7fafc] max-w-max leading-[1.25]",
 					}}
 					inputProps={{
-						className: "!text-sm bg-[#f7fafc]",
+						className: "!text-base bg-[#f7fafc]",
 					}}
 					name={name}
+					disabled={isLoading}
 				/>
 
 				<button
 					className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-					onClick={() => setOpen(!isOpen)}>
+					onClick={() => setOpen(!isOpen)}
+					disabled={isLoading}
+					type="button">
 					<ChevronsUpDown size={16} />
 				</button>
+				{isLoading && (
+					<div className="absolute right-8 top-1/2 -translate-y-1/2">
+						<CircularProgress size={18} thickness={5} />
+					</div>
+				)}
 			</div>
+			{note ? (
+				<small className="text-sm text-gray-500 ml-2">{note}</small>
+			) : null}
 
 			{isOpen && (
 				<div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
-					{filteredOptions.length > 0 ? (
+					{isLoading ? (
+						<div className="flex items-center justify-center py-6">
+							<CircularProgress size={28} thickness={5} />
+						</div>
+					) : filteredOptions.length > 0 ? (
 						<ul className="py-1">
 							{filteredOptions.map((option, index) => (
 								<li
 									key={index}
 									className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
+									onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
 									onClick={() => handleSelect(name, option)}>
-									<span>{option.label}</span>
-									{search === option.label && (
+									<div className="flex gap-2 items-center">
+										{option.label}
+										{option?.price && !hidePrice ? (
+											<span className="text-blue-600">
+												+{formatCurrency(option.price)}
+											</span>
+										) : null}
+									</div>
+									{value === option.value && !hidePrice && (
 										<Check
 											size={16}
 											className="text-green-500"
@@ -174,6 +247,9 @@ const SearchableSelect: React.FC<IProps> = ({
 									/>
 									<div className="flex gap-2">
 										<Button
+											onMouseDown={(e) =>
+												e.preventDefault()
+											} // Prevent blur before click
 											onClick={handleAddNew}
 											disabled={!newOption.trim()}
 											className="w-full capitalize">
@@ -181,6 +257,9 @@ const SearchableSelect: React.FC<IProps> = ({
 											Thêm
 										</Button>
 										<Button
+											onMouseDown={(e) =>
+												e.preventDefault()
+											} // Prevent blur before click
 											onClick={() => {
 												setAdding(false);
 												setNewOption("");
@@ -194,12 +273,14 @@ const SearchableSelect: React.FC<IProps> = ({
 							) : (
 								<Button
 									className={`w-full justify-start text-gray-600 capitalize`}
+									onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
 									onClick={() => {
 										if (isAddOn) {
 											setAdding(true);
 											setNewOption(search);
 										}
-									}}>
+									}}
+									disabled={isLoading}>
 									{isAddOn ? (
 										<>
 											<Plus size={16} className="mr-2" />
@@ -222,52 +303,3 @@ const SearchableSelect: React.FC<IProps> = ({
 };
 
 export default SearchableSelect;
-
-// Demo Component
-const SearchableSelectDemo = () => {
-	const [options, setOptions] = useState([
-		{ value: "apple", label: "Apple", index: 0 },
-	]);
-
-	const [selectedOption, setSelectedOption] =
-		useState<IOptionSelection | null>(null);
-
-	const handleSelect = (option: IOptionSelection) => {
-		setSelectedOption(option);
-	};
-
-	const handleAddNew = (newOption: IOptionSelection) => {
-		setOptions([...options, newOption]);
-	};
-
-	return (
-		<div className="w-full max-w-md mx-auto space-y-4">
-			{/* <SearchableSelect
-				label="temp"
-				options={options}
-				onSelect={handleSelect}
-				onAddNew={handleAddNew}
-				placeholder="Search fruits..."
-			/> */}
-
-			{/* {selectedOption && (
-				<div className="p-4 bg-gray-50 rounded-lg">
-					<p className="text-sm text-gray-600">Selected fruit:</p>
-					<p className="font-medium">{selectedOption.label}</p>
-				</div>
-			)}
-			<div className="p-4 bg-gray-50 rounded-lg">
-				<p className="text-sm text-gray-600 mb-2">Available options:</p>
-				<div className="flex flex-wrap gap-2">
-					{options.map((option, index) => (
-						<span
-							key={index}
-							className="px-2 py-1 bg-white border rounded-md text-sm">
-							{option.label}
-						</span>
-					))}
-				</div>
-			</div> */}
-		</div>
-	);
-};

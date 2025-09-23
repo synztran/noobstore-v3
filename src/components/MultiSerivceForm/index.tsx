@@ -13,6 +13,11 @@ import { Button as MUIButton } from "@material-ui/core";
 import ServiceKeyboardForm from "./keyboardForm";
 import ServicesSwitchesForm from "./switchesForm";
 import { Plus, X } from "lucide-react";
+import { Divider } from "@mui/material";
+import InputWrapperLegend from "../InputComponents/WrapperLegend";
+import { serviceFormText } from "@/constants";
+import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
+import ServiceStabilizerForm from "./stabilizerForm";
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -35,7 +40,7 @@ const TabInfo = [
 				}}
 			/>
 		),
-		id: 0,
+		id: "tab-keyboard",
 	},
 	{
 		name: "Switches",
@@ -51,7 +56,7 @@ const TabInfo = [
 				}}
 			/>
 		),
-		id: 1,
+		id: "tab-switches",
 	},
 	{
 		name: "Stabilizer",
@@ -67,23 +72,21 @@ const TabInfo = [
 				}}
 			/>
 		),
-		id: 3,
-	},
-	{
-		name: "Khác",
-		icon: "",
-		id: 4,
+		id: "tab-stabilizer",
 	},
 ];
 
 const MultiServiceForm: React.FC = () => {
-	const { activeTabIndex, keyboardItems, switchItems } = useServices();
+	const { activeTabIndex, keyboardItems, switchItems, stabilizerItems } =
+		useServices();
 	const {
 		setActiveTabIndex,
 		addKeyboardItem,
 		removeKeyboardItem,
 		addSwitchItem,
 		removeSwitchItem,
+		addStabilizerItem,
+		removeStabilizerItem,
 	} = useServiceAction();
 
 	const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -91,7 +94,7 @@ const MultiServiceForm: React.FC = () => {
 	};
 
 	return (
-		<Box sx={{ width: "100%" }}>
+		<Box sx={{ width: "100%" }} id="multi-service-form-step">
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs
 					value={activeTabIndex}
@@ -101,8 +104,20 @@ const MultiServiceForm: React.FC = () => {
 						<Tab
 							key={index}
 							label={
-								<div className="flex items-center gap-2">
-									{tab.icon} {tab.name}
+								<div
+									className="flex items-center gap-2"
+									id={tab.id}>
+									{tab.icon} {tab.name} (
+									{tab.id === "tab-keyboard"
+										? keyboardItems.length
+										: null}
+									{tab.id === "tab-switches"
+										? switchItems.length
+										: null}
+									{tab.id === "tab-stabilizer"
+										? stabilizerItems.length
+										: null}
+									)
 								</div>
 							}
 							className="!normal-case"
@@ -117,6 +132,7 @@ const MultiServiceForm: React.FC = () => {
 							Danh sách dịch vụ bàn phím
 						</strong>
 						<MUIButton
+							id="guide-add-new-task-keyboard"
 							className="!normal-case !px-3 !py-1 bg-blue-600"
 							variant="contained"
 							color="default"
@@ -126,17 +142,17 @@ const MultiServiceForm: React.FC = () => {
 							</span>
 						</MUIButton>
 					</div>
+					<Divider />
+
 					{keyboardItems.length === 0 ? (
-						<div className="text-sm text-gray-500">
+						<div className="text-base text-gray-800">
 							Chưa có mục nào. Nhấn "Thêm mới" để bắt đầu.
 						</div>
 					) : null}
 					{keyboardItems.map((item) => (
-						<div
-							key={item.id}
-							className="border rounded-md p-3 relative border-gray-600">
+						<InputWrapperLegend key={item.id} className="mt-4">
 							<button
-								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
+								className="absolute -right-3 -top-4 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
 								onClick={() => removeKeyboardItem(item.id)}
 								aria-label="Remove">
 								<X className="hover:scale-110 transition-all duration-300 w-4 h-4 stroke-red-500" />
@@ -146,14 +162,16 @@ const MultiServiceForm: React.FC = () => {
 								serviceType={EnumServiceType.KEYBOARD}
 								value={item}
 							/>
-						</div>
+						</InputWrapperLegend>
 					))}
 				</div>
 			</CustomTabPanel>
 			<CustomTabPanel value={activeTabIndex} index={1}>
 				<div className="flex flex-col gap-3">
 					<div className="flex justify-between items-center">
-						<strong className="text-base">Danh sách switch</strong>
+						<strong className="text-xl">
+							Danh sách dịch vụ switch
+						</strong>
 						<MUIButton
 							className="!normal-case !px-3 !py-1 bg-blue-600"
 							variant="contained"
@@ -164,15 +182,16 @@ const MultiServiceForm: React.FC = () => {
 							</span>
 						</MUIButton>
 					</div>
+					<Divider />
 					{switchItems.length === 0 ? (
-						<div className="text-sm text-gray-500">
-							Chưa có mục nào. Nhấn "Thêm switch" để bắt đầu.
+						<div className="text-base text-gray-800">
+							Chưa có mục nào. Nhấn "Thêm mới" để bắt đầu.
 						</div>
 					) : null}
 					{switchItems.map((item) => (
 						<div
 							key={item.id}
-							className="border border-gray-600  rounded-md p-3 relative">
+							className="border border-gray-600 rounded-md p-3 relative mt-2">
 							<button
 								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
 								onClick={() => removeSwitchItem(item.id)}
@@ -189,10 +208,45 @@ const MultiServiceForm: React.FC = () => {
 				</div>
 			</CustomTabPanel>
 			<CustomTabPanel value={activeTabIndex} index={2}>
-				Item Three
-			</CustomTabPanel>
-			<CustomTabPanel value={activeTabIndex} index={3}>
-				Item Four
+				<div className="flex flex-col gap-3">
+					<div className="flex justify-between items-center">
+						<strong className="text-xl">
+							Danh sách dịch vụ stabilizer
+						</strong>
+						<MUIButton
+							className="!normal-case !px-3 !py-1 bg-blue-600"
+							variant="contained"
+							color="default"
+							onClick={() => addStabilizerItem()}>
+							<span className="text-white flex items-center gap-2">
+								<Plus className="stroke-white" /> Thêm mới
+							</span>
+						</MUIButton>
+					</div>
+					<Divider />
+					{stabilizerItems.length === 0 ? (
+						<div className="text-base text-gray-800">
+							Chưa có mục nào. Nhấn "Thêm mới" để bắt đầu.
+						</div>
+					) : null}
+					{stabilizerItems.map((item) => (
+						<div
+							key={item.id}
+							className="border border-gray-600 rounded-md p-3 relative mt-2">
+							<button
+								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
+								onClick={() => removeStabilizerItem(item.id)}
+								aria-label="Remove">
+								<X className="hover:scale-110 transition-all duration-300 w-4 h-4 stroke-red-500" />
+							</button>
+							<ServiceStabilizerForm
+								itemId={item.id}
+								serviceType={EnumServiceType.STABILIZER}
+								value={item}
+							/>
+						</div>
+					))}
+				</div>
 			</CustomTabPanel>
 		</Box>
 	);
@@ -210,11 +264,7 @@ function CustomTabPanel(props: TabPanelProps) {
 			id={`simple-tabpanel-${index}`}
 			aria-labelledby={`simple-tab-${index}`}
 			{...other}>
-			{value === index && (
-				<div className="border-gray-300 border-2 mt-4 rounded-xl p-4">
-					{children}
-				</div>
-			)}
+			{value === index && <div className="mt-4">{children}</div>}
 		</div>
 	);
 }

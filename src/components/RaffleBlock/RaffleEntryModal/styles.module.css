@@ -1,0 +1,192 @@
+/* RaffleEntryModal Styles */
+.modalContent {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.stepperContainer {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.contentContainer {
+  padding: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.footerContainer {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticketSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.ticketQuantity {
+  text-align: center;
+  min-width: 80px;
+}
+
+.orderSummary {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.totalRow {
+  font-weight: 600;
+  border-top: 1px solid #ddd;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.successIcon {
+  width: 80px;
+  height: 80px;
+  background-color: #e8f5e8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.entryDetails {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .contentContainer {
+    padding: 16px;
+  }
+
+  .footerContainer {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ticketSelector {
+    gap: 12px;
+  }
+}
+
+/* Animation for step transitions */
+.stepContent {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom button styles */
+.primaryButton {
+  background: linear-gradient(45deg, #2196f3, #9c27b0);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  background: linear-gradient(45deg, #1976d2, #7b1fa2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.primaryButton:disabled {
+  background: #cccccc;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Progress indicator styles */
+.progressBar {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  transition: width 0.3s ease;
+}
+
+/* Card hover effects */
+.raffleCard {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.raffleCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Input field styles */
+.formField {
+  margin-bottom: 16px;
+}
+
+.formField .MuiOutlinedInput-root {
+  border-radius: 8px;
+}
+
+.formField .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #2196f3;
+}
+
+.formField .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #2196f3;
+  border-width: 2px;
+}
+
+/* Chip styles */
+.statusChip {
+  font-weight: 600;
+  border-radius: 16px;
+}
+
+.activeChip {
+  background-color: #4caf50;
+  color: white;
+}
+
+.timeChip {
+  background-color: #ff9800;
+  color: white;
+}

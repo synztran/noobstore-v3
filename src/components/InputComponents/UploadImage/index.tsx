@@ -8,7 +8,7 @@ import NotifyUtils from "@/utils/NotifyUtils";
 import { Box, Button, CircularProgress, Typography } from "@material-ui/core";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 
 interface IUploadImageProps {
@@ -18,10 +18,11 @@ interface IUploadImageProps {
 	subLabel?: string;
 	errorMessage?: string;
 	files?: UploadedImage[];
-	handleSyncData?: (files: { publicUrl: string; size: number }) => void;
+	handleSyncData?: (files: { publicUrl: string; size: number }[]) => void;
 	max?: number;
 	thumbnailUploaded?: string[];
 	isRequired?: boolean;
+	isCustomerUpload?: boolean;
 }
 
 export interface UploadedImage {
@@ -49,18 +50,17 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 	thumbnailUploaded,
 	isRequired = false,
 	subLabel,
+	isCustomerUpload = false,
 }) => {
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
 	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(
 		() => {
-			if (thumbnailUploaded) {
-				return [
-					{
-						preview: thumbnailUploaded?.[0] || "",
-						status: EnumUploadStatus.DONE,
-						publicUrl: thumbnailUploaded?.[0] || "",
-					},
-				];
+			if (thumbnailUploaded && thumbnailUploaded.length > 0) {
+				return thumbnailUploaded.map((url) => ({
+					preview: url,
+					status: EnumUploadStatus.DONE,
+					publicUrl: url,
+				}));
 			}
 			return files;
 		}
@@ -92,73 +92,82 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 
 		setUploadedImages((prev) => [...prev, ...newImages]);
 
-		// Upload images using API
 		try {
-			const uploadPromises: Promise<IResponse<IImageData>>[] = Array.from(
-				selectedFiles
-			).map(async (file) => {
+			const uploadResults: {
+				response: IResponse<IImageData>;
+				file: File;
+			}[] = [];
+
+			for (let i = 0; i < selectedFiles.length; i++) {
+				const file = selectedFiles[i];
+				if (!file) continue; // Skip if file is undefined
 				const formData = new FormData();
 				formData.append("files", file);
-				const response = await postUploadImage(formData);
-
-				if (response.status !== "OK") {
-					NotifyUtils.error("Có lỗi xảy ra. Không thể tải lên ảnh");
-					setUploadedImages((prev) =>
-						prev.map((img) => ({
-							...img,
-							status: EnumUploadStatus.ERROR,
-						}))
-					);
+				if (isCustomerUpload) {
+					formData.append("isCustomerUpload", "true");
 				}
-				return response;
-			});
-
-			const results = await Promise.all(uploadPromises);
-			if (results.some((result) => result.status !== "OK")) {
-				NotifyUtils.error("Có lỗi xảy ra. Không thể tải lên ảnh");
-				setUploadedImages((prev) =>
-					prev.map((img) => ({
-						...img,
-						status: EnumUploadStatus.ERROR,
-					}))
-				);
-				return;
+				const response = await postUploadImage(formData);
+				uploadResults.push({ response, file });
 			}
-			const firstData = results?.[0];
-			if (!firstData) {
-				NotifyUtils.error("Có lỗi xảy ra. Không thể tải lên ảnh");
-				setUploadedImages((prev) =>
-					prev.map((img) => ({
-						...img,
-						status: EnumUploadStatus.ERROR,
-					}))
-				);
-				return;
-			}
-			const resultData = getFirst(firstData);
 
-			setUploadedImages((prev) =>
-				prev.map((img) => ({
-					...img,
-					status: EnumUploadStatus.DONE,
-					publicUrl: (resultData as IImageData)?.url,
-				}))
+			const hasError = uploadResults.some(
+				({ response }) => response.status !== "OK"
 			);
 
-			const listImages = {
-				publicUrl: (resultData as IImageData)?.url || "",
-				size: (resultData as IImageData)?.bytes || 0,
-			};
+			if (hasError) {
+				NotifyUtils.error("Có lỗi xảy ra. Không thể tải lên ảnh");
+				setUploadedImages((prev) =>
+					prev.map((img) =>
+						img.status === EnumUploadStatus.UPLOADING
+							? { ...img, status: EnumUploadStatus.ERROR }
+							: img
+					)
+				);
+				return;
+			}
+
+			// Map uploadedImages to update only the UPLOADING ones with the correct publicUrl/status
+			let uploadingIdx = 0;
+			const updatedImages = uploadedImages
+				.concat(newImages)
+				.map((img) => {
+					if (img.status === EnumUploadStatus.UPLOADING) {
+            const { response } = uploadResults[uploadingIdx] || {};
+            console.log("response", response)
+            // TODO: check when image failed to upload
+						if (!response) return img;
+						const resultData = getFirst(response) || {};
+						uploadingIdx++;
+						return {
+							...img,
+							status: EnumUploadStatus.DONE,
+							publicUrl: (resultData as IImageData)?.url,
+						};
+					}
+					return img;
+				});
+
+			setUploadedImages(updatedImages);
+
+			const listImages =
+				uploadResults.map(({ response }) => {
+					const resultData = getFirst(response);
+					return {
+						publicUrl: (resultData as IImageData)?.url || "",
+						size: (resultData as IImageData)?.bytes || 0,
+					};
+				}) || [];
 
 			handleSyncData && handleSyncData(listImages);
 			NotifyUtils.success("Tải ảnh lên thành công");
 		} catch (error) {
 			NotifyUtils.error("Có lỗi xảy ra. Không thể tải lên ảnh");
 			setUploadedImages((prev) =>
-				prev.map((img) => ({
-					...img,
-					status: EnumUploadStatus.ERROR,
-				}))
+				prev.map((img) =>
+					img.status === EnumUploadStatus.UPLOADING
+						? { ...img, status: EnumUploadStatus.ERROR }
+						: img
+				)
 			);
 		}
 	};
@@ -234,14 +243,14 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 					handleRemoveImage={handleRemoveImage}
 				/>
 			) : null}
-			<br />
-			<span>
-				{errorMessage && (
+			{errorMessage && (
+				<>
+					<br />
 					<Typography variant="caption" color="error">
 						{errorMessage}
 					</Typography>
-				)}
-			</span>
+				</>
+			)}
 		</Box>
 	);
 };

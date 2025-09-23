@@ -66,7 +66,7 @@ const SelectWithIcon = ({
 										className="h-5 w-5 flex-shrink-0 rounded-full"
 									/>
 								) : null}
-								<span className="ml-3 block truncate">
+								<span className="block truncate">
 									{selected?.name}
 								</span>
 							</span>

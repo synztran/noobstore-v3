@@ -15,6 +15,11 @@ import {
 import NotifyUtils from "@/utils/NotifyUtils";
 import { preventKeyInNumber } from "@/utils/ValidateUtils";
 import {
+	InvisibleRecaptcha,
+	RecaptchaWrapperRef,
+} from "@/components/RecaptchaWrapper";
+import { getRecaptchaToken } from "@/utils/recaptchaUtils";
+import {
 	Box,
 	Button,
 	Checkbox,
@@ -33,7 +38,7 @@ import {
 	TextField,
 } from "@mui/material";
 import { useFormik } from "formik";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import * as Yup from "yup";
 import ProductOptions from "./productOptions";
 
@@ -58,6 +63,7 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 			verified?: boolean;
 		};
 	};
+	const recaptchaRef = useRef<RecaptchaWrapperRef>(null);
 
 	console.log("user", user);
 
@@ -105,6 +111,21 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 		}),
 		onSubmit: async (values, action) => {
 			action.setSubmitting(true);
+
+			// Get reCAPTCHA token before submitting
+			// const recaptchaToken = await getRecaptchaToken(
+			// 	process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || "",
+			// 	"product_post"
+			// );
+
+			// if (!recaptchaToken) {
+			// 	NotifyUtils.error(
+			// 		"Không thể xác thực reCAPTCHA. Vui lòng thử lại."
+			// 	);
+			// 	action.setSubmitting(false);
+			// 	return;
+			// }
+
 			const resp = await ProductsClient.postUsedProduct({
 				data: {
 					name: values?.productName,
@@ -167,8 +188,10 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 		return 0;
 	}, [formik.values]);
 
-	const syncImageToFormik = (file: { publicUrl: string; size: number }) => {
-		formik.setFieldValue("images", [...formik.values.images, ...[file]]);
+	const syncImageToFormik = (
+		files: { publicUrl: string; size: number }[]
+	) => {
+		formik.setFieldValue("images", [...formik.values.images, ...files]);
 	};
 
 	const resetFormData = () => {
@@ -506,6 +529,18 @@ const ModalPostProduct: React.FC<IProps> = ({ open = false, handleClose }) => {
 							<CircularProgress />
 						</div>
 					) : null}
+					{/* Invisible reCAPTCHA component */}
+					<InvisibleRecaptcha
+						ref={recaptchaRef}
+						siteKey={
+							process.env
+								.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || ""
+						}
+						onError={(error) => {
+							console.error("reCAPTCHA error:", error);
+							NotifyUtils.error("Lỗi xác thực reCAPTCHA");
+						}}
+					/>
 				</Box>
 			</Modal>
 		</div>

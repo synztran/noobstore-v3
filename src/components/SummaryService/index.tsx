@@ -1,158 +1,84 @@
 import { Button, Divider } from "@material-ui/core";
+import { ArrowUpDown, ChevronDown, Truck } from "lucide-react";
+import React, { useRef, useState } from "react";
 import {
-	CalendarRange,
-	ChevronDown,
-	LayoutList,
-	MapPin,
-	Package,
-	Truck,
-} from "lucide-react";
-import React from "react";
+	InvisibleRecaptcha,
+	RecaptchaWrapperRef,
+} from "@/components/RecaptchaWrapper";
+import { getRecaptchaToken } from "@/utils/recaptchaUtils";
+import NotifyUtils from "@/utils/NotifyUtils";
 // import LogoStore from "../../public/assets/icons/logo.png";
-import {
-	SERVICE_KEYBOARD_ICON,
-	SERVICE_NEW_SWITCH_ICON,
-} from "@/constants/Images";
 import { formatCurrency } from "@/utils/FormatNumber";
-import useServices from "@/zustand/useServices";
-import Image from "next/image";
+import useServices, { useServiceAction } from "@/zustand/useServices";
 import SummaryServiceCollapse from "./collapse";
+import SummaryServiceDeliveryBlock from "./DeliveryBlock";
+import SummaryServiceBlock from "./ServiceBlock";
+import {
+	MAPPING_DELIVERY_METHOD,
+	MAPPING_ICON_SUMMARY_SERVICE,
+} from "@/constants";
+import LoadingDots from "../Effects/LoadingDots";
+import DiscountBlock from "./DiscountBlock";
+import { EnumShippingMethodCode } from "@/interface/interface";
 
 const text = {
 	title: "Dịch vụ cơ bản",
 	location: "Hồ Chí Minh, Việt Nam",
 };
 
-const tempData = {
-	delivery: {
-		name: "Giao nhận 2 chiều",
-		code: "SM-SPU-001",
-		icon: <Truck size={20} />,
-		price: 60000,
-	},
-	pickup: {
-		address: "123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh",
-		name: "Nguyễn Văn A",
-		phone: "0123456789",
-		date: "21 Dec, 2022 - 8:30 sáng",
-		icon: <CalendarRange size={20} />,
-	},
-	receiver: {
-		address: "123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh",
-		name: "Nguyễn Văn A",
-		phone: "0123456789",
-		date: "24 Dec, 2022 - 8:30 sáng",
-	},
-	dateTime: {
-		pickup: "21 Dec, 2022 - 8:30 AM",
-		delivery: "24 Dec, 2022 - 8:30 AM",
-		icon: <CalendarRange size={20} />,
-	},
-	services: {
-		keyboards: [
-			{
-				name: "Keyboard 1",
-				services: [
-					{ name: "Service 1", price: 30000 },
-					{ name: "Service 2", price: 34000 },
-				],
-			},
-			{
-				name: "Keyboard 2",
-				services: [
-					{ name: "Service 1", price: 30000 },
-					{ name: "Service 2", price: 34000 },
-				],
-			},
-		],
-		switches: [
-			{
-				name: "Switch 1",
-				quantity: 60,
-				services: [
-					{
-						name: "Service 1",
-						price: 100000,
-					},
-					{
-						name: "Service 2",
-						price: 200000,
-					},
-				],
-			},
-			{
-				name: "Switch 2",
-				quantity: 70,
-				services: [
-					{
-						name: "Service 1",
-						price: 100000,
-						lubricant: "lubricant 1",
-					},
-					{
-						name: "Service 2",
-						price: 200000,
-						lubricant: "lubricant 2",
-					},
-				],
-			},
-		],
-		others: [
-			{
-				name: "Other 1",
-				services: [
-					{
-						name: "Service 1",
-						price: 100000,
-					},
-					{
-						name: "Service 2",
-						price: 200000,
-					},
-				],
-			},
-			{
-				name: "Other 2",
-				services: [
-					{
-						name: "Service 1",
-						price: 100000,
-						lubricant: "lubricant 1",
-					},
-					{
-						name: "Service 2",
-						price: 200000,
-						lubricant: "lubricant 2",
-					},
-				],
-			},
-		],
-		icon: <Package size={20} />,
-		price: 1250000,
-	},
-	quote: "This is a short term quote for this service",
-	price: {
-		discount: 50000,
-		total: 325000,
-		fee: 8000,
-	},
-};
-
 const SummaryService: React.FC = () => {
-	const { selectedOpt } = useServices();
+	const {
+		selectedOpt,
+		selectedPlan,
+		discount,
+		shippingInfo,
+		contactInfo,
+		keyboardItems,
+		switchItems,
+		stabilizerItems,
+		fees,
+	} = useServices();
+	const {
+		calculateTotalPrice,
+		calculateSubTotalPrice,
+		submitServiceBooking,
+	} = useServiceAction();
+	const recaptchaRef = useRef<RecaptchaWrapperRef>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const {
+		platFormFee,
+		serviceOutOfTimeFee: { pickup, delivery },
+	} = fees;
+
 	const [isCollapse, setIsCollapse] = React.useState({
 		note: true,
 		delivery: true,
 		services: true,
 	});
+
 	const handleCollapse = (target: "note" | "delivery" | "services") => {
 		setIsCollapse((prev) => ({
 			...prev,
 			[target]: !prev[target],
 		}));
 	};
+
+	console.log(
+		"selectedPlan",
+		selectedPlan,
+		shippingInfo,
+		contactInfo,
+		keyboardItems,
+		switchItems,
+		stabilizerItems,
+		fees,
+		platFormFee,
+		discount
+	);
 	return (
-		<div className="border-2 border-gray-600 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4">
+		<div
+			className="border-2 border-gray-600 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4"
+			id="summary-service-step">
 			<div className="flex flex-col">
 				<strong className="text-xl">
 					{selectedOpt?.name ?? "Vui lòng chọn gói dịch vụ"}
@@ -160,48 +86,91 @@ const SummaryService: React.FC = () => {
 				<span className="text-sm text-gray-600">{text.location}</span>
 			</div>
 			<div className="flex flex-col gap-2">
-				<div>
+				{shippingInfo?.method?.code !==
+				EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP ? (
 					<DetailContent
-						icon={tempData.delivery.icon}
-						headContent={tempData.delivery.name}
-						subTitle={tempData.delivery.code}
+						icon={<Truck size={28} />}
+						headContent={
+							shippingInfo?.deliveryMethod.name !== "" ? (
+								shippingInfo?.deliveryMethod.name
+							) : (
+								<LoadingDots />
+							)
+						}
+						subTitle={shippingInfo?.deliveryMethod.code}
+						endContent={
+							shippingInfo?.deliveryMethod.code !== "" ? (
+								<div className="flex items-center gap-2">
+									<span className="text-lg">
+										{shippingInfo?.deliveryMethod.price > 0
+											? formatCurrency(
+													shippingInfo?.deliveryMethod
+														.price
+											  )
+											: "Miễn phí"}
+									</span>
+								</div>
+							) : null
+						}
+						headClasses="font-bold"
+						headContentClasses="text-lg"
+					/>
+				) : null}
+				<DetailContent
+					icon={<ArrowUpDown size={28} />}
+					headContent={
+						MAPPING_DELIVERY_METHOD[shippingInfo?.method.code] ?? (
+							<LoadingDots />
+						)
+					}
+					endContent={
+						shippingInfo?.method.code !== "" ? (
+							<div className="flex items-center gap-2">
+								<span className="text-lg">
+									{shippingInfo?.method.price > 0
+										? formatCurrency(
+												shippingInfo?.method.price
+										  )
+										: "Miễn phí"}
+								</span>
+							</div>
+						) : null
+					}
+					headClasses="font-bold"
+					headContentClasses="text-lg"
+				/>
+				<SummaryServiceDeliveryBlock />
+				{shippingInfo?.addOns.map((addOn) => (
+					<DetailContent
+						icon={
+							MAPPING_ICON_SUMMARY_SERVICE[addOn.value]?.icon ??
+							null
+						}
+						key={addOn.value}
+						headContent={addOn.name}
 						endContent={
 							<div className="flex items-center gap-2">
 								<span className="text-lg">
-									{formatCurrency(tempData.delivery.price)}
+									{addOn.price > 0
+										? formatCurrency(addOn.price)
+										: "Miễn phí"}
 								</span>
 							</div>
 						}
 						headClasses="font-bold"
+						headContentClasses="text-lg"
 					/>
-				</div>
-				<DetailContent
-					icon={tempData.pickup.icon}
-					headContent={tempData.pickup.date}
-					headClasses="font-bold"
-					subTitle={tempData.pickup.address}
-				/>
-				<div>
-					<DetailContent
-						icon={tempData.services.icon}
-						headContent={<SummaryServiceContent />}
-						headClasses="font-bold"
-						endContent={
-							<div className="flex items-center gap-2">
-								<span>
-									{formatCurrency(tempData.services.price)}
-								</span>
-							</div>
-						}
-					/>
-				</div>
+				))}
+				<SummaryServiceBlock />
 			</div>
 			<Divider />
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-col">
 				<div
 					className="flex justify-between items-center cursor-pointer"
 					onClick={() => handleCollapse("note")}>
-					<label>Ghi chú:</label>
+					<label className="cursor-pointer select-none">
+						Ghi chú:
+					</label>
 					<div className="hover:bg-gray-200 rounded-full transition-all duration-150">
 						<ChevronDown
 							size={16}
@@ -212,44 +181,90 @@ const SummaryService: React.FC = () => {
 					</div>
 				</div>
 				<SummaryServiceCollapse isCollapse={isCollapse.note}>
-					<textarea
-						className="w-full h-20 p-2 resize-none rounded-md"
-						placeholder="Nhập ghi chú"
-						readOnly
-						value={tempData.quote}
-					/>
+					{keyboardItems.length > 0 ? (
+						<textarea
+							className="w-full h-20 p-2 resize-none rounded-md select-none"
+							readOnly
+							value={keyboardItems
+								.map((keyboard) => keyboard.note)
+								.join("\n")}
+						/>
+					) : null}
+					{switchItems.length > 0 ? (
+						<textarea
+							className="w-full h-20 p-2 resize-none rounded-md"
+							readOnly
+							value={switchItems.map((sw) => sw.note).join("\n")}
+						/>
+					) : null}
+					{stabilizerItems.length > 0 ? (
+						<textarea
+							className="w-full h-20 p-2 resize-none rounded-md"
+							readOnly
+							value={stabilizerItems
+								.map((stabilizer) => stabilizer.note)
+								.join("\n")}
+						/>
+					) : null}
 				</SummaryServiceCollapse>
 				<div className="flex flex-col gap-1">
+					<DiscountBlock />
 					<DetailContent
-						type="dicount"
-						headContent="Giám giá:"
-						subTitle="DS001"
-						endContent={
-							tempData.price.discount > 0
-								? `-${formatCurrency(tempData.price.discount)}`
-								: "0"
-						}
-						itemEndClasses="text-base text-green-700"
-						parentClasses="items-start"
-					/>
-					<DetailContent
-						headContent="Tổng tiền:"
-						endContent={tempData.price.total}
-						itemEndClasses="text-lg font-bold"
-						headClasses="text-lg font-bold"
-						parentClasses="items-center"
-					/>
-					<DetailContent
-						headContent="Bao gồm phí dịch vụ & nền tảng 2%:"
-						headClasses="!text-sm text-gray-600"
-						endContent={tempData.price.fee}
+						headContent="Phí dịch vụ gói nâng cao:"
+						headContentClasses="text-gray-600"
+						headClasses="!text-sm text-gray-500"
+						endContent={formatCurrency(selectedPlan?.price || 0)}
 						itemEndClasses="text-base"
 						endClasses="items-center"
 						parentClasses="items-center"
 					/>
+					<DetailContent
+						headContent="Phí dịch vụ & nền tảng:"
+						headContentClasses="text-gray-600"
+						headClasses="!text-sm text-gray-500"
+						endContent={formatCurrency(platFormFee)}
+						itemEndClasses="text-base"
+						endClasses="items-center"
+						parentClasses="items-center"
+					/>
+					{pickup > 0 || delivery > 0 ? (
+						<DetailContent
+							headContent="Phí hỗ trợ ngoại giờ:"
+							headContentClasses="text-gray-600"
+							headClasses="!text-sm text-gray-500"
+							endContent={formatCurrency(pickup + delivery)}
+						/>
+					) : null}
+					<DetailContent
+						headContent="Tạm tính:"
+						endContent={formatCurrency(calculateSubTotalPrice())}
+						parentClasses="items-center"
+					/>
+					<DetailContent
+						headContent="Giảm giá:"
+						headContentClasses="text-gray-600"
+						endContent={`-${formatCurrency(discount)}`}
+						itemEndClasses="text-red-600"
+						headClasses=""
+						parentClasses="items-center"
+					/>
+					<Divider />
+					<DetailContent
+						headContent="Tổng tiền:"
+						endContent={formatCurrency(calculateTotalPrice())}
+						itemEndClasses="text-xl font-bold"
+						headClasses="text-xl font-bold"
+						parentClasses="items-center"
+						headContentClasses="text-lg"
+					/>
 				</div>
-				<Button className="bg-red-400 rounded-md text-white w-full my-2 hover:bg-red-500 font-bold normal-case">
-					<span className="text-white text-xl">Đặt lịch</span>
+				<Button
+					className="bg-red-400 rounded-md text-white w-full my-2 hover:bg-red-500 font-bold normal-case"
+					onClick={handleSubmitBooking}
+					disabled={isSubmitting}>
+					<span className="text-white text-xl">
+						{isSubmitting ? "Đang xử lý..." : "Đặt lịch"}
+					</span>
 				</Button>
 				<small className="px-2 text-center break-keep">
 					Khi bạn nhấn vào nút{" "}
@@ -258,9 +273,58 @@ const SummaryService: React.FC = () => {
 					<a href="#">điều khoản</a> và <a href="#">quy định</a> của
 					NoobStore
 				</small>
+				{/* Invisible reCAPTCHA component */}
+				{/* <InvisibleRecaptcha
+					ref={recaptchaRef}
+					siteKey={
+						process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY ||
+						""
+					}
+					onError={(error) => {
+						console.error("reCAPTCHA error:", error);
+						NotifyUtils.error("Lỗi xác thực reCAPTCHA");
+					}}
+				/> */}
 			</div>
 		</div>
 	);
+
+	// Handle service booking submission with reCAPTCHA
+	async function handleSubmitBooking() {
+		try {
+			setIsSubmitting(true);
+
+			// Get reCAPTCHA token before submitting
+			// const recaptchaToken = await getRecaptchaToken(
+			// 	process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || "",
+			// 	"service_booking"
+			// );
+
+			// if (!recaptchaToken) {
+			// 	NotifyUtils.error(
+			// 		"Không thể xác thực reCAPTCHA. Vui lòng thử lại."
+			// 	);
+			// 	return;
+			// }
+
+			// Submit service booking
+			const response = await submitServiceBooking();
+
+			if (response?.status === "OK") {
+				NotifyUtils.success("Đặt lịch thành công!");
+				// You might want to redirect or reset form here
+			} else {
+				NotifyUtils.error(
+					response?.message || "Có lỗi xảy ra khi đặt lịch"
+				);
+			}
+		} catch (error) {
+			console.error("Service booking error:", error);
+			NotifyUtils.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	}
 };
 
 export default SummaryService;
@@ -275,6 +339,9 @@ export const DetailContent = ({
 	endClasses = "",
 	itemEndClasses = "",
 	parentClasses = "",
+	headContentClasses = "",
+	isExpand = false,
+	isShow = true,
 }: {
 	type?: "dicount" | "total" | "fee";
 	icon?: React.ReactNode;
@@ -285,27 +352,95 @@ export const DetailContent = ({
 	endClasses?: string;
 	itemEndClasses?: string;
 	parentClasses?: string;
+	headContentClasses?: string;
+	isExpand?: boolean;
+	isShow?: boolean;
 }) => {
 	const [isCollapsed, setIsCollapsed] = React.useState(true);
+	if (!isShow) return null;
+	if (!isExpand) {
+		return (
+			<div className={`flex gap-2 ${parentClasses}`}>
+				<div className="flex gap-2">
+					{icon ? <div className="select-none">{icon}</div> : null}
+					<div className="flex flex-col gap-0.5">
+						<div className={`${headClasses}`}>
+							<div className="flex items-start gap-1">
+								<div className={`${headContentClasses}`}>
+									{headContent}
+								</div>
+							</div>
+						</div>
+						{subTitle ? (
+							<div
+								className={`text-base text-gray-600 leading-[1] ${
+									type === "dicount"
+										? "border border-gray-600 rounded-md px-2 py-1 text-center leading-[1]"
+										: ""
+								}`}>
+								{subTitle}
+							</div>
+						) : null}
+					</div>
+				</div>
+				{endContent ? (
+					<div className={`ml-auto flex ${endClasses}`}>
+						{typeof endContent === "string" ? (
+							<span
+								className={`${itemEndClasses} ${
+									type === "dicount" ? "text-red-600" : ""
+								}`}>
+								{endContent}
+							</span>
+						) : null}
+						{typeof endContent === "number" ? (
+							<span
+								className={`${itemEndClasses} ${
+									type === "dicount" ? "text-red-600" : ""
+								}`}>
+								{formatCurrency(endContent)}
+							</span>
+						) : null}
+						{typeof endContent === "object" ? (
+							<span className={`${itemEndClasses}`}>
+								{endContent}
+							</span>
+						) : null}
+					</div>
+				) : null}
+			</div>
+		);
+	}
 	return (
 		<div className={`flex gap-2 ${parentClasses}`}>
 			<div className="flex gap-2">
 				{icon ? <div className="select-none">{icon}</div> : null}
 				<div className="flex flex-col gap-0.5">
 					<div className={`text-base ${headClasses}`}>
-						<div className="flex items-center gap-1">
-							{headContent}
+						<div className="flex items-start gap-1">
+							<div className={`${headContentClasses}`}>
+								{headContent}
+							</div>
 							{subTitle ? (
 								<button
 									type="button"
-									className="ml-1 text-xs text-gray-600 hover:text-gray-800 rounded px-1 py-0.5 border border-gray-300 leading-none"
+									className="text-xs text-gray-600 hover:text-gray-800 rounded px-1 py-0.5 leading-none"
 									onClick={() =>
 										setIsCollapsed((prev) => !prev)
 									}
 									aria-label={
 										isCollapsed ? "Expand" : "Collapse"
 									}>
-									<span className="select-none">e/c</span>
+									<div className="hover:bg-gray-200 rounded-full transition-all duration-150">
+										<ChevronDown
+											size={20}
+											className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 bg-gray-200 p-0.5 transform ${
+												isCollapsed
+													? ""
+													: "-scale-y-100"
+											}`}
+										/>
+									</div>
 								</button>
 							) : null}
 						</div>
@@ -345,171 +480,6 @@ export const DetailContent = ({
 							{endContent}
 						</span>
 					) : null}
-				</div>
-			) : null}
-		</div>
-	);
-};
-
-const SummaryServiceContent: React.FC = () => {
-	// let keyboards = "";
-	// let switches = "";
-	// let others = "";
-	let keyboards = 0;
-	let switches = 0;
-	let others = 0;
-
-	if (tempData.services.keyboards)
-		// keyboards = `${tempData.services.keyboards?.length}x bàn phím`;
-		keyboards = tempData.services.keyboards.length;
-	if (tempData.services.switches)
-		// switches = `${tempData.services.switches?.reduce((acc, data) => acc + data.quantity, 0)}x switch`;
-		switches = tempData.services.switches?.length;
-	if (tempData.services.others) others = tempData.services.others?.length;
-	// others = `${tempData.services.others?.length}x khác`;
-
-	// return (
-	// 	<div className="flex flex-wrap">
-	// 		{keyboards && <div>{keyboards}</div>}
-	// 		{switches && <div>,&nbsp;{switches}</div>}
-	// 		{others && <div>,&nbsp;{others}</div>}
-	// 	</div>
-	// );
-	return <>{keyboards + switches + others} dịch vụ</>;
-};
-
-const DeliveryInfo = () => {
-	return (
-		<div className="flex items-center gap-2 mx-7 mt-2 border-l-2 pl-4">
-			{/* <ArrowDownUp /> */}
-			<div className="grid grid-cols-1 gap-4">
-				<div className="flex flex-col items-start text-xs">
-					<strong className="text-sm flex items-center">
-						<MapPin size={16} />
-						Nhận tại:
-					</strong>
-					<span>
-						{tempData.pickup.name} - {tempData.pickup.phone}
-					</span>
-					<span>{tempData.pickup.address}</span>
-					<span>Dự kiến:&nbsp;{tempData.pickup.date}</span>
-				</div>
-				<div className="flex flex-col text-xs">
-					<strong className="text-sm flex items-center">
-						<MapPin size={16} />
-						Giao đến:
-					</strong>
-					<span>
-						{tempData.receiver.name} - {tempData.receiver.phone}
-					</span>
-					<span>{tempData.receiver.address}</span>
-					<span>Dự kiến:&nbsp;{tempData.pickup.date}</span>
-				</div>
-			</div>
-		</div>
-	);
-};
-
-const ServicesInfo = () => {
-	return (
-		<div
-			className={`grid grid-rows-${3} border-l-2 border-gray-300 mx-7 pl-4`}>
-			{tempData.services.keyboards?.length ? (
-				<div className="flex items-start gap-2 mt-2">
-					<Image
-						src={SERVICE_KEYBOARD_ICON}
-						width={32}
-						height={32}
-						alt="switch icon"
-						className="select-none"
-						style={{
-							maxWidth: "100%",
-							height: "auto",
-						}}
-					/>
-					<div className="grid grid-cols-1 gap-4 w-full">
-						<div className="flex flex-col items-start text-xs">
-							{tempData.services.keyboards.map((data, index) => (
-								<div key={index} className="w-full">
-									<strong className="text-sm">
-										{data.name}
-									</strong>
-									{data.services?.map((service, index) => (
-										<div
-											key={index}
-											className="flex justify-between w-full pl-2">
-											<span>{service.name}</span>
-											<strong>
-												{formatCurrency(service.price)}
-											</strong>
-										</div>
-									))}
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			) : null}
-			{tempData.services.switches?.length ? (
-				<div className="flex items-start gap-2 mt-2">
-					<Image
-						src={SERVICE_NEW_SWITCH_ICON}
-						width={32}
-						height={32}
-						alt="switch icon"
-						className="select-none"
-						style={{
-							maxWidth: "100%",
-							height: "auto",
-						}}
-					/>
-					<div className="grid grid-cols-1 gap-4 w-full">
-						<div className="flex flex-col items-start text-xs">
-							{tempData.services.switches.map((data, index) => (
-								<div key={index} className="w-full">
-									<strong className="text-sm">
-										{data.name}
-									</strong>
-									{data.services?.map((service, index) => (
-										<div
-											key={index}
-											className="flex justify-between pl-2">
-											<span>{service.name}</span>
-											<strong>
-												{formatCurrency(service.price)}
-											</strong>
-										</div>
-									))}
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			) : null}
-			{tempData.services.others?.length ? (
-				<div className="flex items-start gap-2 mt-2">
-					<LayoutList size={32} />
-					<div className="grid grid-cols-1 gap-4 w-full">
-						<div className="flex flex-col items-start text-xs">
-							{tempData.services.others.map((data, index) => (
-								<div key={index} className="w-full">
-									<strong className="text-sm">
-										{data.name}
-									</strong>
-									{data.services?.map((service, index) => (
-										<div
-											key={index}
-											className="flex justify-between w-full pl-2">
-											<span>{service.name}</span>
-											<strong>
-												{formatCurrency(service.price)}
-											</strong>
-										</div>
-									))}
-								</div>
-							))}
-						</div>
-					</div>
 				</div>
 			) : null}
 		</div>

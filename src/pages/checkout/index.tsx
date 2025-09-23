@@ -26,8 +26,13 @@ import {
 } from "@material-ui/core";
 import { Field, Form, Formik, useFormikContext } from "formik";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import * as Yup from "yup";
+import {
+	InvisibleRecaptcha,
+	RecaptchaWrapperRef,
+} from "@/components/RecaptchaWrapper";
+import { getRecaptchaToken } from "@/utils/recaptchaUtils";
 import { CircularProgress } from "@mui/material";
 
 const deliveryNote =
@@ -35,8 +40,8 @@ const deliveryNote =
 
 const CheckoutPage = () => {
 	const router = useRouter();
+	const recaptchaRef = useRef<RecaptchaWrapperRef>(null);
 	const { data: cart, isPending } = useCartQuery();
-	console.log("cart", cart);
 	const { user } = useAuth() as unknown as {
 		user: { customerId: number; email: string };
 	};
@@ -97,10 +102,23 @@ const CheckoutPage = () => {
 		billingAddress: string;
 		country: string;
 	}) => {
+		// Get reCAPTCHA token before submitting
+		// const recaptchaToken = await getRecaptchaToken(
+		// 	process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || "",
+		// 	"checkout"
+		// );
+
+		// if (!recaptchaToken) {
+		// 	NotifyUtils.error(
+		// 		"Không thể xác thực reCAPTCHA. Vui lòng thử lại."
+		// 	);
+		// 	return;
+		// }
 		let formatFormData: IDataPostCheckout = {
 			orderInfo: {
 				...formData,
 				city: formData?.city?.code,
+				// recaptchaToken, // Add reCAPTCHA token to order info
 			},
 			cart: {
 				...cart,
@@ -142,314 +160,340 @@ const CheckoutPage = () => {
 
 	return (
 		<Base isLoading={inProgress}>
-			<div className="mx-w-full p-6 sm:py-6 relative z-1">
-				<div className="grid grid-cols-5 divide-x-2">
-					<div className="px-4 py-12 col-span-3">
-						<Formik
-							initialValues={{
-								email: user?.email || "",
-								firstName: "",
-								lastName: "",
-								company: "",
-								address: "",
-								apartment: "",
-								city: {
-									code: validCity[0]?.code || "",
-									isDelete: validCity[0]?.isDeleted || false,
-									name: validCity[0]?.name || "",
-									name_with_type:
-										validCity[0]?.nameWithType || "",
-									slug: validCity[0]?.slug || "",
-									type: validCity[0]?.type || "",
-								},
-								province: "",
-								postCode: "",
-								phoneNumber: "",
-								deliveryMethod: ShippingMethod[0]?.value || "",
-								paymentMethod: PaymentMethod[0]?.value || "",
-								billingAddress: BillingAddress[0]?.value || "",
-								country: CountryFlag[0]?.value || "",
-							}}
-							validationSchema={CheckoutSchema}
-							onSubmit={(values) => {
-								console.log("values", values);
-								handleCheckout(values);
-							}}
-							enableReinitialize>
-							{({ errors, touched, setFieldValue, values }) => (
-								<Form className="mx-auto flex flex-col max-w-3xl gap-2">
-									<div className="flex justify-between items-center">
-										<h2 className="text-2xl font-bold">
-											Thông tin liên hệ
-										</h2>
-										{!user ? (
-											<span className="text-gray-600">
-												Đã có tài khoản?{" "}
-												<a
-													href="/account/login"
-													className="underline text-black">
-													Đăng nhập
-												</a>
-											</span>
-										) : null}
-									</div>
-									<FormGroup>
-										<Field
-											value={user?.email}
-											disabled={user?.email}
-											name="email"
-											type="email"
-											placeholder="Email"
-											className="h-12 rounded-sm border border-gray-400 px-4 py-2 disabled:bg-gray-300"
-										/>
-										<FormHelperText className="text-red-500">
-											{errors?.email as string}
-										</FormHelperText>
-									</FormGroup>
-									{/* <SampleCheckbox label="Nhận thông tin khuyến mãi vào email này" /> */}
-									<h2 className="text-2xl font-bold">
-										Địa chỉ giao hàng
-									</h2>
-									<div>
-										<label>Quốc gia</label>
-										<SelectWithIcon
-											selectList={CountryFlag}
-											name="country"
-											setFieldValue={setFieldValue}
-										/>
-									</div>
-									<div className="flex gap-4">
-										<div className="flex flex-col w-1/2">
-											<FormGroup>
-												<label>
-													Họ
-													<strong className="text-red-600">
-														*
-													</strong>
-												</label>
-												<Field
-													name="firstName"
-													type="text"
-													placeholder="Họ"
-													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
-												/>
-												<FormHelperText className="text-red-500">
-													{errors?.firstName}
-												</FormHelperText>
-											</FormGroup>
+			<>
+				<div className="mx-w-full p-6 sm:py-6 relative z-1">
+					<div className="grid grid-cols-5 divide-x-2">
+						<div className="px-4 py-12 col-span-3">
+							<Formik
+								initialValues={{
+									email: user?.email || "",
+									firstName: "",
+									lastName: "",
+									company: "",
+									address: "",
+									apartment: "",
+									city: {
+										code: validCity[0]?.code || "",
+										isDelete:
+											validCity[0]?.isDeleted || false,
+										name: validCity[0]?.name || "",
+										name_with_type:
+											validCity[0]?.nameWithType || "",
+										slug: validCity[0]?.slug || "",
+										type: validCity[0]?.type || "",
+									},
+									province: "",
+									postCode: "",
+									phoneNumber: "",
+									deliveryMethod:
+										ShippingMethod[0]?.value || "",
+									paymentMethod:
+										PaymentMethod[0]?.value || "",
+									billingAddress:
+										BillingAddress[0]?.value || "",
+									country: CountryFlag[0]?.value || "",
+								}}
+								validationSchema={CheckoutSchema}
+								onSubmit={(values) => {
+									console.log("values", values);
+									handleCheckout(values);
+								}}
+								enableReinitialize>
+								{({
+									errors,
+									touched,
+									setFieldValue,
+									values,
+								}) => (
+									<Form className="mx-auto flex flex-col max-w-3xl gap-2">
+										<div className="flex justify-between items-center">
+											<h2 className="text-2xl font-bold">
+												Thông tin liên hệ
+											</h2>
+											{!user ? (
+												<span className="text-gray-600">
+													Đã có tài khoản?{" "}
+													<a
+														href="/account/login"
+														className="underline text-black">
+														Đăng nhập
+													</a>
+												</span>
+											) : null}
 										</div>
-										<div className="flex flex-col w-1/2">
-											<FormGroup>
-												<label>
-													Tên
-													<strong className="text-red-600">
-														*
-													</strong>
-												</label>
-												<Field
-													name="lastName"
-													type="text"
-													placeholder="Tên"
-													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
-												/>
-												<FormHelperText className="text-red-500">
-													{errors?.lastName}
-												</FormHelperText>
-											</FormGroup>
-										</div>
-									</div>
-									<div className="flex flex-col w-full">
 										<FormGroup>
-											<label>Công ty</label>
 											<Field
-												name="company"
-												type="text"
-												placeholder="Công ty (không bắt buộc)"
-												className="h-12 rounded-sm border border-gray-400 px-4 py-2"
-											/>
-										</FormGroup>
-									</div>
-									<div className="flex flex-col w-full">
-										<FormGroup>
-											<label>
-												Địa chỉ
-												<strong className="text-red-600">
-													*
-												</strong>
-											</label>
-											<Field
-												name="address"
-												type="text"
-												placeholder="Địa chỉ"
-												className="h-12 rounded-sm border border-gray-400 px-4 py-2"
+												value={user?.email}
+												disabled={user?.email}
+												name="email"
+												type="email"
+												placeholder="Email"
+												className="h-12 rounded-sm border border-gray-400 px-4 py-2 disabled:bg-gray-300"
 											/>
 											<FormHelperText className="text-red-500">
-												{errors?.address}
+												{errors?.email as string}
 											</FormHelperText>
 										</FormGroup>
-									</div>
-									<div className="flex flex-col w-full">
-										<FormGroup>
-											<label>
-												Chung cư, căn hộ, etc.{" "}
-											</label>
-											<Field
-												name="apartment"
-												type="text"
-												placeholder="Chung cư, căn hộ, etc. (không bắt buộc)"
-												className="h-12 rounded-sm border border-gray-400 px-4 py-2"
-											/>
-										</FormGroup>
-									</div>
-									<div className="flex gap-4">
-										<div className="flex flex-col w-1/3">
-											<label>Thành phố</label>
+										<h2 className="text-2xl font-bold">
+											Địa chỉ giao hàng
+										</h2>
+										<div>
+											<label>Quốc gia</label>
 											<SelectWithIcon
-												selectList={validCity}
-												isIcon={false}
-												name="city"
+												selectList={CountryFlag}
+												name="country"
 												setFieldValue={setFieldValue}
 											/>
 										</div>
-										<div className="flex flex-col w-1/3">
+										<div className="flex gap-4">
+											<div className="flex flex-col w-1/2">
+												<FormGroup>
+													<label>
+														Họ
+														<strong className="text-red-600">
+															*
+														</strong>
+													</label>
+													<Field
+														name="firstName"
+														type="text"
+														placeholder="Họ"
+														className="h-12 rounded-sm border border-gray-400 px-4 py-2"
+													/>
+													<FormHelperText className="text-red-500">
+														{errors?.firstName}
+													</FormHelperText>
+												</FormGroup>
+											</div>
+											<div className="flex flex-col w-1/2">
+												<FormGroup>
+													<label>
+														Tên
+														<strong className="text-red-600">
+															*
+														</strong>
+													</label>
+													<Field
+														name="lastName"
+														type="text"
+														placeholder="Tên"
+														className="h-12 rounded-sm border border-gray-400 px-4 py-2"
+													/>
+													<FormHelperText className="text-red-500">
+														{errors?.lastName}
+													</FormHelperText>
+												</FormGroup>
+											</div>
+										</div>
+										<div className="flex flex-col w-full">
+											<FormGroup>
+												<label>Công ty</label>
+												<Field
+													name="company"
+													type="text"
+													placeholder="Công ty (không bắt buộc)"
+													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
+												/>
+											</FormGroup>
+										</div>
+										<div className="flex flex-col w-full">
 											<FormGroup>
 												<label>
-													Quận/Huyện
+													Địa chỉ
 													<strong className="text-red-600">
 														*
 													</strong>
 												</label>
 												<Field
-													name="province"
+													name="address"
 													type="text"
-													placeholder="Quận/Huyện"
-													className="h-12 rounded-sm border border-gray-400 px-4 py-2 w-full"
+													placeholder="Địa chỉ"
+													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
 												/>
 												<FormHelperText className="text-red-500">
-													{errors?.province}
+													{errors?.address}
 												</FormHelperText>
 											</FormGroup>
 										</div>
-										<div className="flex flex-col w-1/3">
+										<div className="flex flex-col w-full">
 											<FormGroup>
-												<label>Mã bưu cục</label>
+												<label>
+													Chung cư, căn hộ, etc.{" "}
+												</label>
 												<Field
-													name="postCode"
+													name="apartment"
 													type="text"
-													placeholder="Mã bưu cục"
-													className="h-12 rounded-sm border border-gray-400 px-4 py-2 w-full"
+													placeholder="Chung cư, căn hộ, etc. (không bắt buộc)"
+													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
+												/>
+											</FormGroup>
+										</div>
+										<div className="flex gap-4">
+											<div className="flex flex-col w-1/3">
+												<label>Thành phố</label>
+												<SelectWithIcon
+													selectList={validCity}
+													isIcon={false}
+													name="city"
+													setFieldValue={
+														setFieldValue
+													}
+												/>
+											</div>
+											<div className="flex flex-col w-1/3">
+												<FormGroup>
+													<label>
+														Quận/Huyện
+														<strong className="text-red-600">
+															*
+														</strong>
+													</label>
+													<Field
+														name="province"
+														type="text"
+														placeholder="Quận/Huyện"
+														className="h-12 rounded-sm border border-gray-400 px-4 py-2 w-full"
+													/>
+													<FormHelperText className="text-red-500">
+														{errors?.province}
+													</FormHelperText>
+												</FormGroup>
+											</div>
+											<div className="flex flex-col w-1/3">
+												<FormGroup>
+													<label>Mã bưu cục</label>
+													<Field
+														name="postCode"
+														type="text"
+														placeholder="Mã bưu cục"
+														className="h-12 rounded-sm border border-gray-400 px-4 py-2 w-full"
+													/>
+													<FormHelperText className="text-red-500">
+														{errors?.postCode}
+													</FormHelperText>
+												</FormGroup>
+											</div>
+										</div>
+										<div className="flex flex-col w-full">
+											<FormGroup>
+												<label>
+													Số điện thoại
+													<strong className="text-red-600">
+														*
+													</strong>
+												</label>
+												<Field
+													name="phoneNumber"
+													type="text"
+													placeholder="Số điện thoại"
+													className="h-12 rounded-sm border border-gray-400 px-4 py-2"
 												/>
 												<FormHelperText className="text-red-500">
-													{errors?.postCode}
+													{errors?.phoneNumber}
 												</FormHelperText>
 											</FormGroup>
 										</div>
-									</div>
-									<div className="flex flex-col w-full">
-										<FormGroup>
-											<label>
-												Số điện thoại
-												<strong className="text-red-600">
-													*
-												</strong>
-											</label>
-											<Field
-												name="phoneNumber"
-												type="text"
-												placeholder="Số điện thoại"
-												className="h-12 rounded-sm border border-gray-400 px-4 py-2"
-											/>
-											<FormHelperText className="text-red-500">
-												{errors?.phoneNumber}
-											</FormHelperText>
-										</FormGroup>
-									</div>
-									<div className="h-6" />
-									<GroupRadioButton
-										options={ShippingMethod}
-										title="Hình thức vận chuyển"
-										value={values.deliveryMethod}
-										handleChangeValue={(e) => {
-											setFieldValue(
-												"deliveryMethod",
-												e.target.value
-											);
-											setDeliveryMethod(
-												ShippingMethod.find(
-													(item) =>
-														item.value ===
-														e.target.value
+										<div className="h-6" />
+										<GroupRadioButton
+											options={ShippingMethod}
+											title="Hình thức vận chuyển"
+											value={values.deliveryMethod}
+											handleChangeValue={(e) => {
+												setFieldValue(
+													"deliveryMethod",
+													e.target.value
+												);
+												setDeliveryMethod(
+													ShippingMethod.find(
+														(item) =>
+															item.value ===
+															e.target.value
+													)
+												);
+											}}
+											name="deliveryMethod"
+											isBorder
+											subTitle={deliveryNote}
+										/>
+										<GroupRadioButton
+											options={PaymentMethod}
+											title="Phương thức thanh toán"
+											value={values.paymentMethod}
+											handleChangeValue={(e) =>
+												setFieldValue(
+													"paymentMethod",
+													e.target.value
 												)
-											);
-										}}
-										name="deliveryMethod"
-										isBorder
-										subTitle={deliveryNote}
-									/>
-									<GroupRadioButton
-										options={PaymentMethod}
-										title="Phương thức thanh toán"
-										value={values.paymentMethod}
-										handleChangeValue={(e) =>
-											setFieldValue(
-												"paymentMethod",
-												e.target.value
-											)
-										}
-										isBorder
-										name="paymentMethod"
-									/>
-									<GroupRadioButton
-										options={BillingAddress}
-										title="Địa chỉ thanh toán"
-										value={values.billingAddress}
-										handleChangeValue={(e) =>
-											setFieldValue(
-												"billingAddress",
-												e.target.value
-											)
-										}
-										isBorder
-										name="billingAddress"
-									/>
-									<button className="w-full bg-red-500 p-4 rounded-md text-white text-xl font-bold mt-6">
-										Đặt hàng
-									</button>
-								</Form>
-							)}
-						</Formik>
-					</div>
-					<div className="h-full px-4 py-12 col-span-2">
-						<Box position="sticky" top="10rem">
-							{isPending ? (
-								<div className="flex justify-center items-center py-8">
-									<CircularProgress />
-								</div>
-							) : (
-								cart?.products.map((item: IOrderProduct) => (
-									<CartItemBlock
-										cartItem={item}
-										key={item.productId}
-									/>
-								))
-							)}
-							<ApplyPromoBlock />
-							<BillInformation
-								orderInfo={{
-									totalPrice: cart?.totalPrice || 0,
-									fees: {
-										shipping:
-											deliveryMethod?.price ||
-											0 ||
-											cart?.fees.shipping ||
-											0,
-									},
-								}}
-							/>
-						</Box>
+											}
+											isBorder
+											name="paymentMethod"
+										/>
+										<GroupRadioButton
+											options={BillingAddress}
+											title="Địa chỉ thanh toán"
+											value={values.billingAddress}
+											handleChangeValue={(e) =>
+												setFieldValue(
+													"billingAddress",
+													e.target.value
+												)
+											}
+											isBorder
+											name="billingAddress"
+										/>
+										<button className="w-full bg-red-500 p-4 rounded-md text-white text-xl font-bold mt-6">
+											Đặt hàng
+										</button>
+									</Form>
+								)}
+							</Formik>
+						</div>
+						<div className="h-full px-4 py-12 col-span-2">
+							<Box position="sticky" top="10rem">
+								{isPending ? (
+									<div className="flex justify-center items-center py-8">
+										<CircularProgress />
+									</div>
+								) : (
+									cart?.products.map(
+										(item: IOrderProduct) => (
+											<CartItemBlock
+												cartItem={item}
+												key={item.productId}
+											/>
+										)
+									)
+								)}
+								<ApplyPromoBlock />
+								<BillInformation
+									orderInfo={{
+										totalPrice: cart?.totalPrice || 0,
+										fees: {
+											shipping:
+												deliveryMethod?.price ||
+												0 ||
+												cart?.fees.shipping ||
+												0,
+										},
+									}}
+								/>
+							</Box>
+						</div>
 					</div>
 				</div>
-			</div>
+				{/* Invisible reCAPTCHA component */}
+				{/* <InvisibleRecaptcha
+					ref={recaptchaRef}
+					siteKey={
+						process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY ||
+						""
+					}
+					onError={(error) => {
+						console.error("reCAPTCHA error:", error);
+						NotifyUtils.error("Lỗi xác thực reCAPTCHA");
+					}}
+				/> */}
+			</>
 		</Base>
 	);
 };

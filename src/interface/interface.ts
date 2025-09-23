@@ -58,6 +58,7 @@ export enum EnumPaymentMethod {
 export enum EnumServiceType {
 	KEYBOARD = "KEYBOARD",
 	SWITCHES = "SWITCH",
+	STABILIZER = "STABILIZER",
 	OTHER = "OTHER",
 }
 
@@ -125,6 +126,22 @@ export enum ENUM_FILM_TYPE {
 export enum EnumSwitchStatus {
 	NEW = "NEW",
 	USED = "USED",
+}
+
+export enum EnumUnitType {
+	FLAT = "FLAT",
+	UNIT = "UNIT",
+}
+
+export enum EnumShippingMethodCode {
+	SELF_DELIVERY_SELF_PICKUP = "SELF_DELIVERY_SELF_PICKUP",
+	STORE_DELIVERY_SELF_PICKUP = "STORE_DELIVERY_SELF_PICKUP",
+	STORE_PICKUP_SELF_DELIVERY = "STORE_PICKUP_SELF_DELIVERY",
+	STORE_DELIVERY_STORE_PICKUP = "STORE_DELIVERY_STORE_PICKUP",
+}
+
+export enum EnumStabilizerStatus {
+	EnumSwitchStatus,
 }
 
 export interface ICartProduct {
@@ -354,4 +371,65 @@ export interface ITag {
 	icon?: string;
 	iconUrl?: string;
 	value: string;
+}
+
+// reCAPTCHA related interfaces
+export interface IRecaptchaConfig {
+	siteKey: string;
+	secretKey?: string;
+	version?: string;
+}
+
+export interface IFormWithRecaptcha {
+	recaptchaToken?: string;
+}
+
+export interface ICheckoutFormData extends IFormWithRecaptcha {
+	email: string;
+	firstName: string;
+	lastName: string;
+	company: string;
+	address: string;
+	apartment: string;
+	city: {
+		code: string;
+		isDelete: boolean;
+		name: string;
+		name_with_type: string;
+		slug: string;
+		type: string;
+	};
+	province: string;
+	postCode: string;
+	phoneNumber: string;
+	deliveryMethod: string;
+	paymentMethod: string;
+	billingAddress: string;
+	country: string;
+}
+
+export interface IServiceBookingData extends IFormWithRecaptcha {
+	planId: string | number;
+	services: any[];
+	shipping: any;
+	contact: any;
+	totalAmount: number;
+}
+
+export interface IProductPostData extends IFormWithRecaptcha {
+	name: string;
+	description: string;
+	og_price: number;
+	sale_price: number;
+	type: string;
+	sale_type: string;
+	images: any[];
+	service_price: number;
+	service_add_on: any[];
+	total_price: number;
+	condition: string;
+	owner: any;
+	status: string;
+	listings: any[];
+	short_description: string;
 }

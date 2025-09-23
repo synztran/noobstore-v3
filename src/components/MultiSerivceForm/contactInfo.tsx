@@ -4,10 +4,11 @@ import { useDialogLoginAction } from "@/zustand/useDialogLogin";
 import { Divider, FormGroup, FormHelperText } from "@material-ui/core";
 import Button from "@mui/material/Button";
 import { Field, Form, Formik } from "formik";
-import React from "react";
+import React, { useEffect } from "react";
 import * as Yup from "yup";
 import SimpleDivider from "../SimpleDivider";
 import { IAuthUser } from "@/interface/Context/auth";
+import { useServiceAction } from "@/zustand/useServices";
 
 const ServiceContactInfo: React.FC = () => {
 	const { user, isAuthenticated } = useAuth() as unknown as {
@@ -16,6 +17,26 @@ const ServiceContactInfo: React.FC = () => {
 	};
 
 	const { toggleDialogLogin } = useDialogLoginAction();
+	const { updateContactInfo } = useServiceAction();
+
+	const initialValues = {
+		email: user?.email || "",
+		fullName:
+			user?.firstName && user?.lastName
+				? user?.firstName + " " + user?.lastName
+				: user?.firstName || user?.lastName || "",
+		phoneNumber: user?.phoneNumber || "",
+	};
+
+	// On initial mount, update contact info in zustand store
+	useEffect(() => {
+		updateContactInfo({
+			name: initialValues.fullName,
+			email: initialValues.email,
+			phone: initialValues.phoneNumber,
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const ServiceSchema = Yup.object().shape({
 		email: user?.email
@@ -23,10 +44,10 @@ const ServiceContactInfo: React.FC = () => {
 			: Yup.string()
 					.email("Có vẻ sai định dạng rồi ạ")
 					.required("Vui lòng nhập địa chỉ email"),
-		// firstName: Yup.string().required("Vui lòng nhập họ"),
-		lastName: Yup.string().required("Vui lòng nhập tên"),
+		fullName: Yup.string().required("Vui lòng nhập tên liên hệ"),
 		phoneNumber: Yup.string().required("Vui lòng nhập số điện thoại"),
 	});
+
 	return (
 		<div className="border-gray-600 rounded-xl border-2 p-4 bg-white">
 			<div className="flex flex-col">
@@ -56,43 +77,39 @@ const ServiceContactInfo: React.FC = () => {
 					</>
 				) : null}
 				<Formik
-					initialValues={{
-						email: user?.email || "",
-						firstName: user?.firstName || "",
-						lastName: user?.lastName || "",
-						phoneNumber: user?.phoneNumber || "",
-					}}
+					initialValues={initialValues}
 					validationSchema={ServiceSchema}
 					onSubmit={(values) => {
-						console.log("values", values);
-						// handleCheckout(values);
+						// Update contactInfo in zustand store
+						updateContactInfo({
+							name: values.fullName,
+							email: values.email,
+							phone: values.phoneNumber,
+						});
 					}}
 					enableReinitialize>
-					{({ errors }) => (
+					{({ errors, values, handleChange, handleBlur }) => (
 						<Form className="flex flex-col gap-2">
 							<div className="flex gap-2 w-full">
-								{/* <FormGroup className="flex-1 min-w-0">
-									<label>Họ</label>
-									<Field
-										name="firstName"
-										type="text"
-										placeholder="Họ"
-										className="h-10 rounded-md border border-gray-400 px-4 py-2 w-full"
-									/>
-									<FormHelperText className="text-red-500">
-										{errors?.firstName}
-									</FormHelperText>
-								</FormGroup> */}
 								<FormGroup className="flex-1 min-w-0">
 									<label>Tên khách hàng</label>
 									<Field
-										name="lastName"
+										name="fullName"
 										type="text"
 										placeholder="Tên"
 										className="h-10 rounded-md border border-gray-400 px-4 py-2 w-full"
+										onChange={(
+											e: React.ChangeEvent<HTMLInputElement>
+										) => {
+											handleChange(e);
+											updateContactInfo({
+												name: e.target.value,
+											});
+										}}
+										onBlur={handleBlur}
 									/>
 									<FormHelperText className="text-red-500">
-										{errors?.lastName}
+										{errors?.fullName}
 									</FormHelperText>
 								</FormGroup>
 							</div>
@@ -100,12 +117,21 @@ const ServiceContactInfo: React.FC = () => {
 								<FormGroup className="w-full">
 									<label>Email</label>
 									<Field
-										value={user?.email}
-										disabled={user?.email}
+										value={user?.email ?? values.email}
+										disabled={!!user?.email}
 										name="email"
 										type="email"
 										placeholder="Email"
 										className="h-10 rounded-md border border-gray-400 px-4 py-2 disabled:bg-gray-200"
+										onChange={(
+											e: React.ChangeEvent<HTMLInputElement>
+										) => {
+											handleChange(e);
+											updateContactInfo({
+												email: e.target.value,
+											});
+										}}
+										onBlur={handleBlur}
 									/>
 									<FormHelperText className="text-red-500">
 										{errors?.email as string}
@@ -118,6 +144,15 @@ const ServiceContactInfo: React.FC = () => {
 										type="text"
 										placeholder="Số điện thoại"
 										className="h-10 rounded-md border border-gray-400 px-4 py-2"
+										onChange={(
+											e: React.ChangeEvent<HTMLInputElement>
+										) => {
+											handleChange(e);
+											updateContactInfo({
+												phone: e.target.value,
+											});
+										}}
+										onBlur={handleBlur}
 									/>
 									<FormHelperText className="text-red-500">
 										{errors?.phoneNumber}

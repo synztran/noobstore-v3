@@ -9,6 +9,7 @@ import {
 	SERVICE_STABILIZER_ICON,
 } from "@/constants/Images";
 import Link from "next/link";
+import TextTyping from "../../ReactBits/TextTyping";
 
 const categories = [
 	{
@@ -45,7 +46,7 @@ const categories = [
 
 const TitleWithMenuQuickAccess = () => (
 	<div className="w-full flex flex-col gap-8 items-center">
-		<div
+		{/* <div
 			className="text-4xl font-bold text-center"
 			style={{ lineHeight: 1 }}>
 			<span className="text-4xl font-bold mb-0">
@@ -57,8 +58,12 @@ const TitleWithMenuQuickAccess = () => (
 				style={{ lineHeight: "52px" }}>
 				NoobStore.
 			</span>
-			{/* <span className="text-zinc-500 text-4xl font-bold">.</span> */}
-		</div>
+		</div> */}
+		<TextTyping
+			text="Chào mừng bạn đến với NoobStore."
+			className="text-4xl font-bold text-center"
+			splitType="words"
+		/>
 		<div className="flex justify-center gap-10 flex-wrap">
 			{categories.map((cat) => (
 				<Link

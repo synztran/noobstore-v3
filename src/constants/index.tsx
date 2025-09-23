@@ -32,7 +32,14 @@ import {
 	WrenchIcon,
 	ChatBubbleBottomCenterTextIcon,
 } from "@heroicons/react/24/outline";
-import { CircleCheck, CircleX, MessageCircle, Wrench } from "lucide-react";
+import {
+	CircleCheck,
+	CircleX,
+	DoorOpen,
+	MessageCircle,
+	ShieldCheck,
+	Wrench,
+} from "lucide-react";
 import {
 	COD_ICON,
 	FLAGS_VIETNAM,
@@ -315,6 +322,11 @@ export const serviceFormText: Record<EnumServiceType, any> = {
 		subTitle:
 			"Thêm các thông tin về cái dịch vụ bạn cần sử dụng và tải lên những hình ảnh hiện tại của switch",
 	},
+	[EnumServiceType.STABILIZER]: {
+		title: "Đăng ký dịch vụ stabilizer",
+		subTitle:
+			"Thêm các thông tin về cái dịch vụ bạn cần sử dụng và tải lên những hình ảnh hiện tại của stabilizer",
+	},
 	[EnumServiceType.OTHER]: {
 		title: "Thông tin dịch vụ khác",
 		subTitle:
@@ -323,43 +335,64 @@ export const serviceFormText: Record<EnumServiceType, any> = {
 };
 
 export const tempKeyboardOptions = [
-	{ index: 0, value: "1", label: "Option 1" },
-	{ index: 1, value: "2", label: "Option 2" },
+	{ id: 0, value: "1", label: "Option 1" },
+	{ id: 1, value: "2", label: "Option 2" },
 ];
 
 export const tempPCBOptions = [
-	{ index: 0, value: "HOTSWAP", label: "Mạch hotswap" },
-	{ index: 1, value: "SOLDER", label: "Mạch hàn" },
+	{ id: 0, value: "HOTSWAP", label: "Mạch hotswap" },
+	{ id: 1, value: "SOLDER", label: "Mạch hàn" },
 ];
 
 export const tempLayoutOptions = [
-	{ index: 0, value: "60", label: "60%" },
-	{ index: 1, value: "65", label: "65%" },
+	{ id: 0, value: "60", label: "60%" },
+	{ id: 1, value: "65", label: "65%" },
 ];
 
 export const tempSwitchTypeOptions = [
 	{
-		index: 0,
+		id: 0,
 		value: EnumSwitchType.LINEAR,
 		label: "Linear (Không khấc, không clicky)",
 	},
 	{
-		index: 1,
+		id: 1,
 		value: EnumSwitchType.TACTILE,
 		label: "Tactile (Khấc, không clicky)",
 	},
-	{ index: 2, value: EnumSwitchType.CLICKY, label: "Clicky (Khấc, clicky)" },
-	{ index: 3, value: "", label: "Khác" },
+	{ id: 2, value: EnumSwitchType.CLICKY, label: "Clicky (Khấc, clicky)" },
+	{ id: 3, value: "", label: "Khác" },
 ];
 
 export const tempSwitchBrandOptions = [
-	{ index: 0, value: "1", label: "Option 1" },
-	{ index: 1, value: "2", label: "Option 2" },
+	{ id: 0, value: "1", label: "Option 1" },
+	{ id: 1, value: "2", label: "Option 2" },
 ];
 
 export const tempSwitchStatusOptions = [
-	{ index: 0, value: "NEW", label: "Mới" },
-	{ index: 1, value: "USED", label: "Cũ" },
+	{ id: 0, value: "NEW", label: "Mới" },
+	{ id: 1, value: "USED", label: "Đã qua sử dụng hoặc đã được xử lý" },
+];
+
+export const tempStabilizerMountTypeOptions = [
+	{ id: 0, value: "PCB_MOUNTED", label: "PCB Mounted (Bắt trên mạch)" },
+	{ id: 1, value: "PLATE_MOUNTED", label: "Plate Mounted (Bắt trên plate)" },
+];
+
+export const tempStabilizerTypeOptions = [
+	{ id: 0, value: "SCREW_IN", label: "Screw in (cố định bằng ốc)" },
+	{ id: 1, value: "CLIP-IN", label: "Clip-In (Bắt trên mạch bằng ngàm)" },
+];
+
+export const tempStabilizerOptions = [
+	{ id: 0, value: "2U", label: "2U Stabilizer" },
+	{ id: 1, value: "6.25U", label: "6.25U Stabilizer" },
+	{ id: 2, value: "7U", label: "7U Stabilizer" },
+];
+
+export const tempStabilizerStatusOptions = [
+	{ id: 0, value: "NEW", label: "Mới" },
+	{ id: 1, value: "USED", label: "Đã qua sử dụng hoặc đã được xử lý" },
 ];
 
 export const CategoryStatus: Record<EnumSaleStatus, string> = {
@@ -1345,3 +1378,71 @@ export const mapPaymentStatus: Record<
 		bgColor: "bg-grey-400",
 	},
 };
+
+export const DEFAULT_SERVICE_PLAN = [
+	{
+		id: 1,
+		name: "Gói dịch vụ cơ bản",
+		price: 0,
+		subName: "Thời gian và Thứ tự xử lý theo hàng chờ",
+		dateTime: "5-7 ngày",
+		min: 5,
+		max: 7,
+		isActive: true,
+		value: "NB-SP-BASIC",
+	},
+	{
+		id: 2,
+		name: "Gói dịch vụ nâng cao",
+		price: 150000,
+		subName: "Thời gian và thứ tự xử lý được ưu tiên",
+		dateTime: "2-4 ngày",
+		min: 2,
+		max: 4,
+		isActive: true,
+		value: "NB-SP-EXTREME",
+	},
+];
+
+export const MAPPING_DELIVERY_METHOD: Record<string, string> = {
+	SELF_DELIVERY_SELF_PICKUP: "Khách tự giao và nhận",
+	SELF_DELIVERY_STORE_PICKUP: "Giao nhận một chiều",
+	STORE_DELIVERY_SELF_PICKUP: "Giao nhận một chiều",
+	STORE_DELIVERY_STORE_PICKUP: "Giao nhận hai chiều",
+};
+
+export const MAPPING_ICON_SUMMARY_SERVICE: Record<
+	string,
+	{ icon: React.ReactNode; color: string }
+> = {
+	INSURANCE: {
+		icon: <ShieldCheck size={28} />,
+		color: "text-green-500",
+	},
+	DOOR_TO_DOOR: {
+		icon: <DoorOpen size={28} />,
+		color: "text-green-500",
+	},
+};
+
+export const SUGGESTED_DISCOUNT_CODES = [
+	{
+		code: "NOOB10",
+		description: "Giảm 10% cho đơn đầu tiên",
+		discountPercent: 10,
+	},
+	{
+		code: "FREESHIP",
+		description: "Miễn phí vận chuyển",
+		discountAmount: 50000,
+	},
+	{
+		code: "SUMMER50",
+		description: "Giảm 50.000đ cho đơn từ 500.000đ",
+		discountPercent: 0,
+		discountAmount: 50000,
+		condition: {
+			minTotalValue: 500000,
+		},
+	},
+];

@@ -48,14 +48,14 @@ module.exports = {
 			base: "1rem",
 			lg: "1.125rem",
 			xl: "1.25rem",
-			"2xl": "2rem",
-			"3xl": "3rem",
-			"4xl": "4rem",
-			"5xl": "5rem",
-			"6xl": "6rem",
-			"7xl": "7rem",
-			"8xl": "8rem",
-			"9xl": "9rem",
+			"2xl": "1.5rem",
+			"3xl": "1.875rem",
+			"4xl": "2.25rem",
+			"5xl": "3rem",
+			"6xl": "3.75rem",
+			"7xl": "4.5rem",
+			"8xl": "6rem",
+			"9xl": "8rem",
 			"10xl": "10rem",
 			55: "55rem",
 		},
@@ -276,7 +276,7 @@ module.exports = {
 				{
 					[`@media (min-width: ${screens.md})`]: {
 						".container": {
-							"max-width": "1024px",
+							"max-width": "1080px",
 						},
 					},
 				},
@@ -290,14 +290,14 @@ module.exports = {
 				{
 					[`@media (min-width: ${screens.xl})`]: {
 						".container": {
-							"max-width": "1280px",
+							"max-width": "1440px",
 						},
 					},
 				},
 				{
 					[`@media (min-width: ${screens["2xl"]})`]: {
 						".container": {
-							"max-width": "1440px",
+							"max-width": "1600px",
 						},
 					},
 				},

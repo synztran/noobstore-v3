@@ -46,6 +46,11 @@ class MyDocument extends Document {
 			<Html lang={AppConfig.locale}>
 				<Head>
 					<link rel="shortcut icon" href="/static/favicon.ico" />
+					{/* <script
+						src={`https://www.google.com/recaptcha/api.js?render=${process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY}`}
+						async
+						defer
+					/> */}
 				</Head>
 				<body className="notranslate">
 					<Main />

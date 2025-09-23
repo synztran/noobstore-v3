@@ -7,6 +7,7 @@ import GuildAndTutorials from "@/components/GuildAndTutorials";
 import GridLayoutBlock from "@/components/GridLayoutBlock";
 import StrongPoint from "@/components/StrongPoint";
 import HomeProductBlock from "@/components/HomeProductBlock";
+import RaffleBlock from "@/components/RaffleBlock";
 
 const HomePage = ({}) => {
 	return (
@@ -14,6 +15,7 @@ const HomePage = ({}) => {
 			<div className="flex flex-col gap-12 my-8">
 				<TitleWithMenuQuickAccess />
 				<BannerTagPriceName />
+				<RaffleBlock />
 				<CategoryWithTitleAndAction title="Keyboards" items={[]} />
 				<CommunitySharingPost
 					title="Community Sharing"

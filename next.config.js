@@ -8,6 +8,7 @@ const withTM = require("next-transpile-modules")([
 	"@mui/material",
 	"@mui/system",
 	"@mui/icons-material", // If @mui/icons-material is being used
+	// "gsap", // Add GSAP to transpiled modules
 ]);
 
 function getFormattedDate(date, format = "DD/MM/YYYY") {
@@ -34,35 +35,6 @@ const plugins = [];
 // plugins.push([withBundleAnalyzer]);
 
 const buildID = generateBuildId();
-
-// module.exports = withPlugins({
-//   eslint: {
-//     dirs: ['.'],
-//   },
-//   poweredByHeader: false,
-//   trailingSlash: true,
-//   basePath: '',
-//   reactStrictMode: true,
-//   compiler: {
-//     emotion: true,
-//   },
-//   images: {
-//     remotePatterns: [
-//       {
-//         protocol: 'https',
-//         hostname: 'nas-server.thuannc.com',
-//         port: '',
-//         pathname: '/fbdownload/**',
-//       },
-//       {
-//         protocol: 'https',
-//         hostname: 'drive.usercontent.google.com',
-//         port: '',
-//         pathname: '/download/**',
-//       },
-//     ],
-//   },
-// });
 
 const nextConfigs = {
 	assetPrefix: undefined,
@@ -109,13 +81,13 @@ const nextConfigs = {
 				protocol: "https",
 				hostname: "res.cloudinary.com",
 				port: "",
-				pathname: "/debnyyphn/image/upload/**",
+				pathname: "/debnyyphn/**",
 			},
 			{
 				protocol: "http",
 				hostname: "res.cloudinary.com",
 				port: "",
-				pathname: "/debnyyphn/image/upload/**",
+				pathname: "/debnyyphn/**",
 			},
 		],
 	},

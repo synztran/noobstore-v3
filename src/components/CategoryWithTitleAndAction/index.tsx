@@ -117,7 +117,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 	const swiperRef = React.useRef<any>(null);
 
 	return (
-		<div className="w-full bg-white rounded-xl shadow-none px-2 py-4">
+		<div className="w-full bg-white rounded-xl shadow-none p-4">
 			{/* Header */}
 			<div className="flex items-center justify-between mb-2 px-2">
 				<div className="flex items-center gap-2">
@@ -142,7 +142,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 			<div className="relative">
 				<IconButton
 					className={clsx(
-						"absolute z-10 top-1/2 -left-4 -translate-y-1/2 bg-white shadow border border-gray-200",
+						"absolute z-10 top-1/2 -left-3.5 -translate-y-1/2 bg-white shadow border border-gray-200",
 						"hover:shadow-lg"
 					)}
 					onClick={() => swiperRef.current?.slidePrev()}
@@ -152,7 +152,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 				</IconButton>
 				<IconButton
 					className={clsx(
-						"absolute z-10 top-1/2 -right-4 -translate-y-1/2 bg-white shadow border border-gray-200",
+						"absolute z-10 top-1/2 -right-3.5 -translate-y-1/2 bg-white shadow border border-gray-200",
 						"hover:bg-gray-100"
 					)}
 					onClick={() => swiperRef.current?.slideNext()}
@@ -174,7 +174,7 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 					onSwiper={(swiper) => {
 						swiperRef.current = swiper;
 					}}
-					className="mt-3 !py-2">
+					className="mt-3">
 					{fakeItems.map((item) => (
 						<SwiperSlide key={item.id} className="p-0.5">
 							<div className="bg-[#f6f5f8] rounded-xl p-2 flex flex-col gap-3 relative group hover:shadow-md hover:shadow-gray-300 transition min-h-[420px] cursor-pointer">
