@@ -380,7 +380,7 @@ export const tempStabilizerMountTypeOptions = [
 ];
 
 export const tempStabilizerTypeOptions = [
-	{ id: 0, value: "SCREW_IN", label: "Screw in (cố định bằng ốc)" },
+	{ id: 0, value: "SCREW_IN", label: "Screw in (Cố định bằng ốc)" },
 	{ id: 1, value: "CLIP-IN", label: "Clip-In (Bắt trên mạch bằng ngàm)" },
 ];
 

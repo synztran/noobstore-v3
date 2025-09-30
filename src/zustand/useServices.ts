@@ -17,7 +17,7 @@ export interface IServiceOption {
 
 // Service plan interface
 export interface IServicePlan {
-	planId: number | string;
+	planId: string;
 	name: string;
 	description: string;
 	price: number;

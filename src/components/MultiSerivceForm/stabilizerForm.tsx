@@ -19,6 +19,7 @@ import InputWrapperLegend from "../InputComponents/WrapperLegend";
 import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
 import { mapServiceTasksToOptions } from "@/utils/Data";
 import useSelectedOption from "@/hook/useSelectedOption";
+import StabilizerSelection from "./StabilizerSelection";
 
 interface IProps {
 	serviceType: EnumServiceType;
@@ -35,7 +36,7 @@ const defaultStabilizerStatusOptions = tempStabilizerStatusOptions;
 const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 	const { serviceType, itemId } = props;
 	const { title, subTitle } = serviceFormText?.[serviceType];
-	const { stabilizerItems } = useServices();
+	const { stabilizerItems, selectedPlan } = useServices();
 	const { updateStabilizerItem, resetTaskItem } = useServiceAction();
 	const { data: serviceDefaultTasks, isPending } = useServiceTaskQuery();
 
@@ -262,7 +263,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						placeholder="Tìm, chọn hoặc thêm mới"
 						value={props.value.status}
 					/>
-					<SimpleTextField
+					{/* <SimpleTextField
 						name="quantity"
 						label="Số lượng"
 						placeholder="Nhập số lượng stabilizer"
@@ -270,6 +271,10 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						value={props.value.quantity?.toString() || ""}
 						max={50}
 						min={1}
+					/> */}
+					<StabilizerSelection
+						selectedPlan={selectedPlan?.planId || ""}
+						onChange={() => {}}
 					/>
 				</div>
 				<small className="text-sm text-gray-500 ml-1">
