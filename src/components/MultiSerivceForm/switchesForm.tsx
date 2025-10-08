@@ -10,20 +10,19 @@ import {
 	EnumUnitType,
 	EnumUploadStatus,
 } from "@/interface/interface";
-import { Divider } from "@material-ui/core";
-import React, { useCallback, useEffect, useRef } from "react";
-import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
-import SearchableSelect from "../SelectComp";
-import type { IOptionSelection } from "../SelectComp";
+import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
+import { mapServiceTasksToOptions } from "@/utils/Data";
 import useServices, {
 	ISwitchFormItem,
 	useServiceAction,
 } from "@/zustand/useServices";
-import UploadImage from "../InputComponents/UploadImage";
-import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
-import { mapServiceTasksToOptions } from "@/utils/Data";
+import React, { useCallback, useEffect, useRef } from "react";
+import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
 import SimpleTextField from "../InputComponents/SimpleTextField";
+import UploadImage from "../InputComponents/UploadImage";
 import InputWrapperLegend from "../InputComponents/WrapperLegend";
+import type { IOptionSelection } from "../SelectComp";
+import SearchableSelect from "../SelectComp";
 
 interface IProps {
 	serviceType: EnumServiceType;
@@ -64,34 +63,36 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 		initialSwitchStatusOptions:
 			tempSwitchStatusOptions as IOptionSelection[],
 		initialServicePrices: {
-			lube: apiOptions.servicePrices["switch"]["lube"] || {
-				price: 0,
-				name: "",
-				description: "",
-				info: {
-					grease: "",
+			switch: {
+				lube: apiOptions.servicePrices["switch"]["lube"] || {
+					price: 0,
+					name: "",
+					description: "",
+					info: {
+						grease: "",
+					},
 				},
-			},
-			cleanSwitch: apiOptions.servicePrices["switch"]["clean"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			quickCleanSwitch: apiOptions.servicePrices["switch"][
-				"quickClean"
-			] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			film: apiOptions.servicePrices["switch"]["film"] || {
-				price: 0,
-				name: "",
-				description: "",
-				info: {
-					brand: "",
-					type: "",
-					color: "",
+				clean: apiOptions.servicePrices["switch"]["clean"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
+				quickClean: apiOptions.servicePrices["switch"][
+					"quickClean"
+				] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
+				film: apiOptions.servicePrices["switch"]["film"] || {
+					price: 0,
+					name: "",
+					description: "",
+					info: {
+						brand: "",
+						type: "",
+						color: "",
+					},
 				},
 			},
 		},
@@ -100,8 +101,8 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 	useEffect(() => {
 		updateSwitchServicePrices({
 			lube: apiOptions.servicePrices["switch"]["lube"],
-			cleanSwitch: apiOptions.servicePrices["switch"]["clean"],
-			quickCleanSwitch: apiOptions.servicePrices["switch"]["quickClean"],
+			clean: apiOptions.servicePrices["switch"]["clean"],
+			quickClean: apiOptions.servicePrices["switch"]["quickClean"],
 			film: apiOptions.servicePrices["switch"]["film"],
 			spring: apiOptions.servicePrices["switch"]["spring"],
 		});

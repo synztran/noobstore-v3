@@ -1,4 +1,5 @@
-import { createMuiTheme } from "@material-ui/core";
+// import { createMuiTheme } from "@material-ui/core";
+import { createTheme } from "@material-ui/core/styles";
 
 // Create a theme instance.
 // const theme = createTheme({
@@ -167,7 +168,7 @@ import { createMuiTheme } from "@material-ui/core";
 // 	},
 // });
 
-const theme = createMuiTheme({
+const theme = createTheme({
 	overrides: {
 		MuiTooltip: {
 			tooltip: {

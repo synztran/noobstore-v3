@@ -27,11 +27,7 @@ const DetailRating = ({
 	const [showMethodology, setShowMethodology] = useState(false);
 
 	const renderStars = (rating: number, size: "sm" | "md" | "lg" = "md") => {
-		const sizeClasses = {
-			sm: "w-3 h-3",
-			md: "w-4 h-4",
-			lg: "w-6 h-6",
-		};
+		const sizeClasses = { sm: "w-3 h-3", md: "w-4 h-4", lg: "w-6 h-6" };
 
 		return (
 			<div className="flex items-center">
@@ -46,15 +42,15 @@ const DetailRating = ({
 									full
 										? "fill-yellow-400 text-yellow-400"
 										: half
-										? "fill-yellow-400 text-yellow-400"
-										: "fill-gray-300 text-gray-300"
+											? "fill-yellow-400 text-yellow-400"
+											: "fill-gray-300 text-gray-300"
 								)}
 								style={
 									half
 										? {
 												clipPath:
 													"polygon(0 0, 50% 0, 50% 100%, 0 100%)",
-										  }
+											}
 										: undefined
 								}
 							/>
@@ -122,13 +118,11 @@ const DetailRating = ({
 
 					{showMethodology && showRatingMethodology && (
 						<div className="mt-3 p-3 bg-gray-50 rounded-md text-sm text-gray-700">
-							<p>
-								Our star ratings are calculated based on
-								customer reviews and feedback. We use a weighted
-								average system that considers the recency and
-								helpfulness of each review to provide accurate
-								and reliable ratings.
-							</p>
+							Our star ratings are calculated based on customer
+							reviews and feedback. We use a weighted average
+							system that considers the recency and helpfulness of
+							each review to provide accurate and reliable
+							ratings.
 						</div>
 					)}
 				</div>

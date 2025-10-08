@@ -77,7 +77,16 @@ export function useGuide(hours: number = 6) {
 				align: "center" as const,
 			},
 		},
-
+		{
+			element: "#customer-information-step",
+			popover: {
+				title: "Thông tin liên hệ của bạn",
+				description:
+					"Bạn có thể thêm thông tin liên hệ của bạn ở đây, bạn có thể thay đổi tên hoặc số điện thoại nếu cần.",
+				side: "left" as const,
+				align: "center" as const,
+			},
+		},
 		{
 			popover: {
 				title: "Hoàn thành hướng dẫn",

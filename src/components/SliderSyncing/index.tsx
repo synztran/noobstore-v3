@@ -6,11 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 
 interface Props {
-	imageList: {
-		src: string;
-		alt: string;
-		id: number;
-	}[];
+	imageList: { src: string; alt: string; id: number }[];
 }
 
 const SliderSyncing = ({ imageList }: Props) => {
@@ -103,10 +99,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 							className="object-cover select-none rounded-lg"
 							width={90}
 							height={90}
-							style={{
-								maxWidth: "100%",
-								height: "auto",
-							}}
+							style={{ maxWidth: "100%", height: "auto" }}
 						/>
 					</div>
 				))}

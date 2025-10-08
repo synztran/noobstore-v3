@@ -1,12 +1,11 @@
 import { getData, getFirst, isValid } from "@/client";
 import ServiceClient from "@/client/ServiceClient";
-import { createQueryKeys } from "@lukemorales/query-key-factory";
 import {
 	EnumServiceFeeType,
 	IServiceDefaultOption,
 	IServiceFee,
 } from "@/zustand/useServices";
-import { EnumServiceType } from "@/interface/interface";
+import { createQueryKeys } from "@lukemorales/query-key-factory";
 
 export const serviceQueryKeys = createQueryKeys("service", {
 	getDefinitions: (params: { category?: string } = {}) => ({
@@ -71,7 +70,6 @@ export const serviceQueryKeys = createQueryKeys("service", {
 				};
 			if (resp && resp.data) {
 				for (const item of resp.data || []) {
-					console.log(item);
 					if (item && item !== undefined) {
 						mapped[item?.value as EnumServiceFeeType] = item;
 					}

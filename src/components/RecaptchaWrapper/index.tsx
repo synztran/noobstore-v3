@@ -50,11 +50,7 @@ export const RecaptchaWrapper = forwardRef<
 			executeRecaptcha,
 			resetRecaptcha,
 			onRecaptchaChange,
-		} = useRecaptcha({
-			siteKey,
-			onError,
-			onSuccess: onVerify,
-		});
+		} = useRecaptcha({ siteKey, onError, onSuccess: onVerify });
 
 		// Expose methods to parent components via ref
 		useImperativeHandle(
@@ -77,30 +73,32 @@ export const RecaptchaWrapper = forwardRef<
 		// Don't render anything for invisible reCAPTCHA unless executing
 		if (size === "invisible") {
 			return (
-				<ReCAPTCHA
-					ref={recaptchaRef}
-					sitekey={siteKey}
-					size="invisible"
-					onChange={onRecaptchaChange}
-					onExpired={handleExpired}
-					onErrored={onError}
-				/>
+				<></>
+				// <ReCAPTCHA
+				// 	ref={recaptchaRef}
+				// 	sitekey={siteKey}
+				// 	size="invisible"
+				// 	onChange={onRecaptchaChange}
+				// 	onExpired={handleExpired}
+				// 	onErrored={onError?.bind(null, "")}
+				// />
 			);
 		}
 
 		// Render visible reCAPTCHA
 		return (
 			<div className={`recaptcha-wrapper ${className || ""}`}>
-				<ReCAPTCHA
+				<></>
+				{/* <ReCAPTCHA
 					ref={recaptchaRef}
 					sitekey={siteKey}
 					size={size}
 					theme={theme}
 					onChange={onRecaptchaChange}
 					onExpired={handleExpired}
-					onErrored={onError}
+					onErrored={onError?.bind(null, "")}
 					tabindex={tabIndex}
-				/>
+				/> */}
 				{error && (
 					<div className="text-red-500 text-sm mt-2" role="alert">
 						{error}

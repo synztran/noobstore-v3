@@ -1,24 +1,25 @@
 import {
 	serviceFormText,
 	tempStabilizerMountTypeOptions,
-	tempStabilizerOptions,
+	tempStabilizerSizeOptions,
 	tempStabilizerStatusOptions,
 	tempStabilizerTypeOptions,
 } from "@/constants";
+import useSelectedOption from "@/hook/useSelectedOption";
 import { EnumServiceType, EnumUploadStatus } from "@/interface/interface";
-import React, { useMemo, useEffect, useRef, useCallback } from "react";
+import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
+import { mapServiceTasksToOptions } from "@/utils/Data";
+import NotifyUtils from "@/utils/NotifyUtils";
 import useServices, {
 	IStabilizerFormItem,
 	useServiceAction,
 } from "@/zustand/useServices";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
-import SearchableSelect, { IOptionSelection } from "../SelectComp";
 import SimpleTextField from "../InputComponents/SimpleTextField";
 import UploadImage from "../InputComponents/UploadImage";
 import InputWrapperLegend from "../InputComponents/WrapperLegend";
-import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
-import { mapServiceTasksToOptions } from "@/utils/Data";
-import useSelectedOption from "@/hook/useSelectedOption";
+import SearchableSelect, { IOptionSelection } from "../SelectComp";
 import StabilizerSelection from "./StabilizerSelection";
 
 interface IProps {
@@ -30,13 +31,13 @@ interface IProps {
 // Use stabilizer options from constants
 const defaultStabilizerTypeOptions = tempStabilizerTypeOptions;
 const defaultStabilizerMountTypeOptions = tempStabilizerMountTypeOptions;
-const defaultStabilizerOptions = tempStabilizerOptions;
+const defaultStabilizerSizeOptions = tempStabilizerSizeOptions;
 const defaultStabilizerStatusOptions = tempStabilizerStatusOptions;
 
 const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 	const { serviceType, itemId } = props;
 	const { title, subTitle } = serviceFormText?.[serviceType];
-	const { stabilizerItems, selectedPlan } = useServices();
+	const { stabilizerItems } = useServices();
 	const { updateStabilizerItem, resetTaskItem } = useServiceAction();
 	const { data: serviceDefaultTasks, isPending } = useServiceTaskQuery();
 
@@ -64,36 +65,31 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		updateStabilizerServicePrices,
 		handleChangeOption,
 	} = useSelectedOption({
-		initialStabilizerOptions: defaultStabilizerOptions,
+		initialStabilizerSizeOptions: defaultStabilizerSizeOptions,
 		initialStabilizerMountTypeOptions: defaultStabilizerMountTypeOptions,
 		initialStabilizerTypeOptions: defaultStabilizerTypeOptions,
 		initialStabilizerStatusOptions: defaultStabilizerStatusOptions,
 		initialServicePrices: {
-			lube: apiOptions.servicePrices["stabilizer"]["lube"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			film: apiOptions.servicePrices["stabilizer"]["film"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			cleanStabilizer: apiOptions.servicePrices["stabilizer"][
-				"clean"
-			] || {
-				price: 0,
-				name: "",
-				description: "",
+			stabilizer: {
+				handle: apiOptions.servicePrices["stabilizer"]["handle"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
+				clean: apiOptions.servicePrices["stabilizer"]["clean"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
 			},
 		},
 	});
 
+	console.log("stabilizerOptions", stabilizerOptions);
+
 	// Update options when API data changes
 	useEffect(() => {
-		updateStabilizerOptions({
-			stabilizer: defaultStabilizerOptions,
-		});
+		updateStabilizerOptions({ stabilizer: defaultStabilizerSizeOptions });
 		updateStabilizerServicePrices({
 			handle: apiOptions.servicePrices["stabilizer"]["handle"] || {
 				price: 0,
@@ -120,14 +116,10 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		handleStabilizerSelect({ name, option });
 
 		if (itemId) {
-			const payload: any = {
-				...props.value,
-				[name]: option?.value,
-			};
+			const payload: any = { ...props.value, [name]: option?.value };
 
 			updateStabilizerItem(itemId, payload);
 			// when updateKeyboardItem, we will trigger clean tasks
-			console.log("reset task");
 			resetTaskItem(itemId, "stabilizerItems");
 		}
 	};
@@ -140,9 +132,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 			}
 			debounceRef.current[name] = setTimeout(() => {
 				if (itemId) {
-					updateStabilizerItem(itemId, {
-						[name]: value,
-					} as any);
+					updateStabilizerItem(itemId, { [name]: value } as any);
 				}
 			}, 300);
 		},
@@ -185,6 +175,15 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		}
 	};
 
+	const handleOnChangeStabSelection = (updater: IStabilizerFormItem) => {
+		console.log("id", itemId, updater);
+		if (!itemId) {
+			NotifyUtils.error("Không tìm thấy mục stabilizer để cập nhật.");
+			return;
+		}
+		updateStabilizerItem(itemId, updater);
+	};
+
 	console.log("stabilizerItems", stabilizerItems);
 
 	if (isPending) {
@@ -212,7 +211,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 					</span>
 					<div className="w-full border-b border-gray-500" />
 				</div>
-				<div className="flex flex-col gap-4 mt-1">
+				<div className="flex flex-col gap-4">
 					<SimpleTextField
 						name="name"
 						label="Hãng"
@@ -273,8 +272,9 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						min={1}
 					/> */}
 					<StabilizerSelection
-						selectedPlan={selectedPlan?.planId || ""}
-						onChange={() => {}}
+						itemId={itemId}
+						stabilizerSelected={props.value}
+						onChange={handleOnChangeStabSelection}
 					/>
 				</div>
 				<small className="text-sm text-gray-500 ml-1">
@@ -290,7 +290,8 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 					</span>
 					<div className="w-full border-b border-gray-500" />
 				</div>
-				{props.value?.type && props.value.quantity > 0 ? (
+				{props.value?.type &&
+				(props.value.totalPack || props.value.totalWire) ? (
 					<div className="flex flex-col gap-4">
 						<CheckboxWithPrice
 							label={

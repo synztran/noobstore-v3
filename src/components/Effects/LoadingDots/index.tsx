@@ -1,6 +1,10 @@
 import React from "react";
 
-const LoadingDots: React.FC = () => {
+interface IProps {
+	className?: string;
+}
+
+const LoadingDots: React.FC<IProps> = ({ className }) => {
 	return (
 		<div className="flex items-end gap-2 h-full">
 			{[0, 1, 2].map((i) => (
@@ -11,7 +15,8 @@ const LoadingDots: React.FC = () => {
 						animationDelay: `${i * 0.2}s`,
 						display: "inline-flex",
 						scale: "2",
-					}}>
+					}}
+					className={className}>
 					.
 				</span>
 			))}

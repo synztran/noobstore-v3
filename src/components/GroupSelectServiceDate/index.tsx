@@ -12,12 +12,13 @@ import {
 	RadioGroup,
 } from "@material-ui/core";
 import React, { useEffect } from "react";
+import { ErrorMessage } from "@/components/ErrorMessage"; // Import ErrorMessage
 
 interface IProps {
 	options?: IServicePlan[];
 }
 const GroupSelectServiceDate = (props: IProps) => {
-	const { selectedPlan, selectedOpt } = useServices();
+	const { selectedPlan, selectedOpt, errorMessages } = useServices();
 	const { selectPlan } = useServiceAction();
 	const { data: planOptions, isPending } = useServicePlanQuery();
 
@@ -56,6 +57,16 @@ const GroupSelectServiceDate = (props: IProps) => {
 
 	return (
 		<div className={`w-full relative`} id="service-plan-selection">
+			{/* Show error message if there is an error for selectedPlan */}
+			{errorMessages?.selectedPlan && (
+				<div className="mb-2">
+					<ErrorMessage
+						message={errorMessages.selectedPlan}
+						type="error"
+						autoHide
+					/>
+				</div>
+			)}
 			<FormControl
 				className={`grid grid-cols-${planOptions?.length} gap-2`}>
 				{planOptions?.map((option, index) => (
@@ -77,9 +88,7 @@ const GroupSelectServiceDate = (props: IProps) => {
 								value={option.planId}
 								control={<Radio className="p-0" />}
 								label=""
-								classes={{
-									root: "mr-0",
-								}}
+								classes={{ root: "mr-0" }}
 								onChange={() => {
 									selectPlan(
 										option as unknown as IServicePlan
@@ -124,7 +133,10 @@ const Wrapper = ({
 				<span className="text-lg font-bold">{option.name}</span>
 				{children}
 			</div>
-			<div className="text-sm">{option.description}</div>
+			<div
+				className="text-sm"
+				dangerouslySetInnerHTML={{ __html: option.description }}
+			/>
 			<div className="flex justify-between items-end mt-auto">
 				<div className="flex flex-col">
 					<strong>Dự kiến</strong>

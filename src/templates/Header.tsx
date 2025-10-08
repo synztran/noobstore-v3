@@ -172,7 +172,7 @@ export default function Header() {
 																	)}
 																</div>
 																<div className="flex-auto">
-																	<a
+																	<Link
 																		href={
 																			item.href
 																		}
@@ -181,7 +181,7 @@ export default function Header() {
 																			item.name
 																		}
 																		<span className="absolute inset-0" />
-																	</a>
+																	</Link>
 																	<p className="mt-1 text-gray-900">
 																		{
 																			item.description
@@ -243,14 +243,14 @@ export default function Header() {
 																/>
 															</div>
 															<div className="flex-auto">
-																<a
+																<Link
 																	href={
 																		item.href
 																	}
 																	className="block font-semibold text-gray-900">
 																	{item.name}
 																	<span className="absolute inset-0" />
-																</a>
+																</Link>
 																<p className="mt-1 text-gray-900">
 																	{
 																		item.description
@@ -311,14 +311,14 @@ export default function Header() {
 																/>
 															</div>
 															<div className="flex-auto">
-																<a
+																<Link
 																	href={
 																		item.href
 																	}
 																	className="block font-semibold text-gray-900">
 																	{item.name}
 																	<span className="absolute inset-0" />
-																</a>
+																</Link>
 																<p className="mt-1 text-gray-900">
 																	{
 																		item.description
@@ -348,12 +348,12 @@ export default function Header() {
 				{user ? (
 					<div className="hidden md:flex md:flex-1 md:justify-end md:order-2">
 						{isSimpleHeader ? (
-							<a href="/cart" style={{ position: "relative" }}>
+							<Link href="/cart" style={{ position: "relative" }}>
 								<ShoppingCart
 									className="h-6 w-6 text-gray-900 group-hover:text-indigo-600 cursor-pointer"
 									aria-hidden="true"
 								/>
-							</a>
+							</Link>
 						) : (
 							<div className="flex gap-4 items-center justify-center">
 								<div className="m-auto">
@@ -457,12 +457,12 @@ export default function Header() {
 				) : (
 					<div className="hidden md:flex md:flex-1 md:justify-end md:order-2">
 						{isSimpleHeader ? (
-							<a href="/cart">
+							<Link href="/cart">
 								<ShoppingBagIcon
 									className="h-6 w-6 text-gray-900 group-hover:text-indigo-600 cursor-pointer"
 									aria-hidden="true"
 								/>
-							</a>
+							</Link>
 						) : (
 							<div className="flex gap-4 align-middle justify-center">
 								<div
@@ -472,7 +472,7 @@ export default function Header() {
 											isOpenDialogLogin
 												? Boolean(
 														EnumStatusDialog.CLOSE
-												  )
+													)
 												: Boolean(EnumStatusDialog.OPEN)
 										)
 									}>
@@ -503,7 +503,7 @@ export default function Header() {
 						leaveTo="opacity-0 right-95">
 						<Dialog.Panel className="fixed inset-y-0 right-0 z-60 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 transition-all duration-300 delay-150">
 							<div className="flex items-center justify-between">
-								<a href="#" className="-m-1.5 p-1.5">
+								<Link href="/" className="-m-1.5 p-1.5">
 									<span className="sr-only">
 										Your Company
 									</span>
@@ -512,7 +512,7 @@ export default function Header() {
 										src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
 										alt=""
 									/>
-								</a>
+								</Link>
 								<button
 									type="button"
 									className="-m-2.5 rounded-md p-2.5 text-gray-700"
@@ -559,24 +559,24 @@ export default function Header() {
 												</div>
 											)}
 										</Disclosure>
-										<a
+										<Link
 											href="#"
 											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Features
-										</a>
-										<a
+										</Link>
+										<Link
 											href="#"
 											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Marketplace
-										</a>
-										<a
+										</Link>
+										<Link
 											href="#"
 											className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50">
 											Company
-										</a>
+										</Link>
 									</div>
 									<div className="py-6">
-										<a
+										<Link
 											href="#"
 											className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold leading-7 text-gray-900 hover:bg-gray-50"
 											onClick={() =>
@@ -587,7 +587,7 @@ export default function Header() {
 												)
 											}>
 											Log in
-										</a>
+										</Link>
 									</div>
 								</div>
 							</div>

@@ -1,264 +1,347 @@
-import React, { useState, useMemo } from "react";
-import { tempStabilizerOptions } from "@/constants";
-import Image from "next/image";
+import InputNumber from "@/components/InputComponents/InputNumber";
+import SimpleTextField from "@/components/InputComponents/SimpleTextField";
+import InputWrapperLegend from "@/components/InputComponents/WrapperLegend";
 import {
 	SERVICE_STABILIZER_2U,
 	SERVICE_STABILIZER_625U,
 	SERVICE_STABILIZER_7U,
-	SERVICE_STABILIZER_STANDARD_PACK,
+	SERVICE_STABILIZER_PACK_625U,
+	SERVICE_STABILIZER_PACK_7U,
 } from "@/constants/Images";
+import { generateRandomId } from "@/utils/StringUtils";
+import useServices, { IStabilizerFormItem } from "@/zustand/useServices";
 import { Button } from "@mui/material";
+import { X } from "lucide-react";
+import Image from "next/image";
+import React, { useMemo, useState } from "react";
 
-// Option images (replace with your actual images)
-const STABILIZER_IMAGES: Record<string, string> = {
-	"2U": "/images/stabilizer-2u.png",
-	"6.25U": "/images/stabilizer-625u.png",
-	"7U": "/images/stabilizer-7u.png",
-	"pack-7u": "/images/stabilizer-pack-7u.png",
-	"pack-625": "/images/stabilizer-pack-625.png",
-};
-
-type StabilizerType = "2U" | "6.25U" | "7U";
-type PackType = "pack-7u" | "pack-625" | "other";
+type StabilizerSize = "2U" | "6.25U" | "7U";
+type PackType = "6.25U" | "7U";
+enum StabilizerType {
+	PACK = "pack",
+	WIRE = "wire",
+}
 
 interface SelectedStabilizer {
 	id: string;
 	name: string;
-	type: PackType | StabilizerType;
+	type: StabilizerType;
+	packType: PackType;
 	quantity: number;
 	image: string;
 	detail?: string;
+	value?: string;
+	wireQuantity?: number;
 }
 
-interface IProps {
-	selectedPlan: string;
-	onChange?: (selected: SelectedStabilizer[]) => void;
-}
-
-const PACK_OPTIONS = [
+const PACK_OPTIONS: {
+	id: number;
+	label: string;
+	type?: "pack" | "wire";
+	packType?: PackType;
+	image: string;
+	detail?: string;
+	default?: { type: StabilizerSize; quantity: number }[];
+	value: string;
+	wireQuantity?: number;
+}[] = [
 	{
-		id: "pack-7u",
+		id: 0,
 		label: "Pack 7U",
-		type: "pack-7u" as PackType,
-		image: SERVICE_STABILIZER_STANDARD_PACK,
+		type: "pack",
+		image: SERVICE_STABILIZER_PACK_7U,
 		detail: "4x2U + 1x7U",
 		default: [
 			{ type: "2U", quantity: 4 },
 			{ type: "7U", quantity: 1 },
 		],
+		value: "PACK-7U",
+		wireQuantity: 5,
+		packType: "7U",
 	},
 	{
-		id: "pack-625",
+		id: 1,
 		label: "Pack 6.25U",
-		type: "pack-625" as PackType,
-		image: SERVICE_STABILIZER_STANDARD_PACK,
+		type: StabilizerType.PACK,
+		image: SERVICE_STABILIZER_PACK_625U,
 		detail: "4x2U + 1x6.25U",
 		default: [
 			{ type: "2U", quantity: 4 },
 			{ type: "6.25U", quantity: 1 },
 		],
+		value: "PACK-6.25U",
+		wireQuantity: 5,
+		packType: "6.25U",
 	},
 	{
-		id: "other",
+		id: 2,
 		label: "Tùy chọn khác",
-		type: "other" as PackType,
+		type: "wire",
 		image: "",
 		detail: "",
+		value: "",
 	},
 ];
 
-const INDIVIDUAL_OPTIONS = [
+const INDIVIDUAL_OPTIONS: {
+	id: number;
+	label: string;
+	type: StabilizerType;
+	packType?: PackType;
+	image: string;
+	value: StabilizerSize;
+}[] = [
 	{
-		id: "2U",
-		label: "2U Stabilizer",
-		type: "2U" as StabilizerType,
+		id: 0,
+		label: "Thanh Stabilizer 2U",
+		type: StabilizerType.WIRE,
 		image: SERVICE_STABILIZER_2U,
+		value: "2U",
 	},
 	{
-		id: "6.25U",
-		label: "6.25U Stabilizer",
-		type: "6.25U" as StabilizerType,
+		id: 1,
+		label: "Thanh Stabilizer 6.25U",
+		type: StabilizerType.WIRE,
 		image: SERVICE_STABILIZER_625U,
+		value: "6.25U",
 	},
 	{
-		id: "7U",
-		label: "7U Stabilizer",
-		type: "7U" as StabilizerType,
+		id: 2,
+		label: "Thanh Stabilizer 7U",
+		type: StabilizerType.WIRE,
 		image: SERVICE_STABILIZER_7U,
+		value: "7U",
 	},
 ];
 
-function getMaxLimit(selectedPlan: string) {
-	if (selectedPlan === "basic") {
+const mappingStabilizerImage: Record<string, string> = {
+	"2U": SERVICE_STABILIZER_2U,
+	"6.25U": SERVICE_STABILIZER_625U,
+	"7U": SERVICE_STABILIZER_7U,
+	"PACK-7U": SERVICE_STABILIZER_PACK_7U,
+	"PACK-6.25U": SERVICE_STABILIZER_PACK_625U,
+};
+
+const mappingStabilizerDetail: Record<string, string> = {
+	"PACK-7U": "4x2U + 1x7U",
+	"PACK-6.25U": "4x2U + 1x6.25U",
+};
+
+function getMaxLimit(selectedPlan: "SP-BASIC" | "SP-EXTREME") {
+	if (selectedPlan === "SP-BASIC") {
 		return { maxPack: 2, maxTotal: 10 };
 	}
-	return { maxPack: 4, maxTotal: 20 };
+	return { maxPack: 2, maxTotal: 20 };
 }
 
-const StabilizerSelection: React.FC<IProps> = ({ selectedPlan, onChange }) => {
-	const [selectedPack, setSelectedPack] = useState<PackType | "">("");
+interface IProps {
+	itemId: string;
+	stabilizerSelected: IStabilizerFormItem;
+	onChange: (data: IStabilizerFormItem) => void;
+}
+
+const StabilizerSelection: React.FC<IProps> = ({
+	itemId,
+	stabilizerSelected,
+	onChange,
+}) => {
+	// services zustand and react query
+	const { selectedPlan } = useServices();
+
+	// States
+	const [selectedPack, setSelectedPack] = useState<{
+		type: "pack" | "wire";
+		packType: PackType;
+		value: string;
+		name: string;
+	} | null>(null);
 	const [otherSelection, setOtherSelection] = useState<{
-		type: StabilizerType | "";
+		value: StabilizerSize | "";
 		quantity: number;
-	}>({ type: "", quantity: 1 });
-	const [selectedList, setSelectedList] = useState<SelectedStabilizer[]>([]);
+	}>({ value: "", quantity: 1 });
 
-	const { maxPack, maxTotal } = getMaxLimit(selectedPlan);
+	// memoized values
+	const { maxPack, maxTotal } = useMemo(() => {
+		if (!selectedPlan?.planId) {
+			return { maxPack: 0, maxTotal: 0 };
+		}
+		return getMaxLimit(selectedPlan.planId);
+	}, [selectedPlan]);
 
-	// Calculate total packs and total quantity
-	const totalPackCount = selectedList.filter(
-		(item) => item.type === "pack-7u" || item.type === "pack-625"
-	).length;
-	const totalQuantity = selectedList.reduce(
-		(acc, item) => acc + item.quantity,
-		0
-	);
+	// const isHideOtherSelection = useMemo(
+	// 	() =>
+	// 		INDIVIDUAL_OPTIONS.every((opt) =>
+	// 			stabilizerFormSelected.some((item) => item.value === opt.value)
+	// 		),
+	// 	[stabilizerFormSelected]
+	// );
 
 	// Add pack to list
 	const handleAddPack = () => {
+		console.log("add pack", selectedPack);
 		if (!selectedPack) return;
+		console.log("totalPackCount", stabilizerSelected.totalPack, maxPack);
 		if (
-			(selectedPack === "pack-7u" || selectedPack === "pack-625") &&
-			totalPackCount >= maxPack
+			selectedPack.type === "pack" &&
+			stabilizerSelected.totalPack >= maxPack
 		)
 			return;
-		if (selectedPack === "pack-7u") {
-			const exists = selectedList.find((item) => item.type === "pack-7u");
-			if (exists) return;
-			setSelectedList((prev) => [
-				...prev,
-				{
-					id: "pack-7u",
-					name: "Pack 7U",
-					type: "pack-7u",
-					quantity: 5, // 4x2U + 1x7U
-					image: SERVICE_STABILIZER_STANDARD_PACK,
-					detail: "4x2U + 1x7U",
-				} as SelectedStabilizer,
-			]);
-		} else if (selectedPack === "pack-625") {
-			const exists = selectedList.find(
-				(item) => item.type === "pack-625"
-			);
-			if (exists) return;
-			setSelectedList((prev) => [
-				...prev,
-				{
-					id: "pack-625",
-					name: "Pack 6.25U",
-					type: "pack-625",
-					quantity: 5, // 4x2U + 1x6.25U
-					image: SERVICE_STABILIZER_STANDARD_PACK,
-					detail: "4x2U + 1x6.25U",
-				},
-			]);
-		}
-		setSelectedPack("");
-		if (onChange) {
-			setTimeout(() => onChange([...selectedList]), 0);
-		}
+		const exists = stabilizerSelected.packs.find(
+			(item) => item.value === selectedPack.value
+		);
+		const updater = {
+			id: `pack_${generateRandomId()}`,
+			name: selectedPack.name,
+			type: selectedPack.packType,
+			value: selectedPack.value,
+			quantity: exists ? exists.quantity + 1 : 1,
+			wireQuantity:
+				PACK_OPTIONS.find((item) => item.value === selectedPack.value)
+					?.wireQuantity ?? 0,
+		};
+		onChange({
+			...stabilizerSelected,
+			packs: [...stabilizerSelected.packs, updater],
+			totalPack: stabilizerSelected.totalPack + 1,
+			totalWire: stabilizerSelected.totalWire + updater.wireQuantity,
+		});
+		setSelectedPack(null);
 	};
 
 	// Add individual stabilizer to list
 	const handleAddOther = () => {
-		if (!otherSelection.type) return;
-		if (totalQuantity + otherSelection.quantity > maxTotal) return;
-		const exists = selectedList.find(
-			(item) => item.type === otherSelection.type
+		console.log(
+			"Adding other selection:",
+			otherSelection,
+			stabilizerSelected.totalWire + otherSelection.quantity,
+			maxTotal
 		);
-		if (exists) {
-			setSelectedList((prev) =>
-				prev.map((item) =>
-					item.type === otherSelection.type
-						? {
-								...item,
-								quantity:
-									item.quantity + otherSelection.quantity,
-						  }
-						: item
-				)
-			);
-		} else {
-			const found = INDIVIDUAL_OPTIONS.find(
-				(opt) => opt.type === otherSelection.type
-			);
-			if (!found) return;
-			setSelectedList((prev) => [
-				...prev,
-				{
-					id: found.id,
-					name: found.label,
-					type: found.type,
+		if (!otherSelection?.value) return;
+		if (stabilizerSelected.totalWire + otherSelection.quantity > maxTotal)
+			return;
+		const exists = stabilizerSelected.wires.find(
+			(item) => item.value === otherSelection.value
+		);
+
+		const updater = exists
+			? {
+					...exists,
+					quantity: exists.quantity + otherSelection.quantity,
+				}
+			: {
+					id: `wire_${generateRandomId()}`,
+					name:
+						INDIVIDUAL_OPTIONS.find(
+							(opt) => opt.value === otherSelection.value
+						)?.label || otherSelection.value,
+					type: otherSelection.value,
+					value: otherSelection.value,
 					quantity: otherSelection.quantity,
-					image: found.image ?? "",
-				} as SelectedStabilizer,
-			]);
-		}
-		setOtherSelection({ type: "", quantity: 1 });
-		if (onChange) {
-			setTimeout(() => onChange([...selectedList]), 0);
-		}
+					price: 0,
+				};
+		onChange({
+			...stabilizerSelected,
+			wires: [
+				...stabilizerSelected.wires.filter(
+					(item) => item.value !== otherSelection.value
+				),
+				updater,
+			],
+			totalWire: stabilizerSelected.totalWire + otherSelection.quantity,
+		});
+		setOtherSelection({
+			value: "",
+			quantity: 1,
+		});
 	};
 
 	// Remove from list
 	const handleRemove = (id: string) => {
-		setSelectedList((prev) => prev.filter((item) => item.id !== id));
-		if (onChange) {
-			setTimeout(
-				() => onChange(selectedList.filter((item) => item.id !== id)),
-				0
-			);
-		}
+		console.log("Removing", id, stabilizerSelected);
+		onChange({
+			...stabilizerSelected,
+			packs: stabilizerSelected.packs.filter((item) => item.id !== id),
+			wires: stabilizerSelected.wires.filter((item) => item.id !== id),
+			totalPack: stabilizerSelected.packs.some((item) => item.id === id)
+				? stabilizerSelected.totalPack - 1
+				: stabilizerSelected.totalPack,
+			totalWire: stabilizerSelected.packs.some((item) => item.id === id)
+				? stabilizerSelected.totalWire -
+					(stabilizerSelected.packs.find((item) => item.id === id)
+						?.wireQuantity || 0)
+				: stabilizerSelected.wires.some((item) => item.id === id)
+					? stabilizerSelected.totalWire -
+						(stabilizerSelected.wires.find((item) => item.id === id)
+							?.quantity || 0)
+					: stabilizerSelected.totalWire,
+		});
 	};
 
 	// Change quantity in list
-	const handleChangeQuantity = (id: string, quantity: number) => {
+	const handleChangeQuantity = (
+		id: string,
+		quantity: number,
+		type: StabilizerType
+	) => {
+		console.log("Changing quantity", id, quantity);
 		if (quantity < 1) return;
-		const newList = selectedList.map((item) =>
-			item.id === id ? { ...item, quantity } : item
-		);
+		let newList = [];
+		if (type === StabilizerType.PACK) {
+			newList = stabilizerSelected.packs.map((item) =>
+				item.id === id ? { ...item, quantity } : item
+			);
+		} else {
+			newList = stabilizerSelected.wires.map((item) =>
+				item.id === id ? { ...item, quantity } : item
+			);
+		}
 		// Check total quantity limit
 		const newTotal = newList.reduce((acc, item) => acc + item.quantity, 0);
 		if (newTotal > maxTotal) return;
-		setSelectedList(newList);
-		if (onChange) {
-			setTimeout(() => onChange(newList), 0);
-		}
+		// setSelectedList(newList);
+		onChange({
+			...stabilizerSelected,
+			[type]: newList,
+		});
 	};
 
 	// UI
 	return (
 		<div className="flex flex-col gap-4">
-			<div>
-				<label className="font-semibold mb-2 block">
-					Chọn gói stabilizer:
+			<>
+				<label className="font-semibold block">
+					Chọn gói stabilizer: <br />
+					<span className="text-sm font-normal text-gray-600">
+						Tối đa {maxPack} pack hoặc tổng số stabilizer ≤{" "}
+						{maxTotal}
+					</span>
 				</label>
-				<div className="flex gap-3">
+				<div className="flex gap-3 flex-wrap items-end">
 					{PACK_OPTIONS.map((pack) => (
 						<button
 							key={pack.id}
-							className={`border rounded-md p-4 flex flex-col items-center gap-1 min-w-[260px] ${
-								selectedPack === pack.type
+							className={`border-2 bg-[#fbfbfb] rounded-md p-3 flex flex-col items-center gap-1 min-w-[220px]  ${
+								selectedPack?.value === pack.value
 									? "!border-red-600"
 									: "!border-gray-600"
 							}`}
-							disabled={
-								(pack.type === "pack-7u" ||
-									pack.type === "pack-625") &&
-								selectedList.some(
-									(item) => item.type === pack.type
-								)
+							onClick={() =>
+								setSelectedPack({
+									type: pack.type as "pack" | "wire",
+									value: pack.value,
+									name: pack.label,
+									packType: pack.packType as PackType,
+								})
 							}
-							onClick={() => setSelectedPack(pack.type)}
 							type="button">
 							{pack.image ? (
-								<div className="relative w-[200px] h-[240px] !border !border-red-400 rounded-md hover:scale-105 transition duration-300">
+								<div className="relative w-[200px] h-[220px] !border !border-gray-400 rounded-md overflow-hidden hover:scale-105 transition duration-300">
 									<Image
 										src={pack.image ?? ""}
 										alt={pack.label}
 										objectFit="contain"
 										fill
-										className="cursor-pointer scale-125"
+										className="cursor-pointer scale-110"
 									/>
 								</div>
 							) : null}
@@ -273,151 +356,210 @@ const StabilizerSelection: React.FC<IProps> = ({ selectedPlan, onChange }) => {
 						</button>
 					))}
 				</div>
-				{selectedPack && selectedPack !== "other" && (
-					<button
+				{selectedPack && selectedPack.type !== "wire" ? (
+					<Button
+						variant="contained"
 						className="mt-2 bg-blue-600 text-white px-4 py-1 rounded"
 						onClick={handleAddPack}
 						disabled={
-							(selectedPack === "pack-7u" &&
-								(totalPackCount >= maxPack ||
-									selectedList.some(
-										(item) => item.type === "pack-7u"
-									))) ||
-							(selectedPack === "pack-625" &&
-								(totalPackCount >= maxPack ||
-									selectedList.some(
-										(item) => item.type === "pack-625"
-									)))
+							selectedPack.type === "pack" &&
+							stabilizerSelected.totalPack >= maxPack
 						}
 						type="button">
-						Thêm gói này
-					</button>
-				)}
-			</div>
-			{selectedPack === "other" && (
-				<div className="flex flex-col gap-2">
-					<div className="flex gap-2 items-end">
-						<div>
-							<label className="block text-sm">
-								Loại stabilizer
-							</label>
-							<select
-								className="border rounded px-2 py-1"
-								value={otherSelection.type}
-								onChange={(e) =>
-									setOtherSelection((prev) => ({
-										...prev,
-										type: e.target.value as StabilizerType,
-									}))
-								}>
-								<option value="">Chọn loại</option>
-								{INDIVIDUAL_OPTIONS.map((opt) => (
-									<option key={opt.id} value={opt.type}>
-										{opt.label}
-									</option>
-								))}
-							</select>
-						</div>
-						<div>
-							<label className="block text-sm">Số lượng</label>
-							<input
-								type="number"
-								min={1}
-								max={maxTotal - totalQuantity}
-								className="border rounded px-2 py-1 w-20"
-								value={otherSelection.quantity}
-								onChange={(e) =>
-									setOtherSelection((prev) => ({
-										...prev,
-										quantity: Math.max(
-											1,
-											Number(e.target.value)
-										),
-									}))
-								}
-							/>
-						</div>
-						<button
-							className="bg-blue-600 text-white px-4 py-1 rounded"
-							onClick={handleAddOther}
-							disabled={
-								!otherSelection.type ||
-								otherSelection.quantity < 1 ||
-								totalQuantity + otherSelection.quantity >
-									maxTotal
-							}
-							type="button">
-							Thêm
-						</button>
+						{selectedPack.type === "pack" &&
+						stabilizerSelected.totalPack >= maxPack
+							? "Đạt giới hạn của gói dịch vụ"
+							: "Thêm gói này"}
+					</Button>
+				) : null}
+			</>
+			{selectedPack?.type === "wire" ? (
+				<div className="flex gap-2 items-end">
+					<div>
+						<label className="block text-sm">Loại stabilizer</label>
+						<select
+							className="border rounded px-2 py-1 !min-w-[220px]"
+							value={otherSelection?.value}
+							onChange={(e) =>
+								setOtherSelection((prev) => ({
+									...prev,
+									value: e.target.value as StabilizerSize,
+								}))
+							}>
+							<option value="">Chọn loại</option>
+							{INDIVIDUAL_OPTIONS.map((opt) => (
+								<option
+									key={opt.id}
+									value={opt.value}
+									disabled={stabilizerSelected.wires.some(
+										(item) => item.value === opt.value
+									)}>
+									{opt.label}
+								</option>
+							))}
+						</select>
 					</div>
+					<div>
+						<label className="block text-sm">Số lượng</label>
+						<InputNumber
+							min={1}
+							max={maxTotal - stabilizerSelected.totalWire}
+							value={otherSelection?.quantity || 0}
+							onChange={(value) =>
+								setOtherSelection((prev) => ({
+									...prev,
+									quantity: Math.max(1, value || 1),
+								}))
+							}
+						/>
+					</div>
+					<Button
+						variant="contained"
+						className={`bg-blue-600 text-white px-4 py-1 rounded h-[34px] w-full `}
+						onClick={handleAddOther}
+						disabled={
+							!otherSelection?.value ||
+							otherSelection?.quantity < 1 ||
+							stabilizerSelected.totalWire +
+								otherSelection?.quantity >
+								maxTotal
+						}
+						type="button">
+						{!otherSelection?.value ||
+						otherSelection?.quantity < 1 ||
+						stabilizerSelected.totalWire +
+							otherSelection?.quantity >
+							maxTotal
+							? "Đạt giới hạn"
+							: "Thêm"}
+					</Button>
 				</div>
-			)}
-			<div>
-				<label className="font-semibold mb-2 block">Đã chọn:</label>
-				{selectedList.length === 0 ? (
+			) : null}
+			<InputWrapperLegend label="Stabilizer đã chọn">
+				{!stabilizerSelected.packs.length &&
+				!stabilizerSelected.wires.length ? (
 					<div className="text-gray-500">
 						Chưa chọn stabilizer nào.
 					</div>
 				) : (
 					<div className="flex flex-wrap gap-3">
-						{selectedList.map((item) => (
+						{stabilizerSelected?.packs.map((item) => (
 							<div
-								key={item.id}
-								className="border rounded-md p-3 flex items-center gap-3 relative min-w-[220px] bg-gray-50">
-								{item.image && (
+								className={`relative border border-gray-400 rounded-md p-3 flex gap-2 bg-gray-50 items-start max-w-80 `}>
+								<div
+									className={`relative flex-shrink-0 overflow-hidden border border-gray-300 bg-white rounded-md w-40 h-56`}>
 									<Image
-										src={item.image}
+										src={
+											mappingStabilizerImage?.[
+												item.value
+											] || ""
+										}
 										alt={item.name}
-										width={48}
-										height={32}
-										style={{ objectFit: "contain" }}
+										objectFit="contain"
+										fill
+										className={`scale-110`}
 									/>
-								)}
-								<div className="flex-1">
+								</div>
+								<div className="text-left flex flex-col gap-2">
+									<div className="font-semibold text-sm">
+										{item.name}
+										{mappingStabilizerDetail?.[
+											item.value
+										] ? (
+											<div className="text-xs text-gray-600">
+												{
+													mappingStabilizerDetail[
+														item.value
+													]
+												}
+											</div>
+										) : null}
+									</div>
+
+									<div className="flex flex-col gap-4">
+										<span className="text-sm">
+											Tổng wire: {item.wireQuantity}
+										</span>
+									</div>
+								</div>
+								<button
+									className="absolute -top-2 -right-2 text-red-500 hover:text-red-700"
+									onClick={() => handleRemove(item.id)}
+									type="button"
+									aria-label="Xóa">
+									<X className="stroke-red-400 border border-red-600 rounded-full p-1 bg-white" />
+								</button>
+							</div>
+						))}
+						{stabilizerSelected?.wires.map((item) => (
+							<div
+								className={`relative border border-gray-400 rounded-md p-3 flex flex-col gap-2 bg-gray-50 items-start ${item.value !== "2U" ? "w-80" : "w-52"}`}>
+								<div
+									className={`relative flex-shrink-0 overflow-hidden border border-gray-300 bg-white rounded-md w-full h-24`}>
+									<Image
+										src={
+											mappingStabilizerImage?.[
+												item.value
+											] || ""
+										}
+										alt={item.name}
+										objectFit={
+											item.value !== "2U"
+												? "contain"
+												: "cover"
+										}
+										fill
+										className={`${item.value !== "2U" ? "scale-[1.125]" : "scale-105"}`}
+									/>
+								</div>
+								<div className="text-left flex flex-col gap-2">
 									<div className="font-semibold">
 										{item.name}
+										{mappingStabilizerDetail?.[
+											item.value
+										] ? (
+											<div className="text-xs text-gray-600">
+												{
+													mappingStabilizerDetail[
+														item.value
+													]
+												}
+											</div>
+										) : null}
 									</div>
-									{item.detail && (
-										<div className="text-xs text-gray-500">
-											{item.detail}
-										</div>
-									)}
-									<div className="flex items-center gap-2 mt-1">
-										<span>Số lượng:</span>
-										<input
+
+									<div className="flex flex-col gap-4">
+										<SimpleTextField
 											type="number"
+											label="Số lượng"
+											name={`quantity_${item.id}`}
 											min={1}
 											max={maxTotal}
-											className="border rounded px-2 py-1 w-16"
 											value={item.quantity}
-											onChange={(e) =>
+											onChangeWithoutNameValue={(
+												e: React.ChangeEvent<HTMLInputElement>
+											) =>
 												handleChangeQuantity(
 													item.id,
-													Math.max(
-														1,
-														Number(e.target.value)
-													)
+													Number(e.target.value),
+													StabilizerType.WIRE
 												)
 											}
 										/>
 									</div>
 								</div>
 								<button
-									className="absolute top-1 right-1 text-red-500 hover:text-red-700"
+									className="absolute -top-2 -right-2 text-red-500 hover:text-red-700"
 									onClick={() => handleRemove(item.id)}
 									type="button"
 									aria-label="Xóa">
-									&times;
+									<X className="stroke-red-400 border border-red-600 rounded-full p-1 bg-white" />
 								</button>
 							</div>
 						))}
 					</div>
 				)}
-				<div className="mt-2 text-sm text-gray-600">
-					Giới hạn: Tối đa {maxPack} gói hoặc tổng số stabilizer ≤{" "}
-					{maxTotal}
-				</div>
-			</div>
+			</InputWrapperLegend>
 		</div>
 	);
 };

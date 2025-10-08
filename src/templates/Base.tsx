@@ -53,7 +53,7 @@ const Base = ({
 			<Header />
 			<div
 				className={classNames(
-					`text-gray-600 antialiased bg-gray-100 container mx-auto`
+					`max-w-7xl text-gray-600 antialiased bg-gray-100 container mx-auto`
 					// isNonStrutured
 					// 	? `grid grid-rows-[${
 					// 			appiedFixedLayout

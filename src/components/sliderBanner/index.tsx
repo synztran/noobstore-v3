@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import styles from "./styles.module.css";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const sliderSetting = {
 	dots: true,
@@ -33,22 +34,29 @@ interface Props {
 
 const SliderBanner = ({ data }: Props) => {
 	return (
-        <div className="container relative mb-8 max-w-full">
-            <Slider className={styles.sliderBanner} {...sliderSetting}>
-				{tempData?.map((child) => (
-					<div className="w-full relative h-50vh">
-						<Image
-                            src={child.imageUrl}
-                            // height={20}
-                            alt="image banner"
-                            className="object-cover"
-                            fill
-                            sizes="100vw" />
-					</div>
+		<div className="container relative mb-8 max-w-full">
+			<Swiper
+				className={styles.sliderBanner}
+				slidesPerView={1}
+				loop={true}
+				pagination={{ clickable: true }}
+				navigation={true}>
+				{tempData?.map((child, idx) => (
+					<SwiperSlide key={idx}>
+						<div className="w-full relative h-50vh">
+							<Image
+								src={child.imageUrl}
+								alt="image banner"
+								className="object-cover"
+								fill
+								sizes="100vw"
+							/>
+						</div>
+					</SwiperSlide>
 				))}
-			</Slider>
-        </div>
-    );
+			</Swiper>
+		</div>
+	);
 };
 
 export default SliderBanner;

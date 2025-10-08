@@ -1,7 +1,7 @@
 // const DOMAIN_PREFIX = "https://noob-store.thuannc.com";
 // const DOMAIN_PREFIX = "https://server-noobstore-v3.onrender.com";
-// const DOMAIN_PREFIX = "http://localhost:8000";
-const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // when you try fetching data ssr should using this domain, try using local will cat error on connector port
+const DOMAIN_PREFIX = "http://localhost:8000";
+// const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // when you try fetching data ssr should using this domain, try using local will cat error on connector port
 
 const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`;
 const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
@@ -64,13 +64,9 @@ export const PROMOTION_API = {
 	LUCKY_WHEEL: `${DOMAIN_PREFIX}/promotion/lucky-wheel/get`,
 };
 
-export const CONFIG_API = {
-	ALL_CONFIG: `${DOMAIN_PREFIX}/config`,
-};
+export const CONFIG_API = { ALL_CONFIG: `${DOMAIN_PREFIX}/config` };
 
-export const UPLOAD_API = {
-	IMAGE: `${UPLOAD_PREFIX}/image`,
-};
+export const UPLOAD_API = { IMAGE: `${UPLOAD_PREFIX}/image` };
 
 export const USED_PRODUCT_API = {
 	POSTING: `${USED_PRODUCT_PREFIX}/post`,
@@ -82,9 +78,7 @@ export const LUCKY_WHEEL_API = {
 	GET: `${LUCKY_WHEEL_PREFIX}`,
 };
 
-export const PRODUCT_OPTIONS_API = {
-	GET: `${PRODUCT_OPTION_PREFIX}/get`,
-};
+export const PRODUCT_OPTIONS_API = { GET: `${PRODUCT_OPTION_PREFIX}/get` };
 
 export const SERVICE_API = {
 	GET_DEFINITIONS: `${SERVICE_PREFIX}/definitions`,

@@ -79,13 +79,14 @@ const Content = ({
 
 const Banner = () => {
 	return (
-        <div className="rounded-md relative w-1/2" style={{ height: 550 }}>
-            <Image
-                src={HOME_LEFT_BANNER}
-                alt="deskmat"
-                className="rounded-md object-cover"
-                fill
-                sizes="100vw" />
-        </div>
-    );
+		<div className="rounded-md relative w-1/2" style={{ height: 550 }}>
+			<Image
+				src={HOME_LEFT_BANNER}
+				alt="deskmat"
+				className="rounded-md object-cover"
+				fill
+				sizes="100vw"
+			/>
+		</div>
+	);
 };

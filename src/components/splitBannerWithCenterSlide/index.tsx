@@ -1,5 +1,5 @@
 import { HOME_LEFT_BANNER } from "@/constants/Images";
-import { Box, ButtonBase, Grid } from "@material-ui/core";
+import { Box, Button, Grid } from "@mui/material";
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,6 +8,7 @@ import styles from "./styles.module.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { classNames } from "@/utils/AppConfig";
 
 const title = `Welcome to  Noobstore`;
 const description =
@@ -15,11 +16,11 @@ const description =
 
 const SplitBannerWithCenterSlide = () => {
 	return (
-		<Grid container className={styles.splitBannerContainer}>
+		<div className={classNames(styles.splitBannerContainer || "", "grid")}>
 			<LeftSide title={title} description={description} />
 			<Central />
 			<RightSide />
-		</Grid>
+		</div>
 	);
 };
 
@@ -27,17 +28,17 @@ export default SplitBannerWithCenterSlide;
 
 const LeftSide = ({ title = "", description = "" }) => {
 	return (
-		<Grid item xs={12} md={6} className={styles.leftSideContainer}>
+		<div className={classNames(styles.leftSideContainer || "", "grid ")}>
 			<span className={styles.textTitle}>{title}</span>
 			<span className="text-lg max-w-sm">{description}</span>
-			<ButtonBase className={styles.buttonShopNow}>Shop now</ButtonBase>
-		</Grid>
+			<Button className={styles.buttonShopNow}>Shop now</Button>
+		</div>
 	);
 };
 
 const Central = () => {
 	return (
-		<Box className={styles.centralSideContainer}>
+		<div className={styles.centralSideContainer}>
 			<Swiper
 				navigation={true}
 				pagination={true}
@@ -65,7 +66,7 @@ const Central = () => {
 					/>
 				</SwiperSlide>
 			</Swiper>
-		</Box>
+		</div>
 	);
 };
 

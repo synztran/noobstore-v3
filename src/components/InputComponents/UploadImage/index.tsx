@@ -132,9 +132,9 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 				.concat(newImages)
 				.map((img) => {
 					if (img.status === EnumUploadStatus.UPLOADING) {
-            const { response } = uploadResults[uploadingIdx] || {};
-            console.log("response", response)
-            // TODO: check when image failed to upload
+						const { response } = uploadResults[uploadingIdx] || {};
+						console.log("response", response);
+						// TODO: check when image failed to upload
 						if (!response) return img;
 						const resultData = getFirst(response) || {};
 						uploadingIdx++;
@@ -203,13 +203,13 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 				variant="contained"
 				tabIndex={-1}
 				startIcon={<AttachFileIcon className="text-black mx-0 px-0" />}
-				className="!px-2 !py-1 !bg-[#e5e5e7]"
+				className="!px-2 !py-1 !bg-[#e5e5e7] mt-2"
 				onClick={() => {
 					if (fileInputRef.current) {
 						fileInputRef.current.click();
 					}
 				}}>
-				<span className="normal-case text-black font-bold font-nunito">
+				<span className="normal-case text-black font-bold font-nunito text-sm">
 					{uploadedImages?.length > 0
 						? "Lựa chọn thêm ảnh"
 						: "Tải ảnh lên"}
@@ -286,10 +286,7 @@ const BlockImageUploaded = ({
 									width={120}
 									height={120}
 									className="rounded-lg cursor-pointer hover:scale-105 transform transition-transform duration-300"
-									style={{
-										maxWidth: "100%",
-										height: "auto",
-									}}
+									style={{ maxWidth: "100%", height: "auto" }}
 									quality={100}
 									sizes="100vw"
 								/>
@@ -318,8 +315,9 @@ const BlockImageUploaded = ({
 								</span>
 							</div>
 							<span
-								className={`${UploadStatusProperty[image.status]
-									?.color} flex items-center gap-1 text-xs`}>
+								className={`${
+									UploadStatusProperty[image.status]?.color
+								} flex items-center gap-1 text-xs`}>
 								{UploadStatusProperty[image.status]?.icon}
 								{UploadStatusProperty[image.status]?.text}
 							</span>

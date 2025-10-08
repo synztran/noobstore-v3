@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import ProductBlock from "./ProductBlock";
 import { GROUP_IMAGE_1 } from "@/constants/Images";
 import useProductBlockLimit from "@/hook/useScreen";
@@ -9,18 +9,10 @@ export interface ProductItem {
 	name: string;
 	price: number;
 	image: string;
-	rating: {
-		stars: number;
-		reviews: number;
-	};
+	rating: { stars: number; reviews: number };
 	reviews: number;
 	quantity: number;
-	tags?: {
-		label: string;
-		styles?: {
-			[x: string]: string;
-		};
-	}[];
+	tags?: { label: string; styles?: { [x: string]: string } }[];
 }
 
 interface IProps {
@@ -41,10 +33,7 @@ const fakeItems: ProductItem[] = [
 		image: GROUP_IMAGE_1,
 		reviews: 24,
 		quantity: 4,
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 	},
 	{
 		id: 2,
@@ -52,10 +41,7 @@ const fakeItems: ProductItem[] = [
 		name: "Gecko Silent Linear",
 		price: 6000,
 		image: "/images/karina65.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -65,10 +51,7 @@ const fakeItems: ProductItem[] = [
 		name: "Gecko Silent Linear",
 		price: 7500,
 		image: "/images/tgr_910.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -78,10 +61,7 @@ const fakeItems: ProductItem[] = [
 		name: "Gecko Silent Linear",
 		price: 8000,
 		image: "/images/filco.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 		tags: [
@@ -94,38 +74,31 @@ const fakeItems: ProductItem[] = [
 					border: "none",
 				},
 			},
-			{
-				label: "Free shipping",
-			},
+			{ label: "Free shipping" },
 		],
 	},
-	{
-		id: 5,
-		brand: "Kinetic Labs",
-		name: "Gecko Silent Linear",
-		price: 8000,
-		image: "/images/filco.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
-		reviews: 24,
-		quantity: 4,
-		tags: [
-			{
-				label: "PRO",
-				styles: {
-					background:
-						"linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%)",
-					color: "#fff",
-					border: "none",
-				},
-			},
-			{
-				label: "Free shipping",
-			},
-		],
-	},
+	// {
+	// 	id: 5,
+	// 	brand: "Kinetic Labs",
+	// 	name: "Gecko Silent Linear",
+	// 	price: 8000,
+	// 	image: "/images/filco.webp",
+	// 	rating: { stars: 5, reviews: 24 },
+	// 	reviews: 24,
+	// 	quantity: 4,
+	// 	tags: [
+	// 		{
+	// 			label: "PRO",
+	// 			styles: {
+	// 				background:
+	// 					"linear-gradient(90deg, #6d28d9 0%, #a78bfa 100%)",
+	// 				color: "#fff",
+	// 				border: "none",
+	// 			},
+	// 		},
+	// 		{ label: "Free shipping" },
+	// 	],
+	// },
 ];
 
 const HomeProductBlock: React.FC<IProps> = ({
@@ -136,19 +109,26 @@ const HomeProductBlock: React.FC<IProps> = ({
 	id,
 	icon,
 }) => {
-	const { limitHomeProductBlock } = useProductBlockLimit();
+	const { limitHomeProductBlock = 5 } = useProductBlockLimit();
+	console.log("limitHomeProductBlock", limitHomeProductBlock);
+
+	const data = useMemo(() => {
+		if (!limitHomeProductBlock) return [];
+		return fakeItems?.slice(0, limitHomeProductBlock);
+	}, [limitHomeProductBlock]);
+
 	return (
 		<div className="w-full rounded-xl shadow-none" id={id}>
 			<div className="flex items-center justify-between mb-2 px-2">
 				<div className="flex items-center gap-2">
 					{icon ?? null}
-					<span className="font-semibold text-xl text-black">
+					<div className="font-semibold text-xl text-black">
 						{title}.
-					</span>
+					</div>
 					{subTitle && (
-						<span className="text-gray-600 text-lg font-normal">
+						<div className="text-gray-600 text-lg font-normal">
 							{subTitle}
-						</span>
+						</div>
 					)}
 				</div>
 				<div>
@@ -161,19 +141,14 @@ const HomeProductBlock: React.FC<IProps> = ({
 					)}
 				</div>
 			</div>
-			{/* Swiper Controls */}
-			<div className="relative">
-				<div className="grid grid-cols-4 lg:grid-cols-5 gap-4 mt-3 py-2">
-					{fakeItems
-						?.slice(0, limitHomeProductBlock)
-						.map((item, idx) => (
-							<ProductBlock
-								isFirst={idx === 0}
-								product={item}
-								key={item.id}
-							/>
-						))}
-				</div>
+			<div className="grid grid-cols-4 lg:grid-cols-5 gap-4 mt-3 py-2">
+				{fakeItems.map((item, idx) => (
+					<ProductBlock
+						isFirst={idx === 0}
+						product={item}
+						key={item.id}
+					/>
+				))}
 			</div>
 		</div>
 	);

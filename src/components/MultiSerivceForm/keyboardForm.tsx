@@ -1,18 +1,18 @@
 import { serviceFormText } from "@/constants";
+import useSelectedOption from "@/hook/useSelectedOption";
 import { EnumServiceType, EnumUploadStatus } from "@/interface/interface";
-import React, { useMemo, useEffect, useRef } from "react";
+import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
+import { mapServiceTasksToOptions } from "@/utils/Data";
 import useServices, {
 	IKeyboardFormItem,
 	useServiceAction,
 } from "@/zustand/useServices";
+import React, { useEffect, useMemo, useRef } from "react";
 import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
-import SearchableSelect, { IOptionSelection } from "../SelectComp";
 import SimpleTextField from "../InputComponents/SimpleTextField";
 import UploadImage from "../InputComponents/UploadImage";
 import InputWrapperLegend from "../InputComponents/WrapperLegend";
-import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
-import { mapServiceTasksToOptions } from "@/utils/Data";
-import useSelectedOption from "@/hook/useSelectedOption";
+import SearchableSelect, { IOptionSelection } from "../SelectComp";
 
 interface IProps {
 	serviceType: EnumServiceType;
@@ -54,20 +54,22 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		initialPcbOptions: apiOptions.pcb,
 		initialLayoutOptions: apiOptions.layout,
 		initialServicePrices: {
-			solder: apiOptions.servicePrices["keyboard"]["solder"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			desolder: apiOptions.servicePrices["keyboard"]["desolder"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			cleanKeyboard: apiOptions.servicePrices["keyboard"]["clean"] || {
-				price: 0,
-				name: "",
-				description: "",
+			keyboard: {
+				solder: apiOptions.servicePrices["keyboard"]["solder"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
+				desolder: apiOptions.servicePrices["keyboard"]["desolder"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
+				clean: apiOptions.servicePrices["keyboard"]["clean"] || {
+					price: 0,
+					name: "",
+					description: "",
+				},
 			},
 		},
 	});
@@ -105,15 +107,12 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		name: string;
 		option: IOptionSelection | null;
 	}) => {
+		console.log("name", name);
+		console.log("option", option);
+
 		if (!name) return;
 
-		// Map form field names to hook state names
-		let hookStateName = name;
-		if (name === "pcbType") hookStateName = "pcb";
-		if (name === "keyboardLayout") hookStateName = "layout";
-
-		handleKeyboardSelect({ name: hookStateName, option });
-
+		handleKeyboardSelect({ name, option });
 		if (itemId) {
 			const payload: any = {
 				...props.value,
@@ -138,18 +137,14 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		}
 		debounceRef.current[name] = setTimeout(() => {
 			if (itemId) {
-				updateKeyboardItem(itemId, {
-					[name]: value,
-				} as any);
+				updateKeyboardItem(itemId, { [name]: value } as any);
 			}
 		}, 300);
 	};
 
 	const handleNoteChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		if (itemId) {
-			updateKeyboardItem(itemId, {
-				note: e.target.value,
-			} as any);
+			updateKeyboardItem(itemId, { note: e.target.value } as any);
 		}
 	};
 
@@ -204,7 +199,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 					</span>
 					<div className="w-full border-b border-gray-500" />
 				</div>
-				<div className="flex flex-col gap-4 mt-1">
+				<div className="flex flex-col gap-4">
 					<SimpleTextField
 						name="keyboardName"
 						label="Bàn phím"
@@ -223,7 +218,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 						note="Khi thay đổi, cần đăng ký lại dịch vụ"
 					/>
 					<SearchableSelect
-						name="keyboardLayout"
+						name="keyboardSize"
 						label="Layout phím"
 						options={keyboardOptions.layout}
 						onAddNew={handleAddNew}
@@ -302,7 +297,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 						</div>
 					</>
 				) : (
-					<WaitOnSelectComp label="Vui lòng lựa chọn loại PCB" />
+					<WaitOnSelectComp label="Vui lòng lựa chọn thông tin phím" />
 				)}
 			</div>
 			<div className="flex flex-col gap-2">

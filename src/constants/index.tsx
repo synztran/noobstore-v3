@@ -25,21 +25,14 @@ import {
 	ArchiveBoxIcon,
 	ArrowPathIcon,
 	ChartPieIcon,
+	ChatBubbleBottomCenterTextIcon,
 	CursorArrowRaysIcon,
 	FingerPrintIcon,
 	FolderPlusIcon,
 	UserGroupIcon,
 	WrenchIcon,
-	ChatBubbleBottomCenterTextIcon,
 } from "@heroicons/react/24/outline";
-import {
-	CircleCheck,
-	CircleX,
-	DoorOpen,
-	MessageCircle,
-	ShieldCheck,
-	Wrench,
-} from "lucide-react";
+import { CircleCheck, CircleX, DoorOpen, ShieldCheck } from "lucide-react";
 import {
 	COD_ICON,
 	FLAGS_VIETNAM,
@@ -183,12 +176,7 @@ export const services = [
 ];
 
 export const CountryFlag = [
-	{
-		id: 0,
-		name: "Việt Nam",
-		imageUrl: FLAGS_VIETNAM,
-		value: "vietnam",
-	},
+	{ id: 0, name: "Việt Nam", imageUrl: FLAGS_VIETNAM, value: "vietnam" },
 ];
 
 export const ShippingMethod = [
@@ -219,11 +207,7 @@ export const ShippingMethod = [
 ];
 
 export const PaymentMethod = [
-	{
-		id: 0,
-		name: "Thanh toán khi nhận hàng",
-		value: "CASH_ON_DELIVERY",
-	},
+	{ id: 0, name: "Thanh toán khi nhận hàng", value: "CASH_ON_DELIVERY" },
 	{
 		id: 2,
 		name: "Thanh toán qua ví Momo",
@@ -239,11 +223,7 @@ export const PaymentMethod = [
 ];
 
 export const BillingAddress = [
-	{
-		id: 0,
-		name: "Giống như địa chỉ giao hàng",
-		value: "same_address",
-	},
+	{ id: 0, name: "Giống như địa chỉ giao hàng", value: "same_address" },
 	// {
 	//   id: 1,
 	//   name: "Sử dụng một địa chỉ khác",
@@ -269,10 +249,7 @@ export const MapPaymentMethod: Record<
 		icon: COD_ICON,
 		label: "Thanh toán khi nhận hàng",
 	},
-	[EnumPaymentMethod.MOMO]: {
-		icon: MOMO_VERTICAL_LOGO,
-		label: "Momo",
-	},
+	[EnumPaymentMethod.MOMO]: { icon: MOMO_VERTICAL_LOGO, label: "Momo" },
 	// [EnumPaymentMethod.ZALO_PAY]: "ZaloPay",
 	[EnumPaymentMethod.BANK_TRANSFER]: {
 		icon: NEW_MISSING_IMAGE,
@@ -384,7 +361,7 @@ export const tempStabilizerTypeOptions = [
 	{ id: 1, value: "CLIP-IN", label: "Clip-In (Bắt trên mạch bằng ngàm)" },
 ];
 
-export const tempStabilizerOptions = [
+export const tempStabilizerSizeOptions = [
 	{ id: 0, value: "2U", label: "2U Stabilizer" },
 	{ id: 1, value: "6.25U", label: "6.25U Stabilizer" },
 	{ id: 2, value: "7U", label: "7U Stabilizer" },
@@ -422,26 +399,11 @@ export const BreadcumbTitle: Record<string, string> = {
 };
 
 export const MapCategoryStatus: Record<EnumSaleStatus, any> = {
-	[EnumSaleStatus.GB]: {
-		label: "Group buy",
-		color: "bg-blue-500",
-	},
-	[EnumSaleStatus.INSTOCK]: {
-		label: "Sẵn hàng",
-		color: "bg-green-500",
-	},
-	[EnumSaleStatus.OUTSTOCK]: {
-		label: "Hết hàng",
-		color: "bg-red-500",
-	},
-	[EnumSaleStatus.TBD]: {
-		label: "",
-		color: "",
-	},
-	[EnumSaleStatus.ALL]: {
-		label: "",
-		color: "",
-	},
+	[EnumSaleStatus.GB]: { label: "Group buy", color: "bg-blue-500" },
+	[EnumSaleStatus.INSTOCK]: { label: "Sẵn hàng", color: "bg-green-500" },
+	[EnumSaleStatus.OUTSTOCK]: { label: "Hết hàng", color: "bg-red-500" },
+	[EnumSaleStatus.TBD]: { label: "", color: "" },
+	[EnumSaleStatus.ALL]: { label: "", color: "" },
 };
 
 export const RCategoryType: Record<EnumCategoryType, string> = {
@@ -1045,21 +1007,9 @@ export const VNCity = [
 ];
 
 export const genderOptions = [
-	{
-		id: 0,
-		name: "Nam",
-		value: 1,
-	},
-	{
-		id: 1,
-		name: "Nữ",
-		value: 2,
-	},
-	{
-		id: 2,
-		name: "Khác",
-		value: 0,
-	},
+	{ id: 0, name: "Nam", value: 1 },
+	{ id: 1, name: "Nữ", value: 2 },
+	{ id: 2, name: "Khác", value: 0 },
 ];
 
 export const SWITCH_TYPE_LABEL: Record<ENUM_SWITCH_TYPE, string> = {
@@ -1101,26 +1051,11 @@ export const SPRING_WEIGHT_LABEL: Record<string, string> = {
 };
 
 export const KEYBOARD_LAYOUT_OPTS = [
-	{
-		value: 0,
-		label: "< 60%",
-	},
-	{
-		value: 1,
-		label: "60% - 75%",
-	},
-	{
-		value: 2,
-		label: "TKL",
-	},
-	{
-		value: 3,
-		label: "Fullsize",
-	},
-	{
-		value: 4,
-		label: "1800",
-	},
+	{ value: 0, label: "< 60%" },
+	{ value: 1, label: "60% - 75%" },
+	{ value: 2, label: "TKL" },
+	{ value: 3, label: "Fullsize" },
+	{ value: 4, label: "1800" },
 ];
 
 export const CATEGORY_TYPE: Record<number, string> = {
@@ -1180,38 +1115,16 @@ export const mapPostSaleType: Record<
 };
 
 export const postSaleTypeOptions = [
-	{
-		label: "Giá bán thẳng",
-		value: EnumPostPriceType.ABSOLUTE,
-	},
-	{
-		label: "Giá thương lượng",
-		value: EnumPostPriceType.OBO,
-		disabled: true,
-	},
+	{ label: "Giá bán thẳng", value: EnumPostPriceType.ABSOLUTE },
+	{ label: "Giá thương lượng", value: EnumPostPriceType.OBO, disabled: true },
 ];
 
 export const postProductTypeOptions = [
-	{
-		label: "Bàn phím",
-		value: EnumCategoryType.KEYBOARD,
-	},
-	{
-		label: "Switch",
-		value: EnumCategoryType.SWITCH,
-	},
-	{
-		label: "Key set/Keycap",
-		value: EnumCategoryType.KEYCAP,
-	},
-	{
-		label: "Phụ kiện",
-		value: EnumCategoryType.ACCESSORY,
-	},
-	{
-		label: "Khác",
-		value: EnumCategoryType.TBA,
-	},
+	{ label: "Bàn phím", value: EnumCategoryType.KEYBOARD },
+	{ label: "Switch", value: EnumCategoryType.SWITCH },
+	{ label: "Key set/Keycap", value: EnumCategoryType.KEYCAP },
+	{ label: "Phụ kiện", value: EnumCategoryType.ACCESSORY },
+	{ label: "Khác", value: EnumCategoryType.TBA },
 ];
 
 export const postProductAddonService = [
@@ -1250,24 +1163,11 @@ export const postProductAddonService = [
 
 export const RProductPartType: Record<
 	EnumProductType,
-	{
-		label: string;
-		value: EnumProductType;
-		disabled?: boolean;
-	}
+	{ label: string; value: EnumProductType; disabled?: boolean }
 > = {
-	[EnumProductType.CASE]: {
-		label: "Case",
-		value: EnumProductType.CASE,
-	},
-	[EnumProductType.PCB]: {
-		label: "Mạch phím",
-		value: EnumProductType.PCB,
-	},
-	[EnumProductType.PLATE]: {
-		label: "Plate",
-		value: EnumProductType.PLATE,
-	},
+	[EnumProductType.CASE]: { label: "Case", value: EnumProductType.CASE },
+	[EnumProductType.PCB]: { label: "Mạch phím", value: EnumProductType.PCB },
+	[EnumProductType.PLATE]: { label: "Plate", value: EnumProductType.PLATE },
 	[EnumProductType.ACCESSORIES]: {
 		label: "Phụ kiện",
 		value: EnumProductType.ACCESSORIES,
@@ -1284,10 +1184,7 @@ export const RProductPartType: Record<
 		label: "Artisan",
 		value: EnumProductType.ARTISAN,
 	},
-	[EnumProductType.ETC]: {
-		label: "Khác",
-		value: EnumProductType.ETC,
-	},
+	[EnumProductType.ETC]: { label: "Khác", value: EnumProductType.ETC },
 	[EnumProductType.FULL_KIT]: {
 		label: "Kit full",
 		value: EnumProductType.FULL_KIT,
@@ -1331,10 +1228,7 @@ export const productPartOptions = [
 
 export const ORDER_STATUS_LABEL: Record<
 	EnumOrderStatus,
-	{
-		label: string;
-		color: string;
-	}
+	{ label: string; color: string }
 > = {
 	[EnumOrderStatus.ORDERED]: {
 		label: "Đã được đặt hàng",
@@ -1352,10 +1246,7 @@ export const ORDER_STATUS_LABEL: Record<
 		label: "Đã giao hàng",
 		color: "text-green-600",
 	},
-	[EnumOrderStatus.CANCELLED]: {
-		label: "Đã hủy",
-		color: "text-red-600",
-	},
+	[EnumOrderStatus.CANCELLED]: { label: "Đã hủy", color: "text-red-600" },
 };
 
 export const mapPaymentStatus: Record<
@@ -1406,7 +1297,7 @@ export const DEFAULT_SERVICE_PLAN = [
 
 export const MAPPING_DELIVERY_METHOD: Record<string, string> = {
 	SELF_DELIVERY_SELF_PICKUP: "Khách tự giao và nhận",
-	SELF_DELIVERY_STORE_PICKUP: "Giao nhận một chiều",
+	STORE_PICKUP_SELF_DELIVERY: "Giao nhận một chiều",
 	STORE_DELIVERY_SELF_PICKUP: "Giao nhận một chiều",
 	STORE_DELIVERY_STORE_PICKUP: "Giao nhận hai chiều",
 };
@@ -1415,14 +1306,11 @@ export const MAPPING_ICON_SUMMARY_SERVICE: Record<
 	string,
 	{ icon: React.ReactNode; color: string }
 > = {
-	INSURANCE: {
-		icon: <ShieldCheck size={28} />,
+	INSURANCE_PACKAGE: {
+		icon: <ShieldCheck size={24} />,
 		color: "text-green-500",
 	},
-	DOOR_TO_DOOR: {
-		icon: <DoorOpen size={28} />,
-		color: "text-green-500",
-	},
+	DOOR_TO_DOOR: { icon: <DoorOpen size={24} />, color: "text-green-500" },
 };
 
 export const SUGGESTED_DISCOUNT_CODES = [
@@ -1441,8 +1329,6 @@ export const SUGGESTED_DISCOUNT_CODES = [
 		description: "Giảm 50.000đ cho đơn từ 500.000đ",
 		discountPercent: 0,
 		discountAmount: 50000,
-		condition: {
-			minTotalValue: 500000,
-		},
+		condition: { minTotalValue: 500000 },
 	},
 ];

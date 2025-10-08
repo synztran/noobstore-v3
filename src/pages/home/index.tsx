@@ -32,6 +32,7 @@ const HomePage = ({}) => {
 					items={[]}
 					id="keyboards"
 				/>
+
 				<HomeProductBlock
 					title="Switches"
 					subTitle="Linear, clicky, tactile, kể cả silent"

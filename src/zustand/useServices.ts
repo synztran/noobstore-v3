@@ -1,12 +1,11 @@
+import { SUGGESTED_DISCOUNT_CODES } from "@/constants";
 import {
-	EnumStabilizerStatus,
+	EnumShippingMethodCode,
 	EnumSwitchStatus,
 	EnumSwitchType,
 } from "@/interface/interface";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import ServiceClient from "@/client/ServiceClient";
-import { SUGGESTED_DISCOUNT_CODES } from "@/constants";
 
 // Service option interface for dropdowns
 export interface IServiceOption {
@@ -17,7 +16,7 @@ export interface IServiceOption {
 
 // Service plan interface
 export interface IServicePlan {
-	planId: string;
+	planId: "SP-BASIC" | "SP-EXTREME";
 	name: string;
 	description: string;
 	price: number;
@@ -91,16 +90,8 @@ export interface IContactInfo {
 
 // Shipping information interface
 export interface IShippingInfo {
-	method: {
-		name: string;
-		code: string;
-		price: number;
-	};
-	deliveryMethod: {
-		name: string;
-		code: string;
-		price: number;
-	};
+	method: { name: string; code: string; price: number };
+	deliveryMethod: { name: string; code: string; price: number };
 	pickup: {
 		address: string;
 		date: string | null;
@@ -174,7 +165,6 @@ export interface IStabilizerFormItem {
 	type: string | null;
 	mountType: string | null;
 	name: string | null;
-	quantity: number;
 	services: {
 		[x: string]: {
 			isUse: boolean;
@@ -186,6 +176,25 @@ export interface IStabilizerFormItem {
 	attachments: { publicUrl: string; size: number }[];
 	note?: string;
 	status: string | null;
+	totalWire: number;
+	totalPack: number;
+	totalPrice: number;
+	wires: {
+		id: string;
+		name: string;
+		type: "2U" | "6.25U" | "7U";
+		price: number;
+		value: string;
+		quantity: number;
+	}[];
+	packs: {
+		id: string;
+		name: string;
+		type: "6.25U" | "7U";
+		value: string;
+		quantity: number;
+		wireQuantity: number;
+	}[];
 }
 
 // Backend data format interfaces
@@ -198,13 +207,15 @@ interface IBackendServiceItem {
 interface IBackendBookingData {
 	planId: number | string;
 	services: IBackendServiceItem[];
-	shipping: {
-		method: string;
-		pickup: any;
-		delivery: any;
-	};
+	shipping: { method: string; pickup: any; delivery: any };
 	contact: IContactInfo;
-	totalAmount: number;
+	totalPrice: number;
+	subTotalPrice: number;
+	extraService: {
+		name: string;
+		price: number;
+		value: string;
+	}[];
 }
 
 // Main state interface
@@ -213,16 +224,15 @@ interface States {
 	selectedPlan: IServicePlan | null;
 
 	// Discount
-	discount: number;
-	discountCodes: string[];
+	discounts: {
+		discountCode: string;
+		discountAmount: number;
+	}[];
 
 	// Fees
 	fees: {
 		platFormFee: number;
-		serviceOutOfTimeFee: {
-			pickup: number;
-			delivery: number;
-		};
+		serviceOutOfTimeFee: { pickup: number; delivery: number };
 	};
 
 	// Prices
@@ -230,6 +240,9 @@ interface States {
 	subTotalPrice: number;
 	taxPrice: number;
 	shippingPrice: number;
+	totalDiscount: number;
+	totalWires: number;
+	totalPacks: number;
 
 	// Service items
 	keyboardItems: IKeyboardFormItem[];
@@ -240,6 +253,7 @@ interface States {
 	activeTabIndex: number;
 	contactInfo: IContactInfo;
 	shippingInfo: IShippingInfo;
+	errorMessages: Record<string, string>;
 
 	// Options for dropdowns
 	serviceOptions: {
@@ -262,20 +276,14 @@ interface States {
 				date?: string;
 				name?: string;
 				phone?: string;
-				coordinates?: {
-					latitude: number;
-					longitude: number;
-				};
+				coordinates?: { latitude: number; longitude: number };
 			};
 			delivery?: {
 				address?: string;
 				date?: string;
 				name?: string;
 				phone?: string;
-				coordinates?: {
-					latitude: number;
-					longitude: number;
-				};
+				coordinates?: { latitude: number; longitude: number };
 			};
 			isDeliverySameAsPickup: boolean;
 		};
@@ -284,11 +292,8 @@ interface States {
 			switches: ISwitchFormItem[];
 			stabilizer: IStabilizerFormItem[];
 		};
-		contact: {
-			mail: string;
-			phone: string;
-			name: string;
-		};
+
+		contact: { mail: string; phone: string; name: string };
 	};
 }
 
@@ -331,6 +336,7 @@ interface Actions {
 	// Contact and shipping actions
 	updateContactInfo: (updates: Partial<IContactInfo>) => void;
 	updateShippingInfo: (updates: Partial<IShippingInfo>) => void;
+	updateFees: (key: keyof States["fees"], value: number) => void;
 	updateServiceOutOfTimeFee: (
 		fee: number,
 		key: "pickup" | "delivery"
@@ -348,10 +354,11 @@ interface Actions {
 	calculateTotalServicePrice: () => number;
 	calculateTotalService: () => number;
 
-	validateForm: () => string[];
+	validateForm: () => Record<string, string>;
 	resetForm: () => void;
 	formatDataForBackend: () => IBackendBookingData;
 	submitServiceBooking: () => Promise<any>;
+	setErrorMessages: (errors: Record<string, string>) => void;
 
 	// Legacy support - keep for backward compatibility
 	updateSelectedOpt: (payload: IServicePlan) => void;
@@ -365,23 +372,21 @@ const InitialState: States = {
 	selectedPlan: null,
 
 	// Discount
-	discount: 0,
-	discountCodes: [],
+	// discount: 0,
+	// discountCodes: [],
+	discounts: [],
 
 	// Fees
-	fees: {
-		platFormFee: 0,
-		serviceOutOfTimeFee: {
-			pickup: 0,
-			delivery: 0,
-		},
-	},
+	fees: { platFormFee: 0, serviceOutOfTimeFee: { pickup: 0, delivery: 0 } },
 
 	// Prices
 	totalPrice: 0,
 	subTotalPrice: 0,
 	taxPrice: 0,
 	shippingPrice: 0,
+	totalDiscount: 0,
+	totalWires: 0,
+	totalPacks: 0,
 
 	// Service items
 	keyboardItems: [],
@@ -398,6 +403,22 @@ const InitialState: States = {
 		delivery: { address: "", date: "", name: "", phone: "" },
 		isDeliverySameAsPickup: true,
 		addOns: [],
+	},
+	errorMessages: {
+		selectedPlan: "",
+		method: "",
+		deliveryMethod: "",
+		deliveryAddress: "",
+		deliveryDate: "",
+		pickupAddress: "",
+		pickupDate: "",
+		keyboardServices: "",
+		switchServices: "",
+		stabilizerServices: "",
+		contactName: "",
+		contactEmail: "",
+		contactPhone: "",
+		serviceBlock: "",
 	},
 
 	// Options for dropdowns
@@ -439,28 +460,14 @@ const InitialState: States = {
 			},
 			isDeliverySameAsPickup: true,
 		},
-		services: {
-			keyboard: [],
-			switches: [],
-			stabilizer: [],
-		},
-		contact: {
-			mail: "",
-			phone: "",
-			name: "",
-		},
+		services: { keyboard: [], switches: [], stabilizer: [] },
+		contact: { mail: "", phone: "", name: "" },
 	},
 };
 
 const workingTime = {
-	start: {
-		hour: 8,
-		minute: 30,
-	},
-	end: {
-		hour: 19,
-		minute: 0,
-	},
+	start: { hour: 8, minute: 30 },
+	end: { hour: 19, minute: 0 },
 };
 
 const useServices = create<ServiceState>()(
@@ -594,20 +601,30 @@ const useServices = create<ServiceState>()(
 				}));
 			},
 			updateDiscount: (codes: string[]) => {
-				const totalDiscount = SUGGESTED_DISCOUNT_CODES.reduce(
-					(acc, code) => {
-						if (codes.includes(code.code)) {
-							return acc + (code.discountAmount || 0);
-						}
-						return acc;
-					},
+				const discounts = codes.map((code) => {
+					const found = SUGGESTED_DISCOUNT_CODES.find(
+						(d) => d.code === code
+					);
+					return {
+						discountCode: code,
+						discountAmount: found?.discountAmount || 0,
+					};
+				});
+				const totalDiscount = discounts.reduce(
+					(acc, curr) => acc + (curr.discountAmount || 0),
 					0
 				);
 
 				set((state) => ({
 					...state,
-					discountCodes: codes,
-					discount: totalDiscount,
+					discounts,
+					totalDiscount,
+				}));
+			},
+			updateFees: (key: keyof States["fees"], value: number) => {
+				set((state) => ({
+					...state,
+					fees: { ...state.fees, [key]: value },
 				}));
 			},
 			updateServiceOutOfTimeFee: (
@@ -737,7 +754,7 @@ const useServices = create<ServiceState>()(
 				total += state.fees.platFormFee;
 
 				// Add discount
-				total -= state.discount;
+				total -= state.totalDiscount;
 
 				return total;
 			},
@@ -917,7 +934,7 @@ const useServices = create<ServiceState>()(
 							service.price &&
 							service.price > 0
 						) {
-							total += service.price * stabilizer.quantity;
+							// total += service.price * stabilizer.quantity;
 						}
 					});
 				});
@@ -940,37 +957,198 @@ const useServices = create<ServiceState>()(
 				return total || 0;
 			},
 
+			setErrorMessages: (errors: Record<string, string>) => {
+				set((state) => ({
+					...state,
+					errorMessages: errors,
+				}));
+			},
+
 			validateForm: () => {
 				const state = get();
-				const errors: string[] = [];
+				const errors: Record<string, string> = {};
 
 				if (!state.selectedPlan) {
-					errors.push("Vui lòng chọn gói dịch vụ");
+					errors.selectedPlan = "Vui lòng chọn gói dịch vụ";
 				}
+
+				if (!state.shippingInfo.method.code) {
+					errors.method = "Vui lòng chọn phương thức giao hàng";
+				} else if (
+					state.shippingInfo.method.code &&
+					state.shippingInfo.method.code !==
+						EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP
+				) {
+					if (!state.shippingInfo?.deliveryMethod?.code) {
+						errors.deliveryMethod =
+							"Vui lòng chọn phương thức vận chuyển";
+					}
+
+					switch (state.shippingInfo.method.code) {
+						case EnumShippingMethodCode.STORE_DELIVERY_SELF_PICKUP:
+							if (!state.shippingInfo.delivery.address) {
+								errors.deliveryAddress =
+									"Vui lòng nhập địa chỉ giao hàng";
+							}
+							if (!state.shippingInfo.delivery.date) {
+								errors.deliveryDate =
+									"Vui lòng chọn thời gian giao hàng";
+							}
+							break;
+						case EnumShippingMethodCode.STORE_PICKUP_SELF_DELIVERY:
+							if (!state.shippingInfo.pickup.address) {
+								errors.pickupAddress =
+									"Vui lòng nhập địa chỉ lấy hàng";
+							}
+							if (!state.shippingInfo.pickup.date) {
+								errors.pickupDate =
+									"Vui lòng chọn thời gian lấy hàng";
+							}
+							break;
+						case EnumShippingMethodCode.STORE_DELIVERY_STORE_PICKUP:
+							if (!state.shippingInfo.delivery.address) {
+								errors.deliveryAddress =
+									"Vui lòng nhập địa chỉ giao hàng";
+							}
+							if (!state.shippingInfo.delivery.date) {
+								errors.deliveryDate =
+									"Vui lòng chọn thời gian giao hàng";
+							}
+							if (!state.shippingInfo.pickup.address) {
+								errors.pickupAddress =
+									"Vui lòng nhập địa chỉ lấy hàng";
+							}
+							if (!state.shippingInfo.pickup.date) {
+								errors.pickupDate =
+									"Vui lòng chọn thời gian lấy hàng";
+							}
+							break;
+						default:
+							break;
+					}
+				}
+
+				console.log(
+					state.keyboardItems,
+					state.switchItems,
+					state.stabilizerItems,
+					!state.keyboardItems.length &&
+						!state.switchItems.length &&
+						!state.stabilizerItems.length
+				);
 
 				if (
 					state.keyboardItems.length === 0 &&
 					state.switchItems.length === 0 &&
 					state.stabilizerItems.length === 0
 				) {
-					errors.push("Vui lòng thêm ít nhất một dịch vụ");
+					errors.serviceBlock = "Vui lòng thêm ít nhất một dịch vụ";
+				}
+
+				if (state.keyboardItems) {
+					console.log("state.keyboardItems", state.keyboardItems);
+					const isMissingService = state.keyboardItems.some(
+						(keyboard) => {
+							console.log(Object.values(keyboard.services));
+							return Object.values(keyboard.services).some(
+								(service) => {
+									return !service.isUse;
+								}
+							);
+						}
+					);
+					const isMissingInformation = state.keyboardItems.some(
+						(keyboard) => {
+							return (
+								!keyboard.keyboardName ||
+								!keyboard.pcbType ||
+								!keyboard.keyboardSize
+							);
+						}
+					);
+					if (isMissingInformation) {
+						errors.keyboardServices =
+							"Vui lòng cung cấp đầy đủ thông tin";
+					}
+					if (isMissingService) {
+						errors.keyboardServices =
+							"Vui lòng lựa chọn ít nhất 1 dịch vụ";
+					}
+				}
+				if (state.switchItems) {
+					const isMissingService = state.switchItems.some(
+						(switchItem) => {
+							return Object.values(switchItem.services).some(
+								(service) => {
+									return service.isUse;
+								}
+							);
+						}
+					);
+					const isMissingInformation = state.switchItems.some(
+						(switchItem) => {
+							return (
+								!switchItem.type ||
+								!switchItem.name ||
+								!switchItem.quantity ||
+								!switchItem.status
+							);
+						}
+					);
+					if (isMissingInformation) {
+						errors.switchServices =
+							"Vui lòng cung cấp đầy đủ thông tin";
+					}
+					if (isMissingService) {
+						errors.switchServices =
+							"Vui lòng lựa chọn ít nhất 1 dịch vụ";
+					}
+				}
+				if (state.stabilizerItems) {
+					const isMissingService = state.stabilizerItems.some(
+						(stabilizer) => {
+							return Object.values(stabilizer.services).some(
+								(service) => {
+									return service.isUse;
+								}
+							);
+						}
+					);
+					const isMissingInformation = state.stabilizerItems.some(
+						(stabilizer) => {
+							return (
+								!stabilizer.type ||
+								!stabilizer.mountType ||
+								!stabilizer.name ||
+								// !stabilizer.quantity ||
+								!stabilizer.status
+							);
+						}
+					);
+					if (isMissingInformation) {
+						errors.stabilizerServices =
+							"Vui lòng cung cấp đầy đủ thông tin";
+					}
+					if (isMissingService) {
+						errors.stabilizerServices =
+							"Vui lòng lựa chọn ít nhất 1 dịch vụ";
+					}
 				}
 
 				if (!state.contactInfo.name) {
-					errors.push("Vui lòng nhập tên liên hệ");
+					errors.contactName = "Vui lòng nhập tên liên hệ";
 				}
 
 				if (!state.contactInfo.email) {
-					errors.push("Vui lòng nhập email");
+					errors.contactEmail = "Vui lòng nhập email";
 				}
 
 				if (!state.contactInfo.phone) {
-					errors.push("Vui lòng nhập số điện thoại");
+					errors.contactPhone = "Vui lòng nhập số điện thoại";
 				}
 
-				if (!state.shippingInfo.pickup.address) {
-					errors.push("Vui lòng nhập địa chỉ lấy hàng");
-				}
+				const { setErrorMessages } = get().actions;
+				setErrorMessages(errors);
 
 				return errors;
 			},
@@ -991,15 +1169,20 @@ const useServices = create<ServiceState>()(
 							keyboardName: keyboard.keyboardName,
 							pcbType: keyboard.pcbType,
 							keyboardSize: keyboard.keyboardSize,
-							solder: keyboard.services.solder?.isUse
-								? { price: keyboard.services.solder.price }
-								: null,
-							desolder: keyboard.services.desolder?.isUse
-								? { price: keyboard.services.desolder.price }
-								: null,
-							clean: keyboard.services.clean?.isUse
-								? { price: keyboard.services.clean.price }
-								: null,
+							services: {
+								solder: keyboard.services.solder?.isUse
+									? { price: keyboard.services.solder.price }
+									: null,
+								desolder: keyboard.services.desolder?.isUse
+									? {
+											price: keyboard.services.desolder
+												.price,
+										}
+									: null,
+								clean: keyboard.services.clean?.isUse
+									? { price: keyboard.services.clean.price }
+									: null,
+							},
 							attachments: keyboard.attachments,
 							note: keyboard.note,
 						})),
@@ -1041,18 +1224,23 @@ const useServices = create<ServiceState>()(
 							name: switchItem.name,
 							quantity: switchItem.quantity,
 							status: switchItem.status,
-							lube: switchItem.services.lube.isUse
-								? { price: switchItem.services.lube.price }
-								: null,
-							film: switchItem.services.film.isUse
-								? { price: switchItem.services.film.price }
-								: null,
-							spring: switchItem.services.spring.isUse
-								? { price: switchItem.services.spring.price }
-								: null,
-							clean: switchItem.services.clean.isUse
-								? { price: switchItem.services.clean.price }
-								: null,
+							services: {
+								lube: switchItem.services.lube.isUse
+									? { price: switchItem.services.lube.price }
+									: null,
+								film: switchItem.services.film.isUse
+									? { price: switchItem.services.film.price }
+									: null,
+								spring: switchItem.services.spring.isUse
+									? {
+											price: switchItem.services.spring
+												.price,
+										}
+									: null,
+								clean: switchItem.services.clean.isUse
+									? { price: switchItem.services.clean.price }
+									: null,
+							},
 							attachments: switchItem.attachments,
 							note: switchItem.note,
 						})),
@@ -1106,14 +1294,26 @@ const useServices = create<ServiceState>()(
 							type: stabilizer.type,
 							mountType: stabilizer.mountType,
 							name: stabilizer.name,
-							quantity: stabilizer.quantity,
-							services: stabilizer.services,
+							status: stabilizer.status,
+							wires: stabilizer.wires,
+							packs: stabilizer.packs,
+							totalPrice: stabilizer.totalPrice,
+							totalWire: stabilizer.totalWire,
+							services: {
+								lube: stabilizer.services.lube?.isUse
+									? { price: stabilizer.services.lube.price }
+									: null,
+								clean: stabilizer.services.clean?.isUse
+									? { price: stabilizer.services.clean.price }
+									: null,
+							},
 							attachments: stabilizer.attachments,
 							note: stabilizer.note,
 						})),
 						totalPrice: state.stabilizerItems.reduce(
 							(sum, stabilizer) => {
-								return sum;
+								let itemTotal = 0;
+								return sum + itemTotal;
 							},
 							0
 						),
@@ -1126,12 +1326,52 @@ const useServices = create<ServiceState>()(
 					shipping: {
 						method: state.shippingInfo.method.code,
 						pickup: state.shippingInfo.pickup,
-						delivery: state.shippingInfo.isDeliverySameAsPickup
-							? state.shippingInfo.pickup
-							: state.shippingInfo.delivery,
+						delivery: state.shippingInfo.delivery,
 					},
 					contact: state.contactInfo,
-					totalAmount: get().actions.calculateTotalPrice(),
+					discounts: state.discounts,
+					totalDiscount: state.totalDiscount,
+					subTotalPrice: get().actions.calculateSubTotalPrice(),
+					totalPrice: get().actions.calculateTotalPrice(),
+					fees: [
+						state.fees.platFormFee
+							? {
+									platFormFee: state.fees.platFormFee,
+								}
+							: null,
+						state.fees.serviceOutOfTimeFee
+							? {
+									pickup: state.fees.serviceOutOfTimeFee
+										.pickup,
+									delivery:
+										state.fees.serviceOutOfTimeFee.delivery,
+								}
+							: null,
+						state.selectedPlan?.price
+							? {
+									upgradePlanFee:
+										state.selectedPlan?.price || 0,
+								}
+							: null,
+						state.shippingInfo?.method?.price
+							? {
+									shippingMethodFee:
+										state.shippingInfo.method.price,
+								}
+							: null,
+						state.shippingInfo?.deliveryMethod?.price
+							? {
+									deliveryMethodFee:
+										state.shippingInfo.deliveryMethod.price,
+								}
+							: null,
+					],
+					extraService:
+						state.shippingInfo?.addOns?.map((addOn) => ({
+							name: addOn.name,
+							price: addOn.price,
+							value: addOn.value,
+						})) || [],
 				};
 			},
 
@@ -1139,12 +1379,19 @@ const useServices = create<ServiceState>()(
 				try {
 					const formattedData = get().actions.formatDataForBackend();
 					console.log("Submitting service booking:", formattedData);
+					const isValidSubmitData = get().actions.validateForm();
 
-					const response =
-						await ServiceClient.upsertBooking(formattedData);
-					console.log("Booking submitted successfully:", response);
+					console.log("isValidSubmitData", isValidSubmitData);
 
-					return response;
+					if (Object.values(isValidSubmitData).length) {
+						return isValidSubmitData;
+					}
+
+					// const response =
+					// 	await ServiceClient.upsertBooking(formattedData);
+					// console.log("Booking submitted successfully:", response);
+
+					// return response;
 				} catch (error) {
 					console.error("Failed to submit service booking:", error);
 					throw error;
@@ -1160,10 +1407,7 @@ const useServices = create<ServiceState>()(
 				}));
 			},
 			updatedServiceForm: (payload: any) => {
-				set((state) => ({
-					...state,
-					serviceForm: payload,
-				}));
+				set((state) => ({ ...state, serviceForm: payload }));
 			},
 		},
 	}))
@@ -1182,7 +1426,7 @@ export const useServiceSelectors = () => ({
 	serviceOptions: useServices((state) => state.serviceOptions),
 	totalPrice: useServices((state) => state.actions.calculateTotalPrice()),
 	isFormValid: useServices(
-		(state) => state.actions.validateForm().length === 0
+		(state) => Object.values(state.actions.validateForm()).length === 0
 	),
 
 	// Legacy selectors for backward compatibility
@@ -1233,15 +1477,18 @@ function createDefaultStabilizerItem(): IStabilizerFormItem {
 		type: null,
 		mountType: null,
 		name: null,
-		quantity: 1,
+		status: null,
+		wires: [],
+		packs: [],
+		totalWire: 0,
+		totalPrice: 0,
 		services: {
-			lube: { isUse: false, price: 0, info: {} },
-			film: { isUse: false, price: 0, info: {} },
+			handle: { isUse: false, price: 0, info: {} },
 			clean: { isUse: false, price: 0 },
 		},
 		attachments: [],
 		note: "",
-		status: null,
+		totalPack: 0,
 	};
 }
 

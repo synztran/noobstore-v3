@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Base } from "@/templates/Base";
 import {
 	Box,
@@ -25,6 +25,12 @@ import SecurityIcon from "@mui/icons-material/Security";
 
 const PolicyPage = () => {
 	const [expanded, setExpanded] = useState<string | false>("product-policy");
+	const [effectiveDate, setEffectiveDate] = useState<string>("");
+
+	useEffect(() => {
+		// Compute on client to avoid SSR/CSR mismatch due to timezone/locale
+		setEffectiveDate(new Date().toLocaleDateString("vi-VN"));
+	}, []);
 
 	const handleChange =
 		(panel: string) =>
@@ -834,8 +840,8 @@ const PolicyPage = () => {
 					<CardContent className="text-center">
 						<Typography variant="body2" className="text-gray-600">
 							Chính sách này có hiệu lực từ ngày{" "}
-							{new Date().toLocaleDateString("vi-VN")} và có thể
-							được cập nhật theo thời gian.
+							{effectiveDate || ""} và có thể được cập nhật theo
+							thời gian.
 							<br />
 							Phiên bản mới nhất luôn được đăng tải tại
 							noobstore.com/policy

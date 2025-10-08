@@ -468,19 +468,19 @@ select {
 }
 
 .driver-popover-title {
-  font-size: 1.75rem !important;
+  font-size: 1.5rem !important;
   font-weight: 600 !important;
   color: #000 !important;
 }
 
 .driver-popover-description {
-  font-size: 1.125rem !important;
+  font-size: 1rem !important;
   font-weight: 400 !important;
   color: #000 !important;
 }
 
 .driver-popover-close-btn {
-  font-size: 1.5rem !important;
+  font-size: 1.125rem !important;
   color: #000 !important;
 }
 

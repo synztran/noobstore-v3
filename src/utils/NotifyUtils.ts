@@ -15,12 +15,7 @@ const show = (
 	if (toast.isActive(toastId)) {
 		toast.update(toastId, { autoClose: 1500 });
 	} else {
-		toast(text, {
-			toastId,
-			type,
-			position: "bottom-right",
-			...options,
-		});
+		toast(text, { toastId, type, position: "top-right", ...options });
 	}
 };
 

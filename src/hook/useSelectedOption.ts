@@ -1,6 +1,6 @@
 import { IOptionSelection } from "@/components/SelectComp";
 import { EnumSwitchType } from "@/interface/interface";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 type TProps = {
 	// Switch form options
@@ -12,49 +12,64 @@ type TProps = {
 	initialPcbOptions?: IOptionSelection[];
 	initialLayoutOptions?: IOptionSelection[];
 
-	// Service prices for keyboard form
-	initialServicePrices?: {
-		solder?: { price: number; name: string; description: string };
-		desolder?: { price: number; name: string; description: string };
-		cleanKeyboard?: { price: number; name: string; description: string };
-		lube?: {
-			price: number;
-			name: string;
-			description: string;
-			info?: {
-				grease: string;
-			};
-		};
-		film?: {
-			price: number;
-			name: string;
-			info?: {
-				brand: string;
-				type: string;
-				color: string;
-			};
-			description: string;
-		};
-		spring?: {
-			price: number;
-			name: string;
-			info?: {
-				brand: string;
-				type: string;
-				force: string;
-			};
-			description: string;
-		};
-		cleanSwitch?: { price: number; name: string; description: string };
-		quickCleanSwitch?: { price: number; name: string; description: string };
-		cleanStabilizer?: { price: number; name: string; description: string };
-	};
-
 	// Stabilizer form options
-	initialStabilizerOptions?: IOptionSelection[];
+	initialStabilizerSizeOptions?: IOptionSelection[];
 	initialStabilizerMountTypeOptions?: IOptionSelection[];
 	initialStabilizerTypeOptions?: IOptionSelection[];
 	initialStabilizerStatusOptions?: IOptionSelection[];
+
+	// Service prices for keyboard form
+	initialServicePrices?: {
+		keyboard?: {
+			solder?: { price: number; name: string; description: string };
+			desolder?: { price: number; name: string; description: string };
+			clean?: {
+				price: number;
+				name: string;
+				description: string;
+			};
+		};
+		switch?: {
+			lube?: {
+				price: number;
+				name: string;
+				description: string;
+				info?: {
+					grease: string;
+				};
+			};
+			film?: {
+				price: number;
+				name: string;
+				info?: {
+					brand: string;
+					type: string;
+					color: string;
+				};
+				description: string;
+			};
+			spring?: {
+				price: number;
+				name: string;
+				info?: {
+					brand: string;
+					type: string;
+					force: string;
+				};
+				description: string;
+			};
+			clean?: { price: number; name: string; description: string };
+			quickClean?: {
+				price: number;
+				name: string;
+				description: string;
+			};
+		};
+		stabilizer?: {
+			handle?: { price: number; name: string; description: string };
+			clean?: { price: number; name: string; description: string };
+		};
+	};
 };
 
 const useSelectedOption = (props: TProps) => {
@@ -111,48 +126,52 @@ const useSelectedOption = (props: TProps) => {
 		quantity: 0,
 		lube: {
 			value: false,
-			price: props.initialServicePrices?.lube?.price || 0,
-			name: props.initialServicePrices?.lube?.name || "",
-			description: props.initialServicePrices?.lube?.description || "",
-			info: props.initialServicePrices?.lube?.info || {
+			price: props.initialServicePrices?.switch?.lube?.price || 0,
+			name: props.initialServicePrices?.switch?.lube?.name || "",
+			description:
+				props.initialServicePrices?.switch?.lube?.description || "",
+			info: props.initialServicePrices?.switch?.lube?.info || {
 				grease: "",
 			},
 		},
 		clean: {
 			value: false,
-			price: props.initialServicePrices?.cleanSwitch?.price || 0,
-			name: props.initialServicePrices?.cleanSwitch?.name || "",
+			price: props.initialServicePrices?.switch?.clean?.price || 0,
+			name: props.initialServicePrices?.switch?.clean?.name || "",
 			description:
-				props.initialServicePrices?.cleanSwitch?.description || "",
+				props.initialServicePrices?.switch?.clean?.description || "",
 		},
 		film: {
 			value: false,
-			price: props.initialServicePrices?.film?.price || 0,
-			name: props.initialServicePrices?.film?.name || "",
-			info: props.initialServicePrices?.film?.info || {
+			price: props.initialServicePrices?.switch?.film?.price || 0,
+			name: props.initialServicePrices?.switch?.film?.name || "",
+			info: props.initialServicePrices?.switch?.film?.info || {
 				brand: "",
 				type: "",
 				color: "",
 			},
-			description: props.initialServicePrices?.film?.description || "",
+			description:
+				props.initialServicePrices?.switch?.film?.description || "",
 		},
 		spring: {
 			value: false,
-			price: props.initialServicePrices?.spring?.price || 0,
-			name: props.initialServicePrices?.spring?.name || "",
-			info: props.initialServicePrices?.spring?.info || {
+			price: props.initialServicePrices?.switch?.spring?.price || 0,
+			name: props.initialServicePrices?.switch?.spring?.name || "",
+			info: props.initialServicePrices?.switch?.spring?.info || {
 				brand: "",
 				type: "",
 				force: "",
 			},
-			description: props.initialServicePrices?.spring?.description || "",
+			description:
+				props.initialServicePrices?.switch?.spring?.description || "",
 		},
 		quickClean: {
 			value: false,
-			price: props.initialServicePrices?.quickCleanSwitch?.price || 0,
-			name: props.initialServicePrices?.quickCleanSwitch?.name || "",
+			price: props.initialServicePrices?.switch?.quickClean?.price || 0,
+			name: props.initialServicePrices?.switch?.quickClean?.name || "",
 			description:
-				props.initialServicePrices?.quickCleanSwitch?.description || "",
+				props.initialServicePrices?.switch?.quickClean?.description ||
+				"",
 		},
 	});
 	const [switchOptions, setSwitchOptions] = useState<{
@@ -203,24 +222,28 @@ const useSelectedOption = (props: TProps) => {
 		services: {
 			solder: {
 				value: false,
-				price: props.initialServicePrices?.solder?.price || 0,
-				name: props.initialServicePrices?.solder?.name || "",
+				price: props.initialServicePrices?.keyboard?.solder?.price || 0,
+				name: props.initialServicePrices?.keyboard?.solder?.name || "",
 				description:
-					props.initialServicePrices?.solder?.description || "",
+					props.initialServicePrices?.keyboard?.solder?.description ||
+					"",
 			},
 			desolder: {
 				value: false,
-				price: props.initialServicePrices?.desolder?.price || 0,
-				name: props.initialServicePrices?.desolder?.name || "",
+				price:
+					props.initialServicePrices?.keyboard?.desolder?.price || 0,
+				name:
+					props.initialServicePrices?.keyboard?.desolder?.name || "",
 				description:
-					props.initialServicePrices?.desolder?.description || "",
+					props.initialServicePrices?.keyboard?.desolder
+						?.description || "",
 			},
 			clean: {
 				value: false,
-				price: props.initialServicePrices?.cleanKeyboard?.price || 0,
-				name: props.initialServicePrices?.cleanKeyboard?.name || "",
+				price: props.initialServicePrices?.keyboard?.clean?.price || 0,
+				name: props.initialServicePrices?.keyboard?.clean?.name || "",
 				description:
-					props.initialServicePrices?.cleanKeyboard?.description ||
+					props.initialServicePrices?.keyboard?.clean?.description ||
 					"",
 			},
 		},
@@ -233,7 +256,7 @@ const useSelectedOption = (props: TProps) => {
 		stabilizerType: IOptionSelection[];
 		status: IOptionSelection[];
 	}>({
-		stabilizer: props.initialStabilizerOptions || [],
+		stabilizer: props.initialStabilizerSizeOptions || [],
 		stabilizerMountType: props.initialStabilizerMountTypeOptions || [],
 		stabilizerType: props.initialStabilizerTypeOptions || [],
 		status: props.initialStabilizerStatusOptions || [],
@@ -264,18 +287,22 @@ const useSelectedOption = (props: TProps) => {
 		services: {
 			handle: {
 				value: false,
-				price: props.initialServicePrices?.lube?.price || 0,
-				name: props.initialServicePrices?.lube?.name || "",
+				price:
+					props.initialServicePrices?.stabilizer?.handle?.price || 0,
+				name:
+					props.initialServicePrices?.stabilizer?.handle?.name || "",
 				description:
-					props.initialServicePrices?.lube?.description || "",
+					props.initialServicePrices?.stabilizer?.handle
+						?.description || "",
 			},
 			clean: {
 				value: false,
-				price: props.initialServicePrices?.cleanStabilizer?.price || 0,
-				name: props.initialServicePrices?.cleanStabilizer?.name || "",
+				price:
+					props.initialServicePrices?.stabilizer?.clean?.price || 0,
+				name: props.initialServicePrices?.stabilizer?.clean?.name || "",
 				description:
-					props.initialServicePrices?.cleanStabilizer?.description ||
-					"",
+					props.initialServicePrices?.stabilizer?.clean
+						?.description || "",
 			},
 		},
 	});
@@ -344,8 +371,8 @@ const useSelectedOption = (props: TProps) => {
 				info: { grease: string };
 			};
 			reLube?: { price: number; name: string };
-			cleanSwitch?: { price: number; name: string; description: string };
-			quickCleanSwitch?: {
+			clean?: { price: number; name: string; description: string };
+			quickClean?: {
 				price: number;
 				name: string;
 				description: string;
@@ -376,10 +403,10 @@ const useSelectedOption = (props: TProps) => {
 				},
 				clean: {
 					...prev.clean,
-					price: servicePrices.cleanSwitch?.price ?? prev.clean.price,
-					name: servicePrices.cleanSwitch?.name ?? prev.clean.name,
+					price: servicePrices.clean?.price ?? prev.clean.price,
+					name: servicePrices.clean?.name ?? prev.clean.name,
 					description:
-						servicePrices.cleanSwitch?.description ??
+						servicePrices.clean?.description ??
 						prev.clean.description,
 				},
 				film: {
@@ -403,13 +430,12 @@ const useSelectedOption = (props: TProps) => {
 				quickClean: {
 					...prev.quickClean,
 					price:
-						servicePrices.quickCleanSwitch?.price ??
+						servicePrices.quickClean?.price ??
 						prev.quickClean.price,
 					name:
-						servicePrices.quickCleanSwitch?.name ??
-						prev.quickClean.name,
+						servicePrices.quickClean?.name ?? prev.quickClean.name,
 					description:
-						servicePrices.quickCleanSwitch?.description ??
+						servicePrices.quickClean?.description ??
 						prev.quickClean.description,
 				},
 			}));
@@ -544,10 +570,24 @@ const useSelectedOption = (props: TProps) => {
 		name: string;
 		option: IOptionSelection | null;
 	}) => {
+		console.log("name, option", name, option);
 		setStabilizerFormSelected({
 			...stabilizerFormSelected,
 			[name]: option,
 		});
+
+		// remove mount-type = plate when type is screw-in
+		const isRemovePlateMount =
+			name === "type" && option?.value === "SCREW_IN";
+		console.log("isRemovePlateMount", isRemovePlateMount);
+		setStabilizerOptions((prev) => ({
+			...prev,
+			stabilizerMountType: isRemovePlateMount
+				? (props.initialStabilizerMountTypeOptions || []).filter(
+						(item) => item.value !== "PLATE_MOUNTED"
+					)
+				: props.initialStabilizerMountTypeOptions || [],
+		}));
 	};
 
 	const handleStabilizerAddNew = ({
@@ -636,6 +676,16 @@ const useSelectedOption = (props: TProps) => {
 		[]
 	);
 
+	const resetTaskStabilizerItem = useCallback((id: string) => {
+		setStabilizerFormSelected((prev) => ({
+			...prev,
+			[id]: {
+				...prev[id as keyof typeof prev],
+				tasks: [],
+			},
+		}));
+	}, []);
+
 	return {
 		// Switch form exports
 		serviceSwitchSelected,
@@ -664,6 +714,7 @@ const useSelectedOption = (props: TProps) => {
 		handleStabilizerServiceCheck,
 		updateStabilizerOptions,
 		updateStabilizerServicePrices,
+		resetTaskStabilizerItem,
 	};
 };
 

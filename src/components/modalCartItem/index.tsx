@@ -237,7 +237,7 @@ const CartItem = ({
 					<div
 						key={opt.productOptionId}
 						className="grid grid-cols-12 gap-4 min-h-[115px]">
-						<div className="relative col-span-3 min-w-[120px] min-h-[115px]">
+						<div className="relative col-span-3 min-w-[120px] min-h-[115px] border border-gray-200 rounded-10">
 							<Image
 								src={opt?.thumbnail?.path || NEW_MISSING_IMAGE}
 								alt={opt?.thumbnail?.alt || "product"}

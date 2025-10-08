@@ -4,20 +4,19 @@ import {
 	SERVICE_STABILIZER_ICON,
 } from "@/constants/Images";
 import { EnumServiceType } from "@/interface/interface";
+import useServices, { useServiceAction } from "@/zustand/useServices";
+import { Button as MUIButton } from "@material-ui/core";
+import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Image from "next/image";
-import useServices, { useServiceAction } from "@/zustand/useServices";
-import { Button as MUIButton } from "@material-ui/core";
-import ServiceKeyboardForm from "./keyboardForm";
-import ServicesSwitchesForm from "./switchesForm";
 import { Plus, X } from "lucide-react";
-import { Divider } from "@mui/material";
+import Image from "next/image";
+import { useMemo } from "react";
 import InputWrapperLegend from "../InputComponents/WrapperLegend";
-import { serviceFormText } from "@/constants";
-import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
+import ServiceKeyboardForm from "./keyboardForm";
 import ServiceStabilizerForm from "./stabilizerForm";
+import ServicesSwitchesForm from "./switchesForm";
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -34,10 +33,7 @@ const TabInfo = [
 				width={32}
 				height={26}
 				alt="kb icon"
-				style={{
-					maxWidth: "100%",
-					height: "auto",
-				}}
+				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
 		id: "tab-keyboard",
@@ -50,10 +46,7 @@ const TabInfo = [
 				width={32}
 				height={32}
 				alt="switch icon"
-				style={{
-					maxWidth: "100%",
-					height: "auto",
-				}}
+				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
 		id: "tab-switches",
@@ -66,10 +59,7 @@ const TabInfo = [
 				width={32}
 				height={26}
 				alt="stabilizer icon"
-				style={{
-					maxWidth: "100%",
-					height: "auto",
-				}}
+				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
 		id: "tab-stabilizer",
@@ -77,8 +67,13 @@ const TabInfo = [
 ];
 
 const MultiServiceForm: React.FC = () => {
-	const { activeTabIndex, keyboardItems, switchItems, stabilizerItems } =
-		useServices();
+	const {
+		activeTabIndex,
+		keyboardItems,
+		switchItems,
+		stabilizerItems,
+		selectedPlan,
+	} = useServices();
 	const {
 		setActiveTabIndex,
 		addKeyboardItem,
@@ -92,6 +87,29 @@ const MultiServiceForm: React.FC = () => {
 	const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
 		setActiveTabIndex(newValue);
 	};
+
+	const isSwitchLimit = useMemo(() => {
+		if (selectedPlan?.price && selectedPlan?.price > 0) {
+			return switchItems.length === 5;
+		}
+		return switchItems.length === 3;
+	}, [selectedPlan, switchItems]);
+
+	const isStabilizerLimit = useMemo(() => {
+		if (selectedPlan?.price && selectedPlan?.price > 0) {
+			return stabilizerItems.length === 5;
+		}
+		return stabilizerItems.length === 3;
+	}, [selectedPlan, stabilizerItems]);
+
+	const isKeyboardLimit = useMemo(() => {
+		if (selectedPlan?.price && selectedPlan?.price > 0) {
+			return keyboardItems.length === 5;
+		}
+		return keyboardItems.length === 3;
+	}, [selectedPlan, keyboardItems]);
+
+	console.log("stabilizerItems", stabilizerItems);
 
 	return (
 		<Box sx={{ width: "100%" }} id="multi-service-form-step">
@@ -136,9 +154,19 @@ const MultiServiceForm: React.FC = () => {
 							className="!normal-case !px-3 !py-1 bg-blue-600"
 							variant="contained"
 							color="default"
+							disabled={isKeyboardLimit}
 							onClick={() => addKeyboardItem()}>
 							<span className="text-white flex items-center gap-2">
-								<Plus className="stroke-white" /> Thêm mới
+								{isKeyboardLimit ? (
+									<span className="text-gray-500">
+										Đã đạt giới hạn
+									</span>
+								) : (
+									<>
+										<Plus className="stroke-white" /> Thêm
+										mới
+									</>
+								)}
 							</span>
 						</MUIButton>
 					</div>
@@ -150,7 +178,9 @@ const MultiServiceForm: React.FC = () => {
 						</div>
 					) : null}
 					{keyboardItems.map((item) => (
-						<InputWrapperLegend key={item.id} className="mt-4">
+						<InputWrapperLegend
+							key={item.id}
+							className="mt-4 bg-white">
 							<button
 								className="absolute -right-3 -top-4 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
 								onClick={() => removeKeyboardItem(item.id)}
@@ -176,9 +206,19 @@ const MultiServiceForm: React.FC = () => {
 							className="!normal-case !px-3 !py-1 bg-blue-600"
 							variant="contained"
 							color="default"
+							disabled={isSwitchLimit}
 							onClick={() => addSwitchItem()}>
 							<span className="text-white flex items-center gap-2">
-								<Plus className="stroke-white" /> Thêm mới
+								{isSwitchLimit ? (
+									<span className="text-gray-500">
+										Đã đạt giới hạn
+									</span>
+								) : (
+									<>
+										<Plus className="stroke-white" /> Thêm
+										mới
+									</>
+								)}
 							</span>
 						</MUIButton>
 					</div>
@@ -217,9 +257,19 @@ const MultiServiceForm: React.FC = () => {
 							className="!normal-case !px-3 !py-1 bg-blue-600"
 							variant="contained"
 							color="default"
+							disabled={isStabilizerLimit}
 							onClick={() => addStabilizerItem()}>
 							<span className="text-white flex items-center gap-2">
-								<Plus className="stroke-white" /> Thêm mới
+								{isStabilizerLimit ? (
+									<span className="text-gray-500">
+										Đã đạt giới hạn
+									</span>
+								) : (
+									<>
+										<Plus className="stroke-white" /> Thêm
+										mới
+									</>
+								)}
 							</span>
 						</MUIButton>
 					</div>

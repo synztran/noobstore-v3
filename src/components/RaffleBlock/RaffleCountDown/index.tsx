@@ -36,9 +36,9 @@ const STATUS_COLORS = {
 	// upcoming: "from-[#ffe29f] to-[#ffd200]",
 	// running: "from-[#a8ffeb] to-[#43cea2]",
 	// ended: "from-[#e0eafc] to-[#cfdef3]",
-	upcoming: "bg-gray-200",
-	running: "bg-green-400",
-	ended: "bg-gray-400",
+	upcoming: "bg-gray-100",
+	running: "bg-gray-100",
+	ended: "bg-gray-100",
 };
 
 const STATUS_TEXT = {
@@ -80,12 +80,7 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 		hours: number;
 		minutes: number;
 		seconds: number;
-	}>({
-		days: 0,
-		hours: 0,
-		minutes: 0,
-		seconds: 0,
-	});
+	}>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
@@ -129,57 +124,54 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 
 	return (
 		<div
-			className={`rounded-md border border-gray-300 shadow-sm px-6 py-4 flex flex-col items-center gap-2 ${fancyBg} ${className}`}
+			className={`rounded-md shadow-md p-2 flex flex-col items-center gap-2 ${fancyBg} ${className}`}
 			style={{
 				letterSpacing: "0.02em",
 				boxShadow: "0 4px 24px 0 rgba(0,0,0,0.10)",
 			}}>
-			<AnimatePresence mode="wait" initial={false}>
+			{/* <AnimatePresence mode="wait" initial={false}>
 				<motion.span
 					key={mode}
 					variants={textVariants}
 					initial="initial"
 					animate="animate"
 					exit="exit"
-					className="text-xl font-bold tracking-wide mb-1"
-					style={{ color: "#111" }}>
+					className="text-lg font-bold tracking-wide">
 					{STATUS_TEXT[mode]}
 				</motion.span>
-			</AnimatePresence>
+			</AnimatePresence> */}
 			{mode !== "ended" ? (
 				<div className="flex gap-1 text-[20px] font-mono font-bold items-start">
-					<div className="flex flex-col items-center min-w-[30px]">
+					<div className="flex flex-col items-center min-w-[44px]">
 						<AnimatedDigit value={pad(timeLeft.days)} />
-						<span
-							className="text-base font-medium opacity-80"
-							style={{ color: "#111" }}>
+						<span className="text-base font-medium opacity-80">
 							Ngày
 						</span>
 					</div>
-					<span className="text-2xl font-bold h-[24px]">:</span>
-					<div className="flex flex-col items-center min-w-[30px]">
+					<div className="text-2xl h-[30px] relative bottom-0.5">
+						:
+					</div>
+					<div className="flex flex-col items-center min-w-[44px]">
 						<AnimatedDigit value={pad(timeLeft.hours)} />
-						<span
-							className="text-base font-medium opacity-80"
-							style={{ color: "#111" }}>
+						<span className="text-base font-medium opacity-80">
 							Giờ
 						</span>
 					</div>
-					<span className="text-2xl font-bold h-[24px]">:</span>
-					<div className="flex flex-col items-center min-w-[30px]">
+					<div className="text-2xl h-[30px] relative bottom-0.5">
+						:
+					</div>
+					<div className="flex flex-col items-center min-w-[44px]">
 						<AnimatedDigit value={pad(timeLeft.minutes)} />
-						<span
-							className="text-base font-medium opacity-80"
-							style={{ color: "#111" }}>
+						<span className="text-base font-medium opacity-80">
 							Phút
 						</span>
 					</div>
-					<span className="text-2xl font-bold h-[24px]">:</span>
+					<div className="text-2xl h-[30px] relative bottom-0.5">
+						:
+					</div>
 					<div className="flex flex-col items-center">
 						<AnimatedDigit value={pad(timeLeft.seconds)} />
-						<span
-							className="text-base font-medium opacity-80"
-							style={{ color: "#111" }}>
+						<span className="text-base font-medium opacity-80">
 							Giây
 						</span>
 					</div>

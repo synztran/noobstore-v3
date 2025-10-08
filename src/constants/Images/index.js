@@ -20,10 +20,12 @@ export const SERVICE_STABILIZER_ICON = `/assets/icons/service/stabilizer-icon.pn
 export const HOME_LEFT_BANNER = `/assets/images/splitBanner/left-banner.jpg`;
 export const SERVICE_BACKGROUND = `/assets/images/background/service_bg.png`;
 export const SERVICE_KEYBOARD_ICON = `/assets/icons/service/keyboard.png`;
-export const SERVICE_STABILIZER_7U = `/images/service/7u.jpeg`;
-export const SERVICE_STABILIZER_625U = `/images/service/6_25u.jpeg`;
+export const SERVICE_STABILIZER_7U = `/images/service/wire_7u.jpeg`;
+export const SERVICE_STABILIZER_625U = `/images/service/wire_625u.jpeg`;
 export const SERVICE_STABILIZER_2U = `/images/service/2u.jpeg`;
 export const SERVICE_STABILIZER_STANDARD_PACK = `/images/service/standard_pack.jpeg`;
+export const SERVICE_STABILIZER_PACK_7U = `/images/service/pack_7u.jpeg`;
+export const SERVICE_STABILIZER_PACK_625U = `/images/service/pack_625u.jpeg`;
 
 // lading page
 export const LANDING_PAGE_KEYBOARD_IMG = `/assets/images/landingPage/keyboard.png`;

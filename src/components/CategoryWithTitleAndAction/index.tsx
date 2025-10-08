@@ -14,10 +14,7 @@ interface CategoryItem {
 	name: string;
 	price: number;
 	image: string;
-	rating: {
-		stars: number;
-		reviews: number;
-	};
+	rating: { stars: number; reviews: number };
 	reviews: number;
 	quantity: number;
 }
@@ -37,10 +34,7 @@ const fakeItems: CategoryItem[] = [
 		image: "/images/bcp.webp",
 		reviews: 24,
 		quantity: 4,
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 	},
 	{
 		id: 2,
@@ -48,10 +42,7 @@ const fakeItems: CategoryItem[] = [
 		name: "Gecko Silent Linear",
 		price: 6000,
 		image: "/images/karina65.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -61,10 +52,7 @@ const fakeItems: CategoryItem[] = [
 		name: "Gecko Silent Linear",
 		price: 7500,
 		image: "/images/tgr_910.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -74,10 +62,7 @@ const fakeItems: CategoryItem[] = [
 		name: "Gecko Silent Linear",
 		price: 8000,
 		image: "/images/filco.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -87,10 +72,7 @@ const fakeItems: CategoryItem[] = [
 		name: "Gecko Silent Linear",
 		price: 5500,
 		image: "/images/filco.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -100,10 +82,7 @@ const fakeItems: CategoryItem[] = [
 		name: "Gecko Silent Linear",
 		price: 5500,
 		image: "/images/filco.webp",
-		rating: {
-			stars: 5,
-			reviews: 24,
-		},
+		rating: { stars: 5, reviews: 24 },
 		reviews: 24,
 		quantity: 4,
 	},
@@ -139,26 +118,16 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 				</div>
 			</div>
 			{/* Swiper Controls */}
-			<div className="relative">
+			<div className="flex items-center relative">
 				<IconButton
 					className={clsx(
-						"absolute z-10 top-1/2 -left-3.5 -translate-y-1/2 bg-white shadow border border-gray-200",
+						"!absolute z-10 top-1/2 -left-3.5 -translate-y-1/2 !bg-white !shadow !border !border-gray-200",
 						"hover:shadow-lg"
 					)}
 					onClick={() => swiperRef.current?.slidePrev()}
 					size="small"
 					aria-label="Previous">
 					<ChevronLeft />
-				</IconButton>
-				<IconButton
-					className={clsx(
-						"absolute z-10 top-1/2 -right-3.5 -translate-y-1/2 bg-white shadow border border-gray-200",
-						"hover:bg-gray-100"
-					)}
-					onClick={() => swiperRef.current?.slideNext()}
-					size="small"
-					aria-label="Next">
-					<ChevronRight />
 				</IconButton>
 				{/* Swiper */}
 				<Swiper
@@ -222,6 +191,16 @@ const CategoryWithTitleAndAction: React.FC<CategoryWithTitleAndActionProps> = ({
 						</SwiperSlide>
 					))}
 				</Swiper>
+				<IconButton
+					className={clsx(
+						"!absolute z-10 top-1/2 -right-3.5 -translate-y-1/2 !bg-white !shadow border !border-gray-200",
+						"hover:bg-gray-100"
+					)}
+					onClick={() => swiperRef.current?.slideNext()}
+					size="small"
+					aria-label="Next">
+					<ChevronRight />
+				</IconButton>
 			</div>
 		</div>
 	);

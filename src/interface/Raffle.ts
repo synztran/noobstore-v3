@@ -8,11 +8,7 @@ export interface RaffleData {
 	soldTickets: number;
 	endDate: string;
 	status: "active" | "ended" | "upcoming";
-	images: {
-		id: string;
-		url: string;
-		alt: string;
-	}[];
+	images: { id: string; url: string; alt: string }[];
 	seller: {
 		id: string;
 		name: string;
@@ -20,12 +16,7 @@ export interface RaffleData {
 		rating: number;
 		totalSales: number;
 	};
-	productOptions: {
-		id: string;
-		label: string;
-		url: string;
-		price: number;
-	}[];
+	productOptions: { id: string; label: string; url: string; price: number }[];
 	features: string[];
 	categories: string[];
 	tags: string[];
@@ -57,3 +48,41 @@ export interface RaffleEntry {
 	entryDate: string;
 	status: "pending" | "confirmed" | "cancelled";
 }
+
+export interface IStepProps {
+	formData: FormData;
+	setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
+	raffleData: RaffleData;
+	handleInputChange?: (
+		field: keyof FormData
+	) => (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => void;
+	handleSelectChange?: (
+		field: keyof FormData
+	) => (event: React.ChangeEvent<HTMLSelectElement>) => void;
+	minPrice?: number;
+	maxPrice?: number;
+	handleChangeCity?: (value: string) => void;
+}
+
+export type ProductSelection = {
+	productId: string;
+	name: string;
+	priority: number | null; // null means not selected
+	selected: boolean;
+	thumbnail: string;
+	price: number;
+};
+
+export type FormData = Omit<RaffleEntryForm, "ticketQuantity"> & {
+	companyName: string;
+	zipCode: string;
+	cardNumber: string;
+	expiryDate: string;
+	cvv: string;
+	cardName: string;
+	productSelections: ProductSelection[];
+	shippingMethod: { brand: string; price: number };
+	note: string;
+};

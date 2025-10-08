@@ -50,31 +50,31 @@ const CheckboxWithPrice = (props: IProps) => {
 					checked={value}
 					onChange={handleChange}
 					disabled={disabled || isLoading}
-					className={`accent-black !my-[0.175rem] w-4 h-4 cursor-pointer ${
+					className={`accent-black !mt-[0.25rem] w-4 h-4 cursor-pointer ${
 						subLabel ? "mt-[0.125rem]" : ""
 					}`}
-					style={{
-						boxShadow: "none",
-					}}
+					style={{ boxShadow: "none" }}
 				/>
 				<div className="flex flex-col">
 					<label
 						htmlFor={name}
-						className={`text-base text-gray-700 cursor-pointer font-semibold ${
+						className={`text-sm text-gray-700 cursor-pointer font-semibold ${
 							isLoading ? "opacity-60" : ""
 						}`}>
 						{label}
 					</label>
 					{subLabel ? (
-						<span className="text-sm text-gray-600">
+						<span className="text-xs text-gray-600">
 							{subLabel}
 						</span>
 					) : null}
 				</div>
 			</div>
 			{price ? (
-				<div className="text-lg font-bold col-span-1 flex items-center justify-end">
-					{formatCurrency(price)}
+				<div className="font-bold col-span-1 flex items-center justify-end">
+					<span className="text-red-400 text-sm">
+						{formatCurrency(price)}
+					</span>
 					{unit === EnumUnitType.UNIT ? `/${unitLabel}` : ""}
 				</div>
 			) : null}

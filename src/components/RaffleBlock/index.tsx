@@ -1,22 +1,36 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-	AccessTime,
 	People,
-	Star,
 	ChevronLeft,
 	ChevronRight,
-	ShoppingBag,
 	Verified,
+	VerifiedOutlined,
+	VerifiedUser,
+	VerifiedTwoTone,
 } from "@mui/icons-material";
 import RaffleEntryModal from "./RaffleEntryModal";
 import Image from "next/image";
 import RaffleCountDown from "./RaffleCountDown";
-import { RaffleData } from "@/interface/Raffle";
+import { FormData, PaymentMethod, RaffleData } from "@/interface/Raffle";
 import RaffleBadge from "./RaffleBadge";
 import { LOGO_STORE } from "@/constants/Images";
-import { Check, CircleCheck, Dot, Mail, Sparkles } from "lucide-react";
-import { Divider } from "@mui/material";
+import {
+	Check,
+	CircleCheck,
+	Dot,
+	Mail,
+	ShieldCheck,
+	Sparkles,
+} from "lucide-react";
+import { Divider, Tooltip } from "@mui/material";
 import { formatCurrency } from "@/utils/FormatNumber";
+import Stepper, { Step } from "./RaffleModalFancy";
+import StepInformation from "./RaffleEntryModal/Information";
+import StepSelectProduct from "./RaffleEntryModal/Selection";
+import StepDeliveryInfo from "./RaffleEntryModal/Delivery";
+import StepConfirmation from "./RaffleEntryModal/Confirm";
+import RaffleStatus from "./RaffleStatus";
+import { AnimatePresence, motion } from "motion/react";
 
 // Hardcoded images and options for demo as per your links
 const optionImages = [
@@ -104,8 +118,8 @@ function RatingStars({ value = 0, max = 5 }) {
 						i < full
 							? "text-yellow-400"
 							: half && i === full
-							? "text-yellow-300"
-							: "text-gray-300"
+								? "text-yellow-300"
+								: "text-gray-300"
 					}`}
 					fill="currentColor"
 					viewBox="0 0 20 20">
@@ -122,13 +136,34 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 		optionImages?.[0]?.id || ""
 	);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
-	const [timeLeft, setTimeLeft] = useState({
-		days: 0,
-		hours: 0,
-		minutes: 0,
-		seconds: 0,
-	});
 	const [raffleStatus, setRaffleStatus] = useState("running");
+	const [raffleFormData, setRaffleFormData] = useState<FormData>({
+		...raffleData,
+		fullName: "",
+		email: "",
+		phone: "",
+		address: "",
+		city: "",
+		paymentMethod: PaymentMethod.CREDIT_CARD,
+		companyName: "",
+		zipCode: "",
+		cardNumber: "",
+		expiryDate: "",
+		cvv: "",
+		cardName: "",
+		productSelections:
+			raffleData.productOptions?.map((option, index) => ({
+				productId: option.id,
+				name: option.label,
+				priority: null,
+				selected: false,
+				price: option.price,
+				thumbnail: option.url, // Add the required thumbnail property
+			})) || [],
+		note: "",
+		shippingMethod: { brand: "", price: 0 },
+	});
+	console.log("raffleFormData", raffleFormData);
 	const [minPrice, maxPrice] = useMemo(() => {
 		return [
 			Math.min(...optionImages.map((o) => o.price)),
@@ -155,26 +190,174 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 	const progressPercentage =
 		(raffleData.joined / raffleData.totalEntries) * 100;
 
+	const resetAndClose = () => {
+		setRaffleFormData({
+			fullName: "",
+			email: "",
+			phone: "",
+			address: "",
+			city: "",
+			paymentMethod: PaymentMethod.CREDIT_CARD,
+			cardNumber: "",
+			expiryDate: "",
+			cvv: "",
+			cardName: "",
+			productSelections:
+				raffleData.productOptions?.map((option, index) => ({
+					productId: option.id,
+					name: option.label,
+					price: option.price,
+					thumbnail: option.url,
+					priority: null,
+					selected: false,
+				})) || [],
+			companyName: "",
+			zipCode: "",
+			shippingMethod: { brand: "VNPost", price: 0 },
+			note: "",
+		});
+		setShowRaffleModal(false);
+	};
+
 	return (
-		<div className="container mx-auto py-4 !px-0">
+		<div className="container max-w-7xl mx-auto py-4 !px-0">
 			<div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-				{/* Block 1: Title, Description, Seller */}
-				<div className="md:col-span-3">
-					<div className="bg-white rounded-xl shadow p-4 flex flex-col gap-4 h-full">
-						<div>
-							<h2 className="text-2xl font-bold mb-2">
-								<RaffleBadge type="raffle" />
-								&nbsp;
-								{raffleData.title}
-							</h2>
-							<p
-								className="text-gray-700 text-lg mb-2 leading-relaxed"
-								style={{ textIndent: "0.5rem" }}>
-								{raffleData.description}
-							</p>
+				{/* Left: Image Swiper */}
+				<div className="col-span-8 bg-white rounded-xl shadow flex flex-col items-center justify-center p-4 h-full relative">
+					<div className="relative w-full flex items-center justify-center h-full">
+						<div className="w-full flex justify-center relative h-full">
+							{/* Main Image with thumbnails on the right */}
+							<div className="flex w-full h-full">
+								<div className="flex-1 flex items-center justify-center relative">
+									{optionImages.length ? (
+										<button
+											type="button"
+											onClick={() =>
+												handleImageChange(
+													(currentImageIndex -
+														1 +
+														optionImages.length) %
+														optionImages.length
+												)
+											}
+											className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
+											aria-label="Previous image">
+											<ChevronLeft />
+										</button>
+									) : null}
+									{/* Animate image change */}
+									<div className="w-full h-full relative">
+										{/* Use a key to trigger animation on image change */}
+										{/*
+											You need to have framer-motion installed and imported:
+											import { motion, AnimatePresence } from "framer-motion";
+										*/}
+										<AnimatePresence
+											mode="wait"
+											initial={false}>
+											<motion.div
+												key={
+													optionImages[
+														currentImageIndex
+													]?.id
+												}
+												initial={{
+													opacity: 0,
+													scale: 0.98,
+													x: 40,
+												}}
+												animate={{
+													opacity: 1,
+													scale: 1,
+													x: 0,
+												}}
+												exit={{
+													opacity: 0,
+													scale: 0.98,
+													x: -40,
+												}}
+												transition={{
+													duration: 0.35,
+													ease: "easeInOut",
+												}}
+												className="w-full h-full absolute top-0 left-0"
+												style={{
+													position: "absolute",
+												}}>
+												<Image
+													src={
+														optionImages[
+															currentImageIndex
+														]?.url || ""
+													}
+													alt={
+														optionImages[
+															currentImageIndex
+														]?.label || ""
+													}
+													className="w-full object-cover rounded shadow"
+													objectFit="cover"
+													fill
+												/>
+											</motion.div>
+										</AnimatePresence>
+									</div>
+									{optionImages.length ? (
+										<button
+											type="button"
+											onClick={() =>
+												handleImageChange(
+													(currentImageIndex + 1) %
+														optionImages.length
+												)
+											}
+											className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
+											aria-label="Next image">
+											<ChevronRight />
+										</button>
+									) : null}
+								</div>
+								{/* Swiper Thumbnails on the right */}
+								<div className="flex flex-col gap-2 ml-2 items-center justify-start">
+									{optionImages.map((img, idx) => (
+										<img
+											key={img.id}
+											src={img.url}
+											alt={img.label}
+											className={`w-16 h-16 object-cover rounded cursor-pointer border-2 ${
+												idx === currentImageIndex
+													? "border-blue-500"
+													: "border-gray-200"
+											}`}
+											onClick={() =>
+												handleImageChange(idx)
+											}
+										/>
+									))}
+								</div>
+							</div>
 						</div>
-						<Divider className="border-gray-400" />
-						<div className="flex items-center gap-3">
+					</div>
+				</div>
+
+				{/* Right: All Information */}
+				<div className="col-span-4 bg-white rounded-xl shadow p-4 flex flex-col gap-2 h-full">
+					{/* Title, Description, Seller */}
+					<div>
+						<div className="flex items-center gap-2">
+							<RaffleBadge type="raffle" />
+							<RaffleStatus mode="upcoming" />
+						</div>
+						<div className="text-lg font-bold mt-2">
+							{raffleData.title}
+						</div>
+						<p
+							className="text-gray-700 text-sm mb-2"
+							style={{ textIndent: "0.5rem" }}>
+							{raffleData.description}
+						</p>
+						<Divider className="border-gray-400 my-2" />
+						<div className="flex items-center gap-3 mt-2">
 							<div className="w-12 h-12 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600">
 								<Image
 									src={raffleData.seller.avatar}
@@ -184,259 +367,223 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 									className="w-12 h-12 rounded-full"
 								/>
 							</div>
-
 							<div>
 								<div className="flex items-center gap-1">
 									<span className="font-semibold text-lg">
 										{raffleData.seller.name}
 									</span>
 									{raffleData.seller.isVerified && (
-										<Verified className="stroke-green-600 fill-green-600 w-6 h-6" />
+										<Tooltip
+											title="Maker đã xác thực thông tin"
+											placement="right">
+											<ShieldCheck
+												className="cursor-pointer"
+												size={18}
+												color="#48d585"
+												strokeWidth={2}
+												absoluteStrokeWidth
+											/>
+										</Tooltip>
 									)}
 								</div>
-								<RatingStars value={raffleData.seller.rating} />
-							</div>
-						</div>
-						<div className="flex flex-col gap-1 mt-2">
-							<div className="flex items-center gap-1 text-gray-700 text-sm">
-								<People className="w-6 h-6" />
-								<span className="text-base">
-									Tổng số raffle:{" "}
-									<span className="font-semibold text-base">
-										{raffleData.seller.raffleTimes}
+								<div className="flex items-center gap-1 text-gray-700 text-sm">
+									<span className="text-sm">
+										Tổng số raffle:{" "}
+										<span className="font-semibold text-sm">
+											{raffleData.seller.raffleTimes}
+										</span>
 									</span>
-								</span>
-							</div>
-							{/* <div className="flex items-center gap-1 text-gray-700 text-sm">
-								<AccessTime fontSize="small" />
-								<span className="text-lg">
-									Số raffles: {raffleData.seller.pastRaffles}
-								</span>
-							</div> */}
-							{/* <div className="flex items-center gap-1 text-gray-700 text-sm">
-								<Mail className="w-6 h-6" />
-								<div className="text-lg flex items-center gap-1">
-									Mail:{" "}
-									<div className="inline-flex items-center gap-1 border border-white bg-green-600 rounded-md px-2 py-1 font-bold text-white text-base">
-										Đã xác thực
-										<CircleCheck className="w-6 h-6 stroke-white" />
-									</div>
 								</div>
-							</div> */}
+							</div>
 						</div>
 					</div>
-				</div>
+					<Divider className="border-gray-400 my-2" />
+					{/* Countdown */}
+					<RaffleCountDown
+						startDate={raffleData.startDate}
+						endDate={raffleData.endDate}
+						raffleStatus={
+							raffleStatus as "upcoming" | "running" | "ended"
+						}
+						className="text-center"
+					/>
+					{/* <Divider className="border-gray-400 my-2" /> */}
 
-				{/* Block 2: Center Image Swiper */}
-				<div className="md:col-span-6">
-					<div className="bg-white rounded-xl shadow flex flex-col items-center justify-center p-4 h-full relative">
-						<div className="relative w-full flex items-center justify-center h-full">
-							<button
-								type="button"
-								onClick={() =>
-									handleImageChange(
-										(currentImageIndex -
-											1 +
-											optionImages.length) %
-											optionImages.length
-									)
-								}
-								className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
-								aria-label="Previous image">
-								<ChevronLeft />
-							</button>
-							<div className="w-full flex justify-center relative h-full">
-								<Image
-									src={
-										optionImages[currentImageIndex]?.url ||
-										""
-									}
-									alt={
-										optionImages[currentImageIndex]
-											?.label || ""
-									}
-									className="w-full object-cover rounded shadow"
-									objectFit="cover"
-									fill
-								/>
-							</div>
-							<button
-								type="button"
-								onClick={() =>
-									handleImageChange(
-										(currentImageIndex + 1) %
-											optionImages.length
-									)
-								}
-								className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
-								aria-label="Next image">
-								<ChevronRight />
-							</button>
+					{/* Option Select (sync with image) */}
+					<div>
+						<div className="font-semibold mb-1 flex items-center justify-between overflow-hidden">
+							<span className="min-w-[90px] text-lg">
+								Sản phẩm
+							</span>
+							<Divider className="border-gray-400 w-[80%]" />
 						</div>
-						{/* Swiper Thumbnails */}
-						<div className="flex gap-2 mt-4">
-							{optionImages.map((img, idx) => (
-								<img
-									key={img.id}
-									src={img.url}
-									alt={img.label}
-									className={`w-16 h-16 object-cover rounded cursor-pointer border-2 ${
-										idx === currentImageIndex
-											? "border-blue-500"
-											: "border-gray-200"
-									}`}
-									onClick={() => handleImageChange(idx)}
-								/>
+						<div className="text-base font-bold flex items-center gap-1">
+							<Dot size={20} strokeWidth={2} />
+							{selectedOptionObj?.label} -&nbsp;
+							{formatCurrency(selectedOptionObj?.price || 0)}
+						</div>
+						<div className="flex gap-2 flex-wrap mt-2">
+							{optionImages.map((opt) => (
+								<button
+									key={opt.id}
+									type="button"
+									onClick={() => {
+										setSelectedOption(opt.id);
+										setCurrentImageIndex(
+											optionImages.findIndex(
+												(o) => o.id === opt.id
+											)
+										);
+									}}
+									className={`relative p-0.5 rounded-full border font-medium transition overflow-hidden w-[80px] h-[80px] ${
+										selectedOption === opt.id
+											? "text-white border-blue-600"
+											: "text-gray-700 border-gray-300 hover:bg-gray-100"
+									} cursor-pointer`}>
+									<Image
+										src={opt.url}
+										alt={opt.label}
+										objectFit="cover"
+										fill
+										className="w-[80px] h-[80px] rounded-full cursor-pointer border-2"
+									/>
+								</button>
 							))}
 						</div>
 					</div>
-				</div>
 
-				{/* Block 3: Countdown, Options, Price, Features, Join */}
-				<div className="md:col-span-3">
-					<div className="bg-white rounded-xl shadow p-4 flex flex-col gap-4 h-full">
-						{/* Countdown */}
-						<RaffleCountDown
-							startDate={raffleData.startDate}
-							endDate={raffleData.endDate}
-							raffleStatus={
-								raffleStatus as "upcoming" | "running" | "ended"
-							}
-							className="text-center"
-						/>
-						<Divider className="border-gray-400" />
-
-						{/* Option Select (sync with image) */}
-						<div>
-							<span className="text-xl font-medium mb-1 block">
-								Lựa chọn
+					{/* Features */}
+					<div>
+						<div className="font-semibold mb-1 flex items-center justify-between overflow-hidden">
+							<span className="min-w-[90px] text-lg">
+								Thông tin
 							</span>
-							<div className="flex gap-2 flex-wrap">
-								{optionImages.map((opt) => (
-									<button
-										key={opt.id}
-										type="button"
-										onClick={() => {
-											setSelectedOption(opt.id);
-											setCurrentImageIndex(
-												optionImages.findIndex(
-													(o) => o.id === opt.id
-												)
-											);
-										}}
-										className={`relative p-0.5 rounded-full border font-medium transition overflow-hidden w-[80px] h-[80px] ${
-											selectedOption === opt.id
-												? "text-white border-blue-600"
-												: "text-gray-700 border-gray-300 hover:bg-gray-100"
-										} cursor-pointer`}>
-										<Image
-											src={opt.url}
-											alt={opt.label}
-											objectFit="cover"
-											fill
-											className="w-[80px] h-[80px] rounded-full cursor-pointer border-2"
-										/>
-										{/* Show price on each option */}
-										{/* <span
-											className="absolute bottom-1 left-1 right-1 bg-white bg-opacity-80 text-xs text-green-700 font-semibold rounded px-1 py-0.5 text-center pointer-events-none"
-											style={{
-												fontSize: "12px",
-												lineHeight: "1.1",
-											}}>
-											{formatPrice(opt.price)}
-										</span> */}
-									</button>
+							<Divider className="border-gray-400 w-[80%]" />
+						</div>
+						<div className="flex flex-col gap-1">
+							{raffleData.features
+								.slice(0, 4)
+								.map((feature, idx) => (
+									<div
+										key={idx}
+										className="flex items-center gap-1">
+										<Dot size={20} strokeWidth={2} />
+										<span className="text-gray-700 text-base">
+											{feature}
+										</span>
+									</div>
 								))}
-							</div>
 						</div>
+					</div>
 
-						{/* Price */}
-						<div>
-							<div className="text-lg font-bold text-green-600">
-								{formatCurrency(selectedOptionObj?.price || 0)}
-							</div>
-							{/* <div className="text-gray-500 text-sm">
-								Prize Value
-							</div>
-							<div className="text-gray-500 text-sm">
-								Ticket Price:{" "}
-								{formatPrice(raffleData.ticketPrice)}
-							</div> */}
+					{/* Progress */}
+					{/* <div>
+						<div className="flex items-center justify-between mb-1">
+							<span className="text-base text-black">
+								{raffleData.joined} lượt tham gia
+							</span>
 						</div>
+					</div> */}
 
-						{/* Features */}
-						<>
-							<div className="font-semibold mb-1 flex items-center justify-between overflow-hidden">
-								<span className="min-w-[90px] text-lg">
-									Thông tin
-								</span>
-								<Divider className="border-gray-400 w-[80%]" />
-							</div>
-							<div className="flex flex-col gap-1">
-								{raffleData.features
-									.slice(0, 4)
-									.map((feature, idx) => (
-										<div
-											key={idx}
-											className="flex items-center gap-1">
-											<Sparkles className="w-4 h-4" />
-											<span className="text-gray-700 text-base">
-												{feature}
-											</span>
-										</div>
-									))}
-							</div>
-						</>
-
-						{/* Progress */}
-						<div>
-							<div className="flex items-center justify-between mb-1">
-								<span className="text-base text-black">
-									{/* {raffleData.soldTickets} /{" "}
-									{raffleData.totalTickets} lượt tham gia */}
-									{raffleData.joined} lượt tham gia
-								</span>
-								{/* <span className="text-sm font-semibold">
-									{progressPercentage.toFixed(1)}%
-								</span> */}
-							</div>
-							{/* <div className="w-full bg-gray-200 rounded-sm h-2">
-								<div
-									className="bg-red-400 h-2 rounded-sm transition-all duration-300"
-									style={{ width: `${progressPercentage}%` }}
-								/>
-							</div> */}
-						</div>
-
-						{/* Join Button */}
-						<button
-							type="button"
-							onClick={() => setShowRaffleModal(true)}
-							disabled={raffleStatus !== "running"}
-							className={`flex items-center justify-center gap-2 w-full py-3 mt-2 rounded-50 text-white font-semibold text-base transition ${
-								raffleStatus === "running"
-									? "bg-red-400 hover:bg-red-500"
-									: "bg-gray-400 cursor-not-allowed"
-							}`}>
-							{/* <ShoppingBag /> */}
-							{raffleStatus === "running"
-								? "Tham gia Raffle"
-								: raffleStatus === "upcoming"
+					{/* Join Button */}
+					<button
+						type="button"
+						onClick={() => setShowRaffleModal(true)}
+						disabled={raffleStatus !== "running"}
+						className={`flex items-center justify-center gap-2 w-full py-3 rounded-50 text-white font-semibold text-base transition ${
+							raffleStatus === "running"
+								? "bg-red-400 hover:bg-red-500"
+								: "bg-gray-400 cursor-not-allowed"
+						}`}>
+						{raffleStatus === "running"
+							? "Tham gia Raffle"
+							: raffleStatus === "upcoming"
 								? "Chưa bắt đầu"
 								: "Đã kết thúc"}
-						</button>
-					</div>
+					</button>
 				</div>
 			</div>
+			<motion.button
+				whileHover={{ scale: 1.05, background: "#f87171" }}
+				whileTap={{ scale: 0.97 }}
+				initial={{ opacity: 0, y: 30 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{
+					type: "spring",
+					stiffness: 300,
+					damping: 20,
+					delay: 0.2,
+				}}
+				className="max-w-max mt-4 px-6 py-3 rounded-50 bg-gradient-to-r from-pink-500 via-red-400 to-yellow-400 text-white font-bold text-base shadow-lg flex items-center gap-2 group focus:outline-none mx-auto"
+				onClick={() => (window.location.href = "/raffles")}>
+				<motion.span
+					animate={{
+						rotate: [0, 15, -15, 0],
+						scale: [1, 1.2, 1.2, 1],
+					}}
+					transition={{
+						repeat: Infinity,
+						repeatType: "loop",
+						duration: 1.2,
+						ease: "easeInOut",
+					}}
+					className="transition-transform group-hover:scale-110">
+					🎉
+				</motion.span>
+				<motion.span
+					initial={{ opacity: 0, x: 10 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={{ delay: 0.4, duration: 0.4 }}
+					className="drop-shadow-sm text-white">
+					Xem thêm các raffle khác
+				</motion.span>
+				<motion.span
+					initial={{ x: 0 }}
+					whileHover={{ x: 8 }}
+					transition={{ type: "spring", stiffness: 300, damping: 18 }}
+					className="ml-1 flex items-center">
+					<ChevronRight className="transition-transform" />
+				</motion.span>
+			</motion.button>
 
 			{/* Raffle Entry Modal */}
-			<RaffleEntryModal
+			<Stepper
+				raffleData={raffleFormData as unknown as RaffleData}
 				open={showRaffleModal}
 				onClose={() => setShowRaffleModal(false)}
-				raffleData={raffleData as unknown as RaffleData}
-				minPrice={minPrice}
-				maxPrice={maxPrice}
-			/>
+				initialStep={1}
+				onStepChange={(step) => {
+					console.log(step);
+				}}
+				onFinalStepCompleted={resetAndClose}
+				backButtonText="Quay lại"
+				nextButtonText="Tiếp theo">
+				<Step name="Thông tin">
+					<StepInformation
+						formData={raffleFormData}
+						raffleData={raffleData as unknown as RaffleData}
+						minPrice={minPrice}
+						maxPrice={maxPrice}
+					/>
+				</Step>
+				<Step name="Lựa chọn">
+					<StepSelectProduct
+						formData={raffleFormData}
+						setFormData={setRaffleFormData}
+						raffleData={raffleData as unknown as RaffleData}
+					/>
+				</Step>
+				<Step name="Địa chỉ">
+					<StepDeliveryInfo
+						formData={raffleFormData}
+						setFormData={setRaffleFormData}
+						raffleData={raffleData as unknown as RaffleData}
+					/>
+				</Step>
+				<Step name="Xác nhận">
+					<StepConfirmation formData={raffleFormData} />
+				</Step>
+			</Stepper>
 		</div>
 	);
 }

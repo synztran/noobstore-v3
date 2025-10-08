@@ -1,36 +1,38 @@
+import { RecaptchaWrapperRef } from "@/components/RecaptchaWrapper";
+import NotifyUtils from "@/utils/NotifyUtils";
 import { Button, Divider } from "@material-ui/core";
 import { ArrowUpDown, ChevronDown, Truck } from "lucide-react";
-import React, { useRef, useState } from "react";
-import {
-	InvisibleRecaptcha,
-	RecaptchaWrapperRef,
-} from "@/components/RecaptchaWrapper";
-import { getRecaptchaToken } from "@/utils/recaptchaUtils";
-import NotifyUtils from "@/utils/NotifyUtils";
+import React, { useEffect, useRef, useState } from "react";
 // import LogoStore from "../../public/assets/icons/logo.png";
-import { formatCurrency } from "@/utils/FormatNumber";
-import useServices, { useServiceAction } from "@/zustand/useServices";
-import SummaryServiceCollapse from "./collapse";
-import SummaryServiceDeliveryBlock from "./DeliveryBlock";
-import SummaryServiceBlock from "./ServiceBlock";
 import {
 	MAPPING_DELIVERY_METHOD,
 	MAPPING_ICON_SUMMARY_SERVICE,
 } from "@/constants";
-import LoadingDots from "../Effects/LoadingDots";
-import DiscountBlock from "./DiscountBlock";
 import { EnumShippingMethodCode } from "@/interface/interface";
+import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
+import { formatCurrency } from "@/utils/FormatNumber";
+import useServices, {
+	EnumServiceFeeType,
+	useServiceAction,
+} from "@/zustand/useServices";
+import LoadingDots from "../Effects/LoadingDots";
+import SummaryServiceCollapse from "./collapse";
+import SummaryServiceDeliveryBlock from "./DeliveryBlock";
+import DiscountBlock from "./DiscountBlock";
+import SummaryServiceBlock from "./ServiceBlock";
 
 const text = {
-	title: "Dịch vụ cơ bản",
-	location: "Hồ Chí Minh, Việt Nam",
+	title: "",
+	location: "Bình Thạnh, Hồ Chí Minh, Việt Nam",
 };
+const fundLink = "https://tnvc.vn";
 
 const SummaryService: React.FC = () => {
 	const {
 		selectedOpt,
 		selectedPlan,
-		discount,
+		discounts,
+		totalDiscount,
 		shippingInfo,
 		contactInfo,
 		keyboardItems,
@@ -42,7 +44,9 @@ const SummaryService: React.FC = () => {
 		calculateTotalPrice,
 		calculateSubTotalPrice,
 		submitServiceBooking,
+		updateFees,
 	} = useServiceAction();
+	const { data: serviceFees } = useServiceFeeQuery();
 	const recaptchaRef = useRef<RecaptchaWrapperRef>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const {
@@ -57,11 +61,17 @@ const SummaryService: React.FC = () => {
 	});
 
 	const handleCollapse = (target: "note" | "delivery" | "services") => {
-		setIsCollapse((prev) => ({
-			...prev,
-			[target]: !prev[target],
-		}));
+		setIsCollapse((prev) => ({ ...prev, [target]: !prev[target] }));
 	};
+
+	useEffect(() => {
+		if (serviceFees) {
+			updateFees(
+				"platFormFee",
+				serviceFees[EnumServiceFeeType.PLATFORM]?.price || 0
+			);
+		}
+	}, [serviceFees]);
 
 	console.log(
 		"selectedPlan",
@@ -73,14 +83,15 @@ const SummaryService: React.FC = () => {
 		stabilizerItems,
 		fees,
 		platFormFee,
-		discount
+		discounts,
+		totalDiscount
 	);
 	return (
 		<div
-			className="border-2 border-gray-600 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4"
+			className="border border-gray-400 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4"
 			id="summary-service-step">
 			<div className="flex flex-col">
-				<strong className="text-xl">
+				<strong className="text-lg">
 					{selectedOpt?.name ?? "Vui lòng chọn gói dịch vụ"}
 				</strong>
 				<span className="text-sm text-gray-600">{text.location}</span>
@@ -89,7 +100,7 @@ const SummaryService: React.FC = () => {
 				{shippingInfo?.method?.code !==
 				EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP ? (
 					<DetailContent
-						icon={<Truck size={28} />}
+						icon={<Truck size={24} />}
 						headContent={
 							shippingInfo?.deliveryMethod.name !== "" ? (
 								shippingInfo?.deliveryMethod.name
@@ -101,23 +112,23 @@ const SummaryService: React.FC = () => {
 						endContent={
 							shippingInfo?.deliveryMethod.code !== "" ? (
 								<div className="flex items-center gap-2">
-									<span className="text-lg">
+									<span className="text-base">
 										{shippingInfo?.deliveryMethod.price > 0
 											? formatCurrency(
 													shippingInfo?.deliveryMethod
 														.price
-											  )
+												)
 											: "Miễn phí"}
 									</span>
 								</div>
 							) : null
 						}
 						headClasses="font-bold"
-						headContentClasses="text-lg"
+						headContentClasses="text-base"
 					/>
 				) : null}
 				<DetailContent
-					icon={<ArrowUpDown size={28} />}
+					icon={<ArrowUpDown size={24} />}
 					headContent={
 						MAPPING_DELIVERY_METHOD[shippingInfo?.method.code] ?? (
 							<LoadingDots />
@@ -126,18 +137,18 @@ const SummaryService: React.FC = () => {
 					endContent={
 						shippingInfo?.method.code !== "" ? (
 							<div className="flex items-center gap-2">
-								<span className="text-lg">
+								<span className="text-base">
 									{shippingInfo?.method.price > 0
 										? formatCurrency(
 												shippingInfo?.method.price
-										  )
+											)
 										: "Miễn phí"}
 								</span>
 							</div>
 						) : null
 					}
 					headClasses="font-bold"
-					headContentClasses="text-lg"
+					headContentClasses="text-base"
 				/>
 				<SummaryServiceDeliveryBlock />
 				{shippingInfo?.addOns.map((addOn) => (
@@ -150,7 +161,7 @@ const SummaryService: React.FC = () => {
 						headContent={addOn.name}
 						endContent={
 							<div className="flex items-center gap-2">
-								<span className="text-lg">
+								<span className="text-base">
 									{addOn.price > 0
 										? formatCurrency(addOn.price)
 										: "Miễn phí"}
@@ -158,74 +169,91 @@ const SummaryService: React.FC = () => {
 							</div>
 						}
 						headClasses="font-bold"
-						headContentClasses="text-lg"
+						headContentClasses="text-base"
 					/>
 				))}
 				<SummaryServiceBlock />
 			</div>
 			<Divider />
 			<div className="flex flex-col">
-				<div
-					className="flex justify-between items-center cursor-pointer"
-					onClick={() => handleCollapse("note")}>
-					<label className="cursor-pointer select-none">
-						Ghi chú:
-					</label>
-					<div className="hover:bg-gray-200 rounded-full transition-all duration-150">
-						<ChevronDown
-							size={16}
-							className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 transform ${
-								isCollapse.note ? "-scale-y-100" : ""
-							}`}
-						/>
+				{keyboardItems.length ||
+				switchItems.length ||
+				stabilizerItems.length > 0 ? (
+					<div>
+						<div
+							className="flex justify-between items-center cursor-pointer"
+							onClick={() => handleCollapse("note")}>
+							<label className="cursor-pointer select-none">
+								Ghi chú:
+							</label>
+							{keyboardItems.length ||
+							switchItems.length ||
+							stabilizerItems.length > 0 ? (
+								<div className="hover:bg-gray-200 rounded-full transition-all duration-150">
+									<ChevronDown
+										size={16}
+										className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 transform ${
+											isCollapse.note
+												? "-scale-y-100"
+												: ""
+										}`}
+									/>
+								</div>
+							) : null}
+						</div>
+						<SummaryServiceCollapse isCollapse={isCollapse.note}>
+							{keyboardItems.length > 0 ? (
+								<textarea
+									className="w-full h-20 p-2 resize-none rounded-md select-none"
+									readOnly
+									value={keyboardItems
+										.map((keyboard) => keyboard.note)
+										.join("\n")}
+								/>
+							) : null}
+							{switchItems.length > 0 ? (
+								<textarea
+									className="w-full h-20 p-2 resize-none rounded-md"
+									readOnly
+									value={switchItems
+										.map((sw) => sw.note)
+										.join("\n")}
+								/>
+							) : null}
+							{stabilizerItems.length > 0 ? (
+								<textarea
+									className="w-full h-20 p-2 resize-none rounded-md"
+									readOnly
+									value={stabilizerItems
+										.map((stabilizer) => stabilizer.note)
+										.join("\n")}
+								/>
+							) : null}
+						</SummaryServiceCollapse>
 					</div>
-				</div>
-				<SummaryServiceCollapse isCollapse={isCollapse.note}>
-					{keyboardItems.length > 0 ? (
-						<textarea
-							className="w-full h-20 p-2 resize-none rounded-md select-none"
-							readOnly
-							value={keyboardItems
-								.map((keyboard) => keyboard.note)
-								.join("\n")}
-						/>
-					) : null}
-					{switchItems.length > 0 ? (
-						<textarea
-							className="w-full h-20 p-2 resize-none rounded-md"
-							readOnly
-							value={switchItems.map((sw) => sw.note).join("\n")}
-						/>
-					) : null}
-					{stabilizerItems.length > 0 ? (
-						<textarea
-							className="w-full h-20 p-2 resize-none rounded-md"
-							readOnly
-							value={stabilizerItems
-								.map((stabilizer) => stabilizer.note)
-								.join("\n")}
-						/>
-					) : null}
-				</SummaryServiceCollapse>
+				) : null}
 				<div className="flex flex-col gap-1">
 					<DiscountBlock />
 					<DetailContent
-						headContent="Phí dịch vụ gói nâng cao:"
+						headContent="Phí dịch vụ nâng cao:"
 						headContentClasses="text-gray-600"
 						headClasses="!text-sm text-gray-500"
 						endContent={formatCurrency(selectedPlan?.price || 0)}
 						itemEndClasses="text-base"
 						endClasses="items-center"
 						parentClasses="items-center"
+						isShow={selectedPlan ? selectedPlan?.price > 0 : false}
 					/>
 					<DetailContent
-						headContent="Phí dịch vụ & nền tảng:"
+						headContent="Phí nền tảng:"
 						headContentClasses="text-gray-600"
 						headClasses="!text-sm text-gray-500"
 						endContent={formatCurrency(platFormFee)}
 						itemEndClasses="text-base"
 						endClasses="items-center"
 						parentClasses="items-center"
+						isExpand
+						subTitle={`100% đóng góp vào quỹ dưới danh nghĩa Khách hàng NoobStore - <a class='text-blue-600 text-xs hover:text-blue-700 hover:underline transition-all duration-300' href='${fundLink}' target='_blank'>xem thêm</a>`}
 					/>
 					{pickup > 0 || delivery > 0 ? (
 						<DetailContent
@@ -243,7 +271,11 @@ const SummaryService: React.FC = () => {
 					<DetailContent
 						headContent="Giảm giá:"
 						headContentClasses="text-gray-600"
-						endContent={`-${formatCurrency(discount)}`}
+						endContent={
+							totalDiscount > 0
+								? `-${formatCurrency(totalDiscount)}`
+								: `${formatCurrency(0)}`
+						}
 						itemEndClasses="text-red-600"
 						headClasses=""
 						parentClasses="items-center"
@@ -363,23 +395,27 @@ export const DetailContent = ({
 			<div className={`flex gap-2 ${parentClasses}`}>
 				<div className="flex gap-2">
 					{icon ? <div className="select-none">{icon}</div> : null}
+					{icon ? <Divider orientation="vertical" flexItem /> : null}
 					<div className="flex flex-col gap-0.5">
 						<div className={`${headClasses}`}>
 							<div className="flex items-start gap-1">
-								<div className={`${headContentClasses}`}>
+								<div
+									className={`${headContentClasses} text-base`}>
 									{headContent}
 								</div>
 							</div>
 						</div>
 						{subTitle ? (
 							<div
-								className={`text-base text-gray-600 leading-[1] ${
+								className={`text-xs text-gray-600 leading-[1.25] ${
 									type === "dicount"
 										? "border border-gray-600 rounded-md px-2 py-1 text-center leading-[1]"
 										: ""
-								}`}>
-								{subTitle}
-							</div>
+								}`}
+								dangerouslySetInnerHTML={{
+									__html: subTitle as string,
+								}}
+							/>
 						) : null}
 					</div>
 				</div>
@@ -415,6 +451,7 @@ export const DetailContent = ({
 		<div className={`flex gap-2 ${parentClasses}`}>
 			<div className="flex gap-2">
 				{icon ? <div className="select-none">{icon}</div> : null}
+				{icon ? <Divider orientation="vertical" flexItem /> : null}
 				<div className="flex flex-col gap-0.5">
 					<div className={`text-base ${headClasses}`}>
 						<div className="flex items-start gap-1">
@@ -433,8 +470,8 @@ export const DetailContent = ({
 									}>
 									<div className="hover:bg-gray-200 rounded-full transition-all duration-150">
 										<ChevronDown
-											size={20}
-											className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 bg-gray-200 p-0.5 transform ${
+											size={18}
+											className={`cursor-pointer hover:bg-gray-200 rounded-full transition-all duration-150 p-0.5 transform ${
 												isCollapsed
 													? ""
 													: "-scale-y-100"
@@ -447,13 +484,15 @@ export const DetailContent = ({
 					</div>
 					{subTitle && !isCollapsed ? (
 						<div
-							className={`text-sm text-gray-600 ${
+							className={`text-xs text-gray-600 leading-[1.25] ${
 								type === "dicount"
 									? "border border-gray-600 rounded-md px-2 py-1 text-center leading-[1]"
 									: ""
-							}`}>
-							{subTitle}
-						</div>
+							}`}
+							dangerouslySetInnerHTML={{
+								__html: subTitle as string,
+							}}
+						/>
 					) : null}
 				</div>
 			</div>

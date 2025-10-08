@@ -1,33 +1,19 @@
-import React from "react";
-import {
-	FormControl,
-	FormLabel,
-	FormGroup,
-	RadioGroup,
-	FormControlLabel,
-	Radio,
-	Divider,
-	Typography,
-	Box,
-	TextField,
-	CircularProgress,
-} from "@mui/material";
-import useServices, {
-	useServiceSelectors,
-	useServiceAction,
-} from "@/zustand/useServices";
-import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
-import SearchableSelect, { IOptionSelection } from "../SelectComp";
-import { formatCurrency } from "@/utils/FormatNumber";
-import InputWrapperLegend from "../InputComponents/WrapperLegend";
-import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { viVN } from "@mui/x-date-pickers/locales";
-import dayjs from "dayjs";
-import ServiceLocationTime from "../MultiSerivceForm/locationTime";
 import { EnumShippingMethodCode } from "@/interface/interface";
-import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
 import useServiceDefaultOptionQuery from "@/react-query/services/useServiceOptionQueries";
+import { formatCurrency } from "@/utils/FormatNumber";
+import useServices, { useServiceAction } from "@/zustand/useServices";
+import {
+	CircularProgress,
+	Divider,
+	FormControlLabel,
+	FormGroup,
+	Radio,
+	RadioGroup,
+} from "@mui/material";
+import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
+import InputWrapperLegend from "../InputComponents/WrapperLegend";
+import ServiceLocationTime from "../MultiSerivceForm/locationTime";
+import SearchableSelect, { IOptionSelection } from "../SelectComp";
 
 const DELIVERY_PICKUP_OPTIONS = [
 	{
@@ -67,7 +53,7 @@ const DELIVERY_PICKUP_OPTIONS = [
 const DEFAULT_DELIVERY_METHOD = [
 	{
 		id: 1,
-		label: "Giao/lấy hàng cơ bản",
+		label: "Giao/nhận hàng cơ bản",
 		value: "STANDARD",
 		price: 0,
 		description:
@@ -75,7 +61,7 @@ const DEFAULT_DELIVERY_METHOD = [
 	},
 	{
 		id: 2,
-		label: "Giao/lấy hàng nhanh",
+		label: "Giao/nhận hàng nhanh",
 		value: "EXPRESS",
 		price: 50000,
 		description:
@@ -83,27 +69,8 @@ const DEFAULT_DELIVERY_METHOD = [
 	},
 ];
 
-const EXTRA_OPTIONS = [
-	{
-		id: 1,
-		name: "Bảo hiểm gói hàng",
-		value: "INSURANCE",
-		price: 10000,
-		description:
-			"Đảm bảo an toàn cho gói hàng của bạn trong quá trình vận chuyển.",
-	},
-	{
-		id: 2,
-		name: "Giao nhận tận tay",
-		value: "DOOR_TO_DOOR",
-		price: 60000,
-		description:
-			"Chúng tôi sẽ giao đến tận cửa, ngoại trừ chung cư yêu cầu ra vào",
-	},
-];
-
 const DeliverySelection = () => {
-	const { shippingInfo } = useServices();
+	const { shippingInfo, errorMessages } = useServices();
 	const { updateShippingInfo } = useServiceAction();
 	const {
 		data: serviceDefaultOptions,
@@ -168,13 +135,13 @@ const DeliverySelection = () => {
 	};
 
 	const selectedOption =
-		DELIVERY_PICKUP_OPTIONS.find(
+		serviceDefaultOptions?.["PACKAGE_METHOD"]?.find(
 			(opt) => opt.value === shippingInfo.method?.code
 		) || null;
 
 	return (
 		<div
-			className="border border-gray-300 rounded-lg p-4 bg-white flex flex-col gap-2"
+			className={`border border-gray-300 rounded-lg p-4 bg-white flex flex-col gap-2 relative`}
 			id="delivery-selection-step">
 			<div className="flex flex-col">
 				<div className="text-xl font-bold">Dịch vụ giao nhận</div>
@@ -184,7 +151,9 @@ const DeliverySelection = () => {
 				</span>
 			</div>
 			<Divider />
-			<InputWrapperLegend label="Phương thức giao nhận">
+			<InputWrapperLegend
+				label="Phương thức giao nhận"
+				errorMessage={errorMessages?.method}>
 				<SearchableSelect
 					isLoading={isServiceDefaultOptionPending}
 					name="deliveryPickupMethod"
@@ -197,13 +166,13 @@ const DeliverySelection = () => {
 							})
 						) as unknown as IOptionSelection[]
 					}
-					value={selectedOption?.value}
+					value={shippingInfo?.method?.code}
 					onSelect={({ option }) =>
 						handleDeliveryPickupChange(option)
 					}
 					placeholder="Chọn phương thức giao nhận"
 				/>
-				<span className="text-sm text-gray-600 mt-0.5">
+				<span className="text-xs text-gray-600 mt-0.5">
 					{selectedOption?.description}
 				</span>
 			</InputWrapperLegend>
@@ -211,9 +180,11 @@ const DeliverySelection = () => {
 			shippingInfo?.method.code !==
 				EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP ? (
 				<>
-					<InputWrapperLegend label="Phương thức vận chuyển">
+					<InputWrapperLegend
+						label="Phương thức vận chuyển"
+						errorMessage={errorMessages?.deliveryMethod}>
 						<RadioGroup
-							className="grid grid-cols-2 gap-8"
+							className="!grid grid-cols-2 gap-8"
 							aria-label="delivery-method"
 							name="deliveryMethod"
 							value={shippingInfo?.deliveryMethod.code}
@@ -234,11 +205,11 @@ const DeliverySelection = () => {
 										className="items-start mr-0"
 										label={
 											<div>
-												<div className="font-semibold">
+												<div className="font-semibold text-sm">
 													{opt?.label}
 												</div>
 												{opt.description && (
-													<div className="text-sm text-gray-600">
+													<div className="text-xs text-gray-600">
 														{opt?.description}
 													</div>
 												)}
@@ -249,7 +220,7 @@ const DeliverySelection = () => {
 														{opt?.price > 0
 															? formatCurrency(
 																	opt.price
-															  )
+																)
 															: "Miễn phí"}
 													</div>
 												) : null}
@@ -267,7 +238,15 @@ const DeliverySelection = () => {
 					].includes(
 						shippingInfo?.method?.code as EnumShippingMethodCode
 					) && (
-						<InputWrapperLegend label="Thời gian và địa chỉ giao/nhận hàng">
+						<InputWrapperLegend
+							label="Thời gian và địa chỉ giao/nhận hàng"
+							errorMessage={
+								errorMessages?.deliveryLocation ||
+								errorMessages?.deliveryDate ||
+								errorMessages?.deliveryAddress ||
+								errorMessages?.pickupDate ||
+								errorMessages?.pickupAddress
+							}>
 							<ServiceLocationTime />
 						</InputWrapperLegend>
 					)}
@@ -276,13 +255,13 @@ const DeliverySelection = () => {
 			{shippingInfo?.method?.code &&
 			shippingInfo.method.code !==
 				EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP ? (
-				<InputWrapperLegend label="Tùy chọn thêm">
+				<InputWrapperLegend label="Tùy chọn thêm (không bắt buộc)">
 					{isServiceDefaultOptionPending ? (
 						<div className="w-full min-h-[60px] flex items-center justify-center">
 							<CircularProgress size={20} thickness={5} />
 						</div>
 					) : (
-						<FormGroup className="grid grid-cols-2 gap-8">
+						<FormGroup className="grid grid-cols-2 gap-4">
 							{serviceDefaultOptions?.["EXTRA_METHOD"]?.map(
 								(option) => (
 									<CheckboxWithPrice

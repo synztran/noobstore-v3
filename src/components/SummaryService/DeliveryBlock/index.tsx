@@ -1,5 +1,6 @@
 import { EnumShippingMethodCode } from "@/interface/interface";
 import useServices from "@/zustand/useServices";
+import { Divider } from "@mui/material";
 import { CalendarRange, ChevronDown, MapPin, Route, User } from "lucide-react";
 
 interface IProps {}
@@ -29,36 +30,37 @@ const SummaryServiceDeliveryBlock = (props: IProps) => {
 				{isPickup ? (
 					<div className="flex flex-col">
 						<div className="flex gap-2">
-							<Route size={28} className="min-w-[28px]" />
+							<Route size={24} className="min-w-[24px]" />
+							<Divider orientation="vertical" flexItem />
 							<div className="flex flex-col gap-1">
 								<div className="flex items-start">
-									<strong className="text-lg">
+									<strong className="text-base">
 										Lấy hàng
 									</strong>
 								</div>
 								<div className="pl-2 flex flex-col gap-2">
 									<div className="flex items-center gap-1">
 										<strong className="flex items-center gap-1">
-											<User size={20} />
+											<User size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1]">
+										<div className="text-sm text-gray-600 leading-[1]">
 											{contactInfo.name} -{" "}
 											{contactInfo.phone}
 										</div>
 									</div>
 									<div className="flex items-center gap-1">
 										<strong className="flex items-center gap-1">
-											<CalendarRange size={20} />
+											<CalendarRange size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1]">
+										<div className="text-sm text-gray-600 leading-[1]">
 											{pickup.date}
 										</div>
 									</div>
 									<div className="flex items-center gap-1">
 										<strong className="flex items-center gap-1">
-											<MapPin size={20} />
+											<MapPin size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1] line-clamp-1">
+										<div className="text-sm text-gray-600 leading-[1] line-clamp-1">
 											{pickup.address}
 										</div>
 									</div>
@@ -70,36 +72,37 @@ const SummaryServiceDeliveryBlock = (props: IProps) => {
 				{isDelivery ? (
 					<div className="flex flex-col">
 						<div className="flex gap-2">
-							<Route size={28} className="min-w-[28px]" />
+							<Route size={24} className="min-w-[24px]" />
+							<Divider orientation="vertical" flexItem />
 							<div className="flex flex-col gap-1">
 								<div className="flex items-start">
-									<strong className="text-lg">
+									<strong className="text-base">
 										Giao hàng
 									</strong>
 								</div>
 								<div className="pl-2 flex flex-col gap-2">
 									<div className="flex items-center gap-1">
 										<strong className="flex items-center gap-1">
-											<User size={20} />
+											<User size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1]">
+										<div className="text-sm text-gray-600 leading-[1]">
 											{contactInfo.name} -{" "}
 											{contactInfo.phone}
 										</div>
 									</div>
 									<div className="flex items-center gap-1">
 										<strong className="flex items-center gap-1">
-											<CalendarRange size={20} />
+											<CalendarRange size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1]">
+										<div className="text-sm text-gray-600 leading-[1]">
 											{delivery.date}
 										</div>
 									</div>
 									<div className="flex items-center gap-1 min-h-[17px]">
 										<strong className="flex items-center gap-1">
-											<MapPin size={20} />
+											<MapPin size={22} />
 										</strong>
-										<div className="text-base text-gray-600 leading-[1] line-clamp-1">
+										<div className="text-sm text-gray-600 leading-[1] line-clamp-1">
 											{delivery.address}
 										</div>
 									</div>
@@ -116,7 +119,8 @@ const SummaryServiceDeliveryBlock = (props: IProps) => {
 		<div className="flex flex-col gap-2">
 			<div className="flex flex-col">
 				<div className="flex gap-2">
-					<Route size={28} />
+					<Route size={24} />
+					<Divider orientation="vertical" flexItem />
 					<div className="flex flex-col gap-1">
 						<div className="flex items-start">
 							<strong>
@@ -135,7 +139,7 @@ const SummaryServiceDeliveryBlock = (props: IProps) => {
 							</div>
 							<div className="flex items-center gap-2">
 								<strong className="flex items-center gap-1">
-									<CalendarRange size={16} />
+									<CalendarRange size={20} />
 								</strong>
 								<div className="text-sm text-gray-600 leading-[1]">
 									{isDelivery ? delivery?.date : ""}
@@ -144,7 +148,7 @@ const SummaryServiceDeliveryBlock = (props: IProps) => {
 							</div>
 							<div className="flex items-center gap-2 min-h-[17px]">
 								<strong className="flex items-center gap-1">
-									<MapPin size={16} />
+									<MapPin size={20} />
 								</strong>
 								<div className="text-sm text-gray-600 leading-[1]">
 									{isDelivery ? delivery?.address : ""}

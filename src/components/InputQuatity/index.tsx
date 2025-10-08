@@ -192,7 +192,7 @@ const MinusButton = ({
 }) => {
 	return (
 		<Button
-			className="w-6 min-w-[2.5rem] !min-h-[40px] rounded-tr-none rounded-br-none"
+			className="w-6 min-w-[2.5rem] !h-[40px] rounded-tr-none rounded-br-none"
 			onClick={handleDecreaseQuantity}
 			disabled={isDisabled}>
 			-
@@ -250,8 +250,8 @@ const ProductQuantity = memo(
 			<Input
 				type="text"
 				classes={{
-					root: "w-12 bg-transparent !h-[40px]",
-					input: "px-0 text-center bg-transparent leading-none",
+					root: "w-12 bg-transparent !h-[40px] !min-h-[40px]",
+					input: "px-0 text-center bg-transparent leading-none py-0",
 					focused: "!border-gray-400",
 				}}
 				disableUnderline
@@ -261,10 +261,7 @@ const ProductQuantity = memo(
 				onBlur={handleBlur}
 				id="input-quantity"
 				name="quantity"
-				inputProps={{
-					min: 1,
-					max: 99,
-				}}
+				inputProps={{ min: 1, max: 99 }}
 			/>
 		);
 	}

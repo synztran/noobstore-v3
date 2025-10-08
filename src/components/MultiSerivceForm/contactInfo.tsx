@@ -49,13 +49,15 @@ const ServiceContactInfo: React.FC = () => {
 	});
 
 	return (
-		<div className="border-gray-600 rounded-xl border-2 p-4 bg-white">
+		<div
+			className="border-gray-400 rounded-xl border p-4 bg-white"
+			id="customer-information-step">
 			<div className="flex flex-col">
 				<div className="text-lg font-bold">Thông tin liên lạc</div>
-				<small>
+				<div className="text-sm text-gray-600">
 					Bổ sung thông tin liên hệ của bạn một cách dễ dàng bằng cách
 					điền vào các thông tin cần thiết
-				</small>
+				</div>
 				<Divider className="my-2" />
 				{!isAuthenticated ? (
 					<>
@@ -92,7 +94,9 @@ const ServiceContactInfo: React.FC = () => {
 						<Form className="flex flex-col gap-2">
 							<div className="flex gap-2 w-full">
 								<FormGroup className="flex-1 min-w-0">
-									<label>Tên khách hàng</label>
+									<label className="text-sm">
+										Tên khách hàng
+									</label>
 									<Field
 										name="fullName"
 										type="text"
@@ -115,7 +119,7 @@ const ServiceContactInfo: React.FC = () => {
 							</div>
 							<div className="flex flex-col w-full gap-2">
 								<FormGroup className="w-full">
-									<label>Email</label>
+									<label className="text-sm">Email</label>
 									<Field
 										value={user?.email ?? values.email}
 										disabled={!!user?.email}
@@ -138,7 +142,9 @@ const ServiceContactInfo: React.FC = () => {
 									</FormHelperText>
 								</FormGroup>
 								<FormGroup className="w-full">
-									<label>Số điện thoại</label>
+									<label className="text-sm">
+										Số điện thoại
+									</label>
 									<Field
 										name="phoneNumber"
 										type="text"

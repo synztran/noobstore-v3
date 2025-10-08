@@ -167,6 +167,15 @@ export const minuteToHour = (
 	}`;
 };
 
+export const generateRandomId = (length = 5): string => {
+	if (length <= 0) length = 1;
+	const min = length === 1 ? 0 : 10 ** (length - 1);
+	const max = 10 ** length - 1;
+	const randomPart = Math.floor(Math.random() * (max - min + 1)) + min;
+	const timeSuffix = (Date.now() % 10000).toString().padStart(4, "0");
+	return `${randomPart}${timeSuffix}`;
+};
+
 export default {
 	hashCode,
 	changeAlias,
@@ -184,4 +193,6 @@ export default {
 	truncateString,
 	truncateFileName,
 	phoneNumberPattern,
+	minuteToHour,
+	generateRandomId,
 };
