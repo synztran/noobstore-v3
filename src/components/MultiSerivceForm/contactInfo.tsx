@@ -1,14 +1,14 @@
 import { useAuth } from "@/context/Auth";
 import GoogleLogo from "@/icons/google";
+import { IAuthUser } from "@/interface/Context/auth";
 import { useDialogLoginAction } from "@/zustand/useDialogLogin";
+import { useServiceAction } from "@/zustand/useServices";
 import { Divider, FormGroup, FormHelperText } from "@material-ui/core";
 import Button from "@mui/material/Button";
 import { Field, Form, Formik } from "formik";
 import React, { useEffect } from "react";
 import * as Yup from "yup";
 import SimpleDivider from "../SimpleDivider";
-import { IAuthUser } from "@/interface/Context/auth";
-import { useServiceAction } from "@/zustand/useServices";
 
 const ServiceContactInfo: React.FC = () => {
 	const { user, isAuthenticated } = useAuth() as unknown as {
@@ -55,8 +55,7 @@ const ServiceContactInfo: React.FC = () => {
 			<div className="flex flex-col">
 				<div className="text-lg font-bold">Thông tin liên lạc</div>
 				<div className="text-sm text-gray-600">
-					Bổ sung thông tin liên hệ của bạn một cách dễ dàng bằng cách
-					điền vào các thông tin cần thiết
+					Bổ sung thông tin liên hệ của bạn
 				</div>
 				<Divider className="my-2" />
 				{!isAuthenticated ? (

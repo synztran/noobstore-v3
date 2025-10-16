@@ -1,5 +1,6 @@
 import { IServicePlan } from "@/hook/useServicePage";
 import { calculateDistance } from "./locationUtils";
+import dayjs from "dayjs";
 
 const workingTime = {
 	start: {
@@ -42,9 +43,16 @@ const formatDate = (date: Date, style = "dd/mm/yyyy") => {
 
 const isOutOfWorkingTime = (dateStr?: string | null) => {
 	if (!dateStr) return false;
-	const date = new Date(dateStr);
-	const hour = date.getHours();
-	const minute = date.getMinutes();
+  // const date = new Date(dateStr);
+  const date = dayjs(dateStr, "DD/MM/YYYY HH:mm", true)
+  if (!date.isValid()) {
+    console.error("Invalid date string:", dateStr);
+    return false;
+  }
+	const hour = date.hour();
+	const minute = date.minute();
+
+	console.log(date, hour, minute);
 
 	const startHour = workingTime.start.hour;
 	const startMinute = workingTime.start.minute;

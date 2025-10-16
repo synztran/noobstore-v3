@@ -1337,32 +1337,45 @@ const useServices = create<ServiceState>()(
 						state.fees.platFormFee
 							? {
 									platFormFee: state.fees.platFormFee,
+									feeId: generateId(),
+									feeName: "Phí nền tảng",
+									feeDescription: "",
+									feeAmount: state.fees.platFormFee,
 								}
 							: null,
 						state.fees.serviceOutOfTimeFee
 							? {
-									pickup: state.fees.serviceOutOfTimeFee
-										.pickup,
-									delivery:
-										state.fees.serviceOutOfTimeFee.delivery,
+									feeId: generateId(),
+									feeName: "Phí hỗ trợ ngoài giờ",
+									feeDescription: "",
+									feeAmount:
+										state.fees.serviceOutOfTimeFee
+											.delivery +
+										state.fees.serviceOutOfTimeFee.pickup,
 								}
 							: null,
 						state.selectedPlan?.price
 							? {
-									upgradePlanFee:
-										state.selectedPlan?.price || 0,
-								}
+									feeId: generateId(),
+									feeName: "Phí nâng cấp gói dịch vụ",
+									feeDescription: "",
+									feeAmount: state.selectedPlan?.price || 0,
+							}
 							: null,
 						state.shippingInfo?.method?.price
 							? {
-									shippingMethodFee:
-										state.shippingInfo.method.price,
+									feeId: generateId(),
+									feeName: "Phí hỗ trợ giao/nhận tận nơi",
+									feeDescription: "",
+									feeAmount: state.shippingInfo.method.price,
 								}
 							: null,
 						state.shippingInfo?.deliveryMethod?.price
 							? {
-									deliveryMethodFee:
-										state.shippingInfo.deliveryMethod.price,
+									feeId: generateId(),
+									feeName: "Phí giao/nhận ưu tiên",
+									feeDescription: "",
+									feeAmount: state.shippingInfo.deliveryMethod.price,
 								}
 							: null,
 					],

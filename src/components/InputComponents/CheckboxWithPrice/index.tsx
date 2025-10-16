@@ -71,7 +71,7 @@ const CheckboxWithPrice = (props: IProps) => {
 				</div>
 			</div>
 			{price ? (
-				<div className="font-bold col-span-1 flex items-center justify-end">
+				<div className="font-bold col-span-1 flex items-center justify-end text-red-400">
 					<span className="text-red-400 text-sm">
 						{formatCurrency(price)}
 					</span>

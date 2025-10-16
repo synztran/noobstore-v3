@@ -1,38 +1,21 @@
+import DeliverySelection from "@/components/DeliverySelection";
 import GroupSelectServiceDate from "@/components/GroupSelectServiceDate";
 import MultiServiceForm from "@/components/MultiSerivceForm";
 import ServiceContactInfo from "@/components/MultiSerivceForm/contactInfo";
-import ServiceLocationTime from "@/components/MultiSerivceForm/locationTime";
 import OverSizeBanner from "@/components/OverSizeBanner";
 import SummaryService from "@/components/SummaryService";
-import LocationRequestButton from "@/components/LocationRequestButton";
-import {
-	FILM_TYPE_LABEL,
-	GREASE_TYPE_LABEL,
-	MapKeyName,
-	SPRING_TYPE_LABEL,
-	SWITCH_TYPE_LABEL,
-} from "@/constants";
-import { IService } from "@/interface/interface";
-import { Base } from "@/templates/Base";
-import { formatCurrency } from "@/utils/FormatNumber";
-import { Button } from "@material-ui/core";
-import { Box, Divider, Grid } from "@mui/material";
-import Image from "next/image";
+import { useAuth } from "@/context/Auth";
+import { useGuide } from "@/hook/useDriver";
 import { GeolocationCoordinates } from "@/hook/useGeolocation";
+import { IAuthUser } from "@/interface/Context/auth";
+import { Base } from "@/templates/Base";
 import {
 	calculateDistance,
-	isWithinRadius,
 	getShortAddress,
+	isWithinRadius,
 } from "@/utils/locationUtils";
-import useServices, {
-	useServiceAction,
-	useServiceSelectors,
-} from "@/zustand/useServices";
-import { useState, useEffect } from "react";
-import DeliverySelection from "@/components/DeliverySelection";
-import { useAuth } from "@/context/Auth";
-import { IAuthUser } from "@/interface/Context/auth";
-import { useGuide } from "@/hook/useDriver";
+import useServices, { useServiceAction } from "@/zustand/useServices";
+import { useEffect, useState } from "react";
 
 const ServicePage = () => {
 	const { user } = useAuth() as unknown as { user: IAuthUser };
@@ -173,7 +156,7 @@ const ServicePage = () => {
 					</div>
 				</div>
 				<div className="grid grid-cols-3 gap-4 px-4">
-					<div className="col-span-2 relative -top-[5rem] flex flex-col gap-4">
+					<div className="col-span-2 relative -top-[2rem] flex flex-col gap-4">
 						<GroupSelectServiceDate />
 						<DeliverySelection />
 						<MultiServiceForm />

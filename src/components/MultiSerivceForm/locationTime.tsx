@@ -10,6 +10,7 @@ import dayjs, { Dayjs } from "dayjs";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import MapStyles from "../../../public/map/MapStyle.json";
 import SimpleTextField from "../InputComponents/SimpleTextField";
+import NotifyUtils from "@/utils/NotifyUtils";
 
 interface IProps {}
 
@@ -31,13 +32,6 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 	const { data: serviceFees } = useServiceFeeQuery();
 	console.log("serviceFees", serviceFees);
 	console.log("shippingInfo", shippingInfo);
-
-	const handleChangeCheckbox = (checked: boolean) => {
-		updateShippingInfo({
-			...shippingInfo,
-			isDeliverySameAsPickup: checked,
-		});
-	};
 
 	const handleCalculateDistanceAndFee = useCallback(
 		async (key: "pickup" | "delivery") => {
@@ -85,11 +79,17 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 		[shippingInfo, handleCalculateDistanceAndFee, updateShippingInfo]
 	);
 
-	const handleChangeDate = (value: Dayjs | null, key: string) => {
+  const handleChangeDate = (value: Dayjs | null, key: string) => {
+    if (!value || !value.isValid()) { 
+      NotifyUtils.error("Thời gian không hợp lệ");
+      return;
+    }
+		console.log("value", value, value?.format(DATE_FORMAT));
 		if (key === "delivery" || key === "pickup") {
 			const isOutOfServiceTime = DateUtils.isOutOfWorkingTime(
 				value?.format(DATE_FORMAT) || ""
 			);
+			console.log("isOutOfServiceTime", isOutOfServiceTime);
 			updateServiceOutOfTimeFee(
 				isOutOfServiceTime
 					? serviceFees?.OUT_OF_SERVICE_TIME?.price || 0
