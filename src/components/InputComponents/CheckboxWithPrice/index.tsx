@@ -1,6 +1,5 @@
 import { EnumUnitType } from "@/interface/interface";
 import { formatCurrency } from "@/utils/FormatNumber";
-import { CircularProgress } from "@material-ui/core";
 
 interface IProps {
 	value: boolean;
@@ -15,6 +14,7 @@ interface IProps {
 	isLoading?: boolean;
 	unit?: EnumUnitType;
 	unitLabel?: string;
+	positionPrice?: "right" | "bottom";
 }
 
 const CheckboxWithPrice = (props: IProps) => {
@@ -31,6 +31,7 @@ const CheckboxWithPrice = (props: IProps) => {
 		isLoading,
 		unit,
 		unitLabel,
+		positionPrice = "right",
 	} = props;
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,10 +40,11 @@ const CheckboxWithPrice = (props: IProps) => {
 
 	return (
 		<div
-			className={`grid grid-cols-5 gap-2 items-start w-full ${
+			className={`grid grid-cols-5 gap-2 items-start w-full transition-all ${
 				containerClassName ?? ""
-			}`}>
-			<div className={`flex col-span-4 items-start gap-2`}>
+			} `}>
+			<div
+				className={`flex col-span-5 items-start gap-2 ${disabled ? "blur-sm !cursor-not-allowed" : "cursor-pointer"}`}>
 				<input
 					type="checkbox"
 					id={name}
@@ -50,7 +52,7 @@ const CheckboxWithPrice = (props: IProps) => {
 					checked={value}
 					onChange={handleChange}
 					disabled={disabled || isLoading}
-					className={`accent-black !mt-[0.25rem] w-4 h-4 cursor-pointer ${
+					className={`accent-black !mt-[0.25rem] w-4 h-4 ${
 						subLabel ? "mt-[0.125rem]" : ""
 					}`}
 					style={{ boxShadow: "none" }}
@@ -58,10 +60,22 @@ const CheckboxWithPrice = (props: IProps) => {
 				<div className="flex flex-col">
 					<label
 						htmlFor={name}
-						className={`text-sm text-gray-700 cursor-pointer font-semibold ${
+						className={`text-sm text-gray-700 font-semibold flex gap-1  ${
 							isLoading ? "opacity-60" : ""
 						}`}>
 						{label}
+						{price ? (
+							<div className="font-bold col-span-1 flex items-center justify-end text-red-400">
+								(
+								<span className="text-red-400 text-sm">
+									+{formatCurrency(price)}
+								</span>
+								{unit === EnumUnitType.UNIT
+									? `/${unitLabel}`
+									: ""}
+								)
+							</div>
+						) : null}
 					</label>
 					{subLabel ? (
 						<span className="text-xs text-gray-600">
@@ -70,14 +84,14 @@ const CheckboxWithPrice = (props: IProps) => {
 					) : null}
 				</div>
 			</div>
-			{price ? (
+			{/* {price && positionPrice === "right" ? (
 				<div className="font-bold col-span-1 flex items-center justify-end text-red-400">
 					<span className="text-red-400 text-sm">
 						{formatCurrency(price)}
 					</span>
 					{unit === EnumUnitType.UNIT ? `/${unitLabel}` : ""}
 				</div>
-			) : null}
+			) : null} */}
 		</div>
 	);
 };

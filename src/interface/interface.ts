@@ -50,7 +50,6 @@ export enum EnumPostPriceType {
 export enum EnumPaymentMethod {
 	CASH_ON_DELIVERY = "CASH_ON_DELIVERY",
 	MOMO = "MOMO",
-	// ZALO_PAY = "ZALO_PAY",
 	BANK_TRANSFER = "BANK_TRANSFER",
 	NOT_FOUND = "",
 }
@@ -141,7 +140,23 @@ export enum EnumShippingMethodCode {
 }
 
 export enum EnumStabilizerStatus {
-	EnumSwitchStatus,
+	NEW = "NEW",
+	USED = "USED",
+}
+
+export enum EnumPcbType {
+	HOTSWAP = "HOTSWAP",
+	SOLDER = "SOLDER",
+}
+
+export enum EnumStabilizerType {
+	SCREW_IN = "SCREW_IN",
+	CLIP_IN = "CLIP_IN",
+}
+
+export enum EnumStabilizerMountType {
+	PCB_MOUNT = "PCB_MOUNT",
+	PLATE_MOUNT = "PLATE_MOUNT",
 }
 
 export interface ICartProduct {

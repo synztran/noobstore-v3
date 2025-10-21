@@ -125,7 +125,7 @@ const mapServiceTasksToOptions = ({
 		) {
 			const tasks = service.tasks || [];
 			const foundLayout = defaultOptions.layout.find(
-				(opt) => opt.value === keyboardItem?.keyboardSize
+				(opt) => opt.value === keyboardItem?.keyboardInfo?.size
 			);
 			tasks.forEach((task: any) => {
 				switch (task.serviceTaskId) {

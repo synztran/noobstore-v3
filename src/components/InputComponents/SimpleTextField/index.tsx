@@ -14,7 +14,15 @@ interface SimpleTextFieldProps {
 	placeholder?: string;
 	className?: string;
 	value?: string | number;
-	onChange?: ({ name, value }: { name: string; value: string }) => void;
+	onChange?: ({
+		name,
+		value,
+		parentName,
+	}: {
+		name: string;
+		value: string | number;
+		parentName?: string;
+	}) => void;
 	onChangeWithoutNameValue?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	max?: number;
 	min?: number;
@@ -23,6 +31,8 @@ interface SimpleTextFieldProps {
 	multiline?: boolean;
 	disabled?: boolean;
 	type?: "text" | "number";
+	parentName?: string;
+	currentAmount?: number;
 }
 
 const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
@@ -40,44 +50,80 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 	multiline,
 	disabled = false,
 	type = "text",
+	parentName,
+	currentAmount,
 }) => {
 	const [inputValue, setInputValue] = useState(value);
 
+	const debounceRef = React.useRef<number | undefined>(undefined);
+	const DEBOUNCE_DELAY = 1000;
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		// For number type, ensure only valid numeric input
 		if (type === "number") {
-			const regex = /^-?\d*$/; // Allow only digits and optional leading minus
+			const regex = /^-?\d*$/;
 			if (!regex.test(e.target.value)) {
-				return; // Ignore invalid input
+				return;
 			}
 		}
-		let value = e.target.value;
-		// Allow any value, including 0 or empty, during typing
+		const value = parseInt(e.target.value, 10) || 0;
+		console.log("value", value);
+		console.log("max", max);
+		console.log("currentAmount", currentAmount);
+		if (max && currentAmount && value > max - currentAmount) {
+			const newValue = max - currentAmount >= 0 ? max - currentAmount : 0;
+			console.log("newValue", newValue);
+			setInputValue(newValue);
+			return;
+		}
 		setInputValue(value);
-		onChange && onChange({ name, value: value });
-		onChangeWithoutNameValue && onChangeWithoutNameValue(e);
+
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+		}
+
+		debounceRef.current = window.setTimeout(() => {
+			onChange &&
+				onChange({
+					name,
+					value: type === "number" ? value : value,
+					parentName,
+				});
+			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
+		}, DEBOUNCE_DELAY);
 	};
+
+	React.useEffect(() => {
+		return () => {
+			if (debounceRef.current) {
+				clearTimeout(debounceRef.current);
+			}
+		};
+	}, []);
 
 	const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
 		let value = e.target.value;
 		if (value === "" || value === "0") {
 			// Allow empty or 0, do not force min
 			setInputValue(value);
-			onChange && onChange({ name, value: value });
+			onChange && onChange({ name, value: value, parentName });
 			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
 			return;
 		}
 		let num = parseInt(value, 10);
 		let newValue = value;
-		if (max !== undefined && num > max) {
-			newValue = max.toString();
+		console.log("newValue", newValue, max, currentAmount);
+		if (max !== undefined && num > max && currentAmount) {
+			newValue =
+				max - currentAmount >= 0
+					? (max - currentAmount).toString()
+					: "0";
 		}
 		if (min !== undefined && num < min) {
 			newValue = min.toString();
 		}
 		if (newValue !== value) {
 			setInputValue(newValue);
-			onChange && onChange({ name, value: newValue });
+			onChange && onChange({ name, value: newValue, parentName });
 			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
 		}
 	};

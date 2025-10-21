@@ -20,8 +20,8 @@ const InputWrapperLegend = ({
 			component="fieldset"
 			className={`border p-4 pt-2 pb-4 rounded-lg w-full relative ${className} ${errorMessage ? "!border-red-600" : ""}`}
 			style={style}>
-			<Typography component="legend" className="font-bold min-w-max">
-				{label}
+			<Typography component="legend" className="font-bold min-w-max px-2">
+				<span className="text-lg">{label}</span>
 				{errorMessage ? (
 					<small className="text-red-500"> - {errorMessage}</small>
 				) : null}

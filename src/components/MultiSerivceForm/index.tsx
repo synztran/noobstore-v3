@@ -109,8 +109,6 @@ const MultiServiceForm: React.FC = () => {
 		return keyboardItems.length === 3;
 	}, [selectedPlan, keyboardItems]);
 
-	console.log("stabilizerItems", stabilizerItems);
-
 	return (
 		<Box sx={{ width: "100%" }} id="multi-service-form-step">
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>

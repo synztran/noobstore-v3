@@ -292,7 +292,7 @@ export const serviceFormText: Record<EnumServiceType, any> = {
 	[EnumServiceType.KEYBOARD]: {
 		title: "Đăng ký dịch vụ bàn phím",
 		subTitle:
-			"Thêm các thông tin về cái dịch vụ bạn cần sử dụng và tải lên những hình ảnh hiện tại của phím",
+			"Dịch vụ assembled cho kit phím hoàn chỉnh, bao gồm thông tin phím, switch, stabilizer và dịch vụ đi kèm",
 	},
 	[EnumServiceType.SWITCHES]: {
 		title: "Đăng ký dịch vụ switch",

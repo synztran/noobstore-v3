@@ -1,4 +1,3 @@
-import InputNumber from "@/components/InputComponents/InputNumber";
 import SimpleTextField from "@/components/InputComponents/SimpleTextField";
 import InputWrapperLegend from "@/components/InputComponents/WrapperLegend";
 import {
@@ -8,6 +7,7 @@ import {
 	SERVICE_STABILIZER_PACK_625U,
 	SERVICE_STABILIZER_PACK_7U,
 } from "@/constants/Images";
+import NotifyUtils from "@/utils/NotifyUtils";
 import { generateRandomId } from "@/utils/StringUtils";
 import useServices, { IStabilizerFormItem } from "@/zustand/useServices";
 import { Button } from "@mui/material";
@@ -75,7 +75,7 @@ const PACK_OPTIONS: {
 	},
 	{
 		id: 2,
-		label: "Tùy chọn khác",
+		label: "Stablizer lẻ",
 		type: "wire",
 		image: "",
 		detail: "",
@@ -129,21 +129,23 @@ const mappingStabilizerDetail: Record<string, string> = {
 
 function getMaxLimit(selectedPlan: "SP-BASIC" | "SP-EXTREME") {
 	if (selectedPlan === "SP-BASIC") {
-		return { maxPack: 2, maxTotal: 10 };
+		return { maxPack: 2, maxTotalWire: 10 };
 	}
-	return { maxPack: 2, maxTotal: 20 };
+	return { maxPack: 2, maxTotalWire: 20 };
 }
 
 interface IProps {
 	itemId: string;
 	stabilizerSelected: IStabilizerFormItem;
 	onChange: (data: IStabilizerFormItem) => void;
+	className?: string;
 }
 
 const StabilizerSelection: React.FC<IProps> = ({
 	itemId,
 	stabilizerSelected,
 	onChange,
+	className,
 }) => {
 	// services zustand and react query
 	const { selectedPlan } = useServices();
@@ -161,20 +163,12 @@ const StabilizerSelection: React.FC<IProps> = ({
 	}>({ value: "", quantity: 1 });
 
 	// memoized values
-	const { maxPack, maxTotal } = useMemo(() => {
+	const { maxPack, maxTotalWire } = useMemo(() => {
 		if (!selectedPlan?.planId) {
-			return { maxPack: 0, maxTotal: 0 };
+			return { maxPack: 0, maxTotalWire: 0 };
 		}
 		return getMaxLimit(selectedPlan.planId);
 	}, [selectedPlan]);
-
-	// const isHideOtherSelection = useMemo(
-	// 	() =>
-	// 		INDIVIDUAL_OPTIONS.every((opt) =>
-	// 			stabilizerFormSelected.some((item) => item.value === opt.value)
-	// 		),
-	// 	[stabilizerFormSelected]
-	// );
 
 	// Add pack to list
 	const handleAddPack = () => {
@@ -214,10 +208,13 @@ const StabilizerSelection: React.FC<IProps> = ({
 			"Adding other selection:",
 			otherSelection,
 			stabilizerSelected.totalWire + otherSelection.quantity,
-			maxTotal
+			maxTotalWire
 		);
 		if (!otherSelection?.value) return;
-		if (stabilizerSelected.totalWire + otherSelection.quantity > maxTotal)
+		if (
+			stabilizerSelected.totalWire + otherSelection.quantity >
+			maxTotalWire
+		)
 			return;
 		const exists = stabilizerSelected.wires.find(
 			(item) => item.value === otherSelection.value
@@ -258,35 +255,75 @@ const StabilizerSelection: React.FC<IProps> = ({
 	// Remove from list
 	const handleRemove = (id: string) => {
 		console.log("Removing", id, stabilizerSelected);
-		onChange({
-			...stabilizerSelected,
-			packs: stabilizerSelected.packs.filter((item) => item.id !== id),
-			wires: stabilizerSelected.wires.filter((item) => item.id !== id),
-			totalPack: stabilizerSelected.packs.some((item) => item.id === id)
-				? stabilizerSelected.totalPack - 1
-				: stabilizerSelected.totalPack,
-			totalWire: stabilizerSelected.packs.some((item) => item.id === id)
-				? stabilizerSelected.totalWire -
-					(stabilizerSelected.packs.find((item) => item.id === id)
-						?.wireQuantity || 0)
-				: stabilizerSelected.wires.some((item) => item.id === id)
-					? stabilizerSelected.totalWire -
-						(stabilizerSelected.wires.find((item) => item.id === id)
-							?.quantity || 0)
-					: stabilizerSelected.totalWire,
-		});
+		console.log(stabilizerSelected.packs.find((item) => item.id === id));
+		const stabilizerType = id.split("_")[0];
+		console.log("stabilizerType", stabilizerType);
+
+		if (stabilizerType === "pack") {
+			const removedPack = stabilizerSelected.packs.filter(
+				(item) => item.id !== id
+			);
+			console.log("removedPack", removedPack);
+
+			const updater = {
+				...stabilizerSelected,
+				packs: removedPack,
+				totalPack: removedPack.length,
+				totalWire:
+					removedPack?.reduce(
+						(acc, item) => acc + (item.wireQuantity || 0),
+						0
+					) ||
+					0 +
+						stabilizerSelected.wires?.reduce(
+							(acc, item) => acc + (item.quantity || 0),
+							0
+						) ||
+					0,
+			};
+			console.log("updater", updater);
+			if (removedPack) {
+				onChange({
+					...stabilizerSelected,
+					...updater,
+				});
+				return;
+			}
+		} else if (stabilizerType === "wire") {
+			const removedWires = stabilizerSelected.wires.filter(
+				(item) => item.id !== id
+			);
+			if (removedWires) {
+				onChange({
+					...stabilizerSelected,
+					wires: removedWires,
+					totalWire:
+						stabilizerSelected.packs?.reduce(
+							(acc, item) => acc + (item.wireQuantity || 0),
+							0
+						) ||
+						0 +
+							removedWires?.reduce(
+								(acc, item) => acc + (item.quantity || 0),
+								0
+							) ||
+						0,
+				});
+				return;
+			}
+		}
 	};
 
 	// Change quantity in list
 	const handleChangeQuantity = (
 		id: string,
 		quantity: number,
-		type: StabilizerType
+		type: "wires" | "packs"
 	) => {
 		console.log("Changing quantity", id, quantity);
 		if (quantity < 1) return;
 		let newList = [];
-		if (type === StabilizerType.PACK) {
+		if (type === "packs") {
 			newList = stabilizerSelected.packs.map((item) =>
 				item.id === id ? { ...item, quantity } : item
 			);
@@ -296,27 +333,64 @@ const StabilizerSelection: React.FC<IProps> = ({
 			);
 		}
 		// Check total quantity limit
-		const newTotal = newList.reduce((acc, item) => acc + item.quantity, 0);
-		if (newTotal > maxTotal) return;
-		// setSelectedList(newList);
+		const totalPackWire = stabilizerSelected.packs.reduce(
+			(acc, item) => acc + (item.wireQuantity || 0),
+			0
+		);
+		const newTotal =
+			newList.reduce((acc, item) => acc + item.quantity, 0) +
+			totalPackWire;
+		console.log("newList", newList);
+		console.log("newTotal", newTotal, maxTotalWire);
+		if (newTotal > maxTotalWire) {
+			NotifyUtils.error(
+				`Đã vượt quá giới hạn stabilizer của gói ${maxTotalWire}`
+			);
+			return;
+		}
+
+		console.log(
+			"totalWire",
+			stabilizerSelected.packs?.reduce(
+				(acc, item) => acc + (item.wireQuantity || 0),
+				0
+			) ||
+				0 +
+					stabilizerSelected.wires?.reduce(
+						(acc, item) => acc + (item.quantity || 0),
+						0
+					) ||
+				0
+		);
 		onChange({
 			...stabilizerSelected,
 			[type]: newList,
+			totalWire:
+				stabilizerSelected.packs?.reduce(
+					(acc, item) => acc + (item.wireQuantity || 0),
+					0
+				) ||
+				0 +
+					stabilizerSelected.wires?.reduce(
+						(acc, item) => acc + (item.quantity || 0),
+						0
+					) ||
+				0,
 		});
 	};
 
 	// UI
 	return (
-		<div className="flex flex-col gap-4">
+		<div className={`flex flex-col gap-4 ${className || ""}`}>
 			<>
 				<label className="font-semibold block">
 					Chọn gói stabilizer: <br />
 					<span className="text-sm font-normal text-gray-600">
 						Tối đa {maxPack} pack hoặc tổng số stabilizer ≤{" "}
-						{maxTotal}
+						{maxTotalWire}
 					</span>
 				</label>
-				<div className="flex gap-3 flex-wrap items-end">
+				<div className="flex gap-2 items-end flex-nowrap">
 					{PACK_OPTIONS.map((pack) => (
 						<button
 							key={pack.id}
@@ -345,14 +419,14 @@ const StabilizerSelection: React.FC<IProps> = ({
 									/>
 								</div>
 							) : null}
-							<span className="text-base font-bold">
-								{pack.label}
+							<span className="text-sm font-bold">
+								{pack.label} &nbsp;
+								{pack.detail ? (
+									<span className="text-xs text-gray-900">
+										({pack.detail})
+									</span>
+								) : null}
 							</span>
-							{pack.detail && (
-								<span className="text-sm text-gray-900">
-									{pack.detail}
-								</span>
-							)}
 						</button>
 					))}
 				</div>
@@ -375,10 +449,10 @@ const StabilizerSelection: React.FC<IProps> = ({
 			</>
 			{selectedPack?.type === "wire" ? (
 				<div className="flex gap-2 items-end">
-					<div>
+					<div className="w-full">
 						<label className="block text-sm">Loại stabilizer</label>
 						<select
-							className="border rounded px-2 py-1 !min-w-[220px]"
+							className="border rounded px-2 py-1 w-1/2"
 							value={otherSelection?.value}
 							onChange={(e) =>
 								setOtherSelection((prev) => ({
@@ -399,11 +473,11 @@ const StabilizerSelection: React.FC<IProps> = ({
 							))}
 						</select>
 					</div>
-					<div>
+					{/* <div>
 						<label className="block text-sm">Số lượng</label>
 						<InputNumber
 							min={1}
-							max={maxTotal - stabilizerSelected.totalWire}
+							max={maxTotalWire - stabilizerSelected.totalWire}
 							value={otherSelection?.quantity || 0}
 							onChange={(value) =>
 								setOtherSelection((prev) => ({
@@ -412,7 +486,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 								}))
 							}
 						/>
-					</div>
+					</div> */}
 					<Button
 						variant="contained"
 						className={`bg-blue-600 text-white px-4 py-1 rounded h-[34px] w-full `}
@@ -422,16 +496,14 @@ const StabilizerSelection: React.FC<IProps> = ({
 							otherSelection?.quantity < 1 ||
 							stabilizerSelected.totalWire +
 								otherSelection?.quantity >
-								maxTotal
+								maxTotalWire
 						}
 						type="button">
-						{!otherSelection?.value ||
-						otherSelection?.quantity < 1 ||
-						stabilizerSelected.totalWire +
-							otherSelection?.quantity >
-							maxTotal
-							? "Đạt giới hạn"
-							: "Thêm"}
+						{labelButtonAddOther({
+							otherSection: otherSelection,
+							maxTotalWire: maxTotalWire,
+							stabilizerSelected: stabilizerSelected,
+						})}
 					</Button>
 				</div>
 			) : null}
@@ -534,7 +606,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 											label="Số lượng"
 											name={`quantity_${item.id}`}
 											min={1}
-											max={maxTotal}
+											max={maxTotalWire}
 											value={item.quantity}
 											onChangeWithoutNameValue={(
 												e: React.ChangeEvent<HTMLInputElement>
@@ -542,8 +614,11 @@ const StabilizerSelection: React.FC<IProps> = ({
 												handleChangeQuantity(
 													item.id,
 													Number(e.target.value),
-													StabilizerType.WIRE
+													"wires"
 												)
+											}
+											currentAmount={
+												stabilizerSelected.totalWire
 											}
 										/>
 									</div>
@@ -565,3 +640,25 @@ const StabilizerSelection: React.FC<IProps> = ({
 };
 
 export default StabilizerSelection;
+
+const labelButtonAddOther = ({
+	otherSection,
+	maxTotalWire,
+	stabilizerSelected,
+}: {
+	otherSection: {
+		value: StabilizerSize | "";
+		quantity: number;
+	};
+	maxTotalWire: number;
+	stabilizerSelected: IStabilizerFormItem;
+}) => {
+	if (!otherSection?.value || otherSection?.quantity < 1) {
+		return "Chọn loại stabilizer";
+	}
+
+	if (stabilizerSelected.totalWire + otherSection?.quantity > maxTotalWire) {
+		return "Đạt giới hạn";
+	}
+	return "Thêm";
+};

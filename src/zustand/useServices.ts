@@ -1,6 +1,10 @@
 import { SUGGESTED_DISCOUNT_CODES } from "@/constants";
 import {
+	EnumPcbType,
 	EnumShippingMethodCode,
+	EnumStabilizerMountType,
+	EnumStabilizerStatus,
+	EnumStabilizerType,
 	EnumSwitchStatus,
 	EnumSwitchType,
 } from "@/interface/interface";
@@ -118,13 +122,70 @@ export interface IShippingInfo {
 // Enhanced service item interfaces
 export interface IKeyboardFormItem {
 	id: string;
-	keyboardName: string;
-	pcbType: string;
-	keyboardSize: string;
+	keyboard: {
+		name: string;
+		pcb: EnumPcbType | null;
+		size: string;
+	};
+	switch: {
+		type: EnumSwitchType | null;
+		quantity: number;
+		status: EnumSwitchStatus | null;
+	};
+	stabilizer: {
+		type: EnumStabilizerType | null;
+		mountType: EnumStabilizerMountType | null;
+		brand: string;
+		wires: {
+			id: string;
+			name: string;
+			type: "2U" | "6.25U" | "7U";
+			price: number;
+			value: string;
+			quantity: number;
+		}[];
+		packs: {
+			id: string;
+			name: string;
+			type: "6.25U" | "7U";
+			value: string;
+			quantity: number;
+			wireQuantity: number;
+		}[];
+		status: EnumStabilizerStatus | null;
+		totalWire: number;
+		totalPack: number;
+	};
 	attachments: { publicUrl: string; size: number }[];
 	note?: string;
 	services: {
-		[x: string]: { isUse: boolean; price?: number; name?: string };
+		keyboard: {
+			// solder | desolder | clean
+			[x: string]: {
+				isUse: boolean;
+				price?: number;
+				name?: string;
+				info?: Record<string, any>;
+			};
+		};
+		switch: {
+			// lube | film | spring | clean | quickClean
+			[x: string]: {
+				isUse: boolean;
+				price?: number;
+				name?: string;
+				info?: Record<string, any>;
+			};
+		};
+		stabilizer: {
+			// handle | clean
+			[x: string]: {
+				isUse: boolean;
+				price?: number;
+				name?: string;
+				info?: Record<string, any>;
+			};
+		};
 	};
 }
 
@@ -162,10 +223,10 @@ export interface ISwitchFormItem {
 
 export interface IStabilizerFormItem {
 	id: string;
-	type: string | null;
-	mountType: string | null;
-	name: string | null;
-	services: {
+	type: EnumStabilizerType | null;
+	mountType: EnumStabilizerMountType | null;
+	brand: string;
+	services?: {
 		[x: string]: {
 			isUse: boolean;
 			price?: number;
@@ -173,12 +234,12 @@ export interface IStabilizerFormItem {
 			name?: string;
 		};
 	};
-	attachments: { publicUrl: string; size: number }[];
+	attachments?: { publicUrl: string; size: number }[];
 	note?: string;
-	status: string | null;
+	status: EnumStabilizerStatus | null;
 	totalWire: number;
 	totalPack: number;
-	totalPrice: number;
+	totalPrice?: number;
 	wires: {
 		id: string;
 		name: string;
@@ -510,6 +571,8 @@ const useServices = create<ServiceState>()(
 				id: string,
 				updater: Partial<IKeyboardFormItem>
 			) => {
+				const state = get();
+				console.log("sstate", state.keyboardItems);
 				set((state) => ({
 					...state,
 					keyboardItems: state.keyboardItems.map((it) =>
@@ -1060,9 +1123,9 @@ const useServices = create<ServiceState>()(
 					const isMissingInformation = state.keyboardItems.some(
 						(keyboard) => {
 							return (
-								!keyboard.keyboardName ||
-								!keyboard.pcbType ||
-								!keyboard.keyboardSize
+								!keyboard.keyboard ||
+								!keyboard.keyboard.pcb ||
+								!keyboard.keyboard.size
 							);
 						}
 					);
@@ -1119,8 +1182,7 @@ const useServices = create<ServiceState>()(
 							return (
 								!stabilizer.type ||
 								!stabilizer.mountType ||
-								!stabilizer.name ||
-								// !stabilizer.quantity ||
+								!stabilizer.brand ||
 								!stabilizer.status
 							);
 						}
@@ -1166,9 +1228,9 @@ const useServices = create<ServiceState>()(
 					services.push({
 						serviceType: "KEYBOARD",
 						items: state.keyboardItems.map((keyboard) => ({
-							keyboardName: keyboard.keyboardName,
-							pcbType: keyboard.pcbType,
-							keyboardSize: keyboard.keyboardSize,
+							keyboardName: keyboard.keyboard.name,
+							pcb: keyboard.keyboard.pcb,
+							keyboardSize: keyboard.keyboard.size,
 							services: {
 								solder: keyboard.services.solder?.isUse
 									? { price: keyboard.services.solder.price }
@@ -1293,7 +1355,7 @@ const useServices = create<ServiceState>()(
 						items: state.stabilizerItems.map((stabilizer) => ({
 							type: stabilizer.type,
 							mountType: stabilizer.mountType,
-							name: stabilizer.name,
+							brand: stabilizer.brand,
 							status: stabilizer.status,
 							wires: stabilizer.wires,
 							packs: stabilizer.packs,
@@ -1360,7 +1422,7 @@ const useServices = create<ServiceState>()(
 									feeName: "Phí nâng cấp gói dịch vụ",
 									feeDescription: "",
 									feeAmount: state.selectedPlan?.price || 0,
-							}
+								}
 							: null,
 						state.shippingInfo?.method?.price
 							? {
@@ -1375,7 +1437,8 @@ const useServices = create<ServiceState>()(
 									feeId: generateId(),
 									feeName: "Phí giao/nhận ưu tiên",
 									feeDescription: "",
-									feeAmount: state.shippingInfo.deliveryMethod.price,
+									feeAmount:
+										state.shippingInfo.deliveryMethod.price,
 								}
 							: null,
 					],
@@ -1452,13 +1515,43 @@ export default useServices;
 function createDefaultKeyboardItem(): IKeyboardFormItem {
 	return {
 		id: generateId(),
-		keyboardName: "",
-		pcbType: "",
-		keyboardSize: "",
+		keyboard: {
+			name: "",
+			pcb: null,
+			size: "",
+		},
+		switch: {
+			type: null,
+			quantity: 0,
+			status: null,
+		},
+		stabilizer: {
+			type: null,
+			mountType: null,
+			brand: "",
+			status: EnumStabilizerStatus.NEW,
+			wires: null,
+			packs: null,
+			totalWire: 0,
+			totalPack: 0,
+		},
 		services: {
-			solder: { isUse: false, price: 0 },
-			desolder: { isUse: false, price: 0 },
-			clean: { isUse: false, price: 0 },
+			keyboard: {
+				solder: { isUse: false, price: 0 },
+				desolder: { isUse: false, price: 0 },
+				clean: { isUse: false, price: 0 },
+			},
+			switch: {
+				lube: { isUse: false, price: 0, info: {} },
+				film: { isUse: false, price: 0, info: {} },
+				spring: { isUse: false, price: 0, info: {} },
+				clean: { isUse: false, price: 0 },
+				quickClean: { isUse: false, price: 0 },
+			},
+			stabilizer: {
+				handle: { isUse: false, price: 0, info: {} },
+				clean: { isUse: false, price: 0 },
+			},
 		},
 		attachments: [],
 		note: "",
@@ -1489,7 +1582,7 @@ function createDefaultStabilizerItem(): IStabilizerFormItem {
 		id: generateId(),
 		type: null,
 		mountType: null,
-		name: null,
+		brand: null,
 		status: null,
 		wires: [],
 		packs: [],

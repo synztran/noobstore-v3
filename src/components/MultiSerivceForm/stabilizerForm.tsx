@@ -184,8 +184,6 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		updateStabilizerItem(itemId, updater);
 	};
 
-	console.log("stabilizerItems", stabilizerItems);
-
 	if (isPending) {
 		return (
 			<div className="flex flex-col gap-4">
@@ -217,7 +215,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						label="Hãng"
 						placeholder="Nhập tên hãng stabilizer"
 						onChange={handleTextChange}
-						value={props.value.name || ""}
+						value={props.value.brand || ""}
 					/>
 					<div className="flex flex-col">
 						<div className="flex gap-4">
@@ -262,15 +260,6 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						placeholder="Tìm, chọn hoặc thêm mới"
 						value={props.value.status}
 					/>
-					{/* <SimpleTextField
-						name="quantity"
-						label="Số lượng"
-						placeholder="Nhập số lượng stabilizer"
-						onChange={handleTextChange}
-						value={props.value.quantity?.toString() || ""}
-						max={50}
-						min={1}
-					/> */}
 					<StabilizerSelection
 						itemId={itemId}
 						stabilizerSelected={props.value}

@@ -24,10 +24,12 @@ interface IProps {
 	options: IOptionSelection[];
 	onSelect: ({
 		name,
-		option,
+    option,
+    parentName,
 	}: {
 		name: string;
 		option: IOptionSelection | null;
+		parentName: string;
 	}) => void;
 	onAddNew?: ({
 		name,
@@ -44,7 +46,8 @@ interface IProps {
 	isLoading?: boolean;
 	hidePrice?: boolean;
 	note?: string;
-	errorMessage?: string;
+  errorMessage?: string;
+  parentName?: string;
 }
 
 // SearchableSelect Component
@@ -61,7 +64,8 @@ const SearchableSelect: React.FC<IProps> = ({
 	isLoading = false,
 	hidePrice = false,
 	note = "",
-	errorMessage = "",
+  errorMessage = "",
+  parentName = "",
 }: IProps) => {
 	const [isOpen, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
@@ -128,9 +132,9 @@ const SearchableSelect: React.FC<IProps> = ({
 		valueRef.current = value; // keep valueRef in sync with value
 	}, [value, options]);
 
-	const handleSelect = (name: string, option: IOptionSelection) => {
+	const handleSelect = (name: string, option: IOptionSelection, parentName: string) => {
 		ignoreBlurRef.current = true; // Prevent blur logic
-		onSelect({ name, option });
+		onSelect({ name, option, parentName });
 		// Update valueRef to the selected value immediately
 		valueRef.current = option.value;
 		setOpen(false);
@@ -180,7 +184,7 @@ const SearchableSelect: React.FC<IProps> = ({
 
 	const handleClearSearch = () => {
 		setSearch("");
-		onSelect({ name: "", option: null });
+		onSelect({ name: "", option: null, parentName: "" });
 		setOpen(true);
 	};
 
@@ -262,7 +266,7 @@ const SearchableSelect: React.FC<IProps> = ({
 									key={index}
 									className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
 									onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
-									onClick={() => handleSelect(name, option)}>
+									onClick={() => handleSelect(name, option, parentName)}>
 									<div className="flex gap-2 items-center">
 										{option.label}
 										{option?.price && !hidePrice ? (
