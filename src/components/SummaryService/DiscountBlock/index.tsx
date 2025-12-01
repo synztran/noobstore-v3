@@ -5,24 +5,27 @@ import { SUGGESTED_DISCOUNT_CODES } from "@/constants";
 import useServices, { useServiceAction } from "@/zustand/useServices";
 import { motion } from "framer-motion";
 
-interface IProps {}
+interface IProps {
+	appliedCode?: string[];
+}
 
-const DiscountBlock: React.FC<IProps> = () => {
+const DiscountBlock: React.FC<IProps> = ({ appliedCode }) => {
 	const { discounts } = useServices();
 	const { updateDiscount } = useServiceAction();
-	const [input, setInput] = useState("");
+	const [input, setInput] = useState(appliedCode ? appliedCode[0] : "");
 	const [applied, setApplied] = useState<string[]>(
-		discounts.map((d) => d.discountCode) || []
+		appliedCode || discounts.map((d) => d.discountCode) || []
 	);
 	const [localError, setLocalError] = useState<string | null>(null);
 	const [success, setSuccess] = useState(false);
 
 	const hasSuggested =
-		Array.isArray(SUGGESTED_DISCOUNT_CODES) &&
-		SUGGESTED_DISCOUNT_CODES.length > 0;
+		(Array.isArray(SUGGESTED_DISCOUNT_CODES) &&
+			SUGGESTED_DISCOUNT_CODES.length > 0) ||
+		appliedCode?.length === 0;
 
 	const handleApply = () => {
-		const code = input.trim();
+		const code = input?.trim();
 		if (!code) {
 			setLocalError("Vui lòng nhập mã giảm giá");
 			setSuccess(false);
@@ -75,7 +78,7 @@ const DiscountBlock: React.FC<IProps> = () => {
 			<label className="font-semibold text-base">Mã giảm giá</label>
 			<div className="flex gap-2 items-center">
 				<motion.div
-					className="flex-1"
+					className="flex-1 relative"
 					animate={
 						localError
 							? {
@@ -110,21 +113,33 @@ const DiscountBlock: React.FC<IProps> = () => {
 						}}
 						error={!!localError}
 					/>
+					{appliedCode ? (
+						<span className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 font-semibold">
+							Đã áp dụng
+						</span>
+					) : null}
 				</motion.div>
-				<Button
-					variant={applied.length > 0 ? "outlined" : "contained"}
-					onClick={applied.length > 0 ? handleRemove : handleApply}
-					disabled={applied.length > 0 ? false : !input.trim()}
-					className="h-full rounded-md !bg-red-400 hover:!bg-red-500 !text-white disabled:!bg-gray-400"
-					startIcon={
-						applied.length > 0 ? (
-							<XCircle size={18} className="stroke-white" />
-						) : (
-							<CheckCircle size={18} className="stroke-white" />
-						)
-					}>
-					{applied.length > 0 ? "Xóa" : "Áp dụng"}
-				</Button>
+				{!appliedCode ? (
+					<Button
+						variant={applied.length > 0 ? "outlined" : "contained"}
+						onClick={
+							applied.length > 0 ? handleRemove : handleApply
+						}
+						disabled={applied.length > 0 ? false : !input?.trim()}
+						className="h-full rounded-md !bg-red-400 hover:!bg-red-500 !text-white disabled:!bg-gray-400"
+						startIcon={
+							applied.length > 0 ? (
+								<XCircle size={18} className="stroke-white" />
+							) : (
+								<CheckCircle
+									size={18}
+									className="stroke-white"
+								/>
+							)
+						}>
+						{applied.length > 0 ? "Xóa" : "Áp dụng"}
+					</Button>
+				) : null}
 			</div>
 			{localError ? (
 				<div className="text-red-600 text-xs">{localError}</div>

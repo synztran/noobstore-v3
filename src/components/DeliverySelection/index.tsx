@@ -1,5 +1,5 @@
 import { EnumShippingMethodCode } from "@/interface/interface";
-import useServiceDefaultOptionQuery from "@/react-query/services/useServiceOptionQueries";
+import useServiceDefaultOptionQuery from "@/react-query/services/api/useServiceOptionQueries";
 import { formatCurrency } from "@/utils/FormatNumber";
 import useServices, { useServiceAction } from "@/zustand/useServices";
 import {
@@ -220,7 +220,7 @@ const DeliverySelection = () => {
 														{opt?.price > 0
 															? formatCurrency(
 																	opt.price
-																)
+															  )
 															: "Miễn phí"}
 													</div>
 												) : null}

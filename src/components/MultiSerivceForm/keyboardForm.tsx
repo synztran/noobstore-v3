@@ -10,11 +10,12 @@ import {
 import useSelectedOption from "@/hook/useSelectedOption";
 import {
 	EnumServiceType,
+	EnumStabilizerMountType,
 	EnumStabilizerStatus,
 	EnumUnitType,
 	EnumUploadStatus,
 } from "@/interface/interface";
-import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
+import useServiceTaskQuery from "@/react-query/services/api/useServiceTaskQueries";
 import { mapServiceTasksToOptions } from "@/utils/Data";
 import NotifyUtils from "@/utils/NotifyUtils";
 import useServices, {
@@ -22,7 +23,7 @@ import useServices, {
 	IStabilizerFormItem,
 	useServiceAction,
 } from "@/zustand/useServices";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import CheckboxWithPrice from "../InputComponents/CheckboxWithPrice";
 import SimpleTextField from "../InputComponents/SimpleTextField";
 import UploadImage from "../InputComponents/UploadImage";
@@ -40,7 +41,11 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	const { serviceType, itemId } = props;
 	const { title, subTitle } = serviceFormText?.[serviceType];
 	const { keyboardItems } = useServices();
-	const { updateKeyboardItem, resetTaskItem } = useServiceAction();
+	const {
+		updateKeyboardItem,
+		resetKeyboardTaskItem,
+		calculatePriceWireAndPack,
+	} = useServiceAction();
 	const { data: serviceDefaultTasks } = useServiceTaskQuery();
 
 	// Map API data to form options
@@ -57,7 +62,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	}, [serviceDefaultTasks, keyboardItems, itemId]);
 
 	const stabilizerSelected = useMemo(() => {
-		console.log("props stabilizer", props.value.stabilizer);
+		console.log("props.value", props.value);
 		const formatedData: IStabilizerFormItem = {
 			id: props.itemId,
 			type: props.value.stabilizer.type || null,
@@ -77,7 +82,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	const {
 		keyboardOptions,
 		updateKeyboardOptions,
-		updateKeyboardServicePrices,
 		switchOptions,
 		stabilizerOptions,
 		serviceOptions,
@@ -116,29 +120,32 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		initialStabilizerStatusOptions: tempStabilizerStatusOptions,
 	});
 
+	const totalPriceStabilizer = useMemo(() => {
+		console.log(
+			props.value.stabilizer.wires,
+			props.value.stabilizer.packs,
+			props.value.services.stabilizer?.handle?.price,
+			serviceOptions?.stabilizer?.handle?.unitPrice
+		);
+		return calculatePriceWireAndPack({
+			wires: props.value.stabilizer.wires,
+			packs: props.value.stabilizer.packs,
+			packPrice: serviceOptions?.stabilizer?.handle?.price || 0,
+			unitPrice: serviceOptions?.stabilizer?.handle?.unitPrice || {},
+		});
+	}, [
+		props.value.stabilizer.packs,
+		props.value.stabilizer.wires,
+		props.value.services.stabilizer,
+		serviceOptions.stabilizer,
+	]);
+
 	// Update options when API data changes
 	useEffect(() => {
 		updateKeyboardOptions({
 			keyboard: apiOptions.keyboard,
 			pcb: apiOptions.pcb,
 			layout: apiOptions.layout,
-		});
-		updateKeyboardServicePrices({
-			solder: apiOptions.servicePrices["keyboard"]["solder"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			desolder: apiOptions.servicePrices["keyboard"]["desolder"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
-			clean: apiOptions.servicePrices["keyboard"]["clean"] || {
-				price: 0,
-				name: "",
-				description: "",
-			},
 		});
 		updateServiceOptions({
 			keyboard: apiOptions.servicePrices?.keyboard,
@@ -147,27 +154,33 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		});
 	}, [apiOptions]);
 
-	const handleSelect = ({
-		parentName,
-		name,
-		option,
-	}: {
-		parentName: "keyboard" | "switch" | "stabilizer";
-		name: string;
-		option: IOptionSelection | null;
-	}) => {
-		console.log("handleSelect", parentName, name, option);
-		if (!itemId || !name) return;
-		const parentValue = props.value[parentName] as Record<string, any>;
-		const payload: Partial<IKeyboardFormItem> = {
-			[parentName]: {
-				...parentValue,
-				[name]: option?.value || "",
-			} as any,
-		};
-		updateKeyboardItem(itemId, payload);
-		resetTaskItem(itemId, "keyboardItems");
-	};
+	const handleSelect = useCallback(
+		({
+			parentName,
+			name,
+			option,
+		}: {
+			parentName: "keyboard" | "switch" | "stabilizer";
+			name: string;
+			option: IOptionSelection | null;
+		}) => {
+			if (!itemId || !name) return;
+			const parentValue = props.value[parentName] as Record<string, any>;
+			const payload: Partial<IKeyboardFormItem> = {
+				[parentName]: {
+					...parentValue,
+					[name]: option?.value || "",
+				} as any,
+			};
+			updateKeyboardItem(itemId, payload);
+			resetKeyboardTaskItem({
+				taskId: itemId,
+				parentName,
+				name,
+			});
+		},
+		[itemId, props.value]
+	);
 
 	const debounceRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
 	const handleTextChange = ({
@@ -179,7 +192,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		name: string;
 		value: string | number;
 	}) => {
-		console.log("handleTextChange", parent, name, value);
 		if (debounceRef.current[name]) {
 			clearTimeout(debounceRef.current[name]);
 		}
@@ -201,16 +213,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		}
 	};
 
-	// const handleAddNew = ({
-	// 	name = "keyboard",
-	// 	newOption,
-	// }: {
-	// 	name: "keyboard" | "pcb" | "layout";
-	// 	newOption: IOptionSelection;
-	// }) => {
-	// 	handleKeyboardAddNew({ name, newOption });
-	// };
-
 	const handleChecked = ({
 		name,
 		value,
@@ -222,7 +224,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		};
 		value: boolean;
 	}) => {
-		console.log("handleChecked", name, value, Object.keys(name)?.[0]);
 		const parentName = Object.keys(name)?.[0] as
 			| "keyboard"
 			| "switch"
@@ -232,13 +233,12 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 			serviceOptions?.[parentName]?.[
 				serviceName as keyof (typeof serviceOptions)[typeof parentName]
 			]?.price || 0;
+		const serviceUnitPrice =
+			serviceOptions?.[parentName]?.[
+				serviceName as keyof (typeof serviceOptions)[typeof parentName]
+			]?.unitPrice || {};
 
-		console.log("parentName", parentName);
-		console.log("serviceName", serviceName);
-		console.log("servicePrice", servicePrice);
-		// const serviceName = keyboardFormSelected.services[name].name;
-
-		// handleCheckKeyboardService({ name, value });
+		console.log("serviceUnitPrice", serviceUnitPrice);
 
 		if (itemId) {
 			updateKeyboardItem(itemId, {
@@ -250,6 +250,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 							isUse: value,
 							price: servicePrice,
 							name: serviceName,
+							unitPrice: serviceUnitPrice,
 						},
 					},
 				},
@@ -258,7 +259,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	};
 
 	const handleOnChangeStabSelection = (updater: IStabilizerFormItem) => {
-		console.log("id", itemId, updater);
+		console.log("updater", updater);
 		if (!itemId) {
 			NotifyUtils.error("Không tìm thấy mục stabilizer để cập nhật.");
 			return;
@@ -272,7 +273,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 		});
 	};
 
-	console.log("props.value", props.value);
+	console.log("serviceOptions", serviceOptions);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -297,7 +298,13 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 							name="name"
 							label="Tên phím"
 							placeholder="Nhập tên bàn phím"
-							onChange={handleTextChange}
+							onChange={(e) =>
+								handleTextChange({
+									parentName: "keyboard",
+									name: "name",
+									value: e.target.value,
+								})
+							}
 							value={props.value.keyboard.name}
 						/>
 						<SearchableSelect
@@ -444,12 +451,19 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 							name="quantity"
 							label="Số lượng"
 							placeholder="Nhập tên số lượng switch"
-							onChange={handleTextChange}
+							onChange={(e) => {
+								handleTextChange({
+									parentName: "switch",
+									name: "quantity",
+									value: Number(e.target.value),
+								});
+							}}
 							value={props.value.switch.quantity}
 							max={360}
 							min={10}
 							note="Số lượng tối thiểu là 10 và tối đa là 360"
 							type="number"
+							currentAmount={props.value.switch.quantity}
 						/>
 						<SearchableSelect
 							parentName="switch"
@@ -495,6 +509,10 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								}
 								unit={EnumUnitType.UNIT}
 								unitLabel="sw"
+								totalPrice={
+									props.value.switch.quantity *
+									(serviceOptions?.switch?.lube?.price || 0)
+								}
 							/>
 							<CheckboxWithPrice
 								label={serviceOptions?.switch?.film?.name ?? ""}
@@ -518,6 +536,10 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								}
 								unit={EnumUnitType.UNIT}
 								unitLabel="sw"
+								totalPrice={
+									props.value.switch.quantity *
+									(serviceOptions?.switch?.film?.price || 0)
+								}
 							/>
 							<CheckboxWithPrice
 								label={
@@ -570,6 +592,10 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								}
 								unit={EnumUnitType.UNIT}
 								unitLabel="sw"
+								totalPrice={
+									props.value.switch.quantity *
+									(serviceOptions?.switch?.clean?.price || 0)
+								}
 							/>
 							<CheckboxWithPrice
 								label={
@@ -599,6 +625,11 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								}
 								unit={EnumUnitType.UNIT}
 								unitLabel="sw"
+								totalPrice={
+									props.value.switch.quantity *
+									(serviceOptions?.switch?.quickClean
+										?.price || 0)
+								}
 							/>
 						</div>
 					) : (
@@ -624,17 +655,14 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								name="brand"
 								label="Hãng"
 								placeholder="Nhập tên hãng stabilizer"
-								onChange={handleTextChange}
+								onChange={(e) => {
+									handleTextChange({
+										parentName: "stabilizer",
+										name: "brand",
+										value: e.target.value,
+									});
+								}}
 								value={props.value.stabilizer.brand || ""}
-							/>
-							<SearchableSelect
-								parentName="stabilizer"
-								name="type"
-								label="Loại stabilizer"
-								options={stabilizerOptions.stabilizerType}
-								onSelect={handleSelect}
-								placeholder="Tìm và chọn"
-								value={props.value.stabilizer.type}
 							/>
 							<SearchableSelect
 								parentName="stabilizer"
@@ -645,6 +673,18 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 								placeholder="Tìm và chọn"
 								value={props.value.stabilizer.mountType}
 							/>
+							{props.value.stabilizer.mountType !==
+							EnumStabilizerMountType.PLATE_MOUNTED ? (
+								<SearchableSelect
+									parentName="stabilizer"
+									name="type"
+									label="Loại stabilizer"
+									options={stabilizerOptions.stabilizerType}
+									onSelect={handleSelect}
+									placeholder="Tìm và chọn"
+									value={props.value.stabilizer.type}
+								/>
+							) : null}
 							<SearchableSelect
 								parentName="stabilizer"
 								name="status"
@@ -663,7 +703,8 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 							</span>
 							<div className="w-full border-b border-gray-500" />
 						</div>
-						{props.value?.stabilizer.type &&
+
+						{props.value?.stabilizer.mountType &&
 						(props.value.stabilizer.totalPack ||
 							props.value.stabilizer.totalWire) ? (
 							<div className="flex flex-col gap-4">
@@ -671,10 +712,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 									label={
 										serviceOptions?.stabilizer?.handle
 											?.name ?? ""
-									}
-									price={
-										serviceOptions?.stabilizer?.handle
-											?.price ?? 0
 									}
 									value={
 										props.value.services?.stabilizer?.handle
@@ -693,6 +730,17 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 										serviceOptions?.stabilizer?.handle
 											?.description ?? ""
 									}
+									unit={
+										serviceOptions?.stabilizer?.handle
+											?.unitType
+									}
+									unitLabel="set"
+									multipleUnitPrice
+									unitPrices={
+										serviceOptions?.stabilizer?.handle
+											?.unitPrice || {}
+									}
+									price={totalPriceStabilizer}
 								/>
 								<CheckboxWithPrice
 									label={
@@ -770,7 +818,10 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 					max={3}
 					isCustomerUpload
 				/>
-				<InputWrapperLegend label="Ghi chú">
+				<div className="relative mt-4">
+					<label className="absolute -top-3 left-2 bg-white px-2">
+						Ghi chú:
+					</label>
 					<textarea
 						name="note"
 						id="note"
@@ -781,7 +832,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 						className="border rounded-md p-3 resize-none w-full"
 						maxLength={300}
 					/>
-				</InputWrapperLegend>
+				</div>
 			</div>
 		</div>
 	);

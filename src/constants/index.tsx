@@ -9,13 +9,19 @@ import {
 	ENUM_SPRING_TYPE,
 	ENUM_SWITCH_TYPE,
 	EnumCategoryType,
+	EnumFeeType,
 	EnumOrderStatus,
+	EnumPaymentForm,
 	EnumPaymentMethod,
-	EnumPaymentStaus,
+	EnumPaymentStatus,
 	EnumPostPriceType,
 	EnumProductType,
 	EnumSaleStatus,
 	EnumServiceType,
+	EnumShippingMethodCode,
+	EnumStabilizerMountType,
+	EnumStabilizerSize,
+	EnumStabilizerType,
 	EnumSwitchType,
 	EnumUploadStatus,
 	EnumUsedProductStatus,
@@ -34,11 +40,21 @@ import {
 } from "@heroicons/react/24/outline";
 import { CircleCheck, CircleX, DoorOpen, ShieldCheck } from "lucide-react";
 import {
+	BANK_TRANSFER_ICON,
 	COD_ICON,
 	FLAGS_VIETNAM,
+	GIF_PAYMENT_CHECKING,
+	GIF_PAYMENT_PAID_SUCCESS,
+	MOMO_LOGO,
 	MOMO_VERTICAL_LOGO,
 	NEW_MISSING_IMAGE,
+	PAYPAL_ICON,
 } from "./Images";
+import {
+	EnumBackendServiceStepStatus,
+	EnumBackendServiceType,
+} from "@/interface/Client/Service";
+import { CircularProgress } from "@mui/material";
 
 export const categories = [
 	{
@@ -239,6 +255,7 @@ export const LabelPaymentMethod: Record<EnumPaymentMethod, string> = {
 	// [EnumPaymentMethod.ZALO_PAY]: "Thanh toán qua ZaloPay",
 	[EnumPaymentMethod.BANK_TRANSFER]: "Thanh toán qua ngân hàng",
 	[EnumPaymentMethod.NOT_FOUND]: "Không xác định",
+	[EnumPaymentMethod.PAYPAL]: "Nền tảng PayPal",
 };
 
 export const MapPaymentMethod: Record<
@@ -258,6 +275,10 @@ export const MapPaymentMethod: Record<
 	[EnumPaymentMethod.NOT_FOUND]: {
 		icon: NEW_MISSING_IMAGE,
 		label: "Không xác định",
+	},
+	[EnumPaymentMethod.PAYPAL]: {
+		icon: PAYPAL_ICON,
+		label: "PayPal",
 	},
 };
 
@@ -352,19 +373,35 @@ export const tempSwitchStatusOptions = [
 ];
 
 export const tempStabilizerMountTypeOptions = [
-	{ id: 0, value: "PCB_MOUNTED", label: "PCB Mounted (Bắt trên mạch)" },
-	{ id: 1, value: "PLATE_MOUNTED", label: "Plate Mounted (Bắt trên plate)" },
+	{
+		id: 0,
+		value: EnumStabilizerMountType.PCB_MOUNTED,
+		label: "PCB Mounted (Bắt trên mạch)",
+	},
+	{
+		id: 1,
+		value: EnumStabilizerMountType.PLATE_MOUNTED,
+		label: "Plate Mounted (Bắt trên plate)",
+	},
 ];
 
 export const tempStabilizerTypeOptions = [
-	{ id: 0, value: "SCREW_IN", label: "Screw in (Cố định bằng ốc)" },
-	{ id: 1, value: "CLIP-IN", label: "Clip-In (Bắt trên mạch bằng ngàm)" },
+	{
+		id: 0,
+		value: EnumStabilizerType.SCREW_IN,
+		label: "Screw in (Cố định bằng ốc)",
+	},
+	{
+		id: 1,
+		value: EnumStabilizerType.CLIP_IN,
+		label: "Clip-In (Bắt trên mạch bằng ngàm)",
+	},
 ];
 
 export const tempStabilizerSizeOptions = [
-	{ id: 0, value: "2U", label: "2U Stabilizer" },
-	{ id: 1, value: "6.25U", label: "6.25U Stabilizer" },
-	{ id: 2, value: "7U", label: "7U Stabilizer" },
+	{ id: 0, value: EnumStabilizerSize["2U"], label: "2U Stabilizer" },
+	{ id: 1, value: EnumStabilizerSize["6.25U"], label: "6.25U Stabilizer" },
+	{ id: 2, value: EnumStabilizerSize["7U"], label: "7U Stabilizer" },
 ];
 
 export const tempStabilizerStatusOptions = [
@@ -1250,23 +1287,56 @@ export const ORDER_STATUS_LABEL: Record<
 };
 
 export const mapPaymentStatus: Record<
-	EnumPaymentStaus,
-	{ label: string; color: string; bgColor: string }
+	EnumPaymentStatus,
+	{
+		label: string;
+		color: string;
+		bgColor: string;
+		icon?: string;
+		iconBadge?: React.ReactNode;
+		subLabel?: string;
+	}
 > = {
-	[EnumPaymentStaus.PAID]: {
+	[EnumPaymentStatus.PAID]: {
 		label: "Đã thanh toán",
 		color: "text-green-500",
 		bgColor: "bg-green-500",
+		icon: GIF_PAYMENT_PAID_SUCCESS,
+		subLabel: "",
 	},
-	[EnumPaymentStaus.PENDING]: {
-		label: "Đang đợi thanh toán",
+	[EnumPaymentStatus.PENDING]: {
+		label: "Đợi thanh toán",
 		color: "text-red-500",
 		bgColor: "bg-red-400",
+		subLabel: "Xác nhận thanh toán đã được gửi. Vui lòng chờ xử lý.",
 	},
-	[EnumPaymentStaus.CANCELLED]: {
+	[EnumPaymentStatus.CANCELLED]: {
 		label: "Đã hủy",
 		color: "text-grey-500",
 		bgColor: "bg-grey-400",
+		subLabel: "Chúng tôi rất tiếc dịch vụ của bạn đã bị hủy.",
+	},
+	[EnumPaymentStatus.REFUNDED]: {
+		label: "Đã hoàn tiền",
+		color: "text-white",
+		bgColor: "bg-blue-400",
+		subLabel:
+			"Chúng tôi đã hoàn lại thanh toán cho dịch vụ này. Vui lòng kiểm tra tài khoản của bạn.",
+	},
+	[EnumPaymentStatus.SUBMITTED]: {
+		label: "Đợi xác nhận",
+		color: "text-blue-600",
+		bgColor: "bg-gray-400",
+		icon: GIF_PAYMENT_CHECKING,
+		iconBadge: (
+			<CircularProgress
+				size={16}
+				classes={{
+					circle: "!stroke-blue-600",
+				}}
+			/>
+		),
+		subLabel: "Thanh toán đang được xác nhận. Vui lòng chờ xử lý.",
 	},
 };
 
@@ -1332,3 +1402,119 @@ export const SUGGESTED_DISCOUNT_CODES = [
 		condition: { minTotalValue: 500000 },
 	},
 ];
+
+export const MAPPING_FEE_LABEL: Record<EnumFeeType, string> = {
+	[EnumFeeType.PLATFORMFEE]: "Phí nền tảng",
+	[EnumFeeType.SELECTEDPLAN]: "Nâng cấp gói dịch vụ",
+	[EnumFeeType.SERVICEOUTOFTIMEFEE]: "Phí hỗ trợ ngoài giờ",
+	[EnumFeeType.SHIPPING_DELIVERY_METHOD]: "Phí vận chuyển tận nơi",
+	[EnumFeeType.SHIPPING_METHOD]: "Phí vận chuyển ưu tiên",
+};
+
+export const mappingServiceName: Record<
+	"keyboard" | "switch" | "stabilizer",
+	{ [x: string]: string }
+> = {
+	keyboard: {
+		solder: "Hàn switch",
+		desolder: "Rã switch",
+		clean: "Vệ sinh phím",
+	},
+	switch: {
+		lube: "Lube switch",
+		film: "Thêm film switch",
+		spring: "Thay lò xo switch",
+		clean: "Vệ sinh switch",
+		quickClean: "Vệ sinh re-lube",
+	},
+	stabilizer: {
+		handle: "Xử lý wire & housing",
+		clean: "Vệ sinh stabilizer",
+	},
+};
+
+export const mappingShippingMethodLabel: Record<
+	EnumShippingMethodCode,
+	string
+> = {
+	[EnumShippingMethodCode.SELF_DELIVERY_SELF_PICKUP]:
+		"Khách tự gửi và nhận hàng",
+	[EnumShippingMethodCode.STORE_DELIVERY_SELF_PICKUP]:
+		"Khách gửi hàng, shop giao hàng",
+	[EnumShippingMethodCode.STORE_DELIVERY_STORE_PICKUP]:
+		"Shop lấy và giao hàng",
+	[EnumShippingMethodCode.STORE_PICKUP_SELF_DELIVERY]:
+		"Shop lấy hàng, khách đến nhận hàng",
+};
+
+export const mappingLabelServiceType: Record<EnumBackendServiceType, string> = {
+	[EnumBackendServiceType.KEYBOARD]: "Bàn phím",
+	[EnumBackendServiceType.SWITCH]: "Switch",
+	[EnumBackendServiceType.STABILIZER]: "Stabilizer",
+};
+
+export const mappingLabelServiceFromBackend: Record<string, string> = {
+	solder: "Hàn switch",
+	desolder: "Rã switch",
+	lube: "Lube switch",
+	film: "Thêm film switch",
+	spring: "Thay lò xo switch",
+	quickClean: "Vệ sinh re-lubed từ hãng",
+	handle: "Xử lý wire & housing",
+};
+
+export const mappingLabelPaymentMethod: Record<
+	EnumPaymentMethod,
+	{
+		label: string;
+		icon?: string;
+	}
+> = {
+	[EnumPaymentMethod.CASH_ON_DELIVERY]: {
+		label: "Thanh toán khi nhận hàng",
+		icon: COD_ICON,
+	},
+	[EnumPaymentMethod.BANK_TRANSFER]: {
+		label: "Chuyển khoản",
+		icon: BANK_TRANSFER_ICON,
+	},
+	[EnumPaymentMethod.MOMO]: {
+		label: "Ví MoMo",
+		icon: MOMO_LOGO,
+	},
+	[EnumPaymentMethod.PAYPAL]: {
+		label: "Nền tảng PayPal",
+		icon: PAYPAL_ICON,
+	},
+	[EnumPaymentMethod.NOT_FOUND]: {
+		label: "Phương thức không xác định",
+	},
+};
+
+export const mappingLabelPaymentForm: Record<
+	EnumPaymentForm,
+	{ label: string; icon?: string }
+> = {
+	[EnumPaymentForm.FULL]: {
+		label: "Thanh toán 100%",
+	},
+	[EnumPaymentForm.PARTIAL_10_PERCENT]: {
+		label: "10%",
+	},
+	[EnumPaymentForm.PARTIAL_30_PERCENT]: {
+		label: "30%",
+	},
+	[EnumPaymentForm.NOT_FOUND]: {
+		label: "Hình thức không xác định",
+	},
+};
+
+export const mappingBookingServiceStatus: Record<
+	EnumBackendServiceStepStatus,
+	string
+> = {
+	[EnumBackendServiceStepStatus.PENDING]: "Chờ xử lý",
+	[EnumBackendServiceStepStatus.IN_PROGRESS]: "Đang xử lý",
+	[EnumBackendServiceStepStatus.COMPLETED]: "Hoàn thành",
+	[EnumBackendServiceStepStatus.CANCELLED]: "Đã hủy",
+};

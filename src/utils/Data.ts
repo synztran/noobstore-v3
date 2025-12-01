@@ -1,5 +1,5 @@
 import { IOptionSelection } from "@/components/SelectComp";
-import { EnumSwitchType } from "@/interface/interface";
+import { EnumSwitchType, EnumUnitType } from "@/interface/interface";
 import {
 	IKeyboardFormItem,
 	IStabilizerFormItem,
@@ -17,7 +17,6 @@ const mapServiceTasksToOptions = ({
 	switchItem?: ISwitchFormItem;
 	stabilizerItem?: IStabilizerFormItem;
 }) => {
-	console.log("items", keyboardItem, switchItem, stabilizerItem);
 	const defaultOptions = {
 		keyboard: [] as IOptionSelection[],
 		pcb: [
@@ -105,13 +104,21 @@ const mapServiceTasksToOptions = ({
 				quickClean: { price: 0, name: "", description: "" },
 			},
 			stabilizer: {
-				handle: { price: 0, name: "", description: "" },
+				handle: {
+					price: 0,
+					name: "",
+					description: "",
+					unitType: EnumUnitType.FLAT,
+					unitPrice: {},
+				},
 				clean: { price: 0, name: "", description: "" },
 			} as {
 				[key: string]: {
 					price: number;
 					name: string;
 					description: string;
+					unitType?: EnumUnitType;
+					unitPrice?: Record<string, number>;
 				};
 			},
 		},
@@ -125,11 +132,11 @@ const mapServiceTasksToOptions = ({
 		) {
 			const tasks = service.tasks || [];
 			const foundLayout = defaultOptions.layout.find(
-				(opt) => opt.value === keyboardItem?.keyboardInfo?.size
+				(opt) => opt.value === keyboardItem?.keyboard?.size
 			);
 			tasks.forEach((task: any) => {
 				switch (task.serviceTaskId) {
-					case "KB-T-01":
+					case "KB-T-02":
 						const newSolderPrice =
 							task?.salePrice ||
 							task.price + (foundLayout?.price || 0);
@@ -140,7 +147,7 @@ const mapServiceTasksToOptions = ({
 							description: task.description || "",
 						};
 						break;
-					case "KB-T-02":
+					case "KB-T-01":
 						const newDesolderPrice =
 							task?.salePrice ||
 							task.price + (foundLayout?.price || 0);
@@ -241,26 +248,45 @@ const mapServiceTasksToOptions = ({
 			Array.isArray(service.tasks)
 		) {
 			const tasks = service.tasks || [];
-			tasks.forEach((task: any) => {
-				switch (task.serviceTaskId) {
-					case "ST-T-01":
-						defaultOptions.servicePrices["stabilizer"]["handle"] = {
-							price: task.salePrice || task.price || -1,
-							name: task.name || "",
-							description: task.description || "Na",
-						};
-						break;
-					case "ST-T-02":
-						defaultOptions.servicePrices["stabilizer"]["clean"] = {
-							price: task.salePrice || task.price || -1,
-							name: task.name || "Na",
-							description: task.description || "Na",
-						};
-						break;
-					default:
-						break;
+			tasks.forEach(
+				(task: {
+					attributes: unknown;
+					description: string;
+					name: string;
+					salePrice: number;
+					price: number;
+					serviceTaskId: string;
+					unitPrice: Record<string, number>;
+					unitType: EnumUnitType | null;
+				}) => {
+					switch (task.serviceTaskId) {
+						case "ST-T-01":
+							defaultOptions.servicePrices["stabilizer"][
+								"handle"
+							] = {
+								price: task.salePrice || task.price || -1,
+								name: task.name || "",
+								description: task.description || "Na",
+								unitType: task?.unitType || EnumUnitType.FLAT,
+								unitPrice: task?.unitPrice || {},
+							};
+							break;
+						case "ST-T-02":
+							defaultOptions.servicePrices["stabilizer"][
+								"clean"
+							] = {
+								price: task.salePrice || task.price || -1,
+								name: task.name || "Na",
+								description: task.description || "Na",
+								unitPrice: task?.unitPrice || {},
+								unitType: task?.unitType || EnumUnitType.FLAT,
+							};
+							break;
+						default:
+							break;
+					}
 				}
-			});
+			);
 		}
 	});
 

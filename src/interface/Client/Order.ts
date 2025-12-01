@@ -1,7 +1,7 @@
 import {
 	EnumOrderStatus,
 	EnumPaymentMethod,
-	EnumPaymentStaus,
+	EnumPaymentStatus,
 	IProductOption,
 } from "../interface";
 import { ICart, ICartFees } from "./Cart";
@@ -13,7 +13,7 @@ export interface IOrdered {
 	totalPrice?: number;
 	orderedAt?: string;
 	totalQuantity?: number;
-	paymentStatus?: EnumPaymentStaus;
+	paymentStatus?: EnumPaymentStatus;
 	orderStatus?: EnumOrderStatus;
 	customerId?: number;
 	products?: IOrderProduct[];

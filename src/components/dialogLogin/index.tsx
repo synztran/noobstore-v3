@@ -133,13 +133,13 @@ const DialogLogin = ({ isOpen, toggleOpen }: Props) => {
 		<Dialog
 			className={`outline-none px-8 py-4 rounded-md overflow-y-auto`}
 			open={isOpen}
-			onClose={() => toggleOpen(Boolean(EnumStatusDialog.CLOSE))}
+			// onClose={() => toggleOpen(Boolean(EnumStatusDialog.CLOSE))}
 			PaperProps={{
 				style: {
 					backgroundColor: "#f4f4f4",
 					boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
 					maxWidth:
-						formType === ENUM_FORM_TYPE.LOGIN ? "400px" : "650px",
+						formType === ENUM_FORM_TYPE.LOGIN ? "460px" : "650px",
 					borderRadius: "8px",
 				},
 			}}>
@@ -153,8 +153,8 @@ const DialogLogin = ({ isOpen, toggleOpen }: Props) => {
 							Chào mừng trở lại
 						</span>
 						<IconButton
+							className="p-1"
 							onClick={() => {
-								console.log(Boolean(EnumStatusDialog.CLOSE));
 								toggleOpen(Boolean(EnumStatusDialog.CLOSE));
 							}}>
 							<CloseIcon />
@@ -283,9 +283,18 @@ const DialogLogin = ({ isOpen, toggleOpen }: Props) => {
 			) : (
 				<div>
 					<DialogTitle>
-						<Typography variant="h5" className="font-bold">
-							Đăng ký ngay thôi
-						</Typography>
+						<div className="flex justify-between items-center">
+							<Typography variant="h5" className="font-bold">
+								Đăng ký ngay thôi
+							</Typography>
+							<IconButton
+								className="p-1"
+								onClick={() => {
+									toggleOpen(Boolean(EnumStatusDialog.CLOSE));
+								}}>
+								<CloseIcon />
+							</IconButton>
+						</div>
 					</DialogTitle>
 					<DialogContent>
 						<Formik

@@ -1,5 +1,5 @@
 import { EnumShippingMethodCode } from "@/interface/interface";
-import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
+import useServiceFeeQuery from "@/react-query/services/api/useServiceFeeQueries";
 import DateUtils from "@/utils/DateUtils";
 import { formatCurrency } from "@/utils/FormatNumber";
 import useServices, { useServiceAction } from "@/zustand/useServices";
@@ -23,15 +23,12 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 	const {
 		serviceOutOfTimeFee: { pickup, delivery },
 	} = fees;
-	console.log("fees", fees, "shippingInfo", shippingInfo);
 	const mapStyle = MapStyles; // Replace with your MapLibre style URL
 	const mapCenter = [0, 0]; // [lng, lat]
 	const mapZoom = 1;
 	const { updateShippingInfo, updateServiceOutOfTimeFee } =
 		useServiceAction();
 	const { data: serviceFees } = useServiceFeeQuery();
-	console.log("serviceFees", serviceFees);
-	console.log("shippingInfo", shippingInfo);
 
 	const handleCalculateDistanceAndFee = useCallback(
 		async (key: "pickup" | "delivery") => {
@@ -40,13 +37,11 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 					await DateUtils.calculateDeliveryDistanceAndFee(
 						shippingInfo.pickup.address
 					);
-				console.log("pickupDistanceAndFee", pickupDistanceAndFee);
 			} else {
 				const deliveryDistanceAndFee =
 					await DateUtils.calculateDeliveryDistanceAndFee(
 						shippingInfo.delivery.address
 					);
-				console.log("deliveryDistanceAndFee", deliveryDistanceAndFee);
 			}
 		},
 		[shippingInfo.pickup.address]
@@ -57,7 +52,6 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 
 	const handleChangeAddress = useCallback(
 		({ name, value }: { name: "delivery" | "pickup"; value: string }) => {
-			console.log("n - v", name, value);
 			latestAddressRef.current[name] = value;
 			if (debounceTimeoutRef.current[name]) {
 				clearTimeout(debounceTimeoutRef.current[name]);
@@ -68,7 +62,6 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 			debounceTimeoutRef.current[name] = setTimeout(() => {
 				// Only update if the value hasn't changed during debounce
 				const latestValue = latestAddressRef.current[name];
-				console.log("latestValue", latestValue);
 				updateShippingInfo({
 					...shippingInfo,
 					[name]: { ...shippingInfo[name], address: latestValue },
@@ -79,17 +72,15 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 		[shippingInfo, handleCalculateDistanceAndFee, updateShippingInfo]
 	);
 
-  const handleChangeDate = (value: Dayjs | null, key: string) => {
-    if (!value || !value.isValid()) { 
-      NotifyUtils.error("Thời gian không hợp lệ");
-      return;
-    }
-		console.log("value", value, value?.format(DATE_FORMAT));
+	const handleChangeDate = (value: Dayjs | null, key: string) => {
+		if (!value || !value.isValid()) {
+			NotifyUtils.error("Thời gian không hợp lệ");
+			return;
+		}
 		if (key === "delivery" || key === "pickup") {
 			const isOutOfServiceTime = DateUtils.isOutOfWorkingTime(
 				value?.format(DATE_FORMAT) || ""
 			);
-			console.log("isOutOfServiceTime", isOutOfServiceTime);
 			updateServiceOutOfTimeFee(
 				isOutOfServiceTime
 					? serviceFees?.OUT_OF_SERVICE_TIME?.price || 0
@@ -130,20 +121,25 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 	}, [selectedPlan]);
 
 	return (
-		<div className="flex flex-col gap-6">
+		<div className="flex flex-col gap-4">
 			{[
 				EnumShippingMethodCode.STORE_DELIVERY_STORE_PICKUP,
 				EnumShippingMethodCode.STORE_PICKUP_SELF_DELIVERY,
 			].includes(
 				shippingInfo?.method?.code as EnumShippingMethodCode
 			) && (
-				<div className="flex flex-col gap-6">
+				<div className="flex flex-col gap-4">
 					<div className="flex flex-col">
 						<SimpleTextField
 							name="pickup"
 							label="Địa chỉ lấy hàng"
 							placeholder="Nhập địa chỉ lấy hàng"
-							onChange={handleChangeAddress}
+							onChange={(e) =>
+								handleChangeAddress({
+									name: "pickup",
+									value: e.target.value,
+								})
+							}
 							value={shippingInfo.pickup.address || ""}
 						/>
 					</div>
@@ -168,7 +164,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 										? dayjs(
 												shippingInfo.pickup.date,
 												DATE_FORMAT
-											)
+										  )
 										: null
 								}
 								onChange={(value) =>
@@ -217,13 +213,19 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 			].includes(
 				shippingInfo?.method?.code as EnumShippingMethodCode
 			) && (
-				<div className="flex flex-col gap-6">
+				<div className="flex flex-col gap-4">
 					<div className="flex flex-col">
 						<SimpleTextField
 							name="delivery"
 							label="Địa chỉ giao hàng"
 							placeholder="Nhập địa chỉ giao hàng"
-							onChange={handleChangeAddress}
+							// onChange={handleChangeAddress}
+							onChange={(e) =>
+								handleChangeAddress({
+									name: "delivery",
+									value: e.target.value,
+								})
+							}
 							value={shippingInfo.delivery.address || ""}
 						/>
 					</div>
@@ -244,7 +246,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 										? dayjs(
 												shippingInfo.pickup.date,
 												DATE_FORMAT
-											)
+										  )
 										: null;
 									const minDays = selectedPlan?.min || 0;
 									let minDeliveryDate = dayjs()
@@ -289,7 +291,7 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 										? dayjs(
 												shippingInfo.delivery.date,
 												DATE_FORMAT
-											)
+										  )
 										: null
 								}
 								format={DATE_FORMAT}
@@ -305,11 +307,11 @@ const ServiceLocationTime: React.FC = (props: IProps) => {
 										? dayjs(
 												shippingInfo.pickup.date,
 												DATE_FORMAT
-											).add(selectedPlan?.min || 0, "day")
+										  ).add(selectedPlan?.min || 0, "day")
 										: dayjs().add(
 												selectedPlan?.min || 0,
 												"day"
-											)
+										  )
 								}
 								sx={{
 									"& .MuiInputBase-root": {

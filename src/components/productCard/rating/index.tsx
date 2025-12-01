@@ -9,6 +9,7 @@ interface Props {
 	disabled?: boolean;
 	readonly?: boolean;
 	isVertical?: boolean;
+	isShowComment?: boolean;
 }
 
 const RatingComponent = ({
@@ -17,6 +18,7 @@ const RatingComponent = ({
 	disabled = false,
 	readonly = false,
 	isVertical = false,
+	isShowComment = true,
 }: Props) => {
 	if (isVertical) {
 		return (
@@ -47,15 +49,15 @@ const RatingComponent = ({
 										full
 											? "fill-yellow-400"
 											: half
-											? "fill-yellow-400"
-											: "fill-gray-300"
+												? "fill-yellow-400"
+												: "fill-gray-300"
 									)}
 									style={
 										half
 											? {
 													clipPath:
 														"polygon(0 0, 50% 0, 50% 100%, 0 100%)",
-											  }
+												}
 											: undefined
 									}
 								/>
@@ -74,10 +76,14 @@ const RatingComponent = ({
 				</div>
 				<strong className="text-sm">{star}</strong>
 			</div>
-			<div className="w-0.5 h-4 border border-gray-600 my-auto" />
-			<div className="text-sm flex items-center gap-1 text-gray-600">
-				<MessageSquareMore className="w-4 h-4" /> {reviewer}
-			</div>
+			{isShowComment ? (
+				<>
+					<div className="w-0.5 h-4 border border-gray-600 my-auto" />
+					<div className="text-sm flex items-center gap-1 text-gray-600">
+						<MessageSquareMore className="w-4 h-4" /> {reviewer}
+					</div>
+				</>
+			) : null}
 		</Box>
 	);
 };

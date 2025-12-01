@@ -1,5 +1,10 @@
 import { getData, getFirst, isValid } from "@/client";
 import ServiceClient from "@/client/ServiceClient";
+import { IResponse } from "@/interface/Client/interface";
+import {
+	IResponseBackendServiceBooking,
+	IResponseBackendServicePayment,
+} from "@/interface/Client/Service";
 import {
 	EnumServiceFeeType,
 	IServiceDefaultOption,
@@ -79,20 +84,16 @@ export const serviceQueryKeys = createQueryKeys("service", {
 			return mapped;
 		},
 	},
-	getBooking: {
-		queryKey: null,
+	getBookingService: (bookingId: string) => ({
+		queryKey: [{ bookingId }],
 		async queryFn() {
-			const resp = await ServiceClient.getBooking();
+			const params = {
+				id: bookingId,
+			};
+			const resp: IResponse<IResponseBackendServiceBooking> =
+				await ServiceClient.getBookingService(params);
 			if (!isValid(resp)) return {};
 			return getFirst(resp) || {};
-		},
-	},
-	updateServiceBookingIntoCart: (payload: unknown) => ({
-		queryKey: [{ payload }],
-		async queryFn() {
-			const resp = await ServiceClient.upsertBooking(payload);
-			if (!isValid(resp)) throw new Error("Failed to update booking");
-			return getFirst(resp);
 		},
 	}),
 });

@@ -41,15 +41,15 @@ const CategoryCard = ({ category }: Props) => {
 			href={`/product/${slug}`}
 			key={categoryId}
 			className="relative bg-white shadow-sm rounded-xl p-4 flex flex-col cursor-pointer hover:shadow-lg transition-all duration-300">
-			<div className="grid grid-rows-[1fr_1fr] gap-3">
-				<div className="grid-rows-1 relative rounded-lg border border-gray-200 shadow-gray-200 overflow-hidden">
+			<div className="grid grid-rows-[1fr_1fr] gap-2">
+				<div className="relative aspect-[3/2] rounded-lg border border-gray-200 shadow-gray-200 overflow-hidden">
 					<NextImage
 						src={thumbnail?.path || NEW_MISSING_IMAGE}
 						alt={categoryName}
 						fill
-						className="object-contain hover:scale-105 transition-all duration-300"
+						className="object-cover w-full h-full hover:scale-105 transition-all duration-300"
 					/>
-					<button className="absolute right-1 top-1 hover:scale-105 transition-all duration-200 text-lg">
+					<button className="absolute right-1 top-1 hover:scale-105 transition-all duration-200 text-lg bg-blend-saturation">
 						<BookmarkAddOutlined className="fill-black w-6 h-6" />
 					</button>
 					<div className="absolute bottom-1 left-1 bg-gray-200 text-black max-w-max px-1 rounded-md">
@@ -69,27 +69,9 @@ const CategoryCard = ({ category }: Props) => {
 						dangerouslySetInnerHTML={{ __html: description }}
 					/>
 
-					<div className="flex gap-2 mt-2 relative">
-						{/* <div className="flex flex-col items-center justify-between w-full">
-							<span className="text-lg font-extrabold text-[#ec97b2]">
-								{formatCurrency(minPrice)}
-							</span>
-							<span className="text-sm">Giá từ</span>
-						</div> */}
-						{/* <Divider
-								orientation="vertical"
-								flexItem
-								className="w-0.5 h-2/3 absolute left-2/3 -translate-x-1/2 top-1/2 -translate-y-1/2"
-							/> */}
-						{/* <div className="flex flex-col items-center justify-between w-1/3">
-								<RatingComponent
-									star={rating?.star || 0}
-									isVertical
-								/>
-							</div> */}
-					</div>
+					<div className="flex gap-2 mt-2 relative"></div>
 					<div className="flex items-center justify-between">
-						<div className="flex items-end gap-1">
+						<div className="flex items-baseline gap-1">
 							<span className="text-xl font-bold text-black">
 								{formatCurrency(salePrice || minPrice)}
 							</span>

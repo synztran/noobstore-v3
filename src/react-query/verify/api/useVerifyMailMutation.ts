@@ -11,12 +11,10 @@ export function useVerifyMailMutation(
 ) {
 	return useMutation({
 		mutationFn: async (variables) => {
-			console.log("variables", variables);
 			const data = {
 				token: variables.token,
 			};
 			const resp = await AuthClient.postVerifyMail(data);
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: () => {

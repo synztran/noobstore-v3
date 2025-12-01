@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import {
 	People,
 	ChevronLeft,
@@ -11,7 +11,12 @@ import {
 import RaffleEntryModal from "./RaffleEntryModal";
 import Image from "next/image";
 import RaffleCountDown from "./RaffleCountDown";
-import { FormData, PaymentMethod, RaffleData } from "@/interface/Raffle";
+import {
+	PaymentMethod,
+	ProductSelection,
+	RaffleData,
+	RaffleSubmitForm,
+} from "@/interface/Raffle";
 import RaffleBadge from "./RaffleBadge";
 import { LOGO_STORE } from "@/constants/Images";
 import {
@@ -31,6 +36,19 @@ import StepDeliveryInfo from "./RaffleEntryModal/Delivery";
 import StepConfirmation from "./RaffleEntryModal/Confirm";
 import RaffleStatus from "./RaffleStatus";
 import { AnimatePresence, motion } from "motion/react";
+import CountDownTime from "../CountDownTime";
+import { useAuth } from "@/context/Auth";
+import { IAuthUser } from "@/interface/Context/auth";
+import useDialogLogin, {
+	EnumStatusDialog,
+	useDialogLoginAction,
+} from "@/zustand/useDialogLogin";
+import useRaffleSingleQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import {
+	EnumRaffleStatus,
+	IBEResponseRaffleInfo,
+} from "@/interface/Client/Raffle";
 
 // Hardcoded images and options for demo as per your links
 const optionImages = [
@@ -64,8 +82,8 @@ const sampleRaffleData = {
 	// ticketPrice: 50000,
 	totalEntries: 1000,
 	joined: 234,
-	startDate: "2025-10-01T00:00:00",
-	endDate: "2025-10-15T23:59:59",
+	startDate: "2025-12-01T00:00:00",
+	endDate: "2025-12-03T23:59:59",
 	status: "active",
 	seller: {
 		id: "seller-001",
@@ -118,8 +136,8 @@ function RatingStars({ value = 0, max = 5 }) {
 						i < full
 							? "text-yellow-400"
 							: half && i === full
-								? "text-yellow-300"
-								: "text-gray-300"
+							? "text-yellow-300"
+							: "text-gray-300"
 					}`}
 					fill="currentColor"
 					viewBox="0 0 20 20">
@@ -130,40 +148,54 @@ function RatingStars({ value = 0, max = 5 }) {
 	);
 }
 
-export default function RaffleBlock({ raffleData = sampleRaffleData }) {
+interface IProps {
+	raffleData?: IBEResponseRaffleInfo;
+	isLoading: boolean;
+}
+
+export default function RaffleBlock({ raffleData, isLoading }: IProps) {
+	const { user } = useAuth() as unknown as { user: IAuthUser | null };
+	const { data: raffleInfo, isPending: isFetching } =
+		useRaffleFeaturedQueries({
+			enabled: Boolean(user),
+		});
+
+	console.log("raffleIno", raffleInfo, isFetching);
+	const { isOpenDialogLogin } = useDialogLogin();
+	const { toggleDialogLogin } = useDialogLoginAction();
 	const [showRaffleModal, setShowRaffleModal] = useState(false);
 	const [selectedOption, setSelectedOption] = useState(
 		optionImages?.[0]?.id || ""
 	);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
-	const [raffleStatus, setRaffleStatus] = useState("running");
-	const [raffleFormData, setRaffleFormData] = useState<FormData>({
-		...raffleData,
+	const [raffleFormData, setRaffleFormData] = useState<RaffleSubmitForm>({
 		fullName: "",
 		email: "",
 		phone: "",
 		address: "",
 		city: "",
-		paymentMethod: PaymentMethod.CREDIT_CARD,
+		// paymentMethod: PaymentMethod.TBD,
 		companyName: "",
 		zipCode: "",
-		cardNumber: "",
-		expiryDate: "",
-		cvv: "",
-		cardName: "",
-		productSelections:
-			raffleData.productOptions?.map((option, index) => ({
+		// cardNumber: "",
+		// expiryDate: "",
+		// cvv: "",
+		// cardName: "",
+		productSelections: (raffleData?.productOptions?.map(
+			(option, index) => ({
 				productId: option.id,
 				name: option.label,
 				priority: null,
 				selected: false,
 				price: option.price,
-				thumbnail: option.url, // Add the required thumbnail property
-			})) || [],
+				thumbnail: option.thumbnail, // Add the required thumbnail property
+			})
+		) || []) as ProductSelection[],
 		note: "",
-		shippingMethod: { brand: "", price: 0 },
+		shippingMethod: { name: "", price: null },
+		raffleId: raffleData?.raffleId || "",
 	});
-	console.log("raffleFormData", raffleFormData);
+
 	const [minPrice, maxPrice] = useMemo(() => {
 		return [
 			Math.min(...optionImages.map((o) => o.price)),
@@ -175,20 +207,54 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 	const selectedOptionObj =
 		optionImages.find((o) => o.id === selectedOption) || optionImages[0];
 
+	const statusRaffleBasingTime = useMemo(() => {
+		const now = new Date();
+		const start = new Date(raffleData?.startDate || "");
+		const end = new Date(raffleData?.endDate || "");
+
+		if (now < start) return EnumRaffleStatus.UPCOMING;
+		if (now >= start && now <= end) return EnumRaffleStatus.ACTIVE;
+		if (now > end) return EnumRaffleStatus.COMPLETED;
+
+		return EnumRaffleStatus.CANCELLED;
+	}, [raffleData?.startDate, raffleData?.endDate]);
+
 	// Sync image with option
 	useEffect(() => {
 		const idx = optionImages.findIndex((o) => o.id === selectedOption);
 		if (idx !== -1) setCurrentImageIndex(idx);
 	}, [selectedOption]);
 
+	useEffect(() => {
+		// Reset selected option when raffle data changes
+		console.log("raffleData", raffleData);
+		if (raffleData) {
+			setRaffleFormData((prev) => ({
+				...prev,
+				raffleId: raffleData.raffleId || "",
+				productSelections:
+					raffleData?.productOptions?.map((option, index) => ({
+						productId: option.id,
+						name: option.label,
+						price: option.price,
+						thumbnail: option?.thumbnail || {
+							path: "",
+							alt: "",
+						},
+						priority: null,
+						selected: false,
+					})) || ([] as ProductSelection[]),
+			}));
+		}
+	}, [raffleData]);
 	// Sync option with image
 	const handleImageChange = (idx: number) => {
 		setCurrentImageIndex(idx);
 		setSelectedOption(optionImages[idx]?.id || "");
 	};
 
-	const progressPercentage =
-		(raffleData.joined / raffleData.totalEntries) * 100;
+	// const progressPercentage =
+	// 	(raffleData.joined / raffleData.totalEntries) * 100;
 
 	const resetAndClose = () => {
 		setRaffleFormData({
@@ -197,27 +263,128 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 			phone: "",
 			address: "",
 			city: "",
-			paymentMethod: PaymentMethod.CREDIT_CARD,
-			cardNumber: "",
-			expiryDate: "",
-			cvv: "",
-			cardName: "",
 			productSelections:
-				raffleData.productOptions?.map((option, index) => ({
+				raffleData?.productOptions?.map((option, index) => ({
 					productId: option.id,
 					name: option.label,
 					price: option.price,
-					thumbnail: option.url,
+					thumbnail: option.thumbnail || {
+						path: "",
+						alt: "",
+					},
 					priority: null,
 					selected: false,
-				})) || [],
+				})) || ([] as ProductSelection[]),
 			companyName: "",
 			zipCode: "",
-			shippingMethod: { brand: "VNPost", price: 0 },
+			shippingMethod: { name: "", price: null },
 			note: "",
+			raffleId: raffleData?.raffleId || "",
 		});
 		setShowRaffleModal(false);
 	};
+
+	const handleOpenRaffleForm = () => {
+		if (!user && !isOpenDialogLogin) {
+			toggleDialogLogin(
+				isOpenDialogLogin
+					? Boolean(EnumStatusDialog.CLOSE)
+					: Boolean(EnumStatusDialog.OPEN)
+			);
+		} else {
+			setShowRaffleModal(true);
+		}
+	};
+
+	const handleInputChange =
+		(field: keyof RaffleSubmitForm) =>
+		(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+			setRaffleFormData((prev) => ({
+				...prev,
+				[field]: e.target.value,
+			}));
+		};
+
+	if (isLoading) {
+		return (
+			<div className="container max-w-7xl mx-auto py-4 !px-0">
+				<div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+					{/* Left: Image Skeleton */}
+					<div className="col-span-8 bg-white rounded-xl shadow p-4 h-[500px] relative">
+						<div className="w-full h-full bg-gray-200 animate-pulse rounded-lg"></div>
+					</div>
+
+					{/* Right: Info Skeleton */}
+					<div className="col-span-4 bg-white rounded-xl shadow p-4 flex flex-col gap-4">
+						{/* Badge & Status */}
+						<div className="flex items-center gap-2">
+							<div className="w-20 h-6 bg-gray-200 animate-pulse rounded"></div>
+							<div className="w-24 h-6 bg-gray-200 animate-pulse rounded"></div>
+						</div>
+
+						{/* Title */}
+						<div className="space-y-2">
+							<div className="w-full h-6 bg-gray-200 animate-pulse rounded"></div>
+							<div className="w-3/4 h-6 bg-gray-200 animate-pulse rounded"></div>
+						</div>
+
+						{/* Description */}
+						<div className="space-y-2">
+							<div className="w-full h-4 bg-gray-200 animate-pulse rounded"></div>
+							<div className="w-full h-4 bg-gray-200 animate-pulse rounded"></div>
+							<div className="w-2/3 h-4 bg-gray-200 animate-pulse rounded"></div>
+						</div>
+
+						{/* Seller */}
+						<div className="flex items-center gap-3">
+							<div className="w-12 h-12 bg-gray-200 animate-pulse rounded-full"></div>
+							<div className="flex-1 space-y-2">
+								<div className="w-32 h-5 bg-gray-200 animate-pulse rounded"></div>
+								<div className="w-24 h-4 bg-gray-200 animate-pulse rounded"></div>
+							</div>
+						</div>
+
+						{/* Countdown */}
+						<div className="w-full h-16 bg-gray-200 animate-pulse rounded-lg"></div>
+
+						{/* Options */}
+						<div className="space-y-2">
+							<div className="w-24 h-5 bg-gray-200 animate-pulse rounded"></div>
+							<div className="flex gap-2">
+								{[1, 2, 3].map((i) => (
+									<div
+										key={i}
+										className="w-20 h-20 bg-gray-200 animate-pulse rounded-full"></div>
+								))}
+							</div>
+						</div>
+
+						{/* Features */}
+						<div className="space-y-2">
+							<div className="w-24 h-5 bg-gray-200 animate-pulse rounded"></div>
+							{[1, 2, 3, 4].map((i) => (
+								<div
+									key={i}
+									className="w-full h-4 bg-gray-200 animate-pulse rounded"></div>
+							))}
+						</div>
+
+						{/* Button */}
+						<div className="w-full h-12 bg-gray-200 animate-pulse rounded-50"></div>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	if (
+		!raffleData
+		// ||
+		// ![EnumRaffleStatus.ACTIVE, EnumRaffleStatus.UPCOMING].includes(
+		// 	raffleData.status as EnumRaffleStatus
+		// )
+	)
+		return null;
 
 	return (
 		<div className="container max-w-7xl mx-auto py-4 !px-0">
@@ -345,23 +512,32 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 					{/* Title, Description, Seller */}
 					<div>
 						<div className="flex items-center gap-2">
-							<RaffleBadge type="raffle" />
-							<RaffleStatus mode="upcoming" />
+							<RaffleBadge type={raffleData.raffleType} />
+							<RaffleStatus
+								mode={
+									raffleData.status ?? statusRaffleBasingTime
+								}
+							/>
 						</div>
 						<div className="text-lg font-bold mt-2">
-							{raffleData.title}
+							{raffleData?.title}
 						</div>
 						<p
 							className="text-gray-700 text-sm mb-2"
 							style={{ textIndent: "0.5rem" }}>
-							{raffleData.description}
+							{raffleData?.description}
 						</p>
 						<Divider className="border-gray-400 my-2" />
 						<div className="flex items-center gap-3 mt-2">
 							<div className="w-12 h-12 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600">
 								<Image
-									src={raffleData.seller.avatar}
-									alt={raffleData.seller.name}
+									src={
+										raffleData?.seller?.avatar || LOGO_STORE
+									}
+									alt={
+										raffleData?.seller?.name ||
+										"Seller Avatar"
+									}
 									fill
 									objectFit="cover"
 									className="w-12 h-12 rounded-full"
@@ -370,9 +546,9 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 							<div>
 								<div className="flex items-center gap-1">
 									<span className="font-semibold text-lg">
-										{raffleData.seller.name}
+										{raffleData?.seller?.name}
 									</span>
-									{raffleData.seller.isVerified && (
+									{raffleData?.seller?.isVerified && (
 										<Tooltip
 											title="Maker đã xác thực thông tin"
 											placement="right">
@@ -390,7 +566,7 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 									<span className="text-sm">
 										Tổng số raffle:{" "}
 										<span className="font-semibold text-sm">
-											{raffleData.seller.raffleTimes}
+											{raffleData?.seller?.raffleTimes}
 										</span>
 									</span>
 								</div>
@@ -402,9 +578,7 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 					<RaffleCountDown
 						startDate={raffleData.startDate}
 						endDate={raffleData.endDate}
-						raffleStatus={
-							raffleStatus as "upcoming" | "running" | "ended"
-						}
+						raffleStatus={raffleData.status as EnumRaffleStatus}
 						className="text-center"
 					/>
 					{/* <Divider className="border-gray-400 my-2" /> */}
@@ -488,18 +662,29 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 					{/* Join Button */}
 					<button
 						type="button"
-						onClick={() => setShowRaffleModal(true)}
-						disabled={raffleStatus !== "running"}
+						onClick={handleOpenRaffleForm}
+						disabled={
+							raffleData?.status !== EnumRaffleStatus.ACTIVE ||
+							statusRaffleBasingTime !== EnumRaffleStatus.ACTIVE
+						}
 						className={`flex items-center justify-center gap-2 w-full py-3 rounded-50 text-white font-semibold text-base transition ${
-							raffleStatus === "running"
+							raffleData?.status === EnumRaffleStatus.ACTIVE ||
+							statusRaffleBasingTime === EnumRaffleStatus.ACTIVE
 								? "bg-red-400 hover:bg-red-500"
 								: "bg-gray-400 cursor-not-allowed"
 						}`}>
-						{raffleStatus === "running"
+						{raffleData.status === EnumRaffleStatus.UPCOMING ||
+						statusRaffleBasingTime === EnumRaffleStatus.UPCOMING
+							? "Chưa bắt đầu"
+							: null}
+						{raffleData.status === EnumRaffleStatus.ACTIVE ||
+						statusRaffleBasingTime === EnumRaffleStatus.ACTIVE
 							? "Tham gia Raffle"
-							: raffleStatus === "upcoming"
-								? "Chưa bắt đầu"
-								: "Đã kết thúc"}
+							: null}
+						{raffleData.status === EnumRaffleStatus.COMPLETED ||
+						statusRaffleBasingTime === EnumRaffleStatus.COMPLETED
+							? "Đã kết thúc"
+							: null}
 					</button>
 				</div>
 			</div>
@@ -548,7 +733,8 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 
 			{/* Raffle Entry Modal */}
 			<Stepper
-				raffleData={raffleFormData as unknown as RaffleData}
+				raffleId={raffleData?.raffleId}
+				raffleFormSubmit={raffleFormData}
 				open={showRaffleModal}
 				onClose={() => setShowRaffleModal(false)}
 				initialStep={1}
@@ -560,28 +746,28 @@ export default function RaffleBlock({ raffleData = sampleRaffleData }) {
 				nextButtonText="Tiếp theo">
 				<Step name="Thông tin">
 					<StepInformation
-						formData={raffleFormData}
-						raffleData={raffleData as unknown as RaffleData}
+						raffleData={raffleData}
 						minPrice={minPrice}
 						maxPrice={maxPrice}
 					/>
 				</Step>
 				<Step name="Lựa chọn">
 					<StepSelectProduct
-						formData={raffleFormData}
-						setFormData={setRaffleFormData}
-						raffleData={raffleData as unknown as RaffleData}
+						raffleFormSubmit={raffleFormData}
+						setRaffleFormSubmit={setRaffleFormData}
+						raffleData={raffleData}
 					/>
 				</Step>
 				<Step name="Địa chỉ">
 					<StepDeliveryInfo
-						formData={raffleFormData}
-						setFormData={setRaffleFormData}
-						raffleData={raffleData as unknown as RaffleData}
+						raffleFormSubmit={raffleFormData}
+						setRaffleFormSubmit={setRaffleFormData}
+						raffleData={raffleData}
+						handleInputChange={handleInputChange}
 					/>
 				</Step>
 				<Step name="Xác nhận">
-					<StepConfirmation formData={raffleFormData} />
+					<StepConfirmation raffleFormSubmit={raffleFormData} />
 				</Step>
 			</Stepper>
 		</div>

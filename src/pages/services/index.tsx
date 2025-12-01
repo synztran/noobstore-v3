@@ -54,7 +54,6 @@ const ServicePage = () => {
 		// Get address from coordinates
 		try {
 			const address = await getShortAddress(coordinates);
-			console.log(address);
 
 			// Update location text with address and distance
 			if (withinArea) {
@@ -155,13 +154,13 @@ const ServicePage = () => {
 						</div>
 					</div>
 				</div>
-				<div className="grid grid-cols-3 gap-4 px-4">
+				<div className="grid grid-cols-3 gap-4 px-2">
 					<div className="col-span-2 relative -top-[2rem] flex flex-col gap-4">
 						<GroupSelectServiceDate />
 						<DeliverySelection />
 						<MultiServiceForm />
 					</div>
-					<div className="cols-span-1 flex flex-col gap-4">
+					<div className="cols-span-1 flex flex-col gap-4 sticky top-[13rem] h-fit">
 						<SummaryService />
 						<div className="col-span-2 relative -top-[5rem] flex flex-col gap-4">
 							<ServiceContactInfo />

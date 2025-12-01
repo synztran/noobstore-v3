@@ -15,12 +15,19 @@ import { classNames } from "@/utils/AppConfig";
 import CollapseText from "../collapse";
 import SideUtilities from "../SideUtilities";
 import DetailRating from "../DetailRating";
+import ProductReviews from "../ProductReviews";
+import { useAuth } from "@/context/Auth";
+import { IAuthUser } from "@/interface/Context/auth";
 
 interface Props {
 	slug: string;
 }
 
 const ProductCard = ({ slug }: Props) => {
+	const { isAuthenticated = false } = useAuth() as unknown as {
+		user: IAuthUser | null;
+		isAuthenticated: boolean;
+	};
 	const { data: productData, isFetching: isLoading } = useProductQuery(
 		{ categoryId: slug as string },
 		{
@@ -57,47 +64,18 @@ const ProductCard = ({ slug }: Props) => {
 
 		return initialSelectedOpt;
 	});
-	// const itemsOptions: Record<EnumProductType, IProductOption[]> =
-	// 	useMemo(() => {
-	// 		// const producOptions = products?.map(
-	// 		// 	(product: IProduct) => product?.productOpts
-	// 		// );
-
-	// 		// console.log("producOptions", producOptions);
-	// 		// const mappingOptions = productOptions?.reduce(
-	// 		// 	(
-	// 		// 		acc: Record<EnumProductType, IProductOption[]>,
-	// 		// 		opts: IProductOption[]
-	// 		// 	) => {
-	// 		// 		opts?.forEach((opt) => {
-	// 		// 			if (opt.productPart) {
-	// 		// 				if (!acc[opt.productPart]) {
-	// 		// 					acc[opt.productPart] = [];
-	// 		// 				}
-	// 		// 				acc[opt.productPart].push(opt);
-	// 		// 			}
-	// 		// 		});
-	// 		// 		return acc;
-	// 		// 	},
-	// 		// 	{} as Record<EnumProductType, IProductOption[]>
-	// 		// );
-
-	// 		// console.log("mappingOptions", mappingOptions);
-
-	// 		// return mappingOptions || {};
-	// 		return {};
-	// 	}, [products]);
 
 	return (
-		<div className="grid grid-cols-12 gap-8 px-4">
-			<div className="mb-auto w-full col-span-6">
+		<div className="grid grid-cols-12 gap-4">
+			{/* image and slider */}
+			<div className="mb-auto w-full col-span-7">
 				{isLoading ? (
 					<>
 						<SkeletonBlock className="col-span-6" />
 						<SkeletonBlock className="col-span-6" />
 					</>
 				) : (
-					<div className="flex flex-col gap-8">
+					<div className="flex flex-col gap-4">
 						<SliderSyncing
 							imageList={images?.map((pic, index) => ({
 								src: pic.path,
@@ -105,7 +83,7 @@ const ProductCard = ({ slug }: Props) => {
 								id: index + 1,
 							}))}
 						/>
-						<DetailRating
+						{/* <DetailRating
 							averageRating={4.99}
 							totalReviews={215}
 							ratingBreakdown={[
@@ -136,17 +114,22 @@ const ProductCard = ({ slug }: Props) => {
 								},
 							]}
 							showRatingMethodology={true}
+						/> */}
+						<ProductReviews
+							productId={
+								productData?.categoryDetail?.categoryId || ""
+							}
+							canReview={isAuthenticated}
 						/>
 					</div>
 				)}
 			</div>
-
 			{/* Product info */}
-			<div className="col-span-6 gap-12 grid grid-cols-12">
+			<div className="col-span-5 gap-6 grid grid-cols-12">
 				{isLoading ? (
-					<SkeletonBlock className="col-span-5" />
+					<SkeletonBlock className="col-span-8" />
 				) : (
-					<div className="max-w-full p-4 rounded-lg col-span-10 bg-white shadow-md max-h-max">
+					<div className="max-w-full p-4 rounded-lg col-span-11 bg-white shadow-md max-h-max">
 						<ProductInfoBlock
 							products={products}
 							category={categoryDetail as ICategory}
@@ -161,9 +144,9 @@ const ProductCard = ({ slug }: Props) => {
 						/>
 					</div>
 				)}
-				<div className="col-span-2">
+				<div className="col-span-1 ml-auto">
 					{isLoading ? (
-						<SkeletonBlock className="col-span-1" />
+						<SkeletonBlock className="w-full" />
 					) : (
 						<SideUtilities
 							showAvatar={true}

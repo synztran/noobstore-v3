@@ -18,6 +18,7 @@ import InputQuantity from "../InputQuatity";
 import ItemSelectGroupBlock from "../ItemSelectGroupBlock";
 import RatingComponent from "../productCard/rating";
 import styles from "./styles.module.css";
+import ProductReviews from "../ProductReviews";
 
 interface Props {
 	products: IProduct[];
@@ -56,7 +57,7 @@ export default function ProductInfoBlock({
 							0
 						)
 					);
-			  }, 0)
+				}, 0)
 			: 0;
 
 		return basePrice + selectedPrice;
@@ -118,6 +119,7 @@ export default function ProductInfoBlock({
 						star={rating?.star || 0}
 						reviewer={rating?.rateMessages?.length || 0}
 						readonly
+						isShowComment={false}
 					/>
 					<div className="inline-flex items-center gap-1">
 						<span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
@@ -129,28 +131,18 @@ export default function ProductInfoBlock({
 					style={{ letterSpacing: "1px" }}>
 					{category?.description}
 				</p> */}
-				<p className="text-2xl tracking-tight font-bold mt-4 text-[#ec97b2]">
+				<p className="text-2xl tracking-tight font-bold mt-2 text-[#ec97b2]">
 					{totalPriceCurrentOpt > 0
 						? formatCurrency(totalPriceCurrentOpt)
 						: `${formatCurrency(category.minPrice)} ${
 								category.maxPrice > 0
 									? `- ${formatCurrency(category.maxPrice)}`
 									: ""
-						  }`}
+							}`}
 				</p>
 			</div>
 			{/* Options */}
-			<div className="mt-2 lg:row-span-1 lg:mt-0">
-				{/* {Object.keys(productOptions).length > 0 &&
-					Object.entries(productOptions)?.map((item, index) => (
-						<ItemSelectGroupBlock
-							key={index}
-							options={item}
-							selectedOpt={selectedOpt}
-							setSelectedOpt={setSelectedOpt}
-							toggleResetQuantity={toggleResetQuantity}
-						/>
-					))} */}
+			<div className="mt-2 lg:row-span-1 lg:mt-0 flex flex-col gap-4">
 				{products &&
 					products?.map((product) => (
 						<ItemSelectGroupBlock
@@ -236,7 +228,7 @@ export default function ProductInfoBlock({
 								style={{ letterSpacing: "1px" }}>
 								{productsWithSelectedOpt?.length <
 								products?.length ? (
-									<span>Vui lòng chọn option mong muốn</span>
+									<span>Vui lòng chọn option</span>
 								) : (
 									<>
 										Thêm vào giỏ hàng

@@ -1,13 +1,15 @@
+import { EnumRaffleStatus } from "@/interface/Client/Raffle";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface IProps {
-	mode: "upcoming" | "running" | "ended";
+	mode: EnumRaffleStatus;
 }
 
-const STATUS_TEXT = {
-	upcoming: "Sắp diễn ra",
-	running: "Đang diễn ra",
-	ended: "Đã kết thúc",
+const STATUS_TEXT: Record<EnumRaffleStatus, string> = {
+	[EnumRaffleStatus.UPCOMING]: "Sắp diễn ra",
+	[EnumRaffleStatus.ACTIVE]: "Đang diễn ra",
+	[EnumRaffleStatus.COMPLETED]: "Đã kết thúc",
+	[EnumRaffleStatus.CANCELLED]: "Đã hủy",
 };
 
 const textVariants = {
@@ -17,6 +19,7 @@ const textVariants = {
 };
 
 const RaffleStatus = ({ mode }: IProps) => {
+	console.log("moe", mode);
 	return (
 		<AnimatePresence mode="wait" initial={false}>
 			<motion.span

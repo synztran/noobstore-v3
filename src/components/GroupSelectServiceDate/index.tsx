@@ -1,5 +1,5 @@
 import useServicePage from "@/hook/useServicePage";
-import useServicePlanQuery from "@/react-query/services/useServicePlanQueries";
+import useServicePlanQuery from "@/react-query/services/api/useServicePlanQueries";
 import { formatCurrency } from "@/utils/FormatNumber";
 import useServices, {
 	useServiceAction,

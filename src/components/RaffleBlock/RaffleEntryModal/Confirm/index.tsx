@@ -1,12 +1,13 @@
-import { FormData } from "@/interface/Raffle";
 import React from "react";
 import Image from "next/image";
 import { Divider } from "@mui/material";
+import { RaffleSubmitForm } from "@/interface/Raffle";
 
-const StepConfirmation: React.FC<{ formData: FormData }> = ({ formData }) => {
-	const selectedProducts = formData.productSelections.filter(
-		(p) => p.selected
-	);
+const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
+	raffleFormSubmit,
+}) => {
+	const selectedProducts =
+		raffleFormSubmit.productSelections.filter((p) => p.selected) || [];
 
 	// Generate a random registration code for more realism
 	const registrationCode = React.useMemo(
@@ -69,7 +70,7 @@ const StepConfirmation: React.FC<{ formData: FormData }> = ({ formData }) => {
 								<div
 									key={product.productId}
 									className="flex flex-col items-center gap-2 bg-white border border-blue-200 rounded-lg p-2 shadow-sm">
-									<div className="w-full h-48 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-white shadow relative">
+									<div className="w-full h-44 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-white shadow relative">
 										{product.thumbnail ? (
 											<Image
 												src={product.thumbnail}

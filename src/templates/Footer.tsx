@@ -1,4 +1,8 @@
-import { CHECKOUT_URL, THANKS_URL } from "@/constants/path";
+import {
+	CHECKOUT_URL,
+	SERVICES_DETAIL_URL,
+	THANKS_URL,
+} from "@/constants/path";
 import DiscordIcon from "@/icons/discord";
 import { SendHorizontal } from "lucide-react";
 import Link from "next/link";
@@ -7,7 +11,11 @@ import { useState } from "react";
 
 const Footer = () => {
 	const router = useRouter();
-	const isSimpleHeader = [CHECKOUT_URL, THANKS_URL].includes(router.pathname);
+	const isSimpleHeader = [
+		CHECKOUT_URL,
+		THANKS_URL,
+		SERVICES_DETAIL_URL,
+	].includes(router.pathname);
 	const [email, setEmail] = useState("");
 
 	const handleSubmitMail = () => {

@@ -1,7 +1,11 @@
 import DialogLogin from "@/components/dialogLogin";
 import ModalCartItem from "@/components/modalCartItem";
 import { callsToAction, contact, news, services } from "@/constants";
-import { CHECKOUT_URL, THANKS_URL } from "@/constants/path";
+import {
+	CHECKOUT_URL,
+	SERVICES_DETAIL_URL,
+	THANKS_URL,
+} from "@/constants/path";
 import { useAuth } from "@/context/Auth";
 import useCartQuery from "@/react-query/cart/api/useCartQueries";
 import { classNames } from "@/utils/AppConfig";
@@ -34,6 +38,7 @@ import styles from "./styles.module.css";
 import PopupLogOut from "@/components/PopupLogout";
 import { ShoppingCart } from "lucide-react";
 import { IAuthUser } from "@/interface/Context/auth";
+import HeaderUserSetting from "@/components/HeaderUserSetting";
 
 export default function Header() {
 	const router = useRouter();
@@ -52,9 +57,6 @@ export default function Header() {
 	const [isOpenModalCartItem, toggleModalCartItem] = useState(false);
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const [openPopupLogout, setOpenPopupLogout] = useState(false);
-	// const [serviceMenuOpen, setServiceMenuOpen] = useState(false);
-	// const [newsMenuOpen, setNewsMenuOpen] = useState(false);
-	// const [contactMenuOpen, setContactMenuOpen] = useState(false);
 
 	const open = Boolean(anchorEl);
 
@@ -70,7 +72,11 @@ export default function Header() {
 		setOpenPopupLogout(!openPopupLogout);
 	};
 
-	const isSimpleHeader = [CHECKOUT_URL, THANKS_URL].includes(router.pathname);
+	const isSimpleHeader = [
+		CHECKOUT_URL,
+		THANKS_URL,
+		SERVICES_DETAIL_URL,
+	].includes(router.pathname);
 	const isHideHeader = [THANKS_URL].includes(router.pathname);
 
 	if (isHideHeader) return null;
@@ -111,7 +117,7 @@ export default function Header() {
 						<Link
 							href="/shop"
 							className={classNames(
-								`text-xl font-semibold leading-6 text-gray-900`,
+								`text-2xl font-semibold leading-6 text-gray-900`,
 								styles.bbEffect ?? ""
 							)}>
 							Shop
@@ -141,7 +147,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-2xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Dịch vụ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -215,7 +221,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-2xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Tin tức
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -283,7 +289,7 @@ export default function Header() {
 										}}>
 										<Popover.Button
 											ref={buttonRef}
-											className={`flex items-center gap-x-1 text-xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
+											className={`flex items-center gap-x-1 text-2xl font-semibold leading-6 text-gray-900 outline-none ${styles.bbEffect}`}>
 											Liên hệ
 											<ChevronDownIcon
 												className="h-5 w-5 flex-none text-gray-400"
@@ -356,78 +362,12 @@ export default function Header() {
 							</Link>
 						) : (
 							<div className="flex gap-4 items-center justify-center">
-								<div className="m-auto">
-									<button
-										onClick={handleClick}
-										className="flex items-center gap-1">
-										{user?.avatar ? (
-											<Box
-												position="relative"
-												width={40}
-												height={40}>
-												<NextImage
-													src={user?.avatar}
-													alt="user avatar"
-													className="rounded-half object-contain"
-													fill
-													quality={100}
-													sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-												/>
-											</Box>
-										) : (
-											<AccountCircleIcon
-												className="hover:fill-blue-500"
-												style={{
-													width: 40,
-													height: 40,
-												}}
-											/>
-										)}
-										<span className="hover:text-blue-500 text-lg">
-											{user?.firstName} {user?.lastName}
-										</span>
-									</button>
-									<Menu
-										id="basic-menu"
-										anchorEl={anchorEl}
-										open={open}
-										onClose={handleClose}
-										MenuListProps={{
-											"aria-labelledby": "basic-button",
-											className: "py-0",
-										}}
-										PaperProps={{
-											elevation: 0,
-											style: {
-												overflow: "visible",
-												filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-											},
-											className: "!top-20",
-										}}
-										transformOrigin={{
-											horizontal: "right",
-											vertical: "top",
-										}}>
-										<MenuItem className="flex flex-col">
-											<Link href="/account/detail">
-												Thông tin tài khoản
-											</Link>
-										</MenuItem>
-										<Divider className="w-full h-0.5" />
-										<MenuItem>
-											<Link href="/account/orders">
-												Đơn hàng
-											</Link>
-										</MenuItem>
-										<Divider className="w-full h-0.5" />
-										<MenuItem>
-											<span onClick={() => logout()}>
-												Đăng xuất
-											</span>
-										</MenuItem>
-									</Menu>
-								</div>
-								<Divider orientation="vertical" flexItem />
+								<HeaderUserSetting />
+								<Divider
+									orientation="vertical"
+									flexItem
+									className="my-1"
+								/>
 								<IconButton
 									className="relative p-1"
 									onClick={() => toggleModalCartItem(true)}>

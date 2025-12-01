@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Service Item",
+  "description": "Individual service item (keyboard, switch, etc.)",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique item identifier"
+    },
+    "type": {
+      "type": "string",
+      "description": "Item type",
+      "enum": ["keyboard", "switch", "stabilizer"]
+    },
+    "name": {
+      "type": "string",
+      "description": "Item name",
+      "minLength": 1
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity (for switches/stabilizers)",
+      "minimum": 1
+    },
+    "services": {
+      "type": "array",
+      "description": "Services applied to this item",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Service name"
+          },
+          "price": {
+            "type": "number",
+            "description": "Service price in VND",
+            "minimum": 0
+          }
+        },
+        "required": ["name", "price"]
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["id", "type", "name", "services"]
+}

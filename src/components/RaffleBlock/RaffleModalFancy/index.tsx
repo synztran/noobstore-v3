@@ -10,11 +10,24 @@ import React, {
 import { motion, AnimatePresence, Variants, steps } from "motion/react";
 import { CircularProgress, Divider } from "@mui/material";
 import { classNames } from "@/utils/AppConfig";
-import { RaffleData } from "@/interface/Raffle";
+import { RaffleData, RaffleSubmitForm } from "@/interface/Raffle";
 import RaffleBadge from "../RaffleBadge";
 import NotifyUtils from "@/utils/NotifyUtils";
+import {
+	IBEResponseRaffleInfo,
+	IRequestRaffleJoin,
+} from "@/interface/Client/Raffle";
+import useRafflesQuery from "@/react-query/raffles/api/useRafflesQueries";
+import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import useRaffleDetailQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import { useRaffleJoinMutation } from "@/react-query/raffles/api/useRaffleJoinMutation";
+import { useAuth } from "@/context/Auth";
+import { IAuthUser } from "@/interface/Context/auth";
+import { IResponse } from "@/interface/Client/interface";
+import { SuccessRaffleJoin } from "@/components/CustomToastMessage";
 
 interface StepperProps extends HTMLAttributes<HTMLDivElement> {
+	raffleId: string;
 	open: boolean;
 	onClose: () => void;
 	children: ReactNode;
@@ -36,10 +49,12 @@ interface StepperProps extends HTMLAttributes<HTMLDivElement> {
 		currentStep: number;
 		onStepClick: (clicked: number) => void;
 	}) => ReactNode;
-	raffleData: RaffleData;
+	// raffleData: IBEResponseRaffleInfo | null;
+	raffleFormSubmit: RaffleSubmitForm | null;
 }
 
 export default function Stepper({
+	raffleId,
 	open,
 	onClose,
 	children,
@@ -56,12 +71,32 @@ export default function Stepper({
 	nextButtonText = "Continue",
 	disableStepIndicators = false,
 	renderStepIndicator,
-	raffleData,
+	raffleFormSubmit,
 	...rest
 }: StepperProps) {
+	console.log("raffleFormSubmit", raffleFormSubmit);
+	const { user } = useAuth() as unknown as { user: IAuthUser | null };
+	const { data: raffleData, isPending: isLoading } = useRaffleDetailQueries({
+		params: { raffleId },
+		enabled: open && !!raffleId,
+	});
+	const postSubmitRaffle = useRaffleJoinMutation({
+		onSuccess: (response: IResponse<any>) => {
+			console.log("response", response);
+			if (response.status !== "OK") return;
+			// NotifyUtils.success(
+			// 	<SuccessRaffleJoin
+			// 		serviceBookingId={response.data?.payment?.serviceBookingId}
+			// 	/>
+			// );
+			onFinalStepCompleted();
+			onClose();
+		},
+	});
+	const { mutate, isPending: isSubmitting } = postSubmitRaffle;
+
 	const [currentStep, setCurrentStep] = useState<number>(initialStep);
 	const [direction, setDirection] = useState<number>(0);
-	const [isSubmitting, setSubmitting] = useState<boolean>(false);
 	const stepsArray = Children.toArray(children);
 	const totalSteps = stepsArray.length;
 	const isCompleted = currentStep > totalSteps;
@@ -90,44 +125,34 @@ export default function Stepper({
 		updateStep(currentStep + 1);
 	};
 
-	const handleSubmit = async () => {
-		try {
-			setSubmitting(true);
+	const handleSubmitRaffle = () => {
+		if (!raffleFormSubmit) return;
 
-			// Get reCAPTCHA token before submitting
-			// const recaptchaToken = await getRecaptchaToken(
-			// 	process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || "",
-			// 	"raffle_entry"
-			// );
+		const payload: IRequestRaffleJoin = {
+			customerId: user?.customerId || null,
+			raffleId: raffleFormSubmit?.raffleId || "",
+			shipping: {
+				// phone: raffleFormSubmit?.phone || "",
+				address: raffleFormSubmit?.address || "",
+				city: raffleFormSubmit?.city || "",
+				companyName: raffleFormSubmit?.companyName || "",
+				zipCode: raffleFormSubmit?.zipCode || "",
+				shippingMethod: raffleFormSubmit?.shippingMethod || {
+					name: "",
+					price: null,
+				},
+				note: raffleFormSubmit?.note || "",
+			},
+			fullName: raffleFormSubmit?.fullName || "",
+			email: raffleFormSubmit?.email || "",
+			phone: raffleFormSubmit?.phone || "",
+			raffleItemSelections: raffleFormSubmit.productSelections.filter(
+				(item) => item.selected && item.priority !== null
+			),
+		};
 
-			// if (!recaptchaToken) {
-			// 	NotifyUtils.error(
-			// 		"Không thể xác thực reCAPTCHA. Vui lòng thử lại."
-			// 	);
-			// 	return;
-			// }
-
-			// console.log("Submitting raffle entry with data:", {
-			// 	...formData,
-			// 	recaptchaToken,
-			// });
-
-			// Simulate API call
-			await new Promise((resolve) => setTimeout(resolve, 2000));
-
-			// Show success message and proceed to confirmation
-			NotifyUtils.success("Đăng ký raffle thành công!");
-			handleNext();
-		} catch (error) {
-			console.error("Raffle entry error:", error);
-			NotifyUtils.error(
-				"Có lỗi xảy ra khi đăng ký raffle. Vui lòng thử lại."
-			);
-		} finally {
-			setSubmitting(false);
-		}
+		mutate({ payload });
 	};
-
 	useEffect(() => {
 		if (open) {
 			const originalStyle = window.getComputedStyle(
@@ -141,7 +166,10 @@ export default function Stepper({
 		return undefined;
 	}, [open]);
 
+	console.log("isLoading", raffleData, isLoading);
+
 	if (!open) return null;
+	if (!raffleData) return null;
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -156,8 +184,8 @@ export default function Stepper({
 					className={`mx-auto w-full max-w-[50vw] max-h-full rounded-xl shadow-xl bg-white overflow-hidden relative ${stepCircleContainerClassName}`}
 					style={{ border: "1px solid #222" }}>
 					<div className="flex items-center gap-2 p-4">
-						<RaffleBadge type="raffle" />
-						<div className="text-lg font-semibold">
+						<RaffleBadge type={raffleData.raffleType} />
+						<div className="text-2xl font-semibold">
 							{raffleData?.title || ""}
 						</div>
 					</div>
@@ -226,7 +254,7 @@ export default function Stepper({
 						disabled={isSubmitting}>
 						{stepsArray[currentStep - 1]}
 					</StepContentWrapper>
-					{!isCompleted && (
+					{!isCompleted && raffleFormSubmit && (
 						<FooterActions
 							isLastStep={isLastStep}
 							currentStep={currentStep}
@@ -236,12 +264,12 @@ export default function Stepper({
 							backButtonText={backButtonText}
 							handleNext={handleNext}
 							stepsArray={stepsArray}
-							raffleData={raffleData}
+							raffleFormSubmit={raffleFormSubmit}
 							nextButtonProps={nextButtonProps}
 							nextButtonText={nextButtonText}
 							footerClassName={footerClassName}
-							handleSubmit={handleSubmit}
 							isSubmitting={isSubmitting}
+							handleSubmitRaffle={handleSubmitRaffle}
 						/>
 					)}
 				</div>
@@ -361,8 +389,8 @@ function StepIndicator({
 		currentStep === step
 			? "active"
 			: currentStep < step
-				? "inactive"
-				: "complete";
+			? "inactive"
+			: "complete";
 
 	const handleClick = () => {
 		if (step !== currentStep && !disableStepIndicators) {
@@ -404,7 +432,7 @@ function StepIndicator({
 					<span className="text-sm">{step}</span>
 				)}
 			</motion.div>
-			<div className="absolute -bottom-8 max-w-[100px] truncate text-sm">
+			<div className="absolute -bottom-8 max-w-[100px] truncate font-semibold">
 				{stepName}
 			</div>
 		</motion.div>
@@ -472,12 +500,12 @@ const FooterActions = React.memo(
 		backButtonText,
 		handleNext,
 		stepsArray,
-		raffleData,
+		raffleFormSubmit,
 		nextButtonProps,
 		nextButtonText,
 		footerClassName = "",
-		handleSubmit,
 		isSubmitting,
+		handleSubmitRaffle,
 	}: React.PropsWithChildren<{
 		isLastStep: boolean;
 		currentStep: number;
@@ -487,14 +515,13 @@ const FooterActions = React.memo(
 		backButtonText: string;
 		handleNext: () => void;
 		stepsArray: any[];
-		raffleData: any;
+		raffleFormSubmit: RaffleSubmitForm;
 		nextButtonProps?: React.ButtonHTMLAttributes<HTMLButtonElement>;
 		nextButtonText: string;
 		footerClassName?: string;
-		handleSubmit: () => void;
 		isSubmitting: boolean;
+		handleSubmitRaffle: () => void;
 	}>) => {
-		console.log("raffleDataraffleData", raffleData);
 		const renderBackButton = () => {
 			switch (currentStep) {
 				case 1:
@@ -533,8 +560,8 @@ const FooterActions = React.memo(
 			const isLastStep = currentStep === stepsArray.length;
 			const isSubmit = currentStep === 3;
 			const isSelectedProduct =
-				raffleData?.productSelections &&
-				raffleData.productSelections
+				raffleFormSubmit?.productSelections &&
+				raffleFormSubmit.productSelections
 					.map((item: any) => item.selected)
 					.filter(Boolean).length > 0;
 			const isSelectionStep = currentStep === 2;
@@ -543,12 +570,10 @@ const FooterActions = React.memo(
 				nextDisabled = true;
 			}
 
-			console.log(isSelectedProduct, isSelectionStep);
-
 			if (isSubmit) {
 				return (
 					<button
-						onClick={handleSubmit}
+						onClick={handleSubmitRaffle}
 						className={`duration-350 flex items-center justify-center rounded-lg bg-[var(--primary-color)] py-1.5 px-3.5 font-medium tracking-tight text-white transition hover:bg-red-600 active:bg-red-700 ml-auto ${
 							isSubmitting
 								? "opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400"
@@ -557,7 +582,7 @@ const FooterActions = React.memo(
 						{...nextButtonProps}
 						disabled={
 							isSubmitting ||
-							raffleData?.productOptions?.length === 0
+							raffleFormSubmit?.productSelections?.length === 0
 						}>
 						{isSubmitting ? (
 							<CircularProgress size={22} />

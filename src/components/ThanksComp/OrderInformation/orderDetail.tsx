@@ -3,7 +3,7 @@ import {
 	mapPaymentStatus,
 	MapShippingMethod,
 } from "@/constants";
-import { EnumPaymentMethod, EnumPaymentStaus } from "@/interface/interface";
+import { EnumPaymentMethod, EnumPaymentStatus } from "@/interface/interface";
 import useOrderQuery from "@/react-query/order/api/useOrderQueries";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -15,7 +15,7 @@ interface IMapOrderInfo {
 		icon: string;
 		label: string;
 	};
-	paymentStatus: EnumPaymentStaus;
+	paymentStatus: EnumPaymentStatus;
 	shippingInfo: {
 		firstName: string;
 		lastName: string;
@@ -47,7 +47,7 @@ const OrderDetail: React.FC = () => {
 					icon: "",
 					label: "",
 				},
-				paymentStatus: EnumPaymentStaus.PENDING,
+				paymentStatus: EnumPaymentStatus.PENDING,
 				shippingInfo: {
 					firstName: "",
 					lastName: "",
@@ -74,7 +74,7 @@ const OrderDetail: React.FC = () => {
 				icon: "",
 				label: "",
 			},
-			paymentStatus: orderData.paymentStatus || EnumPaymentStaus.PENDING,
+			paymentStatus: orderData.paymentStatus || EnumPaymentStatus.PENDING,
 			shippingInfo: {
 				firstName: orderInfo?.firstName,
 				lastName: orderInfo?.lastName,
@@ -122,10 +122,10 @@ const OrderDetail: React.FC = () => {
 						) : null}
 						<span className="w-2 h-2 bg-gray-500 rounded-full" />
 						<span
-							className={`${mapPaymentStatus[
-								mapOrderInfo.paymentStatus
-							]
-								?.bgColor} px-1 rounded-sm text-white font-semibold`}>
+							className={`${
+								mapPaymentStatus[mapOrderInfo.paymentStatus]
+									?.bgColor
+							} px-1 rounded-sm text-white font-semibold`}>
 							{
 								mapPaymentStatus[mapOrderInfo.paymentStatus]
 									?.label

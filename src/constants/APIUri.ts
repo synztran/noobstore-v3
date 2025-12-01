@@ -1,7 +1,7 @@
 // const DOMAIN_PREFIX = "https://noob-store.thuannc.com";
-// const DOMAIN_PREFIX = "https://server-noobstore-v3.onrender.com";
-const DOMAIN_PREFIX = "http://localhost:8000";
+// const DOMAIN_PREFIX = "http://localhost:8000";
 // const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // when you try fetching data ssr should using this domain, try using local will cat error on connector port
+const DOMAIN_PREFIX = "http://192.168.31.33:8080";
 
 const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`;
 const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
@@ -11,6 +11,7 @@ const USED_PRODUCT_PREFIX = `${DOMAIN_PREFIX}/used-product`;
 const LUCKY_WHEEL_PREFIX = `${DOMAIN_PREFIX}/lucky-wheel`;
 const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`;
 const SERVICE_PREFIX = `${DOMAIN_PREFIX}/service`;
+const RAFFLE_PREFIX = `${DOMAIN_PREFIX}/raffle`;
 
 export const CATEGORY_API = {
 	ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
@@ -87,5 +88,13 @@ export const SERVICE_API = {
 	GET_FEES: `${SERVICE_PREFIX}/fees`,
 	GET_SERVICE_OPTIONS: `${SERVICE_PREFIX}/options`,
 	GET_BOOKING: `${SERVICE_PREFIX}/booking`,
-	UPSERT_BOOKING: `${SERVICE_PREFIX}/booking`,
+	POST_BOOKING: `${SERVICE_PREFIX}/booking`,
+	GET_BOOKING_PAYMENT_CHECKING: `${SERVICE_PREFIX}/booking/checking-payment`,
+	POST_BOOKING_SUBMIT_PAYMENT: `${SERVICE_PREFIX}/booking/submit-payment`,
+};
+
+export const RAFFLE_API = {
+	// GET_RAFFLE_SINGLE: `${RAFFLE_PREFIX}/single`,
+	GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
+	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
 };

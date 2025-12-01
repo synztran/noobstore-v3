@@ -30,9 +30,7 @@ const SliderSyncing = ({ imageList }: Props) => {
 		speed: 500,
 		slidesToShow: 1,
 		slidesToScroll: 1,
-		arrow: false,
-		// nextArrow: <SyncSlickArrowNext />,
-		// prevArrow: <SyncSlickArrowPrev />,
+		arrows: false,
 		beforeChange: (oldIndex: number, newIndex: number) => {
 			setCurrentImageIdx(newIndex + 1);
 		},
@@ -74,9 +72,9 @@ const SliderSyncing = ({ imageList }: Props) => {
 
 	return (
 		<div className="flex gap-4 bg-white rounded-lg shadow-md p-4">
-			<div className="grid grid-cols-1 gap-1 w-1/5 relative place-items-center">
+			<div className="flex flex-col gap-2 w-1/6 relative place-items-center items-start">
 				<div
-					className={`w-7 h-7 absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center ${
+					className={`w-7 h-7 absolute top-2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center z-1 ${
 						isNavigating
 							? "opacity-50 cursor-not-allowed"
 							: "hover:bg-gray-400"
@@ -84,27 +82,29 @@ const SliderSyncing = ({ imageList }: Props) => {
 					onClick={isNavigating ? undefined : goToPrev}>
 					<ChevronUp className="w-4 h-4" />
 				</div>
-				{imageList?.map((child) => (
-					<div
-						key={child.id}
-						className={`overflow-hidden rounded-lg my-auto cursor-pointer justify-center flex align-middle bg-gray-200 w-[90px] h-[90px] ${
-							currentImageIdx === child.id
-								? "border-2 border-black"
-								: ""
-						} ${isNavigating ? "pointer-events-none" : ""}`}>
-						<Image
-							onClick={() => !isNavigating && goToSlide(child.id)}
-							src={child?.src}
-							alt={child?.alt}
-							className="object-cover select-none rounded-lg"
-							width={90}
-							height={90}
-							style={{ maxWidth: "100%", height: "auto" }}
-						/>
-					</div>
-				))}
+				<div className="my-2 w-full flex flex-col gap-2">
+					{imageList?.map((child) => (
+						<div
+							key={child.id}
+							className={`overflow-hidden rounded-lg cursor-pointer justify-center flex align-middle bg-gray-200 w-full h-[85px] relative ${
+								currentImageIdx === child.id
+									? "border-2 border-black"
+									: ""
+							} ${isNavigating ? "pointer-events-none" : ""}`}>
+							<Image
+								onClick={() =>
+									!isNavigating && goToSlide(child.id)
+								}
+								src={child?.src}
+								alt={child?.alt}
+								className="object-cover select-none rounded-lg"
+								fill
+							/>
+						</div>
+					))}
+				</div>
 				<div
-					className={`w-7 h-7 absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center ${
+					className={`w-7 h-7 absolute bottom-2 left-1/2 -translate-x-1/2 translate-y-1/2 cursor-pointer border border-gray-300 rounded-full transition-colors bg-white flex items-center justify-center z-1 ${
 						isNavigating
 							? "opacity-50 cursor-not-allowed"
 							: "hover:bg-gray-400"
@@ -113,51 +113,31 @@ const SliderSyncing = ({ imageList }: Props) => {
 					<ChevronDown className="w-4 h-4" />
 				</div>
 			</div>
-			<div className="w-4/5 relative">
+			<div className="w-5/6 relative">
+				{/* @ts-ignore: Unreachable code error */}
 				<Slider
+					{...settingMainSlide}
 					className="h-full flex items-center"
 					asNavFor={navSub}
-					ref={(slider) => (slider1 = slider)}
-					{...settingMainSlide}>
+					ref={(slider) => (slider ? (slider1 = slider) : slider1)}>
 					{imageList?.map((child) => (
 						<div
-							className="overflow-hidden rounded-lg max-h-max"
+							className="overflow-hidden rounded-lg max-h-max border boder-gray-200"
 							key={child.id}>
 							<Image
 								src={child?.src}
 								alt={child?.alt}
-								width={800}
-								height={500}
+								width={1200}
+								height={800}
 								className="w-full object-contain object-center"
 							/>
 						</div>
 					))}
 				</Slider>
-				<div className="absolute max-w-max px-3 py-0 bg-gray-400 bottom-4 right-2 text-gray-800 rounded-60 text-[16px] leading-tight">
+				<div className="absolute max-w-max px-3 py-1 bg-gray-400 bottom-4 right-2 text-gray-800 rounded-md text-[16px] leading-tight font-bold">
 					{currentImageIdx}/{imageList?.length}
 				</div>
 			</div>
-			{/* <Grid container spacing={2} style={{ marginTop: "1rem" }}>
-				{imageList?.map((child) => (
-					<Grid
-						item
-						md={3}
-						className="aspect-h-4 aspect-w-4 overflow-hidden rounded-lg my-auto cursor-pointer justify-center flex align-middle">
-						<Image
-							onClick={() => goToSlide(child.id)}
-							src={child?.src}
-							alt={child?.alt}
-							className="object-cover select-none"
-							width={120}
-							height={120}
-							style={{
-								maxWidth: "100%",
-								height: "auto",
-							}}
-						/>
-					</Grid>
-				))}
-			</Grid> */}
 		</div>
 	);
 };

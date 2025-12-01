@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Timeline Entry",
+  "description": "Service status timeline entry",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "Status at this point",
+      "enum": ["CREATED", "IN_PROGRESS", "TESTING", "PACKING", "DELIVERY", "COMPLETED", "CANCELLED"]
+    },
+    "date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of status change"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the status change"
+    }
+  },
+  "required": ["status", "date", "description"]
+}

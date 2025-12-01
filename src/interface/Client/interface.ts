@@ -1,6 +1,11 @@
+export enum EnumResponseStatus {
+	OK = "OK",
+	ERROR = "ERROR",
+}
+
 export interface IResponse<T> {
 	message: string;
-	status: string;
+	status: EnumResponseStatus;
 	code: number;
 	data?: T[];
 	errorCode?: string;

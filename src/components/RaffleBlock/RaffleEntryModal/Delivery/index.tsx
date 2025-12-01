@@ -3,11 +3,11 @@ import { useAuth } from "@/context/Auth";
 import { IAuthUser } from "@/interface/Context/auth";
 import { VNCity } from "@/constants";
 import SelectWithIcon from "@/components/selectWIcon";
-import { IStepProps } from "@/interface/Raffle";
+import { IStepProps, PaymentMethod } from "@/interface/Raffle";
 
 const StepDeliveryInfo: React.FC<IStepProps> = ({
-	formData,
-	setFormData,
+	raffleFormSubmit,
+	setRaffleFormSubmit,
 	handleInputChange,
 	handleSelectChange,
 	handleChangeCity,
@@ -25,8 +25,12 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 
 	useEffect(() => {
 		if (user) {
-			setFormData?.({
-				...formData,
+			setRaffleFormSubmit?.((prev) => ({
+				...prev,
+				shippingMethod: raffleFormSubmit?.shippingMethod || {
+					name: "",
+					price: null,
+				},
 				fullName: user.firstName + " " + user.lastName,
 				email: user.email,
 				phone: user.phoneNumber,
@@ -34,7 +38,8 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 				city: user.shippingAt?.[0]?.city,
 				companyName: user.shippingAt?.[0]?.companyName,
 				zipCode: user.shippingAt?.[0]?.zipCode,
-			});
+				note: raffleFormSubmit?.note || "",
+			}));
 		}
 	}, [user]);
 	return (
@@ -57,8 +62,9 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 							type="text"
 							className="w-full border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
 							placeholder="Full Name *"
-							value={formData.fullName}
+							value={raffleFormSubmit?.fullName || ""}
 							onChange={handleInputChange?.("fullName")}
+							readOnly
 						/>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -68,8 +74,9 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 								type="email"
 								className="w-full border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
 								placeholder="Email Address *"
-								value={formData.email}
+								value={raffleFormSubmit?.email || ""}
 								onChange={handleInputChange?.("email")}
+								readOnly
 							/>
 						</div>
 						<div className="flex flex-col gap-1">
@@ -78,8 +85,9 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 								type="text"
 								className="w-full border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
 								placeholder="Phone Number *"
-								value={formData.phone}
+								value={raffleFormSubmit?.phone}
 								onChange={handleInputChange?.("phone")}
+								readOnly
 							/>
 						</div>
 					</div>
@@ -96,7 +104,7 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 						<textarea
 							className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400 h-[120px] resize-none"
 							placeholder="Địa chỉ *"
-							value={formData.address}
+							value={raffleFormSubmit?.address}
 							onChange={handleInputChange?.("address")}
 							rows={2}
 						/>
@@ -109,7 +117,7 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 							type="text"
 							className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
 							placeholder="Tên công ty (không bắt buộc)"
-							value={formData.companyName}
+							value={raffleFormSubmit?.companyName}
 							onChange={handleInputChange?.("companyName")}
 						/>
 					</div>
@@ -129,7 +137,7 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 								type="text"
 								className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400 h-full"
 								placeholder="Zip Code *"
-								value={formData.zipCode}
+								value={raffleFormSubmit?.zipCode}
 								onChange={handleInputChange?.("zipCode")}
 							/>
 						</div>
@@ -148,15 +156,20 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 								name="shippingPartner"
 								value="VNPost"
 								checked={
-									formData.shippingMethod.brand === "VNPost"
+									raffleFormSubmit?.shippingMethod?.name ===
+									"VNPost"
 								}
 								onChange={() => {
-									if (typeof setFormData === "function") {
-										setFormData((prev: any) => ({
+									if (
+										typeof setRaffleFormSubmit ===
+										"function"
+									) {
+										setRaffleFormSubmit((prev: any) => ({
 											...prev,
 											shippingMethod: {
 												...prev.shippingMethod,
-												brand: "VNPost",
+												name: "VNPost",
+												price: 0,
 											},
 										}));
 									}
@@ -178,7 +191,7 @@ const StepDeliveryInfo: React.FC<IStepProps> = ({
 				<textarea
 					className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400"
 					placeholder="Nhập ghi chú của bạn (ví dụ: yêu cầu đặc biệt về sản phẩm, giao hàng, v.v.)"
-					value={formData.note || ""}
+					value={raffleFormSubmit?.note || ""}
 					onChange={handleInputChange?.("note")}
 					rows={3}
 				/>

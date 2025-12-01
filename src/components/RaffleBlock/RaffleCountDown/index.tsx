@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/Auth";
+import { IAuthUser } from "@/interface/Context/auth";
+import { EnumRaffleStatus } from "@/interface/Client/Raffle";
 
 interface RaffleCountDownProps {
 	startDate: string | Date;
 	endDate: string | Date;
-	raffleStatus?: "upcoming" | "running" | "ended";
+	raffleStatus: EnumRaffleStatus;
 	className?: string;
 }
 
@@ -32,13 +35,15 @@ function formatTime(ms: number) {
 const pad = (n: number) => n.toString().padStart(2, "0");
 
 // Move color constants down here for clarity and easier editing
-const STATUS_COLORS = {
-	// upcoming: "from-[#ffe29f] to-[#ffd200]",
-	// running: "from-[#a8ffeb] to-[#43cea2]",
-	// ended: "from-[#e0eafc] to-[#cfdef3]",
-	upcoming: "bg-gray-100",
-	running: "bg-gray-100",
-	ended: "bg-gray-100",
+const STATUS_COLORS: Record<EnumRaffleStatus, string> = {
+	[EnumRaffleStatus.UPCOMING]: "from-[#ffe29f] to-[#ffd200]",
+	[EnumRaffleStatus.ACTIVE]: "from-[#a8ffeb] to-[#43cea2]",
+	[EnumRaffleStatus.COMPLETED]: "from-[#e0eafc] to-[#cfdef3]",
+	[EnumRaffleStatus.CLOSED]: "from-[#d3d3d3] to-[#a9a9a9]",
+	[EnumRaffleStatus.CANCELLED]: "from-[#f5f5f5] to-[#dcdcdc]",
+	// upcoming: "bg-gray-100",
+	// running: "bg-gray-100",
+	// ended: "bg-gray-100",
 };
 
 const STATUS_TEXT = {
@@ -71,10 +76,9 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 	raffleStatus,
 	className = "",
 }) => {
+	const { user } = useAuth() as unknown as { user: IAuthUser | null };
 	const [now, setNow] = useState<Date>(new Date());
-	const [mode, setMode] = useState<"upcoming" | "running" | "ended">(
-		"running"
-	);
+	const [mode, setMode] = useState<EnumRaffleStatus>(raffleStatus);
 	const [timeLeft, setTimeLeft] = useState<{
 		days: number;
 		hours: number;
@@ -127,7 +131,7 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 			className={`rounded-md shadow-md p-2 flex flex-col items-center gap-2 ${fancyBg} ${className}`}
 			style={{
 				letterSpacing: "0.02em",
-				boxShadow: "0 4px 24px 0 rgba(0,0,0,0.10)",
+				boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)",
 			}}>
 			{/* <AnimatePresence mode="wait" initial={false}>
 				<motion.span
@@ -140,7 +144,7 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 					{STATUS_TEXT[mode]}
 				</motion.span>
 			</AnimatePresence> */}
-			{mode !== "ended" ? (
+			{mode !== EnumRaffleStatus.COMPLETED ? (
 				<div className="flex gap-1 text-[20px] font-mono font-bold items-start">
 					<div className="flex flex-col items-center min-w-[44px]">
 						<AnimatedDigit value={pad(timeLeft.days)} />
@@ -184,9 +188,9 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 						initial="initial"
 						animate="animate"
 						exit="exit"
-						className="text-xl font-semibold mt-2"
+						className="text-xl font-semibold"
 						style={{ color: "#111" }}>
-						Chúc may mắn! Raffle đã kết thúc.
+						Raffle đã kết thúc.
 					</motion.span>
 				</AnimatePresence>
 			)}

@@ -53,12 +53,6 @@ const AddressFromLocationDemo: React.FC = () => {
 				short: shortAddress,
 			});
 
-			console.log("Address Results:", {
-				coordinates: coords,
-				simple: simpleAddress,
-				detailed: detailedAddress,
-				short: shortAddress,
-			});
 		} catch (error) {
 			console.error("Error getting addresses:", error);
 		} finally {

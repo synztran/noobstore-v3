@@ -43,16 +43,14 @@ const formatDate = (date: Date, style = "dd/mm/yyyy") => {
 
 const isOutOfWorkingTime = (dateStr?: string | null) => {
 	if (!dateStr) return false;
-  // const date = new Date(dateStr);
-  const date = dayjs(dateStr, "DD/MM/YYYY HH:mm", true)
-  if (!date.isValid()) {
-    console.error("Invalid date string:", dateStr);
-    return false;
-  }
+	// const date = new Date(dateStr);
+	const date = dayjs(dateStr, "DD/MM/YYYY HH:mm", true);
+	if (!date.isValid()) {
+		console.error("Invalid date string:", dateStr);
+		return false;
+	}
 	const hour = date.hour();
 	const minute = date.minute();
-
-	console.log(date, hour, minute);
 
 	const startHour = workingTime.start.hour;
 	const startMinute = workingTime.start.minute;
@@ -63,8 +61,6 @@ const isOutOfWorkingTime = (dateStr?: string | null) => {
 	const timeInMinutes = hour * 60 + minute;
 	const startInMinutes = startHour * 60 + startMinute;
 	const endInMinutes = endHour * 60 + endMinute;
-
-	console.log(timeInMinutes, startInMinutes, endInMinutes);
 
 	// Out of working time if before start or after end (end is exclusive)
 	if (timeInMinutes < startInMinutes || timeInMinutes >= endInMinutes) {
@@ -103,7 +99,9 @@ async function getCoordinatesFromAddress(
 ): Promise<{ latitude: number; longitude: number } | null> {
 	try {
 		const response = await fetch(
-			`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`,
+			`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+				address
+			)}`,
 			{
 				headers: {
 					Accept: "application/json",
@@ -145,8 +143,35 @@ async function calculateDeliveryDistanceAndFee(
 	return { distance, extraFee };
 }
 
+const formatVietNamDate = (dateString: string) => {
+	if (!dateString) return "";
+	const date = new Date(dateString);
+	const day = String(date.getDate()).padStart(2, "0");
+	const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+	const year = date.getFullYear();
+	return `${day} Tháng ${month}, ${year}`;
+};
+
+const formatVietNamTime = (dateString: string, is24h = true) => {
+	if (!dateString) return "";
+	const date = new Date(dateString);
+	const hours = date.getHours();
+	const minutes = String(date.getMinutes()).padStart(2, "0");
+
+	if (is24h) {
+		const hour24 = String(hours).padStart(2, "0");
+		return `${hour24}:${minutes}`;
+	}
+
+	const period = hours >= 12 ? "chiều" : "sáng";
+	const hour12 = String(hours % 12 || 12).padStart(2, "0");
+	return `${hour12}:${minutes} ${period}`;
+};
+
 export default {
 	formatDate,
 	isOutOfWorkingTime,
 	calculateDeliveryDistanceAndFee,
+	formatVietNamDate,
+	formatVietNamTime,
 };

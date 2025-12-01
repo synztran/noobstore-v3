@@ -76,7 +76,7 @@ const DetailRating = ({
 	return (
 		<div
 			className={classNames(
-				"bg-white rounded-lg p-6 shadow-md border border-gray-100",
+				"bg-white rounded-lg p-4 shadow-md border border-gray-100",
 				className
 			)}>
 			<div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">

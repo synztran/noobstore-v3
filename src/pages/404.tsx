@@ -25,20 +25,20 @@ const Custom404 = () => {
 				<Typography
 					variant="h4"
 					className="text-2xl text-gray-600 mb-8">
-					Page Not Found
+					Không tìm thấy trang
 				</Typography>
 				<Typography
 					variant="body1"
-					className="text-gray-500 mb-8 text-center max-w-md">
-					The page you are looking for might have been removed, had
-					its name changed, or is temporarily unavailable.
+					className="text-gray-600 text-lg mb-8 text-center max-w-lg">
+					Trang bạn đang tìm kiếm có thể đã bị xóa, đã đổi tên hoặc
+					tạm thời không khả dụng.
 				</Typography>
 				<Button
 					variant="contained"
 					color="primary"
 					onClick={() => router.push("/")}
-					className="bg-red-500 hover:bg-red-600">
-					Go Back Home
+					className="bg-red-400 hover:bg-red-600">
+					<span className="text-white">Quay lại trang chủ</span>
 				</Button>
 			</div>
 		</Base>

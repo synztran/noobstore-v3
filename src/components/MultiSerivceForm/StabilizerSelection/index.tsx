@@ -172,9 +172,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 
 	// Add pack to list
 	const handleAddPack = () => {
-		console.log("add pack", selectedPack);
 		if (!selectedPack) return;
-		console.log("totalPackCount", stabilizerSelected.totalPack, maxPack);
 		if (
 			selectedPack.type === "pack" &&
 			stabilizerSelected.totalPack >= maxPack
@@ -204,12 +202,6 @@ const StabilizerSelection: React.FC<IProps> = ({
 
 	// Add individual stabilizer to list
 	const handleAddOther = () => {
-		console.log(
-			"Adding other selection:",
-			otherSelection,
-			stabilizerSelected.totalWire + otherSelection.quantity,
-			maxTotalWire
-		);
 		if (!otherSelection?.value) return;
 		if (
 			stabilizerSelected.totalWire + otherSelection.quantity >
@@ -254,16 +246,12 @@ const StabilizerSelection: React.FC<IProps> = ({
 
 	// Remove from list
 	const handleRemove = (id: string) => {
-		console.log("Removing", id, stabilizerSelected);
-		console.log(stabilizerSelected.packs.find((item) => item.id === id));
 		const stabilizerType = id.split("_")[0];
-		console.log("stabilizerType", stabilizerType);
 
 		if (stabilizerType === "pack") {
 			const removedPack = stabilizerSelected.packs.filter(
 				(item) => item.id !== id
 			);
-			console.log("removedPack", removedPack);
 
 			const updater = {
 				...stabilizerSelected,
@@ -281,7 +269,6 @@ const StabilizerSelection: React.FC<IProps> = ({
 						) ||
 					0,
 			};
-			console.log("updater", updater);
 			if (removedPack) {
 				onChange({
 					...stabilizerSelected,
@@ -320,62 +307,44 @@ const StabilizerSelection: React.FC<IProps> = ({
 		quantity: number,
 		type: "wires" | "packs"
 	) => {
-		console.log("Changing quantity", id, quantity);
+		console.log("id", id, "quantity", quantity, "type", type);
 		if (quantity < 1) return;
 		let newList = [];
+		let totalWire = 0;
+
 		if (type === "packs") {
 			newList = stabilizerSelected.packs.map((item) =>
 				item.id === id ? { ...item, quantity } : item
+			);
+			totalWire = stabilizerSelected.packs.reduce(
+				(acc, item) => acc + (item.wireQuantity || 0),
+				0
 			);
 		} else {
 			newList = stabilizerSelected.wires.map((item) =>
 				item.id === id ? { ...item, quantity } : item
 			);
+			totalWire = stabilizerSelected.wires.reduce(
+				(acc, item) => acc + (item.quantity || 0),
+				0
+			);
 		}
 		// Check total quantity limit
-		const totalPackWire = stabilizerSelected.packs.reduce(
-			(acc, item) => acc + (item.wireQuantity || 0),
-			0
-		);
-		const newTotal =
-			newList.reduce((acc, item) => acc + item.quantity, 0) +
-			totalPackWire;
-		console.log("newList", newList);
-		console.log("newTotal", newTotal, maxTotalWire);
-		if (newTotal > maxTotalWire) {
+		const newTotalWire =
+			newList.reduce((acc, item) => acc + item.quantity, 0) + totalWire;
+		if (newTotalWire > maxTotalWire) {
 			NotifyUtils.error(
 				`Đã vượt quá giới hạn stabilizer của gói ${maxTotalWire}`
 			);
 			return;
 		}
 
-		console.log(
-			"totalWire",
-			stabilizerSelected.packs?.reduce(
-				(acc, item) => acc + (item.wireQuantity || 0),
-				0
-			) ||
-				0 +
-					stabilizerSelected.wires?.reduce(
-						(acc, item) => acc + (item.quantity || 0),
-						0
-					) ||
-				0
-		);
+		console.log("newTotal", newTotalWire);
+
 		onChange({
 			...stabilizerSelected,
 			[type]: newList,
-			totalWire:
-				stabilizerSelected.packs?.reduce(
-					(acc, item) => acc + (item.wireQuantity || 0),
-					0
-				) ||
-				0 +
-					stabilizerSelected.wires?.reduce(
-						(acc, item) => acc + (item.quantity || 0),
-						0
-					) ||
-				0,
+			totalWire: newTotalWire,
 		});
 	};
 
@@ -384,9 +353,9 @@ const StabilizerSelection: React.FC<IProps> = ({
 		<div className={`flex flex-col gap-4 ${className || ""}`}>
 			<>
 				<label className="font-semibold block">
-					Chọn gói stabilizer: <br />
+					Lựa chọn stabilizer: <br />
 					<span className="text-sm font-normal text-gray-600">
-						Tối đa {maxPack} pack hoặc tổng số stabilizer ≤{" "}
+						Tối đa {maxPack} set hoặc tổng số stabilizer ≤{" "}
 						{maxTotalWire}
 					</span>
 				</label>
@@ -452,7 +421,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 					<div className="w-full">
 						<label className="block text-sm">Loại stabilizer</label>
 						<select
-							className="border rounded px-2 py-1 w-1/2"
+							className="border rounded px-2 py-1 w-full"
 							value={otherSelection?.value}
 							onChange={(e) =>
 								setOtherSelection((prev) => ({
@@ -473,20 +442,6 @@ const StabilizerSelection: React.FC<IProps> = ({
 							))}
 						</select>
 					</div>
-					{/* <div>
-						<label className="block text-sm">Số lượng</label>
-						<InputNumber
-							min={1}
-							max={maxTotalWire - stabilizerSelected.totalWire}
-							value={otherSelection?.quantity || 0}
-							onChange={(value) =>
-								setOtherSelection((prev) => ({
-									...prev,
-									quantity: Math.max(1, value || 1),
-								}))
-							}
-						/>
-					</div> */}
 					<Button
 						variant="contained"
 						className={`bg-blue-600 text-white px-4 py-1 rounded h-[34px] w-full `}
@@ -506,7 +461,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 						})}
 					</Button>
 				</div>
-			) : null}
+      ) : null}
 			<InputWrapperLegend label="Stabilizer đã chọn">
 				{!stabilizerSelected.packs.length &&
 				!stabilizerSelected.wires.length ? (
@@ -608,7 +563,7 @@ const StabilizerSelection: React.FC<IProps> = ({
 											min={1}
 											max={maxTotalWire}
 											value={item.quantity}
-											onChangeWithoutNameValue={(
+											onChange={(
 												e: React.ChangeEvent<HTMLInputElement>
 											) =>
 												handleChangeQuantity(

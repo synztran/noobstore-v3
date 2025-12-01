@@ -1,6 +1,12 @@
-import { SUGGESTED_DISCOUNT_CODES } from "@/constants";
+import ServiceClient from "@/client/ServiceClient";
+import { MAPPING_FEE_LABEL, SUGGESTED_DISCOUNT_CODES } from "@/constants";
 import {
+	EnumFeeType,
+	EnumPaymentForm,
+	EnumPaymentMethod,
+	EnumPaymentStatus,
 	EnumPcbType,
+	EnumServiceStatus,
 	EnumShippingMethodCode,
 	EnumStabilizerMountType,
 	EnumStabilizerStatus,
@@ -8,6 +14,7 @@ import {
 	EnumSwitchStatus,
 	EnumSwitchType,
 } from "@/interface/interface";
+import { keyBy } from "lodash";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -34,6 +41,12 @@ export enum EnumServiceFeeType {
 	OUT_OF_SERVICE_TIME = "OUT_OF_SERVICE_TIME",
 }
 
+export enum EnumServiceType {
+	KEYBOARD = "KEYBOARD",
+	SWITCH = "SWITCH",
+	STABILIZER = "STABILIZER",
+}
+
 export interface IServiceFee {
 	id: number;
 	value: string;
@@ -51,11 +64,7 @@ export interface IServiceDefaultOption {
 
 export enum UnitType {
 	FLAT = "FLAT",
-	PER_KEYBOARD = "PER_KEYBOARD",
-	PER_SWITCH = "PER_SWITCH",
-	PER_STABILIZER = "PER_STABILIZER",
-	PER_TRIP = "PER_TRIP",
-	PER_MIDMAN = "PER_MIDMAN",
+	PER_UNIT = "PER_UNIT",
 }
 
 export enum SwitchType {
@@ -120,6 +129,32 @@ export interface IShippingInfo {
 }
 
 // Enhanced service item interfaces
+
+export interface IStabilizerPack {
+	id: string;
+	name: string;
+	type: "6.25U" | "7U";
+	value: string;
+	quantity: number;
+	wireQuantity: number;
+}
+
+export interface IStabilizerWire {
+	id: string;
+	name: string;
+	type: "2U" | "6.25U" | "7U";
+	value: string;
+	quantity: number;
+}
+
+export interface IServiceItem {
+	isUse: boolean;
+	price: number;
+	name: string;
+	info?: Record<string, any>;
+	unitPrice?: Record<string, number>;
+	unitType?: UnitType;
+}
 export interface IKeyboardFormItem {
 	id: string;
 	keyboard: {
@@ -136,22 +171,8 @@ export interface IKeyboardFormItem {
 		type: EnumStabilizerType | null;
 		mountType: EnumStabilizerMountType | null;
 		brand: string;
-		wires: {
-			id: string;
-			name: string;
-			type: "2U" | "6.25U" | "7U";
-			price: number;
-			value: string;
-			quantity: number;
-		}[];
-		packs: {
-			id: string;
-			name: string;
-			type: "6.25U" | "7U";
-			value: string;
-			quantity: number;
-			wireQuantity: number;
-		}[];
+		wires: IStabilizerWire[];
+		packs: IStabilizerPack[];
 		status: EnumStabilizerStatus | null;
 		totalWire: number;
 		totalPack: number;
@@ -161,30 +182,15 @@ export interface IKeyboardFormItem {
 	services: {
 		keyboard: {
 			// solder | desolder | clean
-			[x: string]: {
-				isUse: boolean;
-				price?: number;
-				name?: string;
-				info?: Record<string, any>;
-			};
+			[x: string]: IServiceItem;
 		};
 		switch: {
 			// lube | film | spring | clean | quickClean
-			[x: string]: {
-				isUse: boolean;
-				price?: number;
-				name?: string;
-				info?: Record<string, any>;
-			};
+			[x: string]: IServiceItem;
 		};
 		stabilizer: {
 			// handle | clean
-			[x: string]: {
-				isUse: boolean;
-				price?: number;
-				name?: string;
-				info?: Record<string, any>;
-			};
+			[x: string]: IServiceItem;
 		};
 	};
 }
@@ -198,26 +204,7 @@ export interface ISwitchFormItem {
 	note?: string;
 	status: EnumSwitchStatus | null;
 	services: {
-		lube: {
-			isUse: boolean;
-			price?: number;
-			info?: Record<string, any>;
-			name?: string;
-		};
-		film: {
-			isUse: boolean;
-			price?: number;
-			info?: Record<string, any>;
-			name?: string;
-		};
-		spring: {
-			isUse: boolean;
-			price?: number;
-			info?: Record<string, any>;
-			name?: string;
-		};
-		clean: { isUse: boolean; price?: number; name?: string };
-		quickClean: { isUse: boolean; price?: number; name?: string };
+		[x: string]: IServiceItem;
 	};
 }
 
@@ -232,6 +219,8 @@ export interface IStabilizerFormItem {
 			price?: number;
 			info?: Record<string, any>;
 			name?: string;
+			unitPrice?: Record<string, number>;
+			unitType?: UnitType;
 		};
 	};
 	attachments?: { publicUrl: string; size: number }[];
@@ -244,7 +233,6 @@ export interface IStabilizerFormItem {
 		id: string;
 		name: string;
 		type: "2U" | "6.25U" | "7U";
-		price: number;
 		value: string;
 		quantity: number;
 	}[];
@@ -257,26 +245,81 @@ export interface IStabilizerFormItem {
 		wireQuantity: number;
 	}[];
 }
-
 // Backend data format interfaces
-interface IBackendServiceItem {
-	serviceType: string;
-	items: any[];
+interface IBackendTask {
+	id: string;
+	serviceType: EnumServiceType;
+	keyboard?: IKeyboardFormItem;
+	switch?: ISwitchFormItem;
+	stabilizer?: IStabilizerFormItem;
 	totalPrice: number;
+}
+
+interface IBackendFee {
+	feeId: string;
+	feeName: string;
+	feeDescription: string;
+	feeAmount: number;
 }
 
 interface IBackendBookingData {
 	planId: number | string;
-	services: IBackendServiceItem[];
+	// services: IBackendServiceItem[];
 	shipping: { method: string; pickup: any; delivery: any };
 	contact: IContactInfo;
 	totalPrice: number;
 	subTotalPrice: number;
-	extraService: {
-		name: string;
-		price: number;
-		value: string;
-	}[];
+	status: EnumServiceStatus;
+	paymentStatus: EnumPaymentStatus;
+	paymentMethod?: EnumPaymentMethod; // TODO: need defined enum
+	paymentForm?: EnumPaymentForm;
+	tasks: IBackendTask[];
+	note?: string;
+	totalService: number;
+}
+
+export interface IPaymentForm {
+	id: number;
+	name: string;
+	description: string;
+	discount: number;
+	percentage?: number; // 0 - 1
+	paid?: number; // totalPrice * percentage
+	remaining?: number; // totalPrie - paid
+	isActive?: boolean;
+	icon?: string;
+	value: EnumPaymentForm | null;
+}
+
+export interface IPaymentMethod {
+	id: number;
+	name: string;
+	description: string;
+	value: EnumPaymentMethod | null;
+	icon?: string;
+	isOnlyIcon?: boolean;
+	attachment?: { publicUrl: string; alt: string };
+	iconW?: number;
+	iconH?: number;
+	isActive?: boolean;
+	scale?: number;
+	info?: {
+		label: string;
+		logo: string;
+		accountNumber: string;
+		accountHolder: string;
+		qrCodeImage?: string;
+		scale?: number;
+	};
+}
+
+export interface IDonation {
+	id: number;
+	percentage?: number; // 0 - 1
+	totalDonated?: number;
+	note?: string;
+	name: string;
+	value: string;
 }
 
 // Main state interface
@@ -325,6 +368,15 @@ interface States {
 		layouts: IServiceOption[];
 	};
 
+	// payment
+	paymentMethod: IPaymentMethod | null;
+	paymentForm: IPaymentForm | null;
+	donation:
+		| (IDonation & {
+				message?: string;
+		  })
+		| null;
+
 	// Legacy support - keep for backward compatibility
 	selectedOpt: IServicePlan | null;
 	serviceForm: {
@@ -361,6 +413,10 @@ interface States {
 interface Actions {
 	// Service plan actions
 	selectPlan: (plan: IServicePlan) => void;
+	selectPaymentMethod: (method: IPaymentMethod) => void;
+	selectPaymentForm: (form: IPaymentForm) => void;
+	selectDonation: (donation: IDonation | null) => void;
+	setDonationNote: (message: string) => void;
 
 	// Discount actions
 	updateDiscount: (codes: string[]) => void;
@@ -378,8 +434,18 @@ interface Actions {
 	// resetTaskKeyboardItem: (id: string) => void;
 	resetTaskItem: (
 		taskId: string,
-		name: "keyboardItems" | "switchItems" | "stabilizerItems"
+		name: "switchItems" | "stabilizerItems"
 	) => void;
+
+	resetKeyboardTaskItem: ({
+		taskId,
+		parentName,
+		name,
+	}: {
+		taskId: string;
+		parentName: "keyboard" | "switch" | "stabilizer";
+		name: string;
+	}) => void;
 
 	// Switch service actions
 	addSwitchItem: () => void;
@@ -414,6 +480,22 @@ interface Actions {
 	calculateSubTotalPrice: () => number;
 	calculateTotalServicePrice: () => number;
 	calculateTotalService: () => number;
+	getPriceKeyboardServiceById: (serviceId: string) => number;
+	calculatePriceWireAndPack: ({
+		wires,
+		packs,
+		packPrice,
+		unitPrice,
+	}: {
+		wires: IStabilizerWire[];
+		packs: IStabilizerPack[];
+		packPrice: number;
+		unitPrice: Record<string, number>;
+	}) => number;
+	getPriceServiceById: (
+		serviceId: string,
+		type: "switch" | "stabilizer"
+	) => number;
 
 	validateForm: () => Record<string, string>;
 	resetForm: () => void;
@@ -465,6 +547,10 @@ const InitialState: States = {
 		isDeliverySameAsPickup: true,
 		addOns: [],
 	},
+	// payment
+	paymentMethod: null,
+	paymentForm: null,
+	donation: null,
 	errorMessages: {
 		selectedPlan: "",
 		method: "",
@@ -544,6 +630,34 @@ const useServices = create<ServiceState>()(
 				}));
 			},
 
+			selectPaymentMethod: (method: IPaymentMethod) => {
+				set((state) => ({
+					...state,
+					paymentMethod: method,
+				}));
+			},
+
+			selectPaymentForm: (form: IPaymentForm) => {
+				set((state) => ({
+					...state,
+					paymentForm: form,
+				}));
+			},
+			selectDonation: (donation: IDonation) => {
+				set((state) => ({
+					...state,
+					donation: donation,
+				}));
+			},
+			setDonationNote: (message: string) => {
+				set((state) => ({
+					...state,
+					donation: state.donation
+						? { ...state.donation, message }
+						: null,
+				}));
+			},
+
 			// Tab actions
 			setActiveTabIndex: (index: number) => {
 				set((state) => ({ ...state, activeTabIndex: index }));
@@ -571,8 +685,6 @@ const useServices = create<ServiceState>()(
 				id: string,
 				updater: Partial<IKeyboardFormItem>
 			) => {
-				const state = get();
-				console.log("sstate", state.keyboardItems);
 				set((state) => ({
 					...state,
 					keyboardItems: state.keyboardItems.map((it) =>
@@ -589,6 +701,24 @@ const useServices = create<ServiceState>()(
 					[name]: state[name].map((it) =>
 						it.id === taskId ? { ...it, services: {} } : it
 					),
+				}));
+			},
+			resetKeyboardTaskItem: ({ taskId, parentName, name }) => {
+				const state = get();
+				set((state) => ({
+					...state,
+					keyboardItems: state.keyboardItems.map((it) => {
+						if (it.id === taskId) {
+							return {
+								...it,
+								services: {
+									...it.services,
+									[parentName]: {},
+								},
+							};
+						}
+						return it;
+					}),
 				}));
 			},
 
@@ -723,185 +853,26 @@ const useServices = create<ServiceState>()(
 			// Form utilities
 			calculateTotalPrice: () => {
 				const state = get();
+				const { calculateSubTotalPrice } = state.actions;
+				const subTotalPrice = calculateSubTotalPrice();
 				let total = 0;
-
-				// Add plan price
-				if (state.selectedPlan) {
-					total += state.selectedPlan.price;
-				}
-
-				// Add keyboard service prices
-				state.keyboardItems.forEach((keyboard) => {
-					if (
-						keyboard.services.solder?.isUse &&
-						keyboard.services.solder?.price
-					) {
-						total += keyboard.services.solder.price;
-					}
-					if (
-						keyboard.services.desolder?.isUse &&
-						keyboard.services.desolder?.price
-					) {
-						total += keyboard.services.desolder.price;
-					}
-					if (
-						keyboard.services.clean?.isUse &&
-						keyboard.services.clean?.price
-					) {
-						total += keyboard.services.clean.price;
-					}
-				});
-
-				// Add switch service prices
-				state.switchItems.forEach((switchItem) => {
-					if (
-						switchItem.services.lube.isUse &&
-						switchItem.services.lube.price
-					) {
-						total +=
-							switchItem.services.lube.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.film.isUse &&
-						switchItem.services.film.price
-					) {
-						total +=
-							switchItem.services.film.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.spring.isUse &&
-						switchItem.services.spring.price
-					) {
-						total += switchItem.services.spring.price;
-					}
-					if (
-						switchItem.services.clean.isUse &&
-						switchItem.services.clean.price
-					) {
-						total +=
-							switchItem.services.clean.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.quickClean.isUse &&
-						switchItem.services.quickClean.price
-					) {
-						total +=
-							switchItem.services.quickClean.price *
-							switchItem.quantity;
-					}
-				});
-
-				// Add stabilizer service prices
-				state.stabilizerItems.forEach((stabilizer) => {
-					Object.values(stabilizer.services).forEach((service) => {
-						if (service.isUse && service.price) {
-							total += service.price;
-						}
-					});
-				});
-
-				// Add shipping price
-				total += state.shippingInfo.method.price;
-				total += state.shippingInfo.deliveryMethod.price;
-				total += state.shippingInfo.addOns.reduce(
-					(acc, addOn) => acc + addOn.price,
-					0
-				);
-
-				// Add fees
-				total += state.fees.serviceOutOfTimeFee.pickup;
-				total += state.fees.serviceOutOfTimeFee.delivery;
-				total += state.fees.platFormFee;
 
 				// Add discount
 				total -= state.totalDiscount;
 
-				return total;
+				return total + subTotalPrice;
 			},
 			calculateSubTotalPrice: () => {
+				// TODO: without fees and discount
 				const state = get();
+				const { calculateTotalServicePrice } = state.actions;
+				const totalServicePrice = calculateTotalServicePrice();
 				let total = 0;
 
 				// Add plan price
 				if (state.selectedPlan) {
 					total += state.selectedPlan.price;
 				}
-
-				// Add keyboard service prices
-				state.keyboardItems.forEach((keyboard) => {
-					if (
-						keyboard.services.solder?.isUse &&
-						keyboard.services.solder?.price
-					) {
-						total += keyboard.services.solder.price;
-					}
-					if (
-						keyboard.services.desolder?.isUse &&
-						keyboard.services.desolder?.price
-					) {
-						total += keyboard.services.desolder.price;
-					}
-					if (
-						keyboard.services.clean?.isUse &&
-						keyboard.services.clean?.price
-					) {
-						total += keyboard.services.clean.price;
-					}
-				});
-
-				// Add switch service prices
-				state.switchItems.forEach((switchItem) => {
-					if (
-						switchItem.services.lube.isUse &&
-						switchItem.services.lube.price
-					) {
-						total +=
-							switchItem.services.lube.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.film.isUse &&
-						switchItem.services.film.price
-					) {
-						total +=
-							switchItem.services.film.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.spring.isUse &&
-						switchItem.services.spring.price
-					) {
-						total += switchItem.services.spring.price;
-					}
-					if (
-						switchItem.services.clean.isUse &&
-						switchItem.services.clean.price
-					) {
-						total +=
-							switchItem.services.clean.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.quickClean.isUse &&
-						switchItem.services.quickClean.price
-					) {
-						total +=
-							switchItem.services.quickClean.price *
-							switchItem.quantity;
-					}
-				});
-
-				// Add stabilizer service prices
-				state.stabilizerItems.forEach((stabilizer) => {
-					Object.values(stabilizer.services).forEach((service) => {
-						if (service.isUse && service.price) {
-							total += service.price;
-						}
-					});
-				});
 
 				// Add shipping price
 				total += state.shippingInfo.method.price;
@@ -916,108 +887,375 @@ const useServices = create<ServiceState>()(
 				total += state.fees.serviceOutOfTimeFee.delivery;
 				total += state.fees.platFormFee;
 
-				return total || 0;
+				console.log("totalServicePrice", totalServicePrice);
+				return total + totalServicePrice;
 			},
 			calculateTotalServicePrice: () => {
 				const state = get();
 				let total = 0;
 
 				// Add keyboard service prices
-				state.keyboardItems.forEach((keyboard) => {
-					if (
-						keyboard.services.solder?.isUse &&
-						keyboard.services.solder?.price &&
-						keyboard.services.solder.price > 0
-					) {
-						total += keyboard.services.solder.price;
-					}
-					if (
-						keyboard.services.desolder?.isUse &&
-						keyboard.services.desolder?.price &&
-						keyboard.services.desolder.price > 0
-					) {
-						total += keyboard.services.desolder.price;
-					}
-					if (
-						keyboard.services.clean?.isUse &&
-						keyboard.services.clean?.price &&
-						keyboard.services.clean.price > 0
-					) {
-						total += keyboard.services.clean.price;
-					}
+				state.keyboardItems.forEach((item) => {
+					if (!item.services) return;
+					Object.entries(item.services || {}).forEach(
+						([serviceKey, service]) => {
+							switch (serviceKey) {
+								case "stabilizer": {
+									Object.values(service).forEach(
+										(stabService) => {
+											if (!stabService.isUse) return;
+											if (
+												["handle", "clean"].includes(
+													stabService.name
+												)
+											) {
+												const unitPrice =
+													stabService?.unitPrice ||
+													{};
+												const packPrice =
+													stabService?.price || 0;
+												let wireTotalPrice = 0,
+													packTotalPrice = 0;
+
+												item.stabilizer.wires.forEach(
+													(wire) => {
+														const pricePerWire =
+															unitPrice[
+																wire.type
+															] || 0;
+														wireTotalPrice +=
+															pricePerWire *
+															wire.quantity;
+													}
+												);
+
+												item.stabilizer.packs.forEach(
+													(pack) => {
+														packTotalPrice +=
+															pack.quantity *
+															packPrice;
+													}
+												);
+
+												total +=
+													wireTotalPrice +
+													packTotalPrice;
+											}
+										}
+									);
+									break;
+								}
+								case "switch": {
+									Object.values(service).forEach(
+										(switchService) => {
+											if (!switchService.isUse) return;
+											if (
+												[
+													"lube",
+													"film",
+													"clean",
+													"quickClean",
+												].includes(switchService.name)
+											) {
+												const servicePrice =
+													switchService?.price || 0;
+												const quantity =
+													item.switch.quantity || 1;
+												total +=
+													servicePrice * quantity;
+											} else {
+												total +=
+													switchService?.price || 0;
+											}
+										}
+									);
+									break;
+								}
+								default: {
+									Object.values(service).forEach(
+										(stabService) => {
+											if (!stabService.isUse) return;
+											total += stabService?.price || 0;
+										}
+									);
+									break;
+								}
+							}
+						}
+					);
 				});
 
 				// Add switch service prices
 				state.switchItems.forEach((switchItem) => {
-					if (
-						switchItem.services.lube.isUse &&
-						switchItem.services.lube.price
-					) {
-						total +=
-							switchItem.services.lube.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.film.isUse &&
-						switchItem.services.film.price
-					) {
-						total +=
-							switchItem.services.film.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.spring.isUse &&
-						switchItem.services.spring.price
-					) {
-						total += switchItem.services.spring.price;
-					}
-					if (
-						switchItem.services.clean.isUse &&
-						switchItem.services.clean.price
-					) {
-						total +=
-							switchItem.services.clean.price *
-							switchItem.quantity;
-					}
-					if (
-						switchItem.services.quickClean.isUse &&
-						switchItem.services.quickClean.price
-					) {
-						total +=
-							switchItem.services.quickClean.price *
-							switchItem.quantity;
-					}
+					console.log("switchItem calc", switchItem);
+					if (!Object.values(switchItem.services || {}).length)
+						return;
+					Object.values(switchItem.services || {}).forEach(
+						(service) => {
+							if (!service.isUse) return;
+							if (
+								[
+									"lube",
+									"film",
+									"clean",
+									"quickClean",
+								].includes(service.name || "")
+							) {
+								total +=
+									(service?.price || 0) * switchItem.quantity;
+							} else {
+								total += service?.price || 0;
+							}
+						}
+					);
 				});
 
 				// Add stabilizer service prices
 				state.stabilizerItems.forEach((stabilizer) => {
-					Object.values(stabilizer.services).forEach((service) => {
-						if (
-							service.isUse &&
-							service.price &&
-							service.price > 0
-						) {
-							// total += service.price * stabilizer.quantity;
+					if (!stabilizer.services) return;
+					Object.values(stabilizer.services).forEach(
+						(stabService) => {
+							if (!stabService.isUse) return;
+							if (
+								["handle", "clean"].includes(
+									stabService?.name || ""
+								)
+							) {
+								const unitPrice = stabService?.unitPrice || {};
+								const packPrice = stabService?.price || 0;
+								let wireTotalPrice = 0,
+									packTotalPrice = 0;
+
+								stabilizer.wires.forEach((wire) => {
+									const pricePerWire =
+										unitPrice[wire.type] || 0;
+									wireTotalPrice +=
+										pricePerWire * wire.quantity;
+								});
+
+								stabilizer.packs.forEach((pack) => {
+									packTotalPrice += pack.quantity * packPrice;
+								});
+
+								total += wireTotalPrice + packTotalPrice;
+							}
 						}
-					});
+					);
 				});
 
-				return total || 0;
+				console.log("total", total);
+
+				return total;
 			},
 			calculateTotalService: () => {
 				const state = get();
 				let total = 0;
-				if (state.keyboardItems.length > 0) {
+				if (state.keyboardItems.length) {
 					total += state.keyboardItems.length;
 				}
-				if (state.switchItems.length > 0) {
+
+				if (state.switchItems.length) {
 					total += state.switchItems.length;
 				}
-				if (state.stabilizerItems.length > 0) {
+				if (state.stabilizerItems.length) {
 					total += state.stabilizerItems.length;
 				}
 
 				return total || 0;
+			},
+
+			getPriceKeyboardServiceById: (itemId: string) => {
+				if (!itemId) return 0;
+				const state = get();
+				let total = 0;
+
+				console.log("state", state.keyboardItems);
+
+				const found = state.keyboardItems.find(
+					(item) => item.id === itemId
+				);
+				if (!found || !found.services) return 0;
+
+				Object.entries(found.services || {}).forEach(
+					([serviceKey, service]) => {
+						switch (serviceKey) {
+							case "stabilizer": {
+								Object.values(service).forEach(
+									(stabService) => {
+										if (!stabService.isUse) return;
+										if (
+											["handle", "clean"].includes(
+												stabService.name
+											)
+										) {
+											const unitPrice =
+												stabService?.unitPrice || {};
+											const packPrice =
+												stabService?.price || 0;
+											let wireTotalPrice = 0,
+												packTotalPrice = 0;
+
+											found.stabilizer.wires.forEach(
+												(wire) => {
+													const pricePerWire =
+														unitPrice[wire.type] ||
+														0;
+													wireTotalPrice +=
+														pricePerWire *
+														wire.quantity;
+												}
+											);
+
+											found.stabilizer.packs.forEach(
+												(pack) => {
+													packTotalPrice +=
+														pack.quantity *
+														packPrice;
+												}
+											);
+
+											total +=
+												wireTotalPrice + packTotalPrice;
+										}
+									}
+								);
+								break;
+							}
+							case "switch": {
+								Object.values(service).forEach(
+									(switchService) => {
+										if (!switchService.isUse) return;
+										if (
+											[
+												"lube",
+												"film",
+												"clean",
+												"quickClean",
+											].includes(switchService.name)
+										) {
+											const servicePrice =
+												switchService?.price || 0;
+											const quantity =
+												found.switch.quantity || 1;
+											total += servicePrice * quantity;
+										} else {
+											total += switchService?.price || 0;
+										}
+									}
+								);
+								break;
+							}
+							default: {
+								Object.values(service).forEach(
+									(stabService) => {
+										if (!stabService.isUse) return;
+										total += stabService?.price || 0;
+									}
+								);
+								break;
+							}
+						}
+					}
+				);
+
+				return total;
+			},
+			calculatePriceWireAndPack({ wires, packs, packPrice, unitPrice }) {
+				let total = 0;
+
+				wires.forEach((wire) => {
+					const pricePerWire = unitPrice[wire.type] || 0;
+					total += pricePerWire * wire.quantity;
+				});
+
+				packs.forEach((pack) => {
+					total += pack.quantity * packPrice;
+				});
+
+				return total;
+			},
+			getPriceServiceById: (
+				serviceId: string,
+				type: "switch" | "stabilizer"
+			) => {
+				if (!serviceId) return 0;
+				const state = get();
+				let total = 0;
+
+				let findingItems: (ISwitchFormItem | IStabilizerFormItem)[] =
+					[];
+				if (type === "switch") {
+					findingItems = state.switchItems;
+				} else if (type === "stabilizer") {
+					findingItems = state.stabilizerItems;
+				}
+
+				const found = findingItems.find(
+					(item) => item.id === serviceId
+				);
+
+				if (!found || !found.services) return 0;
+
+				Object.entries(found.services || {}).forEach(([_, service]) => {
+					if (!service.isUse) return;
+					switch (type) {
+						case "stabilizer": {
+							if (
+								["handle", "clean"].includes(
+									service?.name || ""
+								)
+							) {
+								const unitPrice = service?.unitPrice || {};
+								const packPrice = service?.price || 0;
+								let wireTotalPrice = 0,
+									packTotalPrice = 0;
+
+								(found as IStabilizerFormItem).wires.forEach(
+									(wire) => {
+										const pricePerWire =
+											unitPrice[wire.type] || 0;
+										wireTotalPrice +=
+											pricePerWire * wire.quantity;
+									}
+								);
+
+								(found as IStabilizerFormItem).packs.forEach(
+									(pack) => {
+										packTotalPrice +=
+											pack.quantity * packPrice;
+									}
+								);
+
+								total += wireTotalPrice + packTotalPrice;
+							} else {
+								total += service?.price || 0;
+							}
+							break;
+						}
+						case "switch": {
+							if (
+								[
+									"lube",
+									"film",
+									"clean",
+									"quickClean",
+								].includes(service?.name || "")
+							) {
+								const servicePrice = service?.price || 0;
+								const quantity =
+									(found as ISwitchFormItem)?.quantity || 1;
+								total += servicePrice * quantity;
+							} else {
+								total += service?.price || 0;
+							}
+							break;
+						}
+						default:
+							break;
+					}
+				});
+
+				return total;
 			},
 
 			setErrorMessages: (errors: Record<string, string>) => {
@@ -1091,35 +1329,24 @@ const useServices = create<ServiceState>()(
 					}
 				}
 
-				console.log(
-					state.keyboardItems,
-					state.switchItems,
-					state.stabilizerItems,
-					!state.keyboardItems.length &&
-						!state.switchItems.length &&
-						!state.stabilizerItems.length
-				);
-
 				if (
-					state.keyboardItems.length === 0 &&
-					state.switchItems.length === 0 &&
-					state.stabilizerItems.length === 0
+					!state.keyboardItems.length &&
+					!state.switchItems.length &&
+					!state.stabilizerItems.length
 				) {
 					errors.serviceBlock = "Vui lòng thêm ít nhất một dịch vụ";
 				}
 
 				if (state.keyboardItems) {
-					console.log("state.keyboardItems", state.keyboardItems);
-					const isMissingService = state.keyboardItems.some(
-						(keyboard) => {
-							console.log(Object.values(keyboard.services));
-							return Object.values(keyboard.services).some(
-								(service) => {
-									return !service.isUse;
-								}
-							);
-						}
-					);
+					// const isMissingService = state.keyboardItems.some(
+					// 	(keyboard) => {
+					// 		return Object.values(keyboard.services).some(
+					// 			(service) => {
+					// 				return !service.isUse;
+					// 			}
+					// 		);
+					// 	}
+					// );
 					const isMissingInformation = state.keyboardItems.some(
 						(keyboard) => {
 							return (
@@ -1133,10 +1360,10 @@ const useServices = create<ServiceState>()(
 						errors.keyboardServices =
 							"Vui lòng cung cấp đầy đủ thông tin";
 					}
-					if (isMissingService) {
-						errors.keyboardServices =
-							"Vui lòng lựa chọn ít nhất 1 dịch vụ";
-					}
+					// if (isMissingService) {
+					// 	errors.keyboardServices =
+					// 		"Vui lòng lựa chọn ít nhất 1 dịch vụ";
+					// }
 				}
 				if (state.switchItems) {
 					const isMissingService = state.switchItems.some(
@@ -1170,6 +1397,7 @@ const useServices = create<ServiceState>()(
 				if (state.stabilizerItems) {
 					const isMissingService = state.stabilizerItems.some(
 						(stabilizer) => {
+							if (!stabilizer.services) return false;
 							return Object.values(stabilizer.services).some(
 								(service) => {
 									return service.isUse;
@@ -1221,233 +1449,118 @@ const useServices = create<ServiceState>()(
 
 			formatDataForBackend: () => {
 				const state = get();
-				const services: IBackendServiceItem[] = [];
+				const fees: IBackendFee[] = [];
+				const tasks: IBackendTask[] = [];
 
 				// Format keyboard services
 				if (state.keyboardItems.length > 0) {
-					services.push({
-						serviceType: "KEYBOARD",
-						items: state.keyboardItems.map((keyboard) => ({
-							keyboardName: keyboard.keyboard.name,
-							pcb: keyboard.keyboard.pcb,
-							keyboardSize: keyboard.keyboard.size,
-							services: {
-								solder: keyboard.services.solder?.isUse
-									? { price: keyboard.services.solder.price }
-									: null,
-								desolder: keyboard.services.desolder?.isUse
-									? {
-											price: keyboard.services.desolder
-												.price,
-										}
-									: null,
-								clean: keyboard.services.clean?.isUse
-									? { price: keyboard.services.clean.price }
-									: null,
-							},
-							attachments: keyboard.attachments,
-							note: keyboard.note,
-						})),
-						totalPrice: state.keyboardItems.reduce(
-							(sum, keyboard) => {
-								let itemTotal = 0;
-								if (
-									keyboard.services.solder?.isUse &&
-									keyboard.services.solder.price
-								) {
-									itemTotal += keyboard.services.solder.price;
-								}
-								if (
-									keyboard.services.desolder?.isUse &&
-									keyboard.services.desolder.price
-								) {
-									itemTotal +=
-										keyboard.services.desolder.price;
-								}
-								if (
-									keyboard.services.clean?.isUse &&
-									keyboard.services.clean.price
-								) {
-									itemTotal += keyboard.services.clean.price;
-								}
-								return sum + itemTotal;
-							},
-							0
-						),
+					state.keyboardItems.forEach((item) => {
+						tasks.push({
+							id: item.id,
+							keyboard: item,
+							serviceType: EnumServiceType.KEYBOARD,
+							totalPrice:
+								state.actions.getPriceKeyboardServiceById(
+									item.id
+								),
+						});
 					});
 				}
 
 				// Format switch services
 				if (state.switchItems.length > 0) {
-					services.push({
-						serviceType: "SWITCHES",
-						items: state.switchItems.map((switchItem) => ({
-							type: switchItem.type,
-							name: switchItem.name,
-							quantity: switchItem.quantity,
-							status: switchItem.status,
-							services: {
-								lube: switchItem.services.lube.isUse
-									? { price: switchItem.services.lube.price }
-									: null,
-								film: switchItem.services.film.isUse
-									? { price: switchItem.services.film.price }
-									: null,
-								spring: switchItem.services.spring.isUse
-									? {
-											price: switchItem.services.spring
-												.price,
-										}
-									: null,
-								clean: switchItem.services.clean.isUse
-									? { price: switchItem.services.clean.price }
-									: null,
-							},
-							attachments: switchItem.attachments,
-							note: switchItem.note,
-						})),
-						totalPrice: state.switchItems.reduce(
-							(sum, switchItem) => {
-								let itemTotal = 0;
-								if (
-									switchItem.services.lube.isUse &&
-									switchItem.services.lube.price
-								) {
-									itemTotal +=
-										switchItem.services.lube.price *
-										switchItem.quantity;
-								}
-								if (
-									switchItem.services.film.isUse &&
-									switchItem.services.film.price
-								) {
-									itemTotal +=
-										switchItem.services.film.price *
-										switchItem.quantity;
-								}
-								if (
-									switchItem.services.spring.isUse &&
-									switchItem.services.spring.price
-								) {
-									itemTotal +=
-										switchItem.services.spring.price *
-										switchItem.quantity;
-								}
-								if (
-									switchItem.services.clean.isUse &&
-									switchItem.services.clean.price
-								) {
-									itemTotal +=
-										switchItem.services.clean.price *
-										switchItem.quantity;
-								}
-								return sum + itemTotal;
-							},
-							0
-						),
+					state.switchItems.forEach((item) => {
+						tasks.push({
+							id: item.id,
+							switch: item,
+							serviceType: EnumServiceType.SWITCH,
+							totalPrice: state.actions.getPriceServiceById(
+								item.id,
+								"switch"
+							),
+						});
 					});
 				}
 
 				// Format stabilizer services
 				if (state.stabilizerItems.length > 0) {
-					services.push({
-						serviceType: "STABILIZER",
-						items: state.stabilizerItems.map((stabilizer) => ({
-							type: stabilizer.type,
-							mountType: stabilizer.mountType,
-							brand: stabilizer.brand,
-							status: stabilizer.status,
-							wires: stabilizer.wires,
-							packs: stabilizer.packs,
-							totalPrice: stabilizer.totalPrice,
-							totalWire: stabilizer.totalWire,
-							services: {
-								lube: stabilizer.services.lube?.isUse
-									? { price: stabilizer.services.lube.price }
-									: null,
-								clean: stabilizer.services.clean?.isUse
-									? { price: stabilizer.services.clean.price }
-									: null,
-							},
-							attachments: stabilizer.attachments,
-							note: stabilizer.note,
-						})),
-						totalPrice: state.stabilizerItems.reduce(
-							(sum, stabilizer) => {
-								let itemTotal = 0;
-								return sum + itemTotal;
-							},
-							0
-						),
+					state.stabilizerItems.forEach((item) => {
+						tasks.push({
+							id: item.id,
+							stabilizer: item,
+							serviceType: EnumServiceType.STABILIZER,
+							totalPrice: state.actions.getPriceServiceById(
+								item.id,
+								"stabilizer"
+							),
+						});
+					});
+				}
+
+				// format fee field
+				Object.entries(state.fees).forEach(([key, value]) => {
+					const objFeeAmount =
+						typeof value === "object"
+							? value?.delivery + value?.pickup
+							: value;
+					if (objFeeAmount <= 0) return;
+					fees.push({
+						feeId: generateId(),
+						feeName: MAPPING_FEE_LABEL[key as keyof States["fees"]],
+						feeAmount: objFeeAmount,
+						feeDescription: "",
+					});
+				});
+
+				if (state.selectedPlan?.price) {
+					fees.push({
+						feeId: generateId(),
+						feeName: MAPPING_FEE_LABEL[EnumFeeType.SELECTEDPLAN],
+						feeDescription: "",
+						feeAmount: state.selectedPlan?.price || 0,
+					});
+				}
+
+				if (state.shippingInfo?.method?.price) {
+					fees.push({
+						feeId: generateId(),
+						feeName: MAPPING_FEE_LABEL[EnumFeeType.SHIPPING_METHOD],
+						feeDescription: "",
+						feeAmount: state.shippingInfo.method.price,
+					});
+				}
+
+				if (state.shippingInfo?.deliveryMethod?.price) {
+					fees.push({
+						feeId: generateId(),
+						feeName:
+							MAPPING_FEE_LABEL[
+								EnumFeeType.SHIPPING_DELIVERY_METHOD
+							],
+						feeDescription: "",
+						feeAmount: state.shippingInfo.deliveryMethod.price,
 					});
 				}
 
 				return {
-					planId: state.selectedPlan?.planId || "",
-					services,
+					planId: state.selectedPlan?.planId || "", // service_plan_id
 					shipping: {
 						method: state.shippingInfo.method.code,
 						pickup: state.shippingInfo.pickup,
 						delivery: state.shippingInfo.delivery,
 					},
-					contact: state.contactInfo,
-					discounts: state.discounts,
-					totalDiscount: state.totalDiscount,
-					subTotalPrice: get().actions.calculateSubTotalPrice(),
-					totalPrice: get().actions.calculateTotalPrice(),
-					fees: [
-						state.fees.platFormFee
-							? {
-									platFormFee: state.fees.platFormFee,
-									feeId: generateId(),
-									feeName: "Phí nền tảng",
-									feeDescription: "",
-									feeAmount: state.fees.platFormFee,
-								}
-							: null,
-						state.fees.serviceOutOfTimeFee
-							? {
-									feeId: generateId(),
-									feeName: "Phí hỗ trợ ngoài giờ",
-									feeDescription: "",
-									feeAmount:
-										state.fees.serviceOutOfTimeFee
-											.delivery +
-										state.fees.serviceOutOfTimeFee.pickup,
-								}
-							: null,
-						state.selectedPlan?.price
-							? {
-									feeId: generateId(),
-									feeName: "Phí nâng cấp gói dịch vụ",
-									feeDescription: "",
-									feeAmount: state.selectedPlan?.price || 0,
-								}
-							: null,
-						state.shippingInfo?.method?.price
-							? {
-									feeId: generateId(),
-									feeName: "Phí hỗ trợ giao/nhận tận nơi",
-									feeDescription: "",
-									feeAmount: state.shippingInfo.method.price,
-								}
-							: null,
-						state.shippingInfo?.deliveryMethod?.price
-							? {
-									feeId: generateId(),
-									feeName: "Phí giao/nhận ưu tiên",
-									feeDescription: "",
-									feeAmount:
-										state.shippingInfo.deliveryMethod.price,
-								}
-							: null,
-					],
-					extraService:
-						state.shippingInfo?.addOns?.map((addOn) => ({
-							name: addOn.name,
-							price: addOn.price,
-							value: addOn.value,
-						})) || [],
+					contact: state.contactInfo, // ServiceCustomerInfo
+					discounts: state.discounts, // DiscountInfo[]
+					totalDiscount: state.totalDiscount, // number
+					subTotalPrice: get().actions.calculateSubTotalPrice(), // number
+					totalPrice: get().actions.calculateTotalPrice(), // number
+					fees, // FeeInfo[]
+					note: "",
+					status: EnumServiceStatus.DRAFT,
+					paymentStatus: EnumPaymentStatus.PENDING, // default to PENDING
+					tasks,
+					createdAt: new Date().toISOString(),
+					totalService: get().actions.calculateTotalService(),
 				};
 			},
 
@@ -1463,9 +1576,11 @@ const useServices = create<ServiceState>()(
 						return isValidSubmitData;
 					}
 
-					// const response =
-					// 	await ServiceClient.upsertBooking(formattedData);
-					// console.log("Booking submitted successfully:", response);
+					const response =
+						await ServiceClient.postBookingService(formattedData);
+					console.log("Booking submitted successfully:", response);
+
+					return response;
 
 					// return response;
 				} catch (error) {
@@ -1530,28 +1645,15 @@ function createDefaultKeyboardItem(): IKeyboardFormItem {
 			mountType: null,
 			brand: "",
 			status: EnumStabilizerStatus.NEW,
-			wires: null,
-			packs: null,
+			wires: [],
+			packs: [],
 			totalWire: 0,
 			totalPack: 0,
 		},
 		services: {
-			keyboard: {
-				solder: { isUse: false, price: 0 },
-				desolder: { isUse: false, price: 0 },
-				clean: { isUse: false, price: 0 },
-			},
-			switch: {
-				lube: { isUse: false, price: 0, info: {} },
-				film: { isUse: false, price: 0, info: {} },
-				spring: { isUse: false, price: 0, info: {} },
-				clean: { isUse: false, price: 0 },
-				quickClean: { isUse: false, price: 0 },
-			},
-			stabilizer: {
-				handle: { isUse: false, price: 0, info: {} },
-				clean: { isUse: false, price: 0 },
-			},
+			keyboard: {},
+			switch: {},
+			stabilizer: {},
 		},
 		attachments: [],
 		note: "",
@@ -1567,13 +1669,7 @@ function createDefaultSwitchItem(): ISwitchFormItem {
 		status: null,
 		note: "",
 		attachments: [],
-		services: {
-			lube: { isUse: false, price: 0, info: {} },
-			film: { isUse: false, price: 0, info: {} },
-			spring: { isUse: false, price: 0, info: {} },
-			clean: { isUse: false, price: 0 },
-			quickClean: { isUse: false, price: 0 },
-		},
+		services: {},
 	};
 }
 
@@ -1582,16 +1678,13 @@ function createDefaultStabilizerItem(): IStabilizerFormItem {
 		id: generateId(),
 		type: null,
 		mountType: null,
-		brand: null,
+		brand: "",
 		status: null,
 		wires: [],
 		packs: [],
 		totalWire: 0,
 		totalPrice: 0,
-		services: {
-			handle: { isUse: false, price: 0, info: {} },
-			clean: { isUse: false, price: 0 },
-		},
+		services: {},
 		attachments: [],
 		note: "",
 		totalPack: 0,

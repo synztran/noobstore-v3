@@ -51,6 +51,7 @@ export enum EnumPaymentMethod {
 	CASH_ON_DELIVERY = "CASH_ON_DELIVERY",
 	MOMO = "MOMO",
 	BANK_TRANSFER = "BANK_TRANSFER",
+	PAYPAL = "PAYPAL",
 	NOT_FOUND = "",
 }
 
@@ -74,10 +75,12 @@ export enum EnumCategorySaleType {
 	NONE = "NONE",
 }
 
-export enum EnumPaymentStaus {
+export enum EnumPaymentStatus {
+	SUBMITTED = "SUBMITTED",
 	PAID = "PAID",
 	PENDING = "PENDING",
 	CANCELLED = "CANCELLED",
+	REFUNDED = "REFUNDED",
 }
 
 export enum EnumOrderStatus {
@@ -86,6 +89,21 @@ export enum EnumOrderStatus {
 	PROCESSING = "PROCESSING",
 	COMPLETED = "COMPLETED",
 	CANCELLED = "CANCELLED",
+}
+
+export enum EnumServiceStatus {
+	DRAFT = "DRAFT",
+	SCHEDULED = "SCHEDULED",
+	IN_PROGRESS = "IN_PROGRESS",
+	COMPLETED = "COMPLETED",
+	CANCELLED = "CANCELLED",
+}
+
+export enum EnumPaymentForm {
+	FULL = "FULL",
+	PARTIAL_10_PERCENT = "PARTIAL_10_PERCENT",
+	PARTIAL_30_PERCENT = "PARTIAL_30_PERCENT",
+	NOT_FOUND = "",
 }
 
 export enum ENUM_SWITCH_TYPE {
@@ -155,8 +173,22 @@ export enum EnumStabilizerType {
 }
 
 export enum EnumStabilizerMountType {
-	PCB_MOUNT = "PCB_MOUNT",
-	PLATE_MOUNT = "PLATE_MOUNT",
+	PCB_MOUNTED = "PCB_MOUNTED",
+	PLATE_MOUNTED = "PLATE_MOUNTED",
+}
+
+export enum EnumStabilizerSize {
+	"2U" = "2U",
+	"6.25U" = "6.25U",
+	"7U" = "7U",
+}
+
+export enum EnumFeeType {
+	PLATFORMFEE = "platFormFee",
+	SERVICEOUTOFTIMEFEE = "serviceOutOfTimeFee",
+	SELECTEDPLAN = "selectedPlan",
+	SHIPPING_METHOD = "shipping.method",
+	SHIPPING_DELIVERY_METHOD = "shipping.deliveryMethod",
 }
 
 export interface ICartProduct {
@@ -448,3 +480,16 @@ export interface IProductPostData extends IFormWithRecaptcha {
 	listings: any[];
 	short_description: string;
 }
+
+export const mapLabelEnumStabilizerType: Record<EnumStabilizerType, string> = {
+	[EnumStabilizerType.SCREW_IN]: "Screw-in",
+	[EnumStabilizerType.CLIP_IN]: "Clip-in",
+};
+
+export const mapLabelEnumStabilizerMountType: Record<
+	EnumStabilizerMountType,
+	string
+> = {
+	[EnumStabilizerMountType.PCB_MOUNTED]: "PCB mount",
+	[EnumStabilizerMountType.PLATE_MOUNTED]: "Plate mount",
+};

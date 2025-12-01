@@ -11,7 +11,7 @@ import { Logo } from "@/templates/Logo";
 import {
 	EnumOrderStatus,
 	EnumPaymentMethod,
-	EnumPaymentStaus,
+	EnumPaymentStatus,
 } from "@/interface/interface";
 import { VNCity } from "@/constants";
 
@@ -54,7 +54,7 @@ const OrderInformation: React.FC<{ orderId: string }> = ({ orderId }) => {
 					)?.name || ""
 				}
 				paymentStatus={
-					orderInfo?.paymentStatus || EnumPaymentStaus.PENDING
+					orderInfo?.paymentStatus || EnumPaymentStatus.PENDING
 				}
 				paymentMethod={
 					orderInfo?.orderInfo?.paymentMethod ||

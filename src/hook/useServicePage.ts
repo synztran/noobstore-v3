@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { EnumSwitchStatus, EnumSwitchType } from "@/interface/interface";
 import ServiceClient from "@/client/ServiceClient";
+import NotifyUtils from "@/utils/NotifyUtils";
 
 // Simplified types for the combined hook
 export interface IServiceOption {
@@ -519,12 +520,13 @@ export const useServicePage = () => {
 			const formattedData = formatDataForBackend();
 			console.log("Submitting service booking:", formattedData);
 
-			const response = await ServiceClient.upsertBooking(formattedData);
-			console.log("Booking submitted successfully:", response);
+			const response =
+				await ServiceClient.postBookingService(formattedData);
 
 			return response;
 		} catch (error) {
 			console.error("Failed to submit service booking:", error);
+			NotifyUtils.error("Có lỗi xảy ra. Vui lòng thử lại sau");
 			throw error;
 		}
 	}, [formatDataForBackend]);

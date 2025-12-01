@@ -8,14 +8,21 @@ import GridLayoutBlock from "@/components/GridLayoutBlock";
 import StrongPoint from "@/components/StrongPoint";
 import HomeProductBlock from "@/components/HomeProductBlock";
 import RaffleBlock from "@/components/RaffleBlock";
+import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
 
 const HomePage = ({}) => {
+	const { data: raffleFeaturedData, isPending: isLoadingFeaturedRaffle } =
+		useRaffleFeaturedQueries();
+	console.log("raffleFeaturedData", raffleFeaturedData);
 	return (
 		<Base>
 			<div className="flex flex-col gap-12 my-8">
 				<TitleWithMenuQuickAccess />
+				<RaffleBlock
+					raffleData={raffleFeaturedData}
+					isLoading={isLoadingFeaturedRaffle}
+				/>
 				<BannerTagPriceName />
-				<RaffleBlock />
 				<CategoryWithTitleAndAction title="Keyboards" items={[]} />
 				<CommunitySharingPost
 					title="Community Sharing"

@@ -62,6 +62,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 				if (intervalRef.current) clearInterval(intervalRef.current);
 			};
 		}
+		return;
 	}, [autoHide, autoHideDelay, isVisible]);
 
 	useEffect(() => {

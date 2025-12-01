@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ErrorMessage from "./index";
+import { ErrorMessage } from "./index";
 
 const ErrorMessageDemo: React.FC = () => {
 	const [showError, setShowError] = useState(false);

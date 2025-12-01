@@ -1,3 +1,8 @@
+import {
+	IBEResponseProductOption,
+	IBEResponseRaffleInfo,
+} from "./Client/Raffle";
+
 export interface RaffleData {
 	id: string;
 	title: string;
@@ -29,20 +34,21 @@ export interface RaffleEntryForm {
 	phone: string;
 	address: string;
 	city: string;
-	paymentMethod: PaymentMethod;
+	// paymentMethod: PaymentMethod;
 }
 
 export enum PaymentMethod {
 	CREDIT_CARD = "credit_card",
 	BANK_TRANSFER = "bank_transfer",
 	E_WALLET = "e_wallet",
+	TBD = "",
 }
 
 export interface RaffleEntry {
 	id: string;
 	raffleId: string;
 	userId?: string;
-	formData: RaffleEntryForm;
+	formData: RaffleSubmitForm;
 	ticketNumbers: number[];
 	totalPaid: number;
 	entryDate: string;
@@ -50,16 +56,20 @@ export interface RaffleEntry {
 }
 
 export interface IStepProps {
-	formData: FormData;
-	setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
-	raffleData: RaffleData;
+	// formData: FormData;
+	// setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
+	raffleFormSubmit?: RaffleSubmitForm;
+	setRaffleFormSubmit?: React.Dispatch<
+		React.SetStateAction<RaffleSubmitForm>
+	>;
+	raffleData: IBEResponseRaffleInfo;
 	handleInputChange?: (
-		field: keyof FormData
+		field: keyof RaffleSubmitForm
 	) => (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 	) => void;
 	handleSelectChange?: (
-		field: keyof FormData
+		field: keyof RaffleSubmitForm
 	) => (event: React.ChangeEvent<HTMLSelectElement>) => void;
 	minPrice?: number;
 	maxPrice?: number;
@@ -71,18 +81,18 @@ export type ProductSelection = {
 	name: string;
 	priority: number | null; // null means not selected
 	selected: boolean;
-	thumbnail: string;
+	thumbnail: {
+		path: string;
+		alt: string;
+	};
 	price: number;
 };
 
-export type FormData = Omit<RaffleEntryForm, "ticketQuantity"> & {
+export type RaffleSubmitForm = Omit<RaffleEntryForm, "ticketQuantity"> & {
 	companyName: string;
 	zipCode: string;
-	cardNumber: string;
-	expiryDate: string;
-	cvv: string;
-	cardName: string;
 	productSelections: ProductSelection[];
-	shippingMethod: { brand: string; price: number };
+	shippingMethod: { name: string; price: number | null };
 	note: string;
+	raffleId: string;
 };

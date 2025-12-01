@@ -1,7 +1,8 @@
+import { EnumRaffleType } from "@/interface/Client/Raffle";
 import React from "react";
 
 interface RaffleBadgeProps {
-	type: "raffle" | "sale";
+	type: EnumRaffleType;
 	className?: string;
 }
 
@@ -43,8 +44,17 @@ const style = `
 }
 `;
 
-const badgeConfig = {
-	raffle: {
+const badgeConfig: Record<
+	EnumRaffleType,
+	{
+		label: string;
+		bg: string;
+		text: string;
+		border: string;
+		icon: React.ReactNode;
+	}
+> = {
+	[EnumRaffleType.RAFFLE]: {
 		label: "Raffle",
 		bg: "bg-gradient-to-r from-yellow-200 via-yellow-100 to-yellow-50",
 		text: "text-yellow-900",
@@ -86,7 +96,7 @@ const badgeConfig = {
 			</svg>
 		),
 	},
-	sale: {
+	[EnumRaffleType.SALE]: {
 		label: "Sale",
 		bg: "bg-green-100",
 		text: "text-green-700",
@@ -115,23 +125,23 @@ const RaffleBadge: React.FC<RaffleBadgeProps> = ({ type, className = "" }) => {
 	const config = badgeConfig[type];
 	return (
 		<>
-			{type === "raffle" && (
+			{type === EnumRaffleType.RAFFLE && (
 				<style dangerouslySetInnerHTML={{ __html: style }} />
 			)}
 			<span
-				className={`inline-flex items-center px-2 py-0.5 rounded-sm border text-xl font-semibold shadow-sm ${
-					config.bg
-				} ${config.text} ${config.border} ${className} ${
-					type === "raffle" ? "raffle-badge-animated" : ""
+				className={`inline-flex items-center px-2 py-0.5 rounded-sm border text-xl font-semibold shadow-sm ${config?.bg} ${config?.text} ${config?.border} ${className} ${
+					type === EnumRaffleType.RAFFLE
+						? "raffle-badge-animated"
+						: ""
 				}`}
 				style={
-					type === "raffle"
+					type === EnumRaffleType.RAFFLE
 						? undefined // All styles handled by CSS class
 						: undefined
 				}>
-				{type === "raffle" && <span className="shine" />}
-				{type === "raffle" && config.icon}
-				{config.label}
+				{type === EnumRaffleType.RAFFLE && <span className="shine" />}
+				{type === EnumRaffleType.RAFFLE && config?.icon}
+				{config?.label}
 			</span>
 		</>
 	);

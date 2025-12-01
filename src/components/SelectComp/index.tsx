@@ -24,12 +24,12 @@ interface IProps {
 	options: IOptionSelection[];
 	onSelect: ({
 		name,
-    option,
-    parentName,
+		option,
+		parentName,
 	}: {
 		name: string;
 		option: IOptionSelection | null;
-		parentName: string;
+		parentName?: string;
 	}) => void;
 	onAddNew?: ({
 		name,
@@ -46,8 +46,8 @@ interface IProps {
 	isLoading?: boolean;
 	hidePrice?: boolean;
 	note?: string;
-  errorMessage?: string;
-  parentName?: string;
+	errorMessage?: string;
+	parentName?: string;
 }
 
 // SearchableSelect Component
@@ -64,8 +64,8 @@ const SearchableSelect: React.FC<IProps> = ({
 	isLoading = false,
 	hidePrice = false,
 	note = "",
-  errorMessage = "",
-  parentName = "",
+	errorMessage = "",
+	parentName = "",
 }: IProps) => {
 	const [isOpen, setOpen] = useState(false);
 	const [search, setSearch] = useState("");
@@ -87,9 +87,10 @@ const SearchableSelect: React.FC<IProps> = ({
 			/\s*\(\s*\+\s*[\d.,]+đ\s*\)\s*$/i,
 			""
 		);
-		return labelWithoutPrice
-			.toLowerCase()
-			.includes(option.label.toLowerCase());
+
+		return option.label
+			.toLocaleLowerCase()
+			.includes(labelWithoutPrice.toLowerCase());
 	});
 
 	// Helper to get the display string for the current value
@@ -107,7 +108,7 @@ const SearchableSelect: React.FC<IProps> = ({
 			}
 			return "";
 		},
-		[options, hidePrice]
+		[options, hidePrice, search]
 	);
 
 	useEffect(() => {
@@ -132,7 +133,11 @@ const SearchableSelect: React.FC<IProps> = ({
 		valueRef.current = value; // keep valueRef in sync with value
 	}, [value, options]);
 
-	const handleSelect = (name: string, option: IOptionSelection, parentName: string) => {
+	const handleSelect = (
+		name: string,
+		option: IOptionSelection,
+		parentName: string
+	) => {
 		ignoreBlurRef.current = true; // Prevent blur logic
 		onSelect({ name, option, parentName });
 		// Update valueRef to the selected value immediately
@@ -165,13 +170,9 @@ const SearchableSelect: React.FC<IProps> = ({
 	// Handle onBlur: if not selecting a new option, reset to current value
 	const handleBlur = useCallback(
 		(e: React.FocusEvent<HTMLInputElement>) => {
-			// Because handleBlur is executed before handleSelect,
-			// we use ignoreBlurRef to skip blur logic if a select is happening
 			const currentValue = valueRef.current;
 			setTimeout(() => {
-				// Fix: Prevent clearing value onBlur for delivery-method (RadioGroup)
 				if (ignoreBlurRef.current) return;
-				// If the input is not focused and not inside the wrapper, reset search to current value
 				if (!wrapperRef.current?.contains(document.activeElement)) {
 					setSearch(getDisplayValue(currentValue));
 					setOpen(false);
@@ -202,14 +203,16 @@ const SearchableSelect: React.FC<IProps> = ({
 					}}
 					autoComplete="off"
 					onFocus={() => setOpen(true)}
-					onBlur={handleBlur}
+					// onBlur={handleBlur}
 					placeholder={placeholder}
-					className={`${className} w-full shadow-none outline-none border-none focus:border-none focus:shadow-none ${errorMessage ? "!border-2 !border-red-600" : ""}`}
+					className={`${className} w-full shadow-none outline-none border-none focus:border-none focus:shadow-none ${
+						errorMessage ? "!border-2 !border-red-600" : ""
+					}`}
 					InputLabelProps={{
 						className:
 							"!text-lg max-w-max leading-[1.25] !bg-transparent",
 					}}
-					inputProps={{ className: "!text-base bg-[#f7fafc]" }}
+					inputProps={{ className: "!text-base" }}
 					name={name}
 					disabled={isLoading}
 				/>
@@ -266,7 +269,9 @@ const SearchableSelect: React.FC<IProps> = ({
 									key={index}
 									className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
 									onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
-									onClick={() => handleSelect(name, option, parentName)}>
+									onClick={() =>
+										handleSelect(name, option, parentName)
+									}>
 									<div className="flex gap-2 items-center">
 										{option.label}
 										{option?.price && !hidePrice ? (

@@ -79,7 +79,7 @@ const ItemSelectGroupBlock = ({
 	return (
 		<div className={classNames(styles.container || "", "!mt-0")}>
 			<div className={classNames("flex gap-2")}>
-				<span className="text-lg uppercase font-bold text-gray-600">
+				<span className="text-lg capitalize font-bold text-gray-600">
 					{productName}
 				</span>
 				{itemSelected ? (
@@ -87,7 +87,7 @@ const ItemSelectGroupBlock = ({
 						|
 						<div className="flex gap-1 items-center">
 							{itemSelected?.name}
-							&nbsp; (+
+							&nbsp;(+
 							{formatCurrency(
 								itemSelected?.salePrice ||
 									itemSelected?.price ||
@@ -103,7 +103,8 @@ const ItemSelectGroupBlock = ({
 										}}
 									/>
 								}
-								placement="top">
+								placement="top"
+								arrow>
 								<Info className="w-4 h-4" />
 							</Tooltip>
 						</div>
@@ -114,19 +115,13 @@ const ItemSelectGroupBlock = ({
 				value={itemSelected}
 				exclusive
 				onChange={handelSelectedItem}
-				className={classNames("flex items-center gap-2")}>
+				className={classNames("flex items-center gap-2 flex-wrap")}>
 				{productOptions?.map((option: IProductOption, idx: number) => (
-					<div className="relative font-nunito" key={idx}>
+					<div className="relative" key={idx}>
 						<ToggleButton
-							style={{
-								borderLeft: "1px solid rgb(113 128 150)",
-							}}
 							value={option}
 							className={classNames(
-								"relative max-w-max border border-gray-600 capitalize disabled:!border-l-gray-400",
-								option.thumbnail
-									? "p-2 !rounded-10 bg-white"
-									: "!rounded-sm min-w-[70px] p-1",
+								"relative max-w-max capitalize disabled:!border-l-gray-400 !p-1 !min-w-[120px] h-20 !rounded-lg overflow-hidden border border-l-gray-300 border-gray-300 flex items-center justify-center",
 								itemSelected?.productOptionId ===
 									option.productOptionId
 									? "!border-green-600"
@@ -151,14 +146,9 @@ const ItemSelectGroupBlock = ({
 										option.thumbnail?.path ||
 										NEW_MISSING_IMAGE
 									}
-									width={80}
-									height={80}
+									fill
 									alt={option.name || ""}
-									style={{
-										maxWidth: "100%",
-										height: "auto",
-										minHeight: 80,
-									}}
+									className="object-cover select-none p-1 rounded-lg"
 								/>
 							) : (
 								<span>{option.name}</span>
@@ -168,7 +158,7 @@ const ItemSelectGroupBlock = ({
 						option?.productOptionId ? (
 							<Check
 								className={classNames(
-									"absolute text-green-600 w-5 h-5 border border-green-600 rounded-full bg-white p-0.5",
+									"absolute text-green-600 w-5 h-5 border border-green-600 rounded-full bg-white p-0.5 stroke-green-600",
 									option.thumbnail
 										? "-top-1.5 -right-1.5"
 										: "-top-2.5 -right-2.5"

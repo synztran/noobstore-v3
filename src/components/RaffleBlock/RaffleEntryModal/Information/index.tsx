@@ -108,10 +108,10 @@ const StepInformation: React.FC<IStepProps> = ({
 					<div className="relative w-20 h-20">
 						<Image
 							src={
-								raffleData.seller.avatar ||
+								raffleData?.seller?.avatar ||
 								"/default-avatar.png"
 							}
-							alt={raffleData.seller.name}
+							alt={raffleData?.seller?.name || ""}
 							className="w-60 h-60 rounded-full"
 							fill
 							objectFit="cover"
@@ -119,13 +119,14 @@ const StepInformation: React.FC<IStepProps> = ({
 					</div>
 					<div className="flex flex-col">
 						<div className="font-medium text-xl flex items-center gap-2">
-							{raffleData.seller.name}
+							{raffleData?.seller?.name || ""}
 							<Verified className="stroke-green-600 w-6 h-6" />
 						</div>
 						<div className="flex items-center gap-3 text-sm text-gray-600">
-							<span>⭐ {raffleData.seller.rating}/5</span>
+							<span>⭐ {raffleData?.seller?.rating || 0}/5</span>
 							<span>
-								📦 {raffleData.seller.totalSales} đơn hàng
+								📦 {raffleData?.seller?.totalSales || 0} đơn
+								hàng
 							</span>
 						</div>
 					</div>
@@ -182,7 +183,7 @@ const StepInformation: React.FC<IStepProps> = ({
 			{/* Maker Policies */}
 			<div className="p-4 rounded-lg bg-gray-200">
 				<div className="mb-3 font-semibold text-lg flex items-center gap-2">
-					🔧 Chính sách của {raffleData.seller.name}
+					🔧 Chính sách của {raffleData?.seller?.name || ""}
 				</div>
 				<div className="space-y-2 text-sm text-gray-700">
 					<div className="flex items-center gap-2">
@@ -195,7 +196,7 @@ const StepInformation: React.FC<IStepProps> = ({
 					<div className="flex items-center gap-2">
 						<span className="text-indigo-600">•</span>
 						<span>
-							Sản phẩm đã bao gồm chi phị vận chuyển nội địa, với
+							Sản phẩm đã bao gồm chi phí vận chuyển nội địa, với
 							khách hàng không nằm trong khu vực nội địa sẽ được
 							tính thêm chi phí vận chuyển
 						</span>

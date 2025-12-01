@@ -2,6 +2,7 @@ interface CustomToastMessageProps {
 	productName?: string;
 	categoryName?: string;
 	productId?: string;
+	serviceBookingId?: string;
 }
 
 const SuccessRemoveItem: React.FC<CustomToastMessageProps> = ({
@@ -56,9 +57,30 @@ const SuccessDeleteProduct: React.FC<CustomToastMessageProps> = ({
 	);
 };
 
+const SuccessSubmitPayment: React.FC<CustomToastMessageProps> = ({
+	serviceBookingId,
+}: CustomToastMessageProps) => {
+	return (
+		<div>
+			Mã dịch vụ{" "}
+			<strong className="text-green-400">{serviceBookingId}</strong> đã
+			gửi thanh toán thành công. Vui lòng chờ xác nhận từ hệ thống
+		</div>
+	);
+};
+
+const SuccessRaffleJoin: React.FC<
+	CustomToastMessageProps
+> = ({} // serviceBookingId,
+: CustomToastMessageProps) => {
+	return <div>Bạn đã tham gia raffle thành công. Chúc bạn may mắn!</div>;
+};
+
 export {
 	SuccessAddItem,
 	SuccessCreateCategory,
 	SuccessDeleteProduct,
 	SuccessRemoveItem,
+	SuccessSubmitPayment,
+	SuccessRaffleJoin,
 };

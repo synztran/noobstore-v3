@@ -3,11 +3,16 @@ import { CheckCircle } from "lucide-react";
 import { IStepProps } from "@/interface/Raffle";
 import { formatCurrency } from "@/utils/FormatNumber";
 
-const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
+const StepSelectProduct: React.FC<IStepProps> = ({
+	raffleData,
+	raffleFormSubmit,
+	setRaffleFormSubmit,
+}) => {
+	console.log("raffleFormSubmit", raffleFormSubmit);
 	const handleProductToggle = (productId: string) => {
-		if (!setFormData) return;
+		if (!setRaffleFormSubmit) return;
 
-		setFormData((prev) => {
+		setRaffleFormSubmit((prev) => {
 			const isSelecting = !prev.productSelections.find(
 				(product) => product.productId === productId
 			)?.selected;
@@ -54,26 +59,25 @@ const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
 		});
 	};
 
-	const selectedProducts = formData.productSelections.filter(
-		(p) => p.selected
-	);
+	const selectedProducts =
+		raffleFormSubmit?.productSelections.filter((p) => p.selected) || [];
 
 	return (
-		<div className="space-y-6">
-			<div className="text-center mb-6">
-				<div className="text-2xl font-bold">Lựa chọn sản phẩm</div>
-				<div className="text-gray-500">
+		<div className="space-y-4">
+			<div className="text-center">
+				<div className="text-xl font-bold">Lựa chọn sản phẩm</div>
+				{/* <div className="text-gray-500">
 					Chọn sản phẩm và thiết lập thứ tự ưu tiên.
-				</div>
+				</div> */}
 			</div>
 
 			{/* Product Selection */}
-			<div className="space-y-4">
-				<div className="font-semibold text-base mb-3">
+			<div className="space-y-2">
+				<div className="font-semibold text-base">
 					Chọn sản phẩm và thiết lập thứ tự ưu tiên:
 				</div>
 
-				{formData.productSelections.map((product, index) => (
+				{raffleFormSubmit?.productSelections?.map((product, index) => (
 					<div
 						key={product.productId}
 						className={`p-4 rounded-lg border-2 transition-all ${
@@ -88,8 +92,11 @@ const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
 									<div className="flex gap-4">
 										<div className="relative w-28 h-28">
 											<Image
-												src={product.thumbnail}
-												alt={product.name}
+												src={product.thumbnail.path}
+												alt={
+													product.thumbnail.alt ||
+													product.name
+												}
 												className="w-28 h-28 object-cover rounded-lg"
 												loading="lazy"
 												fill
@@ -108,7 +115,7 @@ const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
 												</div>
 											</div>
 											<div className="block min-h-[32px]">
-												{formData.productSelections.find(
+												{raffleFormSubmit.productSelections.find(
 													(p) =>
 														p.productId ===
 														product.productId
@@ -131,35 +138,6 @@ const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
 									className="!w-5 !h-5 text-[var(--primary-color)] border-gray-300 rounded focus:ring-[var(--primary-color)] cursor-pointer ml-auto checked:!bg-[var(--primary-color)]"
 								/>
 							</label>
-
-							{/* Priority Selector */}
-							{/* {product.selected && (
-								<div className="ml-auto flex items-center gap-2">
-									<select
-										value={product.priority || 1}
-										onChange={(e) =>
-											handlePriorityChange(
-												product.productId,
-												parseInt(e.target.value)
-											)
-										}
-										className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-										{Array.from(
-											{
-												length: formData
-													.productSelections.length,
-											},
-											(_, i) => (
-												<option
-													key={i + 1}
-													value={i + 1}>
-													{i + 1}
-												</option>
-											)
-										)}
-									</select>
-								</div>
-							)} */}
 						</div>
 					</div>
 				))}
@@ -183,15 +161,18 @@ const StepSelectProduct: React.FC<IStepProps> = ({ formData, setFormData }) => {
 									<span>
 										#{product.priority} - {product.name}
 									</span>
-									<span className="font-medium text-green-600">
+									{/* <span className="font-medium text-green-600">
 										<CheckCircle className="stroke-green-600 w-6 h-6" />
-									</span>
+									</span> */}
 								</div>
 							))}
 					</div>
-					<div className="mt-3 p-2 bg-green-200 rounded text-base text-green-800">
-						💡 Giới hạn số lượng trúng là x và sẽ dựa vào thứ tự ưu
-						tiên đã chọn
+					<div className="mt-3 p-2 bg-gray-400 rounded text-gray-700 font-semibold">
+						💡 Giới hạn số lượng trúng là{" "}
+						<span className="bg-green-600 text-white font-bold rounded-lg px-1">
+							{raffleData?.maxWinPerEntries}
+						</span>{" "}
+						và sẽ dựa vào thứ tự ưu tiên đã chọn
 					</div>
 				</div>
 			)}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "User data model",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique user identifier"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email address"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number",
+      "pattern": "^[0-9+()-\\s]+$"
+    },
+    "preferences": {
+      "type": "object",
+      "description": "User preferences",
+      "properties": {
+        "language": {
+          "type": "string",
+          "enum": ["vi", "en"],
+          "default": "vi"
+        },
+        "notifications": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  },
+  "required": ["id", "name", "email"]
+}

@@ -1,6 +1,11 @@
 import ValidateUtils from "./ValidateUtils";
 
-export function formatCurrency(n: number, separate = ".", currency = "đ") {
+export function formatCurrency(
+	n: number,
+	separate = ".",
+	currency = "đ",
+	isShorten = false
+) {
 	const num = ValidateUtils.isNumber(n) ? Number(n) : 0;
 	const [integerPart, decimalPart] = num?.toFixed(0).split(".");
 	const regex = /\B(?=(\d{3})+(?!\d))/g;
@@ -11,6 +16,19 @@ export function formatCurrency(n: number, separate = ".", currency = "đ") {
 		formattedInteger = formattedInteger.substring(1);
 	}
 
+	if (isShorten && num >= 1000) {
+		const units = ["", "K", "M", "B", "T"];
+		let unitIndex = 0;
+		let shortenedNum = num;
+
+		while (shortenedNum >= 1000 && unitIndex < units.length - 1) {
+			shortenedNum /= 1000;
+			unitIndex++;
+		}
+
+		return `${shortenedNum.toFixed(0)}${units[unitIndex]}`;
+	}
+
 	const formattedNumber = decimalPart
 		? `${formattedInteger}.${decimalPart}`
 		: formattedInteger;
@@ -18,9 +36,9 @@ export function formatCurrency(n: number, separate = ".", currency = "đ") {
 	return formattedNumber + cur;
 }
 
-export function formatNumber(n: number, separate = ".") {
+export function formatNumber(n: number, separate = ".", fixed = 0) {
 	const num = ValidateUtils.isNumber(n) ? n : 0;
-	const s = String(num);
+	const s = String(num.toFixed(fixed));
 	const regex = /\B(?=(\d{3})+(?!\d))/g;
 	return s.replace(regex, separate);
 }

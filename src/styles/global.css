@@ -493,6 +493,19 @@ select {
   font-size: 1rem !important;
 }
 
+/* overwrite tooltip MUI */
+.MuiTooltip-tooltip {
+  background-color: #bdbdbd !important;
+  color: #000 !important;
+  font-size: 0.875rem !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+}
+
+.MuiTooltip-arrow::before {
+  background-color: #bdbdbd !important;
+}
+
 
 /* Mobile - Full width */
 @media (max-width: 767px) {

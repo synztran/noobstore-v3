@@ -2,7 +2,7 @@ import { mapPaymentStatus, ORDER_STATUS_LABEL } from "@/constants";
 import {
 	EnumOrderStatus,
 	EnumPaymentMethod,
-	EnumPaymentStaus,
+	EnumPaymentStatus,
 } from "@/interface/interface";
 import classNames from "classnames";
 import React from "react";
@@ -14,7 +14,7 @@ const LocatedMap = dynamic(() => import("@/components/LocatedMap"), {
 
 const OrderMapComp: React.FC<{
 	orderStatus: EnumOrderStatus;
-	paymentStatus: EnumPaymentStaus;
+	paymentStatus: EnumPaymentStatus;
 	address: string;
 	city: string;
 	paymentMethod: EnumPaymentMethod;
@@ -27,7 +27,7 @@ const OrderMapComp: React.FC<{
 			<div className="p-4 flex flex-col min-h-[120px]">
 				<span className="text-lg">
 					Đơn hàng{" "}
-					{paymentStatus === EnumPaymentStaus.PAID ||
+					{paymentStatus === EnumPaymentStatus.PAID ||
 					paymentMethod === EnumPaymentMethod.CASH_ON_DELIVERY ? (
 						<strong
 							className={classNames(

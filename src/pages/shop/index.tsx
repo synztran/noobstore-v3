@@ -1,6 +1,7 @@
 import Breadcumb from "@/components/breadcumb";
 import CategoryCard from "@/components/categoryCard";
 import CategoryCardV2 from "@/components/CategoryCardV2";
+import CategoryCardV3 from "@/components/CategoryCardV3";
 import FilterSection from "@/components/filter";
 import { BreadcumbTitle, sortOptions } from "@/constants";
 import { useAuth } from "@/context/Auth";
@@ -54,7 +55,7 @@ const ShopPage = () => {
 						<div className="grid gap-2 grid-cols-3 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-3  w-full">
 							{categoryList?.map(
 								(child: ICategory, index: number) => (
-									<CategoryCardV2
+									<CategoryCardV3
 										category={child}
 										key={index}
 									/>

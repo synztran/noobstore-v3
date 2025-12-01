@@ -7,6 +7,9 @@ export const MOMO_VERTICAL_LOGO = `/assets/icons/brand/momo-vertical-logo.png`;
 export const SAMPLE_MATRIX_CORSA = `/assets/images/sample/matrix-corsa.jpeg`;
 export const SAMPLE_INDIGO_UNIKORN = "/assets/images/sample/indigo-unikorn.jpg";
 export const COD_ICON = "/assets/icons/brand/cod_icon.svg";
+export const PAYPAL_ICON = "/assets/icons/brand/paypal.svg";
+export const PAYPAL_1_ICON = "/assets/icons/brand/paypal_1.svg";
+export const BANK_TRANSFER_ICON = "/assets/icons/brand/bank_transfer.svg";
 
 // service page
 export const SERVICE_SWITCH_ICON = `/assets/icons/service/switch-icon.png`;
@@ -37,6 +40,8 @@ export const VIETINBANK_LOGO = "/assets/icons/bank/vietinbank.png";
 export const VIETCOMBANK_LOGO = "/assets/icons/bank/vietcombank.png";
 export const TECHCOMBANK_LOGO = "/assets/icons/bank/techcombank.png";
 export const VPBANK_LOGO = "/assets/icons/bank/vpbank.png";
+export const VIETINBANK_QR = "/assets/icons/bank/vietinbank_qr.jpg";
+export const MOMO_QR = "/assets/icons/bank/momo_qr.png";
 
 // GIF
 export const GIF_SUCCESS_1 = `/gif/success_1.gif`;
@@ -44,6 +49,8 @@ export const GIF_SUCCESS_1_STATIC = `/gif/success_1_static.jpg`;
 export const GIF_SUCCESS_2 = `/gif/success_2.gif`;
 export const GIF_THANKS = `/gif/thanks.gif`;
 export const GIF_SHOPPING_CART = `/gif/shopping_cart.gif`;
+export const GIF_PAYMENT_CHECKING = `/gif/payment_wait_to_check.gif`;
+export const GIF_PAYMENT_PAID_SUCCESS = `/gif/payment_paid_success.gif`;
 
 // lucky-wheel
 export const LUCKYWHEEL_BORDER = `/wheel/lucky-wheel/wheel-background.svg`;
@@ -119,3 +126,8 @@ export const QUICK_ACCESS_DESKMATS_ICON = "/images/quickAccess/deskmats.webp";
 // icons
 export const STAR_MEDAL_ICON = "/assets/icons/star_medal.png";
 export const SOLD_OUT_ICON = "/assets/icons/oos_icon.png";
+
+// sale percentage badge
+export const TEN_PERCENT_ICON = "/assets/icons/sale_percentage/10.svg";
+export const THIRDTY_PERCENT_ICON = "/assets/icons/sale_percentage/30.svg";
+export const HUNDRED_PERCENT_ICON = "/assets/icons/sale_percentage/100.svg";

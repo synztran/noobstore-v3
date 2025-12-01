@@ -3,23 +3,25 @@ import NotifyUtils from "@/utils/NotifyUtils";
 import { Button, Divider } from "@material-ui/core";
 import { ArrowUpDown, ChevronDown, Truck } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-// import LogoStore from "../../public/assets/icons/logo.png";
 import {
 	MAPPING_DELIVERY_METHOD,
 	MAPPING_ICON_SUMMARY_SERVICE,
 } from "@/constants";
 import { EnumShippingMethodCode } from "@/interface/interface";
-import useServiceFeeQuery from "@/react-query/services/useServiceFeeQueries";
+import useServiceFeeQuery from "@/react-query/services/api/useServiceFeeQueries";
 import { formatCurrency } from "@/utils/FormatNumber";
 import useServices, {
 	EnumServiceFeeType,
 	useServiceAction,
 } from "@/zustand/useServices";
-import LoadingDots from "../Effects/LoadingDots";
+// import LoadingDots from "../Effects/LoadingDots";
 import SummaryServiceCollapse from "./collapse";
 import SummaryServiceDeliveryBlock from "./DeliveryBlock";
 import DiscountBlock from "./DiscountBlock";
 import SummaryServiceBlock from "./ServiceBlock";
+import { CircularProgress } from "@mui/material";
+import { EnumResponseStatus } from "@/interface/Client/interface";
+import SuccessModal from "./ModalDirection";
 
 const text = {
 	title: "",
@@ -60,9 +62,34 @@ const SummaryService: React.FC = () => {
 		services: true,
 	});
 
+	const [isOpenModalSuccess, setOpenModalSuccess] = useState(false);
+
 	const handleCollapse = (target: "note" | "delivery" | "services") => {
 		setIsCollapse((prev) => ({ ...prev, [target]: !prev[target] }));
 	};
+
+	// Handle service booking submission with reCAPTCHA
+	async function handleSubmitBooking() {
+		try {
+			setIsSubmitting(true);
+			// Submit service booking
+			const response = await submitServiceBooking();
+
+			if (response?.status === EnumResponseStatus.OK) {
+				NotifyUtils.success("Đặt lịch thành công!");
+				// You might want to redirect or reset form here
+			} else {
+				NotifyUtils.error(
+					response?.message || "Có lỗi xảy ra khi đặt lịch"
+				);
+			}
+		} catch (error) {
+			console.error("Service booking error:", error);
+			NotifyUtils.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
+		} finally {
+			setIsSubmitting(false);
+		}
+	}
 
 	useEffect(() => {
 		if (serviceFees) {
@@ -73,19 +100,8 @@ const SummaryService: React.FC = () => {
 		}
 	}, [serviceFees]);
 
-	console.log(
-		"selectedPlan",
-		selectedPlan,
-		shippingInfo,
-		contactInfo,
-		keyboardItems,
-		switchItems,
-		stabilizerItems,
-		fees,
-		platFormFee,
-		discounts,
-		totalDiscount
-	);
+	console.log("keyboardItems", keyboardItems);
+
 	return (
 		<div
 			className="border border-gray-400 bg-white relative -top-[5rem] p-4 rounded-lg flex flex-col gap-4"
@@ -105,7 +121,7 @@ const SummaryService: React.FC = () => {
 							shippingInfo?.deliveryMethod.name !== "" ? (
 								shippingInfo?.deliveryMethod.name
 							) : (
-								<LoadingDots />
+								<CircularProgress size={20} />
 							)
 						}
 						subTitle={shippingInfo?.deliveryMethod.code}
@@ -117,7 +133,7 @@ const SummaryService: React.FC = () => {
 											? formatCurrency(
 													shippingInfo?.deliveryMethod
 														.price
-												)
+											  )
 											: "Miễn phí"}
 									</span>
 								</div>
@@ -131,7 +147,7 @@ const SummaryService: React.FC = () => {
 					icon={<ArrowUpDown size={24} />}
 					headContent={
 						MAPPING_DELIVERY_METHOD[shippingInfo?.method.code] ?? (
-							<LoadingDots />
+							<CircularProgress size={20} />
 						)
 					}
 					endContent={
@@ -141,7 +157,7 @@ const SummaryService: React.FC = () => {
 									{shippingInfo?.method.price > 0
 										? formatCurrency(
 												shippingInfo?.method.price
-											)
+										  )
 										: "Miễn phí"}
 								</span>
 							</div>
@@ -235,7 +251,7 @@ const SummaryService: React.FC = () => {
 				<div className="flex flex-col gap-1">
 					<DiscountBlock />
 					<DetailContent
-						headContent="Phí dịch vụ nâng cao:"
+						headContent="Gói dịch vụ nâng cao:"
 						headContentClasses="text-gray-600"
 						headClasses="!text-sm text-gray-500"
 						endContent={formatCurrency(selectedPlan?.price || 0)}
@@ -305,58 +321,16 @@ const SummaryService: React.FC = () => {
 					<a href="#">điều khoản</a> và <a href="#">quy định</a> của
 					NoobStore
 				</small>
-				{/* Invisible reCAPTCHA component */}
-				{/* <InvisibleRecaptcha
-					ref={recaptchaRef}
-					siteKey={
-						process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY ||
-						""
-					}
-					onError={(error) => {
-						console.error("reCAPTCHA error:", error);
-						NotifyUtils.error("Lỗi xác thực reCAPTCHA");
-					}}
-				/> */}
 			</div>
+			<SuccessModal
+				open={isOpenModalSuccess}
+				title="Đặt lịch thành công!"
+				subtitle="Bạn đã đặt lịch dịch vụ thành công. Hệ thống sẽ chuyển hướng bạn trong giây lát."
+				countdownTime={3} // seconds
+				// redirectUrl="/dashboard"
+			/>
 		</div>
 	);
-
-	// Handle service booking submission with reCAPTCHA
-	async function handleSubmitBooking() {
-		try {
-			setIsSubmitting(true);
-
-			// Get reCAPTCHA token before submitting
-			// const recaptchaToken = await getRecaptchaToken(
-			// 	process.env.NEXT_PUBLIC_RECAPCHA_SITE_TO_RECAPCHA_KEY || "",
-			// 	"service_booking"
-			// );
-
-			// if (!recaptchaToken) {
-			// 	NotifyUtils.error(
-			// 		"Không thể xác thực reCAPTCHA. Vui lòng thử lại."
-			// 	);
-			// 	return;
-			// }
-
-			// Submit service booking
-			const response = await submitServiceBooking();
-
-			if (response?.status === "OK") {
-				NotifyUtils.success("Đặt lịch thành công!");
-				// You might want to redirect or reset form here
-			} else {
-				NotifyUtils.error(
-					response?.message || "Có lỗi xảy ra khi đặt lịch"
-				);
-			}
-		} catch (error) {
-			console.error("Service booking error:", error);
-			NotifyUtils.error("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	}
 };
 
 export default SummaryService;

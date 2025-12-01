@@ -117,11 +117,7 @@ const useCart = create<CartState>()(
 					return respUpdateCart;
 				} catch (err) {
 					NotifyUtils.error(err.message);
-					return {
-						code: 500,
-						message: err.message,
-						status: "ERROR",
-					};
+					throw err;
 				}
 			},
 			setIniting: (isIniting) => {

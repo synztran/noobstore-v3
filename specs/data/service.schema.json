@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Service",
+  "description": "Service booking data model",
+  "type": "object",
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Unique customer identifier"
+    },
+    "serviceBookingId": {
+      "type": "string",
+      "description": "Unique service booking identifier"
+    },
+    "servicePlanId": {
+      "type": "string",
+      "description": "Unique service plan identifier"
+    },
+    "tasks": {
+      "type": "array",
+      "description": "List of tasks associated with the service",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shipping": {
+      "type": "object",
+      "description": "Shipping information",
+      "properties": {
+        "delivery": {
+          "type": "object",
+          "description": "Shipping address",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "delivery address"
+            },
+            "date": {
+              "type": "string",
+              "description": "delivery date in format dd/mm/yyyy"
+            }
+          }
+        },
+        "pickup": {
+          "type": "object",
+          "description": "Pickup address",
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "pickup address"
+            },
+            "date": {
+              "type": "string",
+              "description": "pickup date in format dd/mm/yyyy"
+            }
+          }
+        }
+      },
+      "required": ["address", "city", "postalCode", "country"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Current service status",
+      "enum": ["CREATED", "IN_PROGRESS", "TESTING", "PACKING", "DELIVERY", "COMPLETED", "CANCELLED"]
+    },
+    "totalAmount": {
+      "type": "number",
+      "description": "Total service cost in VND",
+      "minimum": 0
+    },
+    "paymentStatus": {
+      "type": "string",
+      "description": "Payment status",
+      "enum": ["UNPAID", "PAID", "DEPOSIT", "FAILED", "REFUNDED"]
+    },
+    "customer": {
+      "$ref": "user.schema.json",
+      "description": "Customer information"
+    },
+    "items": {
+      "type": "array",
+      "description": "Service items (keyboards, switches, etc.)",
+      "items": {
+        "$ref": "service-item.schema.json"
+      },
+      "minItems": 1
+    },
+    "timeline": {
+      "type": "array",
+      "description": "Service status timeline",
+      "items": {
+        "$ref": "timeline-entry.schema.json"
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Service creation timestamp"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last update timestamp"
+    }
+  },
+  "required": ["id", "name", "status", "totalAmount", "paymentStatus", "customer", "items", "createdAt"]
+}

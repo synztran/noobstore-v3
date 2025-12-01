@@ -1,5 +1,7 @@
-import { GET, PUT } from "@/client";
+import { GET, POST, PUT } from "@/client";
 import { SERVICE_API } from "@/constants/APIUri";
+import { IResponse } from "@/interface/Client/interface";
+import { IResponseBackendServicePayment } from "@/interface/Client/Service";
 
 const getDefinitions = async (params?: { category?: string }) => {
 	const url = SERVICE_API.GET_DEFINITIONS;
@@ -26,14 +28,28 @@ const getServiceOptions = async () => {
 	return GET({ url, isAuth: true });
 };
 
-const getBooking = async () => {
+const getBookingService = async (params: { id: string }) => {
 	const url = SERVICE_API.GET_BOOKING;
-	return GET({ url, isAuth: true });
+	return GET({ url, params, isAuth: true });
 };
 
-const upsertBooking = async (payload: unknown) => {
-	const url = SERVICE_API.UPSERT_BOOKING;
-	return PUT({ url, body: payload, isAuth: true });
+const postBookingService = async (
+	payload: unknown
+): Promise<IResponse<unknown>> => {
+	const url = SERVICE_API.POST_BOOKING;
+	return POST({ url, body: payload, isAuth: true });
+};
+
+const getCheckingPayment = async (params: { bookingId: string }) => {
+	const url = SERVICE_API.GET_BOOKING_PAYMENT_CHECKING;
+	return GET({ url, params, isAuth: true });
+};
+
+const postSubmitPayment = async (
+	payload: unknown
+): Promise<IResponse<IResponseBackendServicePayment>> => {
+	const url = SERVICE_API.POST_BOOKING_SUBMIT_PAYMENT;
+	return POST({ url, body: payload, isAuth: true });
 };
 
 export default {
@@ -42,6 +58,8 @@ export default {
 	getTasks,
 	getFees,
 	getServiceOptions,
-	getBooking,
-	upsertBooking,
+	getBookingService,
+	postBookingService,
+	getCheckingPayment,
+	postSubmitPayment,
 };

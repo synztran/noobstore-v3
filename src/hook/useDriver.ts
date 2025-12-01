@@ -15,7 +15,8 @@ export function useGuide(hours: number = 6) {
 					Lần đâu có thể hơi bở ngỡ, hãy cùng chúng tôi trải nghiệm quy trình đặt lịch dịch vụ nhanh chóng và tiện lợi nhé!
 					`,
 				side: "bottom" as const,
-				align: "center" as const,
+        align: "center" as const,
+        
 			},
 		},
 		{
@@ -132,7 +133,7 @@ export function useGuide(hours: number = 6) {
 			localStorage.setItem("isGuided", "true");
 			localStorage.setItem(
 				"isGuidedExpires",
-				String(now + hours * 60 * 60 * 1000)
+				String(now + hours * 60 * 60 * 10000)
 			);
 		}
 	}, [hours]);

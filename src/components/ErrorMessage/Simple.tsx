@@ -24,6 +24,7 @@ const SimpleErrorMessage: React.FC<SimpleErrorMessageProps> = ({
 			}, autoHideDelay);
 			return () => clearTimeout(timer);
 		}
+		return;
 	}, [autoHide, autoHideDelay]);
 
 	const handleClose = () => {
@@ -152,4 +153,3 @@ const SimpleErrorMessage: React.FC<SimpleErrorMessageProps> = ({
 };
 
 export default SimpleErrorMessage;
-

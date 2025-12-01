@@ -14,16 +14,8 @@ interface SimpleTextFieldProps {
 	placeholder?: string;
 	className?: string;
 	value?: string | number;
-	onChange?: ({
-		name,
-		value,
-		parentName,
-	}: {
-		name: string;
-		value: string | number;
-		parentName?: string;
-	}) => void;
-	onChangeWithoutNameValue?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	// onChangeWithoutNameValue?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	max?: number;
 	min?: number;
 	note?: string;
@@ -42,7 +34,7 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 	className = "",
 	value = "",
 	onChange,
-	onChangeWithoutNameValue,
+	// onChangeWithoutNameValue,
 	max,
 	min,
 	note,
@@ -64,31 +56,25 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 			if (!regex.test(e.target.value)) {
 				return;
 			}
+			const value = parseInt(e.target.value, 10) || 0;
+			if (max && currentAmount && value > max - currentAmount) {
+				const newValue =
+					max - currentAmount >= 0 ? max - currentAmount : 0;
+				setInputValue(newValue);
+				return;
+			}
+			setInputValue(value);
+		} else {
+			const value = e.target.value;
+			setInputValue(value);
 		}
-		const value = parseInt(e.target.value, 10) || 0;
-		console.log("value", value);
-		console.log("max", max);
-		console.log("currentAmount", currentAmount);
-		if (max && currentAmount && value > max - currentAmount) {
-			const newValue = max - currentAmount >= 0 ? max - currentAmount : 0;
-			console.log("newValue", newValue);
-			setInputValue(newValue);
-			return;
-		}
-		setInputValue(value);
 
 		if (debounceRef.current) {
 			clearTimeout(debounceRef.current);
 		}
 
 		debounceRef.current = window.setTimeout(() => {
-			onChange &&
-				onChange({
-					name,
-					value: type === "number" ? value : value,
-					parentName,
-				});
-			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
+			onChange && onChange(e);
 		}, DEBOUNCE_DELAY);
 	};
 
@@ -101,12 +87,14 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 	}, []);
 
 	const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+		if (type !== "number") return;
 		let value = e.target.value;
 		if (value === "" || value === "0") {
 			// Allow empty or 0, do not force min
 			setInputValue(value);
-			onChange && onChange({ name, value: value, parentName });
-			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
+			// onChange && onChange({ name, value: value, parentName });
+			onChange && onChange(e);
+			// onChangeWithoutNameValue && onChangeWithoutNameValue(e);
 			return;
 		}
 		let num = parseInt(value, 10);
@@ -123,8 +111,7 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 		}
 		if (newValue !== value) {
 			setInputValue(newValue);
-			onChange && onChange({ name, value: newValue, parentName });
-			onChangeWithoutNameValue && onChangeWithoutNameValue(e);
+			onChange && onChange(e);
 		}
 	};
 
@@ -145,7 +132,7 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 						"!text-lg max-w-max leading-[1.25] !bg-transparent",
 				}}
 				inputProps={{
-					className: "!text-base bg-[#f7fafc]",
+					className: "!text-base",
 				}}
 				name={name}
 				multiline={multiline}

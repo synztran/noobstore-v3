@@ -2,64 +2,83 @@
 
 🚀 A modern e-commerce platform built with Next.js, Tailwind CSS, and TypeScript, specializing in mechanical keyboards and accessories.
 
+## 📋 Specification-Driven Development (SDD)
+
+This project uses **Specification-Driven Design (SDD)** methodology to ensure high-quality, unambiguous development. All features are defined through formal specifications that serve as the **Single Source of Truth**.
+
+### SDD Components
+
+- **API Specifications** (OpenAPI) - Define endpoints and contracts in `specs/api/`
+- **Data Specifications** (JSON Schema) - Define data structures in `specs/data/`
+- **Behavior Specifications** (Gherkin) - Define user journeys in `specs/behavior/`
+
+### SDD Workflow
+
+1. **Define Behavior** - Write Gherkin scenarios
+2. **Design API** - Create OpenAPI specifications
+3. **Model Data** - Define JSON schemas
+4. **Implement & Validate** - Code must satisfy all specifications
+
+📖 **Read the full SDD guide**: [`specs/README.md`](specs/README.md)
+
 ## 🌟 Features
 
 ### 🛍️ E-commerce Core
 
--   **Product Catalog**: Browse keyboards, switches, keycaps, desk mats, and accessories
--   **Shopping Cart**: Add, remove, and manage cart items with real-time updates
--   **Checkout System**: Complete order process with multiple payment methods
--   **Order Management**: Track orders and view order history
--   **User Authentication**: Secure login/register with role-based access
+- **Product Catalog**: Browse keyboards, switches, keycaps, desk mats, and accessories
+- **Shopping Cart**: Add, remove, and manage cart items with real-time updates
+- **Checkout System**: Complete order process with multiple payment methods
+- **Order Management**: Track orders and view order history
+- **User Authentication**: Secure login/register with role-based access
 
 ### 🎮 Interactive Features
 
--   **Lucky Wheel Game**: Spin-to-win promotional game with rewards
--   **Real-time Chat**: Live customer support with WebSocket integration
--   **Music Player**: Background music player for enhanced user experience
--   **Community Sharing**: Social features for keyboard enthusiasts
+- **Lucky Wheel Game**: Spin-to-win promotional game with rewards
+- **Real-time Chat**: Live customer support with WebSocket integration
+- **Music Player**: Background music player for enhanced user experience
+- **Community Sharing**: Social features for keyboard enthusiasts
 
 ### 🎨 User Experience
 
--   **Responsive Design**: Mobile-first approach with Tailwind CSS
--   **Modern UI**: Clean, professional interface with Material-UI components
--   **Search & Filter**: Advanced product filtering and search capabilities
--   **Wishlist**: Save favorite products for later
--   **Product Reviews**: Customer feedback and ratings system
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Modern UI**: Clean, professional interface with Material-UI components
+- **Search & Filter**: Advanced product filtering and search capabilities
+- **Wishlist**: Save favorite products for later
+- **Product Reviews**: Customer feedback and ratings system
 
 ### 🔧 Technical Features
 
--   **TypeScript**: Full type safety and better development experience
--   **React Query**: Efficient data fetching and caching
--   **Zustand**: Lightweight state management
--   **WebSocket**: Real-time communication for chat and notifications
--   **SEO Optimized**: Next.js SEO features for better search visibility
+- **TypeScript**: Full type safety and better development experience
+- **React Query**: Efficient data fetching and caching
+- **Zustand**: Lightweight state management
+- **WebSocket**: Real-time communication for chat and notifications
+- **SEO Optimized**: Next.js SEO features for better search visibility
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
--   **Next.js 14** - React framework with SSR/SSG
--   **TypeScript** - Type-safe JavaScript
--   **Tailwind CSS** - Utility-first CSS framework
--   **Material-UI** - React component library
--   **React Query** - Data fetching and caching
--   **Zustand** - State management
--   **Formik & Yup** - Form handling and validation
+- **Next.js 14** - React framework with SSR/SSG
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Material-UI** - React component library
+- **React Query** - Data fetching and caching
+- **Zustand** - State management
+- **Formik & Yup** - Form handling and validation
 
 ### Backend Integration
 
--   **RESTful APIs** - Custom API endpoints
--   **WebSocket** - Real-time communication
--   **Authentication** - JWT-based auth system
--   **File Upload** - Image and media handling
+- **RESTful APIs** - Custom API endpoints
+- **WebSocket** - Real-time communication
+- **Authentication** - JWT-based auth system
+- **File Upload** - Image and media handling
 
 ### Development Tools
 
--   **ESLint** - Code linting
--   **Prettier** - Code formatting
--   **Husky** - Git hooks
--   **TypeScript** - Static type checking
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Husky** - Git hooks
+- **TypeScript** - Static type checking
 
 ## 📦 Installation
 
@@ -98,84 +117,80 @@
 
 ## 🚀 Available Scripts
 
--   `npm run dev` - Start development server
--   `npm run build` - Build for production
--   `npm run start` - Start production server
--   `npm run lint` - Run ESLint
--   `npm run format` - Format code with Prettier
--   `npm run check-types` - TypeScript type checking
--   `npm run build-prod` - Build and export for static hosting
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+- `npm run check-types` - TypeScript type checking
+- `npm run build-prod` - Build and export for static hosting
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/          # Reusable UI components
-│   ├── adminComponents/ # Admin dashboard components
-│   ├── home/           # Homepage components
-│   ├── luckyWheel/     # Lucky wheel game
-│   ├── MessageChat/    # Real-time chat system
-│   └── ...
-├── pages/              # Next.js pages
-│   ├── admin/          # Admin dashboard pages
-│   ├── account/        # User account pages
-│   ├── cart/           # Shopping cart
-│   ├── checkout/       # Checkout process
-│   └── ...
-├── client/             # API client functions
-├── context/            # React context providers
-├── hook/               # Custom React hooks
-├── interface/          # TypeScript interfaces
-├── react-query/        # React Query configurations
-├── services/           # External service integrations
-├── utils/              # Utility functions
-└── zustand/            # State management stores
+├── specs/                          # SDD Specifications
+│   ├── api/                        # OpenAPI specifications
+│   ├── data/                       # JSON Schema definitions
+│   └── behavior/                   # Gherkin feature files
+├── src/
+│   ├── components/                 # Reusable UI components
+│   ├── pages/                      # Next.js pages/routes
+│   ├── client/                     # API client classes
+│   ├── react-query/                # API hooks and queries
+│   ├── zustand/                    # Global state stores
+│   ├── interface/                  # TypeScript interfaces
+│   ├── constants/                  # App constants and enums
+│   ├── utils/                      # Utility functions
+│   ├── styles/                     # Global styles and themes
+│   └── hooks/                      # Custom React hooks
+├── public/                         # Static assets
+└── docs/                           # Documentation
 ```
 
 ## 🎯 Key Features Explained
 
 ### E-commerce Platform
 
--   **Product Management**: Complete CRUD operations for products
--   **Category System**: Organized product categorization
--   **Inventory Management**: Stock tracking and availability
--   **Pricing System**: Dynamic pricing with discounts and promotions
+- **Product Management**: Complete CRUD operations for products
+- **Category System**: Organized product categorization
+- **Inventory Management**: Stock tracking and availability
+- **Pricing System**: Dynamic pricing with discounts and promotions
 
 ### User Management
 
--   **Authentication**: Secure login/register system
--   **User Profiles**: Personal information and preferences
--   **Order History**: Complete order tracking
--   **Address Management**: Multiple shipping addresses
+- **Authentication**: Secure login/register system
+- **User Profiles**: Personal information and preferences
+- **Order History**: Complete order tracking
+- **Address Management**: Multiple shipping addresses
 
 ### Admin Dashboard
 
--   **Analytics**: Sales and user analytics
--   **Order Management**: Process and track orders
--   **Product Management**: Add/edit products and categories
--   **User Management**: Manage customer accounts
+- **Analytics**: Sales and user analytics
+- **Order Management**: Process and track orders
+- **Product Management**: Add/edit products and categories
+- **User Management**: Manage customer accounts
 
 ### Interactive Features
 
--   **Lucky Wheel**: Gamification with rewards and prizes
--   **Live Chat**: Real-time customer support
--   **Community**: Social features for enthusiasts
--   **Music Player**: Background entertainment
+- **Lucky Wheel**: Gamification with rewards and prizes
+- **Live Chat**: Real-time customer support
+- **Community**: Social features for enthusiasts
+- **Music Player**: Background entertainment
 
 ## 🔒 Security Features
 
--   JWT-based authentication
--   Role-based access control
--   Secure API endpoints
--   Input validation and sanitization
--   CSRF protection
+- JWT-based authentication
+- Role-based access control
+- Secure API endpoints
+- Input validation and sanitization
+- CSRF protection
 
 ## 📱 Responsive Design
 
--   Mobile-first approach
--   Tablet and desktop optimized
--   Touch-friendly interfaces
--   Progressive Web App features
+- Mobile-first approach
+- Tablet and desktop optimized
+- Touch-friendly interfaces
+- Progressive Web App features
 
 ## 🚀 Deployment
 
@@ -208,6 +223,42 @@ CMD ["npm", "start"]
 
 ## 🤝 Contributing
 
+### For New Features (SDD Process)
+
+1. **Create Specifications First**
+    - Write Gherkin scenarios in `specs/behavior/`
+    - Design API contracts in `specs/api/openapi.yml`
+    - Define data schemas in `specs/data/`
+
+2. **Get Specification Approval**
+    - Have specs reviewed by the team
+    - Ensure all contracts are clear and complete
+
+3. **Implement to Satisfy Specifications**
+    - Code must exactly match API contracts
+    - Data must validate against schemas
+    - Behavior must satisfy Gherkin scenarios
+
+4. **Validate Implementation**
+    - Use validation tools to ensure compliance
+    - Test against all specification contracts
+
+### For Bug Fixes
+
+1. **Update specifications** if behavior needs to change
+2. **Implement fix** according to updated specs
+3. **Validate** against specifications
+
+### Code Review Checklist
+
+- [ ] Specifications exist and are current
+- [ ] Code satisfies all specification contracts
+- [ ] Data structures match JSON schemas
+- [ ] API responses conform to OpenAPI specs
+- [ ] Behavior matches Gherkin scenarios
+
+### General Contributing Steps
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
@@ -220,9 +271,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
--   Built with ♥ by [HariHateDev](https://irah.vercel.app/)
--   Special thanks to the mechanical keyboard community
--   Icons and assets from various open-source contributors
+- Built with ♥ by [HariHateDev](https://irah.vercel.app/)
+- Special thanks to the mechanical keyboard community
+- Icons and assets from various open-source contributors
 
 ---
 

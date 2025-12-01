@@ -6,8 +6,12 @@ import {
 	tempStabilizerTypeOptions,
 } from "@/constants";
 import useSelectedOption from "@/hook/useSelectedOption";
-import { EnumServiceType, EnumUploadStatus } from "@/interface/interface";
-import useServiceTaskQuery from "@/react-query/services/useServiceTaskQueries";
+import {
+	EnumServiceType,
+	EnumStabilizerStatus,
+	EnumUploadStatus,
+} from "@/interface/interface";
+import useServiceTaskQuery from "@/react-query/services/api/useServiceTaskQueries";
 import { mapServiceTasksToOptions } from "@/utils/Data";
 import NotifyUtils from "@/utils/NotifyUtils";
 import useServices, {
@@ -60,10 +64,8 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		stabilizerFormSelected,
 		handleStabilizerSelect,
 		handleStabilizerAddNew,
-		handleStabilizerServiceCheck,
 		updateStabilizerOptions,
 		updateStabilizerServicePrices,
-		handleChangeOption,
 	} = useSelectedOption({
 		initialStabilizerSizeOptions: defaultStabilizerSizeOptions,
 		initialStabilizerMountTypeOptions: defaultStabilizerMountTypeOptions,
@@ -84,8 +86,6 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 			},
 		},
 	});
-
-	console.log("stabilizerOptions", stabilizerOptions);
 
 	// Update options when API data changes
 	useEffect(() => {
@@ -156,10 +156,10 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 		name: "handle" | "clean";
 		value: boolean;
 	}) => {
-		const servicePrice = stabilizerFormSelected.services[name].price;
-		const serviceName = stabilizerFormSelected.services[name].name;
-
-		handleStabilizerServiceCheck({ name, value });
+		const servicePrice =
+			stabilizerFormSelected?.services?.[name]?.price ?? 0;
+		const serviceName =
+			stabilizerFormSelected?.services?.[name]?.name ?? "";
 
 		if (itemId) {
 			updateStabilizerItem(itemId, {
@@ -176,7 +176,6 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 	};
 
 	const handleOnChangeStabSelection = (updater: IStabilizerFormItem) => {
-		console.log("id", itemId, updater);
 		if (!itemId) {
 			NotifyUtils.error("Không tìm thấy mục stabilizer để cập nhật.");
 			return;
@@ -214,7 +213,12 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						name="name"
 						label="Hãng"
 						placeholder="Nhập tên hãng stabilizer"
-						onChange={handleTextChange}
+						onChange={(e) =>
+							handleTextChange({
+								name: "name",
+								value: e.target.value,
+							})
+						}
 						value={props.value.brand || ""}
 					/>
 					<div className="flex flex-col">
@@ -250,10 +254,9 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 							name: string;
 							option: IOptionSelection;
 						}) => {
-							handleChangeOption({ name, option });
 							if (itemId) {
 								updateStabilizerItem(itemId, {
-									status: option?.value,
+									status: option?.value as EnumStabilizerStatus,
 								});
 							}
 						}}
@@ -284,32 +287,36 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 					<div className="flex flex-col gap-4">
 						<CheckboxWithPrice
 							label={
-								stabilizerFormSelected.services.handle.name ||
-								"Cân chỉnh Stabilizer"
+								stabilizerFormSelected?.services?.handle
+									?.name || "Cân chỉnh Stabilizer"
 							}
-							price={stabilizerFormSelected.services.handle.price}
+							price={
+								stabilizerFormSelected?.services?.handle?.price
+							}
 							value={props.value.services?.handle?.isUse || false}
 							onChange={handleChecked}
 							name="handle"
 							containerClassName="justify-between gap-12"
 							subLabel={
-								stabilizerFormSelected.services.handle
-									.description
+								stabilizerFormSelected?.services?.handle
+									?.description
 							}
 						/>
 						<CheckboxWithPrice
 							label={
-								stabilizerFormSelected.services.clean.name ||
+								stabilizerFormSelected?.services?.clean?.name ||
 								"Vệ sinh Stabilizer"
 							}
-							price={stabilizerFormSelected.services.clean.price}
+							price={
+								stabilizerFormSelected?.services?.clean?.price
+							}
 							value={props.value.services?.clean?.isUse || false}
 							onChange={handleChecked}
 							name="clean"
 							containerClassName="justify-between gap-12"
 							subLabel={
-								stabilizerFormSelected.services.clean
-									.description
+								stabilizerFormSelected?.services?.clean
+									?.description
 							}
 						/>
 					</div>
@@ -328,7 +335,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 				<UploadImage
 					label="Tải lên hiện trạng stabilizer"
 					subLabel="Bạn có thể tải lên hình ảnh của stabilizer ngay, hoặc shop sẽ liên hệ bạn sau"
-					files={props.value.attachments.map((item) => ({
+					files={props.value?.attachments?.map((item) => ({
 						preview: item.publicUrl || "",
 						status: EnumUploadStatus.DONE,
 						publicUrl: item.publicUrl || "",
@@ -339,7 +346,7 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						if (itemId) {
 							updateStabilizerItem(itemId, {
 								attachments: [
-									...props.value.attachments,
+									...(props.value?.attachments || []),
 									...data,
 								],
 							});
@@ -354,7 +361,12 @@ const ServiceStabilizerForm: React.FC<IProps> = (props) => {
 						name="note"
 						label=""
 						placeholder="Nhập ghi chú"
-						onChange={handleTextChange}
+						onChange={(e) =>
+							handleTextChange({
+								name: "note",
+								value: e.target.value,
+							})
+						}
 						value={props.value.note}
 						className="resize-none"
 						note="Tối đa 300 ký tự"

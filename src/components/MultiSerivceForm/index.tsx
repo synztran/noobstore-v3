@@ -36,7 +36,7 @@ const TabInfo = [
 				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
-		id: "tab-keyboard",
+		id: "keyboard",
 	},
 	{
 		name: "Switches",
@@ -49,7 +49,7 @@ const TabInfo = [
 				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
-		id: "tab-switches",
+		id: "switches",
 	},
 	{
 		name: "Stabilizer",
@@ -62,7 +62,7 @@ const TabInfo = [
 				style={{ maxWidth: "100%", height: "auto" }}
 			/>
 		),
-		id: "tab-stabilizer",
+		id: "stabilizer",
 	},
 ];
 
@@ -109,8 +109,14 @@ const MultiServiceForm: React.FC = () => {
 		return keyboardItems.length === 3;
 	}, [selectedPlan, keyboardItems]);
 
+	const mapTabLabel: Record<(typeof TabInfo)[number]["id"], number> = {
+		keyboard: keyboardItems.length,
+		switches: switchItems.length,
+		stabilizer: stabilizerItems.length,
+	};
+
 	return (
-		<Box sx={{ width: "100%" }} id="multi-service-form-step">
+		<div className="w-full min-h-[300px]" id="multi-service-form-step">
 			<Box sx={{ borderBottom: 1, borderColor: "divider" }}>
 				<Tabs
 					value={activeTabIndex}
@@ -123,17 +129,8 @@ const MultiServiceForm: React.FC = () => {
 								<div
 									className="flex items-center gap-2"
 									id={tab.id}>
-									{tab.icon} {tab.name} (
-									{tab.id === "tab-keyboard"
-										? keyboardItems.length
-										: null}
-									{tab.id === "tab-switches"
-										? switchItems.length
-										: null}
-									{tab.id === "tab-stabilizer"
-										? stabilizerItems.length
-										: null}
-									)
+									{tab.icon} {tab.name}(
+									{mapTabLabel?.[tab.id] || 0})
 								</div>
 							}
 							className="!normal-case"
@@ -229,7 +226,7 @@ const MultiServiceForm: React.FC = () => {
 					{switchItems.map((item) => (
 						<div
 							key={item.id}
-							className="border border-gray-600 rounded-md p-3 relative mt-2">
+							className="border border-gray-600 rounded-md p-3 relative mt-2 bg-white">
 							<button
 								className="absolute -right-2 -top-2 bg-white text-gray-500 hover:text-red-600 border-2 border-red-400 rounded-full p-1"
 								onClick={() => removeSwitchItem(item.id)}
@@ -296,7 +293,7 @@ const MultiServiceForm: React.FC = () => {
 					))}
 				</div>
 			</CustomTabPanel>
-		</Box>
+		</div>
 	);
 };
 

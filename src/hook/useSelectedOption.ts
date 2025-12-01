@@ -1,5 +1,5 @@
 import { IOptionSelection } from "@/components/SelectComp";
-import { EnumSwitchType } from "@/interface/interface";
+import { EnumSwitchType, EnumUnitType } from "@/interface/interface";
 import { useCallback, useState } from "react";
 
 type TProps = {
@@ -133,49 +133,6 @@ const useSelectedOption = (props: TProps) => {
 		name: string;
 		quantity: number;
 		services: TService; // lube | clean | film | spring | quickClean
-		// lube: {
-		// 	value: boolean;
-		// 	price: number;
-		// 	name: string;
-		// 	description: string;
-		// 	info: {
-		// 		grease?: string;
-		// 	};
-		// };
-		// clean: {
-		// 	value: boolean;
-		// 	price: number;
-		// 	name: string;
-		// 	description: string;
-		// };
-		// film: {
-		// 	value: boolean;
-		// 	price: number;
-		// 	name: string;
-		// 	info: {
-		// 		brand?: string;
-		// 		type?: string;
-		// 		color?: string;
-		// 	};
-		// 	description: string;
-		// };
-		// spring: {
-		// 	value: boolean;
-		// 	price: number;
-		// 	name: string;
-		// 	info: {
-		// 		brand?: string;
-		// 		type?: string;
-		// 		force?: string;
-		// 	};
-		// 	description: string;
-		// };
-		// quickClean: {
-		// 	value: boolean;
-		// 	price: number;
-		// 	name: string;
-		// 	description: string;
-		// };
 	}>({
 		type: "",
 		name: "",
@@ -235,55 +192,6 @@ const useSelectedOption = (props: TProps) => {
 						?.description || "",
 			},
 		},
-		// lube: {
-		// 	value: false,
-		// 	price: props.initialServicePrices?.switch?.lube?.price || 0,
-		// 	name: props.initialServicePrices?.switch?.lube?.name || "",
-		// 	description:
-		// 		props.initialServicePrices?.switch?.lube?.description || "",
-		// 	info: props.initialServicePrices?.switch?.lube?.info || {
-		// 		grease: "",
-		// 	},
-		// },
-		// clean: {
-		// 	value: false,
-		// 	price: props.initialServicePrices?.switch?.clean?.price || 0,
-		// 	name: props.initialServicePrices?.switch?.clean?.name || "",
-		// 	description:
-		// 		props.initialServicePrices?.switch?.clean?.description || "",
-		// },
-		// film: {
-		// 	value: false,
-		// 	price: props.initialServicePrices?.switch?.film?.price || 0,
-		// 	name: props.initialServicePrices?.switch?.film?.name || "",
-		// 	info: props.initialServicePrices?.switch?.film?.info || {
-		// 		brand: "",
-		// 		type: "",
-		// 		color: "",
-		// 	},
-		// 	description:
-		// 		props.initialServicePrices?.switch?.film?.description || "",
-		// },
-		// spring: {
-		// 	value: false,
-		// 	price: props.initialServicePrices?.switch?.spring?.price || 0,
-		// 	name: props.initialServicePrices?.switch?.spring?.name || "",
-		// 	info: props.initialServicePrices?.switch?.spring?.info || {
-		// 		brand: "",
-		// 		type: "",
-		// 		force: "",
-		// 	},
-		// 	description:
-		// 		props.initialServicePrices?.switch?.spring?.description || "",
-		// },
-		// quickClean: {
-		// 	value: false,
-		// 	price: props.initialServicePrices?.switch?.quickClean?.price || 0,
-		// 	name: props.initialServicePrices?.switch?.quickClean?.name || "",
-		// 	description:
-		// 		props.initialServicePrices?.switch?.quickClean?.description ||
-		// 		"",
-		// },
 	});
 
 	const [switchOptions, setSwitchOptions] = useState<{
@@ -322,26 +230,6 @@ const useSelectedOption = (props: TProps) => {
 			switch: TService;
 			stabilizer: TService;
 		};
-		// {
-		// 	solder: {
-		// 		value: boolean;
-		// 		price: number;
-		// 		name: string;
-		// 		description: string;
-		// 	};
-		// 	desolder: {
-		// 		value: boolean;
-		// 		price: number;
-		// 		name: string;
-		// 		description: string;
-		// 	};
-		// 	clean: {
-		// 		value: boolean;
-		// 		price: number;
-		// 		name: string;
-		// 		description: string;
-		// 	};
-		// };
 	}>({
 		name: null,
 		pcb: null,
@@ -492,20 +380,6 @@ const useSelectedOption = (props: TProps) => {
 		stabilizerMountType: IOptionSelection | null;
 		stabilizerType: IOptionSelection | null;
 		services: TService;
-		// {
-		// 	handle: {
-		// 		value: boolean;
-		// 		price: number;
-		// 		name: string;
-		// 		description: string;
-		// 	};
-		// 	clean: {
-		// 		value: boolean;
-		// 		price: number;
-		// 		name: string;
-		// 		description: string;
-		// 	};
-		// };
 	}>({
 		stabilizer: null,
 		stabilizerMountType: null,
@@ -539,6 +413,7 @@ const useSelectedOption = (props: TProps) => {
 				price: number;
 				name: string;
 				description: string;
+				unitPrice?: Record<string, number>;
 			} | null;
 		};
 		switch?: {
@@ -546,6 +421,7 @@ const useSelectedOption = (props: TProps) => {
 				price: number;
 				name: string;
 				description: string;
+				unitPrice?: Record<string, number>;
 			} | null;
 		};
 		stabilizer?: {
@@ -553,6 +429,8 @@ const useSelectedOption = (props: TProps) => {
 				price: number;
 				name: string;
 				description: string;
+				unitType?: EnumUnitType;
+				unitPrice?: Record<string, number>;
 			} | null;
 		};
 	}>({
@@ -581,22 +459,6 @@ const useSelectedOption = (props: TProps) => {
 		setSwitchOptions({ ...switchOptions, [name]: newOption });
 		setSwitchSelected({ ...serviceSwitchSelected, [name]: newOption });
 	};
-
-	// const handleCheckSwitchService = (
-	// 	serviceName: string,
-	// 	name: string,
-	// 	value: string | number,
-	// 	isUse: boolean
-	// ) => {
-	// 	setSwitchSelected({
-	// 		...serviceSwitchSelected,
-	// 		[serviceName]: {
-	// 			value,
-	// 			name,
-	// 			isUse,
-	// 		},
-	// 	});
-	// };
 
 	// Switch service handlers (for checkbox services)
 	const handleSwitchServiceCheck = ({
@@ -762,7 +624,6 @@ const useSelectedOption = (props: TProps) => {
 		};
 		value: boolean;
 	}) => {
-		console.log(name, value, "<<<<<", Object.keys(name));
 		setKeyboardFormSelected((prev) => ({
 			...prev,
 			// [Object.keys(name) as unknown as string]: {
@@ -868,7 +729,7 @@ const useSelectedOption = (props: TProps) => {
 			[name]: option,
 		});
 
-		// remove mount-type = plate when type is screw-in
+		// TODO: if mountType === PLATE_MOUNTED => hide select stabilizerType
 		const isRemovePlateMount =
 			name === "type" && option?.value === "SCREW_IN";
 		setStabilizerOptions((prev) => ({

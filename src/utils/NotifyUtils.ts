@@ -1,44 +1,46 @@
+import { ReactNode } from "react";
 import { toast, ToastOptions, TypeOptions, Id } from "react-toastify";
 import { hashCode } from "./StringUtils";
 
-type ShowOptions = ToastOptions & { [key: string]: any };
+type ShowContent = string | ReactNode;
+type ShowOptions = ToastOptions & { timeout?: number }; // Add timeout to ShowOptions
 
 const show = (
-	text: string,
+	content: ShowContent,
 	type: TypeOptions,
 	options: ShowOptions = {}
 ): void => {
-	// create toastId
-	const toastId: Id = hashCode(`${text}-${Date.now()}`)?.toString() || "";
-
-	// prevent duplicate message
-	if (toast.isActive(toastId)) {
-		toast.update(toastId, { autoClose: 1500 });
-	} else {
-		toast(text, { toastId, type, position: "top-right", ...options });
+	let toastId: Id | undefined = options.toastId;
+	if (!toastId && typeof content === "string") {
+		toastId = hashCode(`${content || ""}-${Date.now()}`)?.toString();
 	}
+
+	if (toastId && toast.isActive(toastId)) {
+		toast.update(toastId, { autoClose: options.timeout || 1500 }); // Use timeout if provided
+		return;
+	}
+
+	toast(content, {
+		type,
+		position: "top-right",
+		autoClose: options.timeout || 5000, // Default to 5000ms if no timeout is provided
+		toastId,
+		...options,
+	});
 };
 
-const info = (text: string, options?: ShowOptions): void => {
-	show(text, "info", options);
-};
+const info = (content: ShowContent, options?: ShowOptions): void =>
+	show(content, "info", options);
 
-const success = (text: string | JSX.Element, options?: ShowOptions): void => {
-	show(typeof text === "string" ? text : text.toString(), "success", options);
-};
+const success = (content: ShowContent, options?: ShowOptions): void =>
+	show(content, "success", options);
 
-const dark = (text: string, options?: ShowOptions): void => {
-	show(text, "dark" as TypeOptions, options);
-};
+const error = (content: ShowContent, options?: ShowOptions): void =>
+	show(content, "error", options);
 
-const error = (text: string, options?: ShowOptions): void => {
-	show(text, "error", options);
-};
+const warn = (content: ShowContent, options?: ShowOptions): void =>
+	show(content, "warning", options);
 
-const warn = (text: string, options?: ShowOptions): void => {
-	show(text, "warn" as TypeOptions, options);
-};
-
-const NotifyUtils = { info, success, dark, error, warn };
+const NotifyUtils = { info, success, error, warn };
 
 export default NotifyUtils;

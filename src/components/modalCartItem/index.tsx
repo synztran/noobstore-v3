@@ -144,6 +144,7 @@ const ModalCartItem = ({ open, handleClose }: Props) => {
 								alt="gif sc"
 								width={150}
 								height={50}
+								unoptimized
 							/>
 							<Typography variant="body1" className="text-center">
 								Chưa có sản phẩm thêm vào giỏ!
@@ -303,9 +304,6 @@ const CartItem = ({
 							</div>
 						</div>
 					</div>
-					{index !== cart.products.length - 1 ? (
-						<Divider className="" />
-					) : null}
 				</>
 			))}
 		</div>

@@ -1,0 +1,680 @@
+openapi: 3.0.3
+info:
+    title: NoobStore Service Booking API
+    description: API for keyboard service booking and management
+    version: 1.0.0
+    contact:
+        name: NoobStore Support
+        email: support@noobstore.vn
+
+servers:
+    - url: https://api.noobstore.vn/v1
+      description: Production server
+    - url: http://localhost:8000
+      description: Development server
+
+security:
+    - bearerAuth: []
+
+paths:
+    /services:
+        get:
+            summary: Get user's service bookings
+            description: Retrieve all service bookings for the authenticated user
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                      type: string
+                      enum:
+                          [
+                              CREATED,
+                              IN_PROGRESS,
+                              TESTING,
+                              PACKING,
+                              DELIVERY,
+                              COMPLETED,
+                              CANCELLED,
+                          ]
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      maximum: 100
+                      default: 20
+            responses:
+                "200":
+                    description: Service bookings retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    services:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/Service"
+                                    pagination:
+                                        $ref: "#/components/schemas/Pagination"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        post:
+            summary: Create a new service booking
+            description: Create a new service booking for the authenticated user
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ServiceCreateRequest"
+            responses:
+                "201":
+                    description: Service booking created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Service"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+    /services/{serviceId}:
+        get:
+            summary: Get service booking details
+            description: Retrieve detailed information about a specific service booking
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: serviceId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Service details retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Service"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        put:
+            summary: Update service booking
+            description: Update service booking information (admin only)
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: serviceId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ServiceUpdateRequest"
+            responses:
+                "200":
+                    description: Service updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Service"
+                "403":
+                    $ref: "#/components/responses/Forbidden"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /services/{serviceId}/payments:
+        post:
+            summary: Process payment for service
+            description: Process payment or deposit for a service booking
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: serviceId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/PaymentRequest"
+            responses:
+                "200":
+                    description: Payment processed successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PaymentResponse"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /products/{productId}/reviews:
+        get:
+            summary: Get product reviews
+            description: Retrieve all approved reviews for a specific product
+            parameters:
+                - name: productId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      maximum: 50
+                      default: 10
+                - name: sort
+                  in: query
+                  schema:
+                      type: string
+                      enum: [newest, oldest, highest, lowest, helpful]
+                      default: newest
+            responses:
+                "200":
+                    description: Reviews retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    reviews:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/ProductReview"
+                                    pagination:
+                                        $ref: "#/components/schemas/Pagination"
+                                    averageRating:
+                                        type: number
+                                        minimum: 0
+                                        maximum: 5
+                                    totalReviews:
+                                        type: integer
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        post:
+            summary: Create product review
+            description: Submit a new review for a product (verified purchases only)
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: productId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ProductReviewCreateRequest"
+            responses:
+                "201":
+                    description: Review created successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductReview"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "403":
+                    description: Forbidden - not a verified purchase
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: "Forbidden"
+                                    message:
+                                        type: string
+                                        example: "Only verified purchases can leave reviews"
+
+    /products/{productId}/reviews/{reviewId}:
+        get:
+            summary: Get specific review
+            description: Retrieve a specific product review
+            parameters:
+                - name: productId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: reviewId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Review retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductReview"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        put:
+            summary: Update product review
+            description: Update user's own review
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: productId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: reviewId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ProductReviewUpdateRequest"
+            responses:
+                "200":
+                    description: Review updated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductReview"
+                "403":
+                    $ref: "#/components/responses/Forbidden"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+        delete:
+            summary: Delete product review
+            description: Delete user's own review or admin deletes any review
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: productId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: reviewId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "204":
+                    description: Review deleted successfully
+                "403":
+                    $ref: "#/components/responses/Forbidden"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /reviews/{reviewId}/helpful:
+        post:
+            summary: Mark review as helpful
+            description: Mark a review as helpful (authenticated users only)
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: reviewId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Review marked as helpful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    helpfulCount:
+                                        type: integer
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+    /admin/reviews:
+        get:
+            summary: Get reviews for moderation
+            description: Admin endpoint to get reviews pending moderation
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: status
+                  in: query
+                  schema:
+                      type: string
+                      enum: [PENDING, APPROVED, REJECTED]
+                      default: PENDING
+                - name: page
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      default: 1
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      minimum: 1
+                      maximum: 100
+                      default: 20
+            responses:
+                "200":
+                    description: Reviews retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    reviews:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/ProductReview"
+                                    pagination:
+                                        $ref: "#/components/schemas/Pagination"
+                "403":
+                    $ref: "#/components/responses/Forbidden"
+
+    /admin/reviews/{reviewId}/moderate:
+        put:
+            summary: Moderate review
+            description: Approve or reject a review (admin only)
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: reviewId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                status:
+                                    type: string
+                                    enum: [APPROVED, REJECTED]
+                                moderationReason:
+                                    type: string
+                                    maxLength: 500
+                            required: [status]
+            responses:
+                "200":
+                    description: Review moderated successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProductReview"
+                "403":
+                    $ref: "#/components/responses/Forbidden"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+components:
+    schemas:
+        Service:
+            $ref: "../data/service.schema.json"
+
+        ProductReview:
+            $ref: "../data/product-review.schema.json"
+
+        ProductReviewCreateRequest:
+            type: object
+            properties:
+                rating:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                    description: Star rating from 1 to 5
+                title:
+                    type: string
+                    maxLength: 100
+                    description: Review title/summary
+                comment:
+                    type: string
+                    maxLength: 1000
+                    description: Detailed review comment
+                images:
+                    type: array
+                    items:
+                        type: string
+                        format: uri
+                    maxItems: 5
+                    description: Array of image URLs
+            required: [rating, comment]
+
+        ProductReviewUpdateRequest:
+            type: object
+            properties:
+                rating:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                title:
+                    type: string
+                    maxLength: 100
+                comment:
+                    type: string
+                    maxLength: 1000
+                images:
+                    type: array
+                    items:
+                        type: string
+                        format: uri
+                    maxItems: 5
+
+        ServiceCreateRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Service name
+                description:
+                    type: string
+                    description: Service description
+                items:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/ServiceItemRequest"
+                    minItems: 1
+            required: [name, items]
+
+        ServiceItemRequest:
+            type: object
+            properties:
+                type:
+                    type: string
+                    enum: [keyboard, switch, stabilizer]
+                name:
+                    type: string
+                quantity:
+                    type: integer
+                    minimum: 1
+                services:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            name:
+                                type: string
+                            price:
+                                type: number
+                                minimum: 0
+                        required: [name, price]
+                    minItems: 1
+            required: [type, name, services]
+
+        ServiceUpdateRequest:
+            type: object
+            properties:
+                status:
+                    type: string
+                    enum:
+                        [
+                            CREATED,
+                            IN_PROGRESS,
+                            TESTING,
+                            PACKING,
+                            DELIVERY,
+                            COMPLETED,
+                            CANCELLED,
+                        ]
+                description:
+                    type: string
+
+        PaymentRequest:
+            type: object
+            properties:
+                method:
+                    type: string
+                    enum: [bank, momo]
+                    description: Payment method
+                amount:
+                    type: number
+                    minimum: 0
+                    description: Amount to pay
+                depositPercent:
+                    type: integer
+                    minimum: 10
+                    maximum: 100
+                    description: Deposit percentage (if applicable)
+            required: [method, amount]
+
+        PaymentResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                paymentId:
+                    type: string
+                status:
+                    type: string
+                    enum: [PAID, DEPOSIT, FAILED]
+                amount:
+                    type: number
+                message:
+                    type: string
+
+        Pagination:
+            type: object
+            properties:
+                page:
+                    type: integer
+                limit:
+                    type: integer
+                total:
+                    type: integer
+                totalPages:
+                    type: integer
+
+    responses:
+        BadRequest:
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                            message:
+                                type: string
+                            details:
+                                type: object
+
+        Unauthorized:
+            description: Authentication required
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Unauthorized"
+                            message:
+                                type: string
+                                example: "Authentication token required"
+
+        Forbidden:
+            description: Access forbidden
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Forbidden"
+                            message:
+                                type: string
+                                example: "Insufficient permissions"
+
+        NotFound:
+            description: Resource not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "NotFound"
+                            message:
+                                type: string
+                                example: "Service not found"
+
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
