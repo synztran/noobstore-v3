@@ -8,10 +8,10 @@ export const raffleQueryKeys = createQueryKeys("raffle", {
 		async queryFn() {
 			const resp = await RaffleClient.getDetailRaffle(params);
 			if (!isValid(resp)) return null;
-			return getFirst(resp) || [];
+			return getFirst(resp);
 		},
 	}),
-	getRaffles: (params: { featuredOnly?: boolean }) => ({
+	getRaffles: (params?: { featuredOnly?: boolean }) => ({
 		queryKey: [{ params }],
 		async queryFn() {
 			const resp = await RaffleClient.getRaffles(params);

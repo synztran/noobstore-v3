@@ -1,7 +1,7 @@
 // const DOMAIN_PREFIX = "https://noob-store.thuannc.com";
-// const DOMAIN_PREFIX = "http://localhost:8000";
+const DOMAIN_PREFIX = "http://localhost:8000";
 // const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // when you try fetching data ssr should using this domain, try using local will cat error on connector port
-const DOMAIN_PREFIX = "http://192.168.31.33:8080";
+// const DOMAIN_PREFIX = "http://192.168.31.33:8080";
 
 const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`;
 const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
@@ -38,6 +38,7 @@ export const PRODUCTS_API = {
 export const ACCOUNT_API = {
 	ACCOUNT: `${ACCOUNT_PREFIX}`,
 	CURRENT_ACCOUNT: `${ACCOUNT_PREFIX}/get-user`,
+	POST_NEW_USER_SHIPPING_ADDRESS: `${ACCOUNT_PREFIX}/shipping-address`,
 };
 
 export const AUTH_API = {
@@ -94,7 +95,7 @@ export const SERVICE_API = {
 };
 
 export const RAFFLE_API = {
-	// GET_RAFFLE_SINGLE: `${RAFFLE_PREFIX}/single`,
 	GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
 	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
+	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
 };

@@ -1,25 +1,29 @@
-import { Base } from "@/templates/Base";
-import TitleWithMenuQuickAccess from "@/components/home/TitleWithMenuQuickAccess";
-import BannerTagPriceName from "@/components/home/BannerTagPriceName";
 import CategoryWithTitleAndAction from "@/components/CategoryWithTitleAndAction";
 import CommunitySharingPost from "@/components/CommunitySharingPost";
-import GuildAndTutorials from "@/components/GuildAndTutorials";
 import GridLayoutBlock from "@/components/GridLayoutBlock";
-import StrongPoint from "@/components/StrongPoint";
+import GuildAndTutorials from "@/components/GuildAndTutorials";
+import BannerTagPriceName from "@/components/home/BannerTagPriceName";
+import TitleWithMenuQuickAccess from "@/components/home/TitleWithMenuQuickAccess";
 import HomeProductBlock from "@/components/HomeProductBlock";
 import RaffleBlock from "@/components/RaffleBlock";
-import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import StrongPoint from "@/components/StrongPoint";
+// import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
+import useRafflesQuery from "@/react-query/raffles/api/useRafflesQueries";
+import { Base } from "@/templates/Base";
 
 const HomePage = ({}) => {
 	const { data: raffleFeaturedData, isPending: isLoadingFeaturedRaffle } =
-		useRaffleFeaturedQueries();
+		useRafflesQuery({
+			params: { featuredOnly: true },
+			enabled: true,
+		});
 	console.log("raffleFeaturedData", raffleFeaturedData);
 	return (
 		<Base>
 			<div className="flex flex-col gap-12 my-8">
 				<TitleWithMenuQuickAccess />
 				<RaffleBlock
-					raffleData={raffleFeaturedData}
+					raffleData={raffleFeaturedData?.[0]}
 					isLoading={isLoadingFeaturedRaffle}
 				/>
 				<BannerTagPriceName />

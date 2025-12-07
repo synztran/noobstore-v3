@@ -1,22 +1,7 @@
 import { classNames } from "@/utils/AppConfig";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Fragment, useState } from "react";
-
-const people = [
-	{
-		id: 1,
-		name: "Sample 1",
-		imageUrl:
-			"https://images.unsplash.com/photo-1491528323818-fdd1faba62cc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-	},
-	{
-		id: 2,
-		name: "Sample 2",
-		imageUrl:
-			"https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-	},
-];
+import { Fragment, useEffect, useState } from "react";
 
 interface Props {
 	label?: string;
@@ -27,16 +12,24 @@ interface Props {
 	onChange?: (value: string | number) => void;
 	name?: string;
 	setFieldValue?: any;
+	value?: string;
 }
 
 const SelectWithIcon = ({
 	label = "",
-	selectList = people,
+	selectList = [],
 	isIcon = true,
 	name,
 	setFieldValue,
+	value,
 }: Props) => {
-	const [selected, setSelected] = useState(selectList[0]);
+	const [selected, setSelected] = useState<{
+		name: string;
+		slug: string;
+		type: string;
+		code: string;
+		imageUrl?: string;
+	} | null>(null);
 
 	const handleChange = (newValue: {
 		name: string;
@@ -45,9 +38,24 @@ const SelectWithIcon = ({
 		code: string;
 	}) => {
 		console.log("newValue", newValue);
-		setSelected(newValue);
-		setFieldValue(name, newValue);
+		if (newValue) {
+			setSelected(newValue);
+			setFieldValue(name, newValue);
+		}
 	};
+
+	useEffect(() => {
+		const found = selectList.find((item) => item.code === value);
+		if (found) {
+			setSelected({
+				name: found.name as string,
+				slug: found.slug as string,
+				type: found.type as string,
+				code: found.code as string,
+				imageUrl: found.imageUrl as string,
+			});
+		}
+	}, [value]);
 
 	return (
 		<Listbox value={selected} onChange={handleChange}>
@@ -61,7 +69,7 @@ const SelectWithIcon = ({
 							<span className="flex items-center">
 								{isIcon ? (
 									<img
-										src={selected?.imageUrl as string}
+										src={selected?.imageUrl || ""}
 										alt=""
 										className="h-5 w-5 flex-shrink-0 rounded-full"
 									/>
@@ -85,6 +93,19 @@ const SelectWithIcon = ({
 							leaveFrom="opacity-100"
 							leaveTo="opacity-0">
 							<Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+								<Listbox.Option
+									disabled
+									value={null}
+									className="text-gray-500 cursor-not-allowed select-none py-2 pl-3 pr-9">
+									<div className="flex items-center">
+										{isIcon ? (
+											<span className="h-5 w-5 flex-shrink-0 rounded-full bg-gray-200" />
+										) : null}
+										<span className="ml-3 block truncate">
+											{label || "Lựa chọn"}
+										</span>
+									</div>
+								</Listbox.Option>
 								{selectList.map((child) => (
 									<Listbox.Option
 										key={child.id as number}

@@ -35,9 +35,10 @@ export interface IBEResponseRaffleProduct {
 export interface IBEResponseProductOption {
 	id: string;
 	label: string;
-	url?: string;
+	url?: string; // redirect to product page
 	price: number;
 	thumbnail?: IImage;
+	raffleQuantity: number | null;
 }
 
 export interface IBEResponsePaymentMethod {
@@ -59,6 +60,11 @@ export interface IBEResponseSellerInfo {
 	isVerified: boolean;
 	raffleTimes: number;
 	pastRaffles: unknown;
+	social: {
+		icon?: string | React.ReactNode;
+		label: string;
+		url: string;
+	}[];
 }
 
 export interface IBEResponseRaffleInfo {
@@ -90,7 +96,9 @@ export interface IBEResponseRaffleInfo {
 	maxWinPerEntries: number; //  number product can win in one raffle
 
 	maxWinners: number;
-	specialKey?: string;
+	secretKey?: string;
+	isHaveSecretKey: boolean;
+	isHasJoined?: boolean;
 
 	startDate: Date;
 	endDate: Date;
@@ -128,19 +136,19 @@ export interface IRequestRaffleJoin {
 	raffleId: string;
 	shipping: {
 		address: string;
-		zipCode: string;
+		// zipCode: string;
 		shippingMethod: {
 			name: string;
 			price: number | null;
 		};
 		companyName?: string;
-		note: string;
+		// note: string;
 		city: string;
 	};
 	email: string;
 	phone: string;
 	customerId: number | null;
-	fullName: string;
+	name: string;
 	raffleItemSelections: {
 		productId: string;
 		name: string;
@@ -149,8 +157,6 @@ export interface IRequestRaffleJoin {
 		price: number;
 		thumbnail?: IImage;
 	}[];
-	answer?: string; // answer for special key question
-
-	// ?
-	specialKey?: string;
+	secretKey?: string;
+	note?: string;
 }

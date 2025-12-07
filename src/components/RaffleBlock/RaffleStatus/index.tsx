@@ -1,15 +1,38 @@
 import { EnumRaffleStatus } from "@/interface/Client/Raffle";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface IProps {
 	mode: EnumRaffleStatus;
 }
 
-const STATUS_TEXT: Record<EnumRaffleStatus, string> = {
-	[EnumRaffleStatus.UPCOMING]: "Sắp diễn ra",
-	[EnumRaffleStatus.ACTIVE]: "Đang diễn ra",
-	[EnumRaffleStatus.COMPLETED]: "Đã kết thúc",
-	[EnumRaffleStatus.CANCELLED]: "Đã hủy",
+const STATUS_TEXT: Record<
+	EnumRaffleStatus,
+	{
+		title: string;
+		color: string;
+		bgColor: string;
+	}
+> = {
+	[EnumRaffleStatus.UPCOMING]: {
+		title: "Sắp diễn ra",
+		color: "text-yellow-800",
+		bgColor: "bg-yellow-200",
+	},
+	[EnumRaffleStatus.ACTIVE]: {
+		title: "Đang diễn ra",
+		color: "text-green-800",
+		bgColor: "bg-green-300",
+	},
+	[EnumRaffleStatus.COMPLETED]: {
+		title: "Đã kết thúc",
+		color: "text-blue-800",
+		bgColor: "bg-blue-200",
+	},
+	[EnumRaffleStatus.CANCELLED]: {
+		title: "Đã hủy",
+		color: "text-gray-800",
+		bgColor: "bg-gray-200",
+	},
 };
 
 const textVariants = {
@@ -28,8 +51,8 @@ const RaffleStatus = ({ mode }: IProps) => {
 				initial="initial"
 				animate="animate"
 				exit="exit"
-				className="text-lg font-bold tracking-wide border border-gray-300 rounded-md p-2 max-h-[36px] leading-[1] bg-gray-200">
-				{STATUS_TEXT[mode]}
+				className={`text-lg font-bold tracking-wide border border-gray-300 rounded-md p-2 max-h-[36px] leading-[1] ${STATUS_TEXT[mode].bgColor} ${STATUS_TEXT[mode].color}`}>
+				{STATUS_TEXT[mode].title || ""}
 			</motion.span>
 		</AnimatePresence>
 	);

@@ -1,13 +1,7 @@
 import RaffleClient from "@/client/RaffleClient";
-import ServiceClient from "@/client/ServiceClient";
-import { SuccessRaffleJoin } from "@/components/CustomToastMessage";
 import { IResponse } from "@/interface/Client/interface";
 import { IRequestRaffleJoin } from "@/interface/Client/Raffle";
-import {
-	IRequestServiceDonation,
-	IResponseBackendServicePayment,
-	TRequestServiceSubmitPayment,
-} from "@/interface/Client/Service";
+import { IResponseBackendServicePayment } from "@/interface/Client/Service";
 import { appQueryKeys } from "@/react-query/root";
 import NotifyUtils from "@/utils/NotifyUtils";
 import {
@@ -27,7 +21,6 @@ export function useRaffleJoinMutation(
 	return useMutation({
 		mutationFn: async (variables) => {
 			const resp = await RaffleClient.postRaffleJoin(variables.payload);
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: (_) => {
@@ -37,16 +30,8 @@ export function useRaffleJoinMutation(
 			resp: IResponse<IResponseBackendServicePayment>,
 			variables: IVariable
 		) => {
-			// console.log("respSuccess", resp);
-			// console.log("variables", variables);
+			console.log("resp", resp);
 			if (resp.status !== "OK") return;
-			// const { serviceBookingId, transitionId } =
-			//   variables.pSubmitPayment?.payment || {};
-			// console.log("transitionId", transitionId);
-			// console.log("serviceBookingId", serviceBookingId);
-			// NotifyUtils.success(
-			//   <SuccessRaffleJoin serviceBookingId={serviceBookingId} />
-			// );
 			queryClient.invalidateQueries(
 				appQueryKeys.raffle.getDetailRaffle({
 					raffleId: variables.payload?.raffleId || "",

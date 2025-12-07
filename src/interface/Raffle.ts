@@ -1,7 +1,4 @@
-import {
-	IBEResponseProductOption,
-	IBEResponseRaffleInfo,
-} from "./Client/Raffle";
+import { IBEResponseRaffleInfo } from "./Client/Raffle";
 
 export interface RaffleData {
 	id: string;
@@ -56,8 +53,6 @@ export interface RaffleEntry {
 }
 
 export interface IStepProps {
-	// formData: FormData;
-	// setFormData?: React.Dispatch<React.SetStateAction<FormData>>;
 	raffleFormSubmit?: RaffleSubmitForm;
 	setRaffleFormSubmit?: React.Dispatch<
 		React.SetStateAction<RaffleSubmitForm>
@@ -95,4 +90,5 @@ export type RaffleSubmitForm = Omit<RaffleEntryForm, "ticketQuantity"> & {
 	shippingMethod: { name: string; price: number | null };
 	note: string;
 	raffleId: string;
+	secretKey?: string;
 };

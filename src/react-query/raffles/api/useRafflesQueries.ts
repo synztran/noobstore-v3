@@ -1,5 +1,4 @@
 import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
-import { IServicePlan } from "@/zustand/useServices";
 import {
 	useQuery,
 	UseQueryOptions,
@@ -19,7 +18,7 @@ export default function useRafflesQuery(
 ): UseQueryResult<IBEResponseRaffleInfo[], Error> {
 	const enabled = queryOptions?.enabled ?? true;
 	const queryConfig = {
-		...appQueryKeys.raffle.getRaffles(queryOptions?.params || {}),
+		...appQueryKeys.raffle.getRaffles(queryOptions?.params),
 		...queryPresets.longLived,
 		...queryOptions,
 		enabled,

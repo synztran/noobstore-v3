@@ -459,6 +459,74 @@ paths:
                 "404":
                     $ref: "#/components/responses/NotFound"
 
+    /account/shipping-address:
+        post:
+            summary: Add a new shipping address
+            description: Add a new shipping address for the user (authenticated users only)
+            security:
+                - bearerAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                firstName:
+                                    type: string
+                                    maxLength: 100
+                                lastName:
+                                    type: string
+                                    maxLength: 100
+                                companyName:
+                                    type: string
+                                    maxLength: 200
+                                address:
+                                    type: string
+                                    maxLength: 500
+                                city:
+                                    type: string
+                                    maxLength: 100
+                                postalCode:
+                                    type: string
+                                    maxLength: 20
+                                country:
+                                    type: string
+                                    maxLength: 100
+                            required: [address, city, postalCode, country]
+            responses:
+                "201":
+                    description: Shipping address added successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ShippingAddress"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Review marked as helpful
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    helpfulCount:
+                                        type: integer
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+
 components:
     schemas:
         Service:

@@ -131,3 +131,7 @@ export const SOLD_OUT_ICON = "/assets/icons/oos_icon.png";
 export const TEN_PERCENT_ICON = "/assets/icons/sale_percentage/10.svg";
 export const THIRDTY_PERCENT_ICON = "/assets/icons/sale_percentage/30.svg";
 export const HUNDRED_PERCENT_ICON = "/assets/icons/sale_percentage/100.svg";
+
+// maker
+export const MAKER_FB_ICON = "/assets/icons/maker/fb.svg";
+export const MAKER_DISCORD_ICON = "/assets/icons/maker/discord.svg";

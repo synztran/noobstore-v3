@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/Auth";
-import { IAuthUser } from "@/interface/Context/auth";
 import { EnumRaffleStatus } from "@/interface/Client/Raffle";
+import { IAuthUser } from "@/interface/Context/auth";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useRef, useState } from "react";
 
 interface RaffleCountDownProps {
 	startDate: string | Date;
@@ -39,7 +39,6 @@ const STATUS_COLORS: Record<EnumRaffleStatus, string> = {
 	[EnumRaffleStatus.UPCOMING]: "from-[#ffe29f] to-[#ffd200]",
 	[EnumRaffleStatus.ACTIVE]: "from-[#a8ffeb] to-[#43cea2]",
 	[EnumRaffleStatus.COMPLETED]: "from-[#e0eafc] to-[#cfdef3]",
-	[EnumRaffleStatus.CLOSED]: "from-[#d3d3d3] to-[#a9a9a9]",
 	[EnumRaffleStatus.CANCELLED]: "from-[#f5f5f5] to-[#dcdcdc]",
 	// upcoming: "bg-gray-100",
 	// running: "bg-gray-100",

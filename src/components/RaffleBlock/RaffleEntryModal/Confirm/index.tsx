@@ -1,13 +1,19 @@
-import React from "react";
-import Image from "next/image";
+import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
+import useRaffle from "@/zustand/useRaffle";
 import { Divider } from "@mui/material";
-import { RaffleSubmitForm } from "@/interface/Raffle";
+import Image from "next/image";
+import React from "react";
 
-const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
-	raffleFormSubmit,
+const StepConfirmation: React.FC<{ raffleData: IBEResponseRaffleInfo }> = ({
+	raffleData,
 }) => {
+	const { raffleSubmitForm } = useRaffle();
+
+	console.log("raffleSubmitForm", raffleSubmitForm);
 	const selectedProducts =
-		raffleFormSubmit.productSelections.filter((p) => p.selected) || [];
+		raffleSubmitForm?.productSelections?.filter((p) => p.selected) || [];
+
+	console.log("selectedProducts", selectedProducts);
 
 	// Generate a random registration code for more realism
 	const registrationCode = React.useMemo(
@@ -45,7 +51,7 @@ const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
 				</div> */}
 				<div className="space-y-2">
 					<div className="flex justify-between text-base">
-						<span className="text-gray-600 text-base">
+						<span className="text-gray-600 text-lg font-semibold">
 							Mã đăng ký:
 						</span>
 						<span className="font-bold text-blue-600 tracking-wider text-base">
@@ -53,7 +59,7 @@ const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
 						</span>
 					</div>
 					<div className="flex justify-between text-base">
-						<span className="text-gray-600 text-base">
+						<span className="text-gray-600 text-lg font-semibold">
 							Số sản phẩm đã chọn:
 						</span>
 						<span className="font-semibold text-base">
@@ -70,10 +76,12 @@ const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
 								<div
 									key={product.productId}
 									className="flex flex-col items-center gap-2 bg-white border border-blue-200 rounded-lg p-2 shadow-sm">
-									<div className="w-full h-44 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-white shadow relative">
+									<div className="w-full h-40 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 bg-white shadow relative">
 										{product.thumbnail ? (
 											<Image
-												src={product.thumbnail}
+												src={
+													product.thumbnail.path || ""
+												}
 												alt={product.name}
 												className="object-cover w-full h-full hover:scale-110 transition-all duration-300 ease-in-out"
 												fill
@@ -98,7 +106,7 @@ const StepConfirmation: React.FC<{ raffleFormSubmit: RaffleSubmitForm }> = ({
 				</div>
 			</div>
 			{/* Next Steps */}
-			<div className="p-4 rounded-xl bg-white w-full max-w-lg border border-gray-200 shadow">
+			<div className="p-4 rounded-xl bg-white w-full max-w-lg border border-gray-200 shadow-lg">
 				<div className="text-base text-blue-800">
 					<div className="font-semibold mb-2 flex items-center gap-2 text-xl">
 						Bước tiếp theo

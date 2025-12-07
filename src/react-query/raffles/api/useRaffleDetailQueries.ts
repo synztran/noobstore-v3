@@ -1,3 +1,4 @@
+import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
 import {
 	useQuery,
 	UseQueryOptions,
@@ -5,7 +6,6 @@ import {
 } from "@tanstack/react-query";
 import { queryPresets } from "../../configs";
 import { appQueryKeys } from "../../root";
-import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
 
 type IQueryOptions = {
 	params?: {
