@@ -1,4 +1,3 @@
-import AuthClient from "@/client/AuthClient";
 import UserClient from "@/client/UserClient";
 import { IAuthUser } from "@/interface/Context/auth";
 import { appQueryKeys } from "@/react-query/root";
@@ -43,10 +42,8 @@ interface AuthContextType {
 	}) => void;
 	logout?: () => void;
 	isLoading: boolean;
-	// handleResetPassword: () => void;
 	reloadDataCustomer: () => void;
 	refresh: () => void;
-	// refreshKey: string;
 }
 
 interface AuthProviderProps {
@@ -63,16 +60,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 	children,
 	token,
 	redirectUrl,
-	// initUser,
 	source = "",
 }: {
 	children: ReactNode;
 	token: string;
 	redirectUrl: string;
-	// initUser: any;
 	source: string;
 }): JSX.Element => {
-	const [user, setUser] = useState(null);
+	const [user, setUser] = useState<IAuthUser | null>(null);
 	const [customerInfo, setCustomerInfo] = useState(null);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isLoading, setIsLoading] = useState(true);

@@ -1,3 +1,5 @@
+import { IBEResponseRaffleEntry } from "../Client/Raffle";
+
 export type TShippingAt = IRequestShippingAddress;
 
 export interface IAuthUser {
@@ -32,3 +34,30 @@ export interface IRequestShippingAddress {
 	zipCode?: string;
 	isDefault?: boolean;
 }
+
+export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
+	raffleInfo: {
+		title: string;
+		images: {
+			url: string;
+			alt: string;
+		}[];
+		productOptions: {
+			id: string;
+			label: string;
+			price: number;
+			thumbnail: {
+				path: string;
+				alt: string;
+			};
+			priority?: number;
+		}[];
+		raffleId: string;
+		status: string;
+		thumbnail: {
+			url: string;
+			alt: string;
+		};
+	};
+	joinedAt: string;
+};

@@ -1,10 +1,10 @@
+import { useCalcBodyHeight } from "@/hook/useConfig";
+import { classNames } from "@/utils/AppConfig";
 import { CircularProgress } from "@material-ui/core";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Footer } from "./Footer";
 import Header from "./Header";
-import { useCalcBodyHeight } from "@/hook/useConfig";
-import { classNames } from "@/utils/AppConfig";
-import { useRouter } from "next/router";
 
 const Base = ({
 	children,
@@ -54,13 +54,6 @@ const Base = ({
 			<div
 				className={classNames(
 					`max-w-7xl text-gray-600 antialiased bg-gray-100 container mx-auto`
-					// isNonStrutured
-					// 	? `grid grid-rows-[${
-					// 			appiedFixedLayout
-					// 				? "120px_calc(100vh-120px-280px)_280px"
-					// 				: "120px_1fr_280px"
-					// 	  }]`
-					// 	: ""
 				)}
 				id="webpage"
 				style={{

@@ -39,6 +39,7 @@ export const ACCOUNT_API = {
 	ACCOUNT: `${ACCOUNT_PREFIX}`,
 	CURRENT_ACCOUNT: `${ACCOUNT_PREFIX}/get-user`,
 	POST_NEW_USER_SHIPPING_ADDRESS: `${ACCOUNT_PREFIX}/shipping-address`,
+	GET_RAFFLE_ENTRIES: `${ACCOUNT_PREFIX}/raffle-entries`,
 };
 
 export const AUTH_API = {

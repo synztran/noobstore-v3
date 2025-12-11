@@ -37,6 +37,11 @@ export function useRaffleJoinMutation(
 					raffleId: variables.payload?.raffleId || "",
 				})
 			);
+			queryClient.invalidateQueries(
+				appQueryKeys.raffle.getRaffles({
+					featuredOnly: true,
+				})
+			);
 		},
 		...mutationOptions,
 	});

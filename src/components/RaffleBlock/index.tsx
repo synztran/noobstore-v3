@@ -138,6 +138,26 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 		} as any);
 	};
 
+	const labelButton = (status: EnumRaffleStatus, isHasJoined: boolean) => {
+		if (isHasJoined) return "Bạn đã tham gia raffle này";
+		if (
+			status === EnumRaffleStatus.UPCOMING ||
+			statusRaffleBasingTime === EnumRaffleStatus.UPCOMING
+		)
+			return "Chưa bắt đầu";
+		if (
+			status === EnumRaffleStatus.ACTIVE ||
+			statusRaffleBasingTime === EnumRaffleStatus.ACTIVE
+		)
+			return "Tham gia Raffle";
+		if (
+			status === EnumRaffleStatus.COMPLETED ||
+			statusRaffleBasingTime === EnumRaffleStatus.COMPLETED
+		)
+			return "Raffle đã kết thúc";
+		return "Raffle không khả dụng";
+	};
+
 	if (isLoading) {
 		return (
 			<div className="container max-w-7xl mx-auto py-4 !px-0">
@@ -630,23 +650,13 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 						className={`flex items-center justify-center gap-2 w-full py-3 rounded-50 text-white !font-semibold !text-lg transition ${
 							raffleData?.status === EnumRaffleStatus.ACTIVE ||
 							statusRaffleBasingTime === EnumRaffleStatus.ACTIVE
-								? "!bg-red-400 hover:bg-red-500"
-								: "!bg-gray-400 cursor-not-allowed"
-						}`}>
-						{raffleData.status === EnumRaffleStatus.UPCOMING ||
-						statusRaffleBasingTime === EnumRaffleStatus.UPCOMING
-							? "Chưa bắt đầu"
-							: null}
-						{(raffleData.status === EnumRaffleStatus.ACTIVE ||
-							statusRaffleBasingTime ===
-								EnumRaffleStatus.ACTIVE) &&
-						!raffleData.isHasJoined
-							? "Tham gia Raffle"
-							: "Bạn đã tham gia raffle này"}
-						{raffleData.status === EnumRaffleStatus.COMPLETED ||
-						statusRaffleBasingTime === EnumRaffleStatus.COMPLETED
-							? "Đã kết thúc"
-							: null}
+								? "bg-red-400 hover:bg-red-500"
+								: ""
+						} ${raffleData?.isHasJoined ? "!bg-gray-400" : ""}`}>
+						{labelButton(
+							raffleData?.status as EnumRaffleStatus,
+							raffleData?.isHasJoined || false
+						)}
 					</Button>
 				</div>
 			</div>

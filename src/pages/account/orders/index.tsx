@@ -1,5 +1,4 @@
 import Breadcumb from "@/components/breadcumb";
-import UserSideMenu from "@/components/userSideMenu";
 import { BreadcumbTitle } from "@/constants";
 import { Base } from "@/templates/Base";
 import { Divider } from "@material-ui/core";
@@ -14,7 +13,7 @@ const UserOrderPage = () => {
 				/>
 				<article className="flex mt-4">
 					<div className="flex-initial w-1/4">
-						<UserSideMenu />
+						{/* <UserSideMenu /> */}
 					</div>
 					<Divider orientation="vertical" flexItem />
 					<div className="flex-initial w-3/4 pl-4 pt-5">

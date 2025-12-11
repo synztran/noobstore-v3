@@ -132,6 +132,33 @@ export interface IBEResponseRaffleInfo {
 	updatedAt?: Date;
 }
 
+export interface IBEResponseRaffleProductSelection {
+	productId: string;
+	name: string;
+	priority: number | null;
+	selected: boolean;
+	price: number;
+	thumbnail?: IImage;
+}
+
+export interface IBEResponseRaffleEntry {
+	entryId: string;
+	raffleId: string;
+	email: string;
+	name: string;
+	phone: string;
+	customerId: number | null;
+	shipping: unknown;
+	productSelections: IBEResponseRaffleProductSelection[];
+	note?: string;
+
+	status: string;
+	payment: unknown;
+	paymentStatus: string;
+	isWinner: boolean;
+	createdAt: string;
+}
+
 export interface IRequestRaffleJoin {
 	raffleId: string;
 	shipping: {
