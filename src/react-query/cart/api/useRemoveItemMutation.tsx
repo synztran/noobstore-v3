@@ -34,7 +34,7 @@ export function useRemoveItemMutation(
 		onSuccess: (_, variables) => {
 			const { productName } = variables.payload;
 			NotifyUtils.success(
-				<SuccessRemoveItem productName={productName} />
+				<CheckCircleRemoveItem productName={productName} />
 			);
 			queryClient.invalidateQueries(appQueryKeys.cart.cartData);
 		},

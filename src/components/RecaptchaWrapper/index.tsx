@@ -5,7 +5,7 @@ import { useRecaptcha } from "@/hook/useRecaptcha";
 interface RecaptchaWrapperProps {
 	siteKey: string;
 	size?: "compact" | "normal" | "invisible";
-	theme?: "light" | "dark";
+	// theme?: "light" | "dark";
 	onVerify?: (token: string) => void;
 	onError?: (error: string) => void;
 	onExpired?: () => void;

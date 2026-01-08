@@ -168,7 +168,7 @@ async function request({
 		if (timeout !== null && timeout > 0) {
 			const controller = new AbortController();
 			id = setTimeout(() => controller.abort(), timeout);
-			// dataRequest.signal = controller.signal;
+			dataRequest.signal = controller.signal;
 		}
 
 		// if (priority) {
@@ -180,17 +180,33 @@ async function request({
 		// cache with client side & cache boolean
 		if (!ctx && method === "GET" && cache) {
 			if (mapRequest[link]) {
-				return mapRequest;
+				return mapRequest[link];
 			}
 			if (!mapRequestPromise[link]) {
 				mapRequestPromise[link] = fetch(
 					link,
 					dataRequest as unknown as RequestInit
-				);
+				)
+					.then(async (r) => {
+						const json = await r.json();
+						mapRequest[link] = json;
+						mapRequestPromise[link] = null;
+						return json;
+					})
+					.catch((e) => {
+						mapRequestPromise[link] = null;
+						throw e;
+					});
 			}
+			const result = await mapRequestPromise[link];
+			if (timeout != null && timeout > 0 && id) {
+				clearTimeout(id);
+			}
+			// proceed to post-processing below
+			// NOTE: already returned result for cached GET
+			return result;
 		}
-		const res = await (mapRequestPromise[link] ||
-			fetch(link, dataRequest as unknown as RequestInit));
+		const res = await fetch(link, dataRequest as unknown as RequestInit);
 		const result = await res.json();
 		if (timeout != null && timeout > 0 && id) {
 			clearTimeout(id);

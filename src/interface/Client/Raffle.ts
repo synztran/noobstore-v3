@@ -1,3 +1,5 @@
+import { EnumPaymentMethod, EnumRafflePaymentStatus } from "../interface";
+
 interface IImage {
 	path: string;
 	alt: string;
@@ -10,9 +12,15 @@ export enum EnumRaffleType {
 
 export enum EnumRaffleStatus {
 	UPCOMING = "UPCOMING",
-	ACTIVE = "ACTIVE",
-	COMPLETED = "COMPLETED",
+	ONGOING = "ONGOING",
+	ENDED = "ENDED",
 	CANCELLED = "CANCELLED",
+}
+
+export enum EnumMakerStatus {
+	PENDING = "PENDING",
+	VERIFIED = "VERIFIED",
+	REJECTED = "REJECTED",
 }
 
 export interface IBEResponseRaffleProduct {
@@ -51,20 +59,40 @@ export interface IBEResponsePaymentMethod {
 	createdAt: Date;
 }
 
-export interface IBEResponseSellerInfo {
+export interface IBEResponseMakerMember {
 	id: string;
 	name: string;
-	avatar?: string;
-	rating: number;
-	totalSales: number;
-	isVerified: boolean;
-	raffleTimes: number;
-	pastRaffles: unknown;
-	social: {
-		icon?: string | React.ReactNode;
-		label: string;
-		url: string;
-	}[];
+	isActive: boolean;
+	createdAt: Date;
+	updatedAt?: Date;
+}
+
+export interface IBEResponseMakerInfo {
+	brandName: string;
+	makerId: string;
+	teamMember?: IBEResponseMakerMember[];
+	email: string;
+	isActive: boolean;
+	websiteUrl?: string;
+	socialLinks?: Record<string, string>;
+	bio?: string;
+	logo?: IImage;
+	verificationStatus: EnumMakerStatus;
+	createdAt: Date;
+	updatedAt?: Date;
+	banners?: IImage[];
+	raffleTimes?: number;
+	rating?: {
+		totalRatings: number;
+		averageRating: number;
+		comments: {
+			content?: string;
+			createdAt: string;
+			updatedAt?: string;
+			customerId?: number;
+		}[];
+		updatedAt?: string;
+	};
 }
 
 export interface IBEResponseRaffleInfo {
@@ -73,7 +101,7 @@ export interface IBEResponseRaffleInfo {
 	description: string;
 	makerId: string;
 
-	seller?: IBEResponseSellerInfo;
+	makerInfo?: IBEResponseMakerInfo;
 
 	raffleProducts: IBEResponseRaffleProduct[];
 	productOptions: IBEResponseProductOption[];
@@ -100,8 +128,9 @@ export interface IBEResponseRaffleInfo {
 	isHaveSecretKey: boolean;
 	isHasJoined?: boolean;
 
-	startDate: Date;
-	endDate: Date;
+	startAt: Date;
+	endAt: Date;
+	expectedDeliveryAt?: Date;
 
 	raffleType: EnumRaffleType;
 	status: EnumRaffleStatus;
@@ -141,6 +170,16 @@ export interface IBEResponseRaffleProductSelection {
 	thumbnail?: IImage;
 }
 
+export interface IBEResponseRaffleShipping {
+	address: string;
+	city: string;
+	companyName?: string;
+	shippingMethod: {
+		name: string;
+		price: number | null;
+	};
+}
+
 export interface IBEResponseRaffleEntry {
 	entryId: string;
 	raffleId: string;
@@ -148,15 +187,23 @@ export interface IBEResponseRaffleEntry {
 	name: string;
 	phone: string;
 	customerId: number | null;
-	shipping: unknown;
+	shipping: IBEResponseRaffleShipping;
 	productSelections: IBEResponseRaffleProductSelection[];
 	note?: string;
-
 	status: string;
-	payment: unknown;
-	paymentStatus: string;
+	payment: {
+		paymentMethod: EnumPaymentMethod;
+		attachments?: {
+			path: string;
+			alt: string;
+		}[];
+		createdAt: string;
+		updatedAt: string;
+	}; // customer payment schema
+	paymentStatus: EnumRafflePaymentStatus;
 	isWinner: boolean;
 	createdAt: string;
+	secretKey?: string;
 }
 
 export interface IRequestRaffleJoin {

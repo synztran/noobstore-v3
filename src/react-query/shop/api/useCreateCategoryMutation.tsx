@@ -29,7 +29,7 @@ export function useCreateCategoryMutation(
 		onSuccess: (_, variables) => {
 			const { categoryName } = variables.payload;
 			NotifyUtils.success(
-				<SuccessCreateCategory categoryName={categoryName} />
+				<CheckCircleCreateCategory categoryName={categoryName} />
 			);
 			queryClient.invalidateQueries(appQueryKeys.category.getAll({}));
 		},

@@ -51,6 +51,7 @@ export const GIF_THANKS = `/gif/thanks.gif`;
 export const GIF_SHOPPING_CART = `/gif/shopping_cart.gif`;
 export const GIF_PAYMENT_CHECKING = `/gif/payment_wait_to_check.gif`;
 export const GIF_PAYMENT_PAID_SUCCESS = `/gif/payment_paid_success.gif`;
+export const GIF_RAFFLE_LOADING = `/gif/raffle_loading.gif`;
 
 // lucky-wheel
 export const LUCKYWHEEL_BORDER = `/wheel/lucky-wheel/wheel-background.svg`;
@@ -135,3 +136,33 @@ export const HUNDRED_PERCENT_ICON = "/assets/icons/sale_percentage/100.svg";
 // maker
 export const MAKER_FB_ICON = "/assets/icons/maker/fb.svg";
 export const MAKER_DISCORD_ICON = "/assets/icons/maker/discord.svg";
+
+// 3d icons
+export const I3D_WINNER_RANK = "/assets/3dIcons/winner.png";
+export const I3D_WINNER_MEDAL = "/assets/3dIcons/winner_medal.png";
+export const I3D_WINNER_CROWN = "/assets/3dIcons/winner_crown.png";
+export const I3D_WINNER_CROWN_LUX = "/assets/3dIcons/winner_crown_lux.png";
+export const I3D_NUMBER_ONE = "/assets/3dIcons/one.png";
+export const I3D_NUMBER_TWO = "/assets/3dIcons/two.png";
+export const I3D_NUMBER_THREE = "/assets/3dIcons/three.png";
+export const I3D_NUMBER_RAFFLE_WHEEL =
+	"/assets/3dIcons/number_raffle_wheel.png";
+export const I3D_RAFFLE_PAYMENT = "/assets/3dIcons/raffle_payment.png";
+export const I3D_ORDER_PACKAGE = "/assets/3dIcons/order.png";
+export const I3D_SHIPPING_TRUCK = "/assets/3dIcons/shipping_truck.png";
+export const I3D_SUMMARY_PRICE_LIST = "/assets/3dIcons/summary_price_list.png";
+export const I3D_INFORMATION = "/assets/3dIcons/information.png";
+export const I3D_CREDIT_CARD = "/assets/3dIcons/credit_card.png";
+export const I3D_NOTE = "/assets/3dIcons/note.png";
+export const I3D_DONATION_COFFEE = "/assets/3dIcons/donation_coffee.png";
+export const I3D_VERIFY_SHIELD = "/assets/3dIcons/verify_shield.png";
+export const I3D_E_INVOICE = "/assets/3dIcons/e_invoice.png";
+export const I3D_STAR_POINT = "/assets/3dIcons/star_point.png";
+export const I3D_WINNER_CUP = "/assets/3dIcons/winner_cup.png";
+
+export const I3D_FIREWORK_GUN = "/assets/3dIcons/fire_gun.png";
+export const I3D_CONFETTI_POPPER = "/assets/3dIcons/confetti_popper.png";
+export const I3D_PAPER_STAR = "/assets/3dIcons/paper_star.png";
+export const I3D_SHERIFF_STAR = "/assets/3dIcons/sheriff_star.png";
+export const I3D_FIREWORKS_SHOW = "/assets/3dIcons/fireworks_show.png";
+export const I3D_FLOWER_PARADE = "/assets/3dIcons/flower_parade.png";

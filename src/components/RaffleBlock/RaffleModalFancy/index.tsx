@@ -10,9 +10,12 @@ import StepConnector from "./Stepper/StepConnector";
 import StepContentWrapper from "./Stepper/StepContentWrapper";
 import StepIndicator from "./Stepper/StepIndicator";
 import type { StepValue } from "./Stepper/types";
+import NotifyUtils from "@/utils/NotifyUtils";
+import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
 	raffleId: string;
+	raffleData?: IBEResponseRaffleInfo;
 	open: boolean;
 	onClose: () => void;
 	children: ReactNode;
@@ -34,6 +37,7 @@ interface IProps extends HTMLAttributes<HTMLDivElement> {
 
 const Stepper = ({
 	raffleId,
+	raffleData,
 	open,
 	onClose,
 	children,
@@ -45,11 +49,14 @@ const Stepper = ({
 	renderStepIndicator,
 	...rest
 }: IProps) => {
+	console.log("raffleData", raffleData);
 	const { user } = useAuth() as { user: IAuthUser | null };
-	const { data: raffleData } = useRaffleDetailQueries({
+	const { data: raffleDataById } = useRaffleDetailQueries({
 		params: { raffleId },
-		enabled: open,
+		enabled: raffleData == undefined && open,
 	});
+
+	console.log("raffleData", raffleData);
 
 	const {
 		steps,
@@ -66,13 +73,15 @@ const Stepper = ({
 	} = useRaffleStepper({
 		user,
 		raffleId,
-		raffleData: raffleData ?? null,
+		raffleData: raffleData ?? (raffleDataById || null),
 		open,
 		onClose,
 		onFinalStepCompleted,
 		onStepChange,
 		children,
 	});
+
+	console.log("open", open, raffleData, currentStep);
 
 	if (!open) return null;
 	if (!raffleData) return null;
@@ -177,7 +186,7 @@ const Stepper = ({
 										updateStep,
 										setDirection,
 										setCurrentStep,
-									})
+								  })
 								: child;
 						})}
 					</StepContentWrapper>

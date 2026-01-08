@@ -1,4 +1,4 @@
-import SelectWithIcon from "@/components/selectWIcon";
+// using native select instead of SelectWithIcon
 import { VNCity } from "@/constants";
 import { useAuth } from "@/context/Auth";
 import { IAuthUser } from "@/interface/Context/auth";
@@ -6,7 +6,7 @@ import useRaffle, {
 	TRaffleFormShipping,
 	useRaffleAction,
 } from "@/zustand/useRaffle";
-import { useMemo } from "react";
+import { use, useEffect, useMemo } from "react";
 
 interface IProps {
 	handleInputChange: (
@@ -19,7 +19,10 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 	handleInputChange,
 	handleSelectChange,
 }) => {
-	const { user } = useAuth() as unknown as { user: IAuthUser };
+	// const { user } = useAuth() as unknown as { user: IAuthUser };
+	const auth = useAuth();
+	const { user } = auth || {};
+	const shippingInfomation = user?.shippingAt?.[0];
 	const { raffleSubmitForm } = useRaffle();
 	const { updateRaffleSubmitForm } = useRaffleAction();
 	const validCity = useMemo(() => {
@@ -32,7 +35,32 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 		);
 	}, [VNCity]);
 
-	console.log("raffleSubmitForm", raffleSubmitForm);
+	// Simple validation for required shipping fields
+	const shippingAddressMissing = !raffleSubmitForm?.shipping?.address;
+	const shippingCityMissing = !raffleSubmitForm?.shipping?.city;
+	const shippingMethodMissing =
+		!raffleSubmitForm?.shipping?.shippingMethod?.name;
+
+	useEffect(() => {
+		if (shippingInfomation) {
+			updateRaffleSubmitForm({
+				email: user?.email || "",
+				name: user?.firstName + " " + user?.lastName || "",
+				phone: user?.phoneNumber || "",
+				shipping: {
+					address: shippingInfomation.address || "",
+					city: shippingInfomation.city || "",
+					companyName: shippingInfomation.companyName || "",
+					shippingMethod: {
+						name: "VNPost",
+						price: 0,
+					},
+				},
+			});
+		}
+	}, [shippingInfomation]);
+
+	console.log("shippingInfomation", shippingInfomation);
 
 	return (
 		<div className="space-y-4">
@@ -68,13 +96,13 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 							<label className="text-lg">Email</label>
 							<input
 								type="email"
-								className="w-full border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+								className="w-full border border-gray-300 rounded px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-200"
 								placeholder="Email Address *"
 								value={
 									raffleSubmitForm?.email || user?.email || ""
 								}
 								onChange={handleInputChange?.("email")}
-								readOnly
+								disabled
 							/>
 						</div>
 						<div className="flex flex-col gap-1">
@@ -108,7 +136,13 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 							value={raffleSubmitForm?.shipping?.address || ""}
 							onChange={handleInputChange?.("shipping.address")}
 							rows={2}
+							required
 						/>
+						{shippingAddressMissing && (
+							<div className="text-red-600 text-sm mt-1">
+								Vui lòng nhập địa chỉ giao hàng.
+							</div>
+						)}
 					</div>
 
 					<div className="flex flex-col gap-1">
@@ -128,19 +162,29 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 						/>
 					</div>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-						{/* <div className="flex flex-col gap-1">
-							<label className="text-lg">Huyện/Tỉnh</label>
-							<input readOnly className="h-full" />
-						</div> */}
 						<div className="flex flex-col gap-1">
 							<label className="text-lg">Thành phố</label>
-							<SelectWithIcon
-								selectList={validCity}
-								isIcon={false}
+							<select
 								name="city"
-								setFieldValue={handleSelectChange("city")}
 								value={raffleSubmitForm?.shipping?.city || ""}
-							/>
+								onChange={(e) =>
+									handleSelectChange?.("shipping.city")(
+										e.target.value
+									)
+								}
+								className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400 bg-white">
+								<option value="">Lựa chọn</option>
+								{validCity?.map((c) => (
+									<option key={c.code} value={c.name}>
+										{c.nameWithType}
+									</option>
+								))}
+							</select>
+							{shippingCityMissing && (
+								<div className="text-red-600 text-sm mt-1">
+									Vui lòng chọn thành phố.
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
@@ -153,6 +197,7 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 					<label className="flex justify-between items-center cursor-pointer w-full">
 						<div className="flex items-center gap-2">
 							<input
+								required
 								type="radio"
 								name="shippingPartner"
 								value="VNPost"
@@ -181,6 +226,11 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 						<span className="text-base font-medium">Miễn phí</span>
 					</label>
 				</div>
+				{shippingMethodMissing && (
+					<div className="text-red-600 text-sm mt-2">
+						Vui lòng chọn đơn vị vận chuyển.
+					</div>
+				)}
 			</div>
 			<div className="mt-4">
 				<label className="font-semibold text-lg block mb-2">

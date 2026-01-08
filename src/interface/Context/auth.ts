@@ -1,4 +1,4 @@
-import { IBEResponseRaffleEntry } from "../Client/Raffle";
+import { EnumRaffleStatus, IBEResponseRaffleEntry } from "../Client/Raffle";
 
 export type TShippingAt = IRequestShippingAddress;
 
@@ -35,11 +35,27 @@ export interface IRequestShippingAddress {
 	isDefault?: boolean;
 }
 
+export interface IBEResponseRafflePaymentMethod {
+	accountNumber: string;
+	accountName: string;
+	bankBranch?: string;
+	bankCode?: string;
+	bankName?: string;
+	isActive: boolean;
+	isVerified: boolean;
+	platform: "BANK_TRANSFER" | "PAYPAL" | "MOMO" | "COD";
+	qrCode: {
+		path: string;
+		alt: string;
+	};
+	name: string;
+}
+
 export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 	raffleInfo: {
 		title: string;
 		images: {
-			url: string;
+			path: string;
 			alt: string;
 		}[];
 		productOptions: {
@@ -53,11 +69,45 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 			priority?: number;
 		}[];
 		raffleId: string;
-		status: string;
+		status: EnumRaffleStatus;
 		thumbnail: {
-			url: string;
+			path: string;
 			alt: string;
 		};
+		makerId?: string;
+		paymentMethods?: IBEResponseRafflePaymentMethod[];
+		createdAt?: string;
+		deliveryEstimate?: string;
+	};
+	raffleWinInfo?: {
+		productId: string;
+		entryId: string;
 	};
 	joinedAt: string;
+	isWinner?: boolean;
+	makerInfo?: {
+		bio: string;
+		brandName: string;
+		createdAt: string;
+		email: string;
+		makerId: string;
+		socialLinks: Record<string, string>;
+		isActive: boolean;
+		teamMember: {
+			name: string;
+			isActive: boolean;
+			createdAt: string;
+		}[];
+		updatedAt: string;
+		verificationStatus: "VERIFIED" | "PENDING" | "REJECTED";
+		websiteUrl: string;
+		logo: {
+			path: string;
+			alt: string;
+		};
+		banners?: {
+			path: string;
+			alt: string;
+		}[];
+	};
 };

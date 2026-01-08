@@ -1,3 +1,4 @@
+// Enums
 export enum EnumCategoryType {
 	TBA = "TBA",
 	KEYBOARD = "KEYBOARD",
@@ -191,6 +192,15 @@ export enum EnumFeeType {
 	SHIPPING_DELIVERY_METHOD = "shipping.deliveryMethod",
 }
 
+export enum EnumRafflePaymentStatus {
+	PENDING = "PENDING",
+	UNPAID = "UNPAID",
+	PAID = "PAID",
+	REFUNDED = "REFUNDED",
+	CANCELLED = "CANCELLED",
+}
+
+// Interfaces & Types
 export interface ICartProduct {
 	type: string;
 	productId: string;
@@ -480,16 +490,3 @@ export interface IProductPostData extends IFormWithRecaptcha {
 	listings: any[];
 	short_description: string;
 }
-
-export const mapLabelEnumStabilizerType: Record<EnumStabilizerType, string> = {
-	[EnumStabilizerType.SCREW_IN]: "Screw-in",
-	[EnumStabilizerType.CLIP_IN]: "Clip-in",
-};
-
-export const mapLabelEnumStabilizerMountType: Record<
-	EnumStabilizerMountType,
-	string
-> = {
-	[EnumStabilizerMountType.PCB_MOUNTED]: "PCB mount",
-	[EnumStabilizerMountType.PLATE_MOUNTED]: "Plate mount",
-};

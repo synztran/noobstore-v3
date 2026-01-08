@@ -1,5 +1,5 @@
 import { formatCurrency } from "@/utils/FormatNumber";
-import { Divider } from "@material-ui/core";
+import { Divider } from "@mui/material";
 import React from "react";
 
 const BillInformation: React.FC<{

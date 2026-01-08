@@ -13,52 +13,50 @@ import { BreadcumbTitle } from "@/constants";
 import { EnumSideMenu } from "@/constants/Enums";
 import { useAuth } from "@/context/Auth";
 import { Base } from "@/templates/Base";
-import { Divider } from "@material-ui/core";
+import { Divider } from "@mui/material";
 import React, { useState } from "react";
 
 const COMPONENT_MAP: Record<string, React.ReactNode> = {
-	[EnumSideMenu.DETAIL]: <AccountInfo />,
-	[EnumSideMenu.ORDERS]: <Orders />,
-	wishlist: <Wishlist />,
-	[EnumSideMenu.ADDRESSES]: <Addresses />,
-	raffleHistory: <RaffleHistory />,
-	rewards: <Rewards />,
-	preferences: <Preferences />,
-	makerDashboard: <MakerDashboard />,
-	makerRaffle: <MakerRaffle />,
+  [EnumSideMenu.DETAIL]: <AccountInfo />,
+  [EnumSideMenu.ORDERS]: <Orders />,
+  wishlist: <Wishlist />,
+  [EnumSideMenu.ADDRESSES]: <Addresses />,
+  raffleHistory: <RaffleHistory />,
+  rewards: <Rewards />,
+  preferences: <Preferences />,
+  makerDashboard: <MakerDashboard />,
+  makerRaffle: <MakerRaffle />,
 };
 
 const UserDetailPage: React.FC = () => {
-	const auth = useAuth();
-	const { isAuthenticated } = auth || {};
-	const [selectedMenu, setSelectedMenu] = useState<string>(
-		EnumSideMenu.DETAIL
-	);
+  const auth = useAuth();
+  const { isAuthenticated } = auth || {};
+  const [selectedMenu, setSelectedMenu] = useState<string>(EnumSideMenu.DETAIL);
 
-	if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null;
 
-	return (
-		<Base>
-			<div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
-				<Breadcumb
-					mainRoot={BreadcumbTitle["account.detail"] as string}
-					subRoot="Thông tin tài khoản"
-				/>
-				<article className="flex mt-4 gap-4">
-					<div className="flex-initial w-1/4">
-						<UserSideMenu
-							selectedMenu={selectedMenu}
-							onSelectMenu={setSelectedMenu}
-						/>
-					</div>
-					<Divider orientation="vertical" flexItem />
-					<div className="flex-initial w-3/4 pl-4 pt-5">
-						{COMPONENT_MAP[selectedMenu] || <AccountInfo />}
-					</div>
-				</article>
-			</div>
-		</Base>
-	);
+  return (
+    <Base>
+      <div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
+        <Breadcumb
+          mainRoot={BreadcumbTitle["account.detail"] as string}
+          subRoot="Thông tin tài khoản"
+        />
+        <article className="flex mt-4 gap-4">
+          <div className="flex-initial w-1/4">
+            <UserSideMenu
+              selectedMenu={selectedMenu}
+              onSelectMenu={setSelectedMenu}
+            />
+          </div>
+          <Divider orientation="vertical" />
+          <div className="flex-initial w-3/4">
+            {COMPONENT_MAP[selectedMenu] || <AccountInfo />}
+          </div>
+        </article>
+      </div>
+    </Base>
+  );
 };
 
 export default UserDetailPage;

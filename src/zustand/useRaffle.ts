@@ -37,11 +37,22 @@ export type TRaffleFormSubmit = {
 	name?: string;
 };
 
+export type TRaffleFormPayment = {
+	donation: {
+		amount: number;
+		message?: string;
+	};
+	subPrice: number;
+	shippingPrice: number;
+	totalPrice: number;
+};
+
 // Trạng thái chính
 interface States {
 	raffleSubmitForm: TRaffleFormSubmit | null;
 	isRaffleLoading: boolean;
 	isScrollToBottom: boolean;
+	rafflePaymentForm: TRaffleFormPayment | null;
 }
 
 interface Actions {
@@ -51,6 +62,7 @@ interface Actions {
 	handleClearRaffleSubmitForm: () => void;
 	setRaffleLoading: (payload: boolean) => void;
 	setScrollToBottom: (payload: boolean) => void;
+	initRafflePaymentForm: (payload: TRaffleFormPayment) => void;
 }
 
 type RaffleState = States & { actions: Actions };
@@ -59,6 +71,7 @@ const InitialState: States = {
 	raffleSubmitForm: null,
 	isRaffleLoading: false,
 	isScrollToBottom: false,
+	rafflePaymentForm: null,
 };
 
 const useRaffle = create<RaffleState>()(
@@ -182,6 +195,12 @@ const useRaffle = create<RaffleState>()(
 				set((state) => ({
 					...state,
 					isScrollToBottom: payload,
+				}));
+			},
+			initRafflePaymentForm(payload) {
+				set((state) => ({
+					...state,
+					rafflePaymentForm: payload,
 				}));
 			},
 		},

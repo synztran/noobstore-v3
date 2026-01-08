@@ -51,7 +51,7 @@ export function useSubmitPaymentMutation(
 			console.log("transitionId", transitionId);
 			console.log("serviceBookingId", serviceBookingId);
 			NotifyUtils.success(
-				<SuccessSubmitPayment serviceBookingId={serviceBookingId} />
+				<CheckCircleSubmitPayment serviceBookingId={serviceBookingId} />
 			);
 			queryClient.invalidateQueries(
 				appQueryKeys.service.getBookingService(serviceBookingId || "")

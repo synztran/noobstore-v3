@@ -33,7 +33,7 @@ export function useDeleteProductOptionMutation(
 		onSuccess: (_, variables) => {
 			const { productOptionId } = variables.payload;
 			NotifyUtils.success(
-				<SuccessDeleteProduct productId={productOptionId} />
+				<CheckCircleDeleteProduct productId={productOptionId} />
 			);
 			queryClient.invalidateQueries(
 				appQueryKeys.product.getProductOptions({})

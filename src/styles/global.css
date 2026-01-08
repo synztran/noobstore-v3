@@ -112,7 +112,8 @@ button,
 
 legend {
   padding: 0;
-  font-family: 'Nunito' !important;
+  /* font-family: Nunito !important; */
+  font-family: 'Nunito', sans-serif;
   color: rgba(0, 0, 0, 0.6)
 }
 

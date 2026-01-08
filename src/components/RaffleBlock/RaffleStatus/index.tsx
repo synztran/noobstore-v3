@@ -18,12 +18,12 @@ const STATUS_TEXT: Record<
 		color: "text-yellow-800",
 		bgColor: "bg-yellow-200",
 	},
-	[EnumRaffleStatus.ACTIVE]: {
+	[EnumRaffleStatus.ONGOING]: {
 		title: "Đang diễn ra",
 		color: "text-green-800",
 		bgColor: "bg-green-300",
 	},
-	[EnumRaffleStatus.COMPLETED]: {
+	[EnumRaffleStatus.ENDED]: {
 		title: "Đã kết thúc",
 		color: "text-blue-800",
 		bgColor: "bg-blue-200",
@@ -42,7 +42,7 @@ const textVariants = {
 };
 
 const RaffleStatus = ({ mode }: IProps) => {
-	console.log("moe", mode);
+	console.log("raffle status", mode);
 	return (
 		<AnimatePresence mode="wait" initial={false}>
 			<motion.span

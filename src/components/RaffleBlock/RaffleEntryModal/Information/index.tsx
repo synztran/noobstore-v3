@@ -1,3 +1,4 @@
+import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { IStepProps } from "@/interface/Raffle";
 import { Check, Verified } from "lucide-react";
 import Image from "next/image";
@@ -23,10 +24,10 @@ const StepInformation: React.FC<IStepProps> = memo(
 						<div className="relative w-20 h-20">
 							<Image
 								src={
-									raffleData?.seller?.avatar ||
-									"/default-avatar.png"
+									raffleData?.makerInfo?.logo?.path ||
+									NEW_MISSING_IMAGE
 								}
-								alt={raffleData?.seller?.name || ""}
+								alt={raffleData?.makerInfo?.brandName || ""}
 								className="w-60 h-60 rounded-full"
 								fill
 								objectFit="cover"
@@ -34,16 +35,19 @@ const StepInformation: React.FC<IStepProps> = memo(
 						</div>
 						<div className="flex flex-col">
 							<div className="font-medium text-xl flex items-center gap-2">
-								{raffleData?.seller?.name || ""}
+								{raffleData?.makerInfo?.brandName || ""}
 								<Verified className="stroke-green-600 w-6 h-6" />
 							</div>
 							<div className="flex items-center gap-3 text-sm text-gray-600">
 								<span>
-									⭐ {raffleData?.seller?.rating || 0}/5
+									⭐{" "}
+									{raffleData?.makerInfo?.rating
+										?.averageRating || 0}
+									/5
 								</span>
 								<span>
-									📦 {raffleData?.seller?.totalSales || 0} đơn
-									hàng
+									📦 {raffleData?.makerInfo?.raffleTimes || 0}{" "}
+									raffle
 								</span>
 							</div>
 						</div>
@@ -102,7 +106,8 @@ const StepInformation: React.FC<IStepProps> = memo(
 				{/* Maker Policies */}
 				<div className="p-4 rounded-lg bg-gray-200">
 					<div className="mb-3 font-semibold text-lg flex items-center gap-2">
-						🔧 Chính sách của {raffleData?.seller?.name || ""}
+						🔧 Chính sách của{" "}
+						{raffleData?.makerInfo?.brandName || ""}
 					</div>
 					<div className="space-y-2 text-sm text-gray-700">
 						<div className="flex items-center gap-2">

@@ -168,10 +168,53 @@ const formatVietNamTime = (dateString: string, is24h = true) => {
 	return `${hour12}:${minutes} ${period}`;
 };
 
+/**
+ * Parse a server-provided date into a Date instance treated as UTC when
+ * the string has no timezone info. Handles:
+ * - Date objects (returned as-is)
+ * - ISO strings with timezone ("2025-12-14T12:00:00Z" or with +07:00)
+ * - Plain date-time strings without timezone ("2025-12-14 12:00:00" or "2025-12-14T12:00:00")
+ *   which we assume are UTC and append 'Z' to parse correctly.
+ */
+const parseServerDate = (input: string | Date): Date => {
+	if (input instanceof Date) return input;
+	if (typeof input !== "string") return new Date(input as any);
+
+	const s = input.trim();
+	// If the string contains timezone info (Z or +/-hh:mm), let Date parse it
+	if (/[zZ]$/.test(s) || /[+-]\d{2}:?\d{2}$/.test(s)) {
+		return new Date(s);
+	}
+
+	// Numeric timestamp?
+	if (/^\d+$/.test(s)) {
+		return new Date(Number(s));
+	}
+
+	// No timezone info present — assume server sent UTC naive datetime.
+	// Ensure we have a 'T' separator and append 'Z' to force UTC parsing.
+	const withT = s.includes("T") ? s : s.replace(/\s+/, "T");
+	return new Date(withT + "Z");
+};
+
+function getTimeLeft(start: Date, end: Date, now: Date) {
+	if (now < start) {
+		const diff = start.getTime() - now.getTime();
+		return { mode: "upcoming", diff };
+	}
+	if (now >= start && now <= end) {
+		const diff = end.getTime() - now.getTime();
+		return { mode: "running", diff };
+	}
+	return { mode: "ended", diff: 0 };
+}
+
 export default {
 	formatDate,
 	isOutOfWorkingTime,
 	calculateDeliveryDistanceAndFee,
 	formatVietNamDate,
 	formatVietNamTime,
+	parseServerDate,
+	getTimeLeft,
 };

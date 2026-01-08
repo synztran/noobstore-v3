@@ -21,38 +21,43 @@ import PopupLogOut from "../PopupLogout";
 const AccountMenu = [
 	{
 		icon: UserIcon,
-		href: PAGE_LINK.USER_DETAIL,
+		href: "/account#detail",
 		label: "Thông tin cá nhân",
 		sublabel: "Quản lý tài khoản, thông tin cá nhân",
 		id: EnumSideMenu.DETAIL,
+		isActive: true,
 	},
 	{
 		icon: ShoppingCartIcon,
-		href: PAGE_LINK.USER_ORDERS,
+		href: "/account#orders",
 		label: "Đơn hàng",
 		sublabel: "Quản lý, chỉnh sửa đơn hàng",
 		id: EnumSideMenu.ORDERS,
+		isActive: true,
 	},
 	{
 		icon: HeartIcon,
-		href: "#",
+		href: "/account#wishlist",
 		label: "Yêu thích",
 		sublabel: "Sản phẩm đã lưu",
 		id: "wishlist",
+		isActive: false,
 	},
 	{
 		icon: MapPinIcon,
-		href: PAGE_LINK.USER_ADDRESSES,
+		href: "/account#addresses",
 		label: "Sổ địa chỉ",
 		sublabel: "Quản lý địa chỉ giao hàng",
 		id: EnumSideMenu.ADDRESSES,
+		isActive: true,
 	},
 	{
 		icon: StarIcon,
-		href: "#",
+		href: "/account#raffleHistory",
 		label: "Lịch sử tham gia raffle",
 		sublabel: "Xem các raffle đã tham gia",
 		id: "raffleHistory",
+		isActive: true,
 	},
 ];
 
@@ -60,14 +65,14 @@ const AccountMenu = [
 const MakerMenu = [
 	{
 		icon: BuildingStorefrontIcon,
-		href: "#",
+		href: "/account#makerDashboard",
 		label: "Maker dashboard",
 		sublabel: "Quản lý sản phẩm, đơn hàng của bạn",
 		id: "makerDashboard",
 	},
 	{
 		icon: GiftIcon,
-		href: "#",
+		href: "/account#makerRaffle",
 		label: "Quản lý raffle",
 		sublabel: "Tạo và quản lý các raffle",
 		id: "makerRaffle",
@@ -78,14 +83,14 @@ const MakerMenu = [
 const OtherMenu = [
 	{
 		icon: WalletIcon,
-		href: "#",
+		href: "/account#rewards",
 		label: "Rewards",
 		sublabel: "Điểm thưởng, hoàn tiền, ưu đãi",
 		id: "rewards",
 	},
 	{
 		icon: Cog6ToothIcon,
-		href: "#",
+		href: "/account#preferences",
 		label: "Cài đặt & ưu tiên",
 		sublabel: "Cài đặt tài khoản, thông báo",
 		id: "preferences",
@@ -123,7 +128,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 			<main className="mx-auto max-w-7xl">
 				{/* Account Block */}
 				<section className="mb-6">
-					<div className="mb-2 text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">
+					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Account
 					</div>
 					<div className="rounded-xl bg-white shadow p-2 space-y-2">
@@ -132,6 +137,9 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 								key={menu.id}
 								className={classNames(
 									"flex items-center gap-3 py-3 px-2 cursor-pointer hover:bg-gray-200 rounded-md group transition",
+									menu.isActive
+										? ""
+										: "bg-gray-100 opacity-[50%] pointer-events-none",
 									selectedMenu === menu.id
 										? "!bg-red-50 border-r-4 !border-red-400"
 										: ""
@@ -143,7 +151,9 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 										{menu.label}
 									</span>
 									<span className="text-xs text-gray-700 truncate">
-										{menu.sublabel}
+										{menu.isActive
+											? menu.sublabel
+											: "Chức năng sắp ra mắt"}
 									</span>
 								</div>
 							</div>
@@ -153,7 +163,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 
 				{/* Maker Block: always show. If not Maker, show register button. */}
 				<section className="mb-6">
-					<div className="mb-2 text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">
+					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Maker
 					</div>
 					<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100">
@@ -198,7 +208,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 
 				{/* Other Block */}
 				<section>
-					<div className="mb-2 text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">
+					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Thông tin
 					</div>
 					<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100">

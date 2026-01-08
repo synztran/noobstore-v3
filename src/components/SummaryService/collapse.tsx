@@ -1,20 +1,20 @@
-import { Collapse } from "@material-ui/core";
+import { Collapse } from "@mui/material";
 import React from "react";
 
 interface CollapseProps {
-	children: React.ReactNode;
-	isCollapse?: boolean;
+  children: React.ReactNode;
+  isCollapse?: boolean;
 }
 
 const SummaryServiceCollapse: React.FC<CollapseProps> = ({
-	isCollapse,
-	children,
+  isCollapse,
+  children,
 }) => {
-	return (
-		<div className="h-auto">
-			<Collapse in={isCollapse}>{children}</Collapse>
-		</div>
-	);
+  return (
+    <div className="h-auto">
+      <Collapse in={isCollapse}>{children}</Collapse>
+    </div>
+  );
 };
 
 export default SummaryServiceCollapse;

@@ -9,36 +9,35 @@ import { Divider } from "@mui/material";
 import SummaryServicePayment from "./SummaryServicePayment";
 
 const ServiceDetail = ({ id }: { id: string }) => {
-	const { data: service, isPending } = useBookingServiceQueries(id as string);
+  const { data: service, isPending } = useBookingServiceQueries(id as string);
 
-	if (isPending) {
-		return <div>Loading...</div>;
-	}
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
 
-	if (!service) {
-		return <div>Dịch vụ không tồn tại hoặc đã bị xóa.</div>;
-	}
+  if (!service) {
+    return <div>Dịch vụ không tồn tại hoặc đã bị xóa.</div>;
+  }
 
-	return (
-		<div className="sticky top-32 bg-white rounded-lg shadow-lg p-4 space-y-4">
-			<div className="relative space-y-4">
-				{/* <div className="text-xl font-bold border border-gray-300 rounded-lg p-4 text-center">
+  return (
+    <div className="sticky top-32 bg-white rounded-lg shadow-lg p-4 space-y-4">
+      <div className="relative space-y-4">
+        {/* <div className="text-xl font-bold border border-gray-300 rounded-lg p-4 text-center">
 					Thông tin
 				</div> */}
-				<div className="flex flex-col justify-center items-center w-full gap-1">
-					<span className="text-sm text-gray-700">Tổng tiền</span>
-					<span className="font-bold text-center text-2xl bg-gray-400 rounded-md shadow-md px-1 py-.5">
-						{formatCurrency(service?.totalPrice || 0)}
-					</span>
-					<span className="text-gray-700 text-sm text-center">
-						{DateUtils.formatVietNamDate(service?.createdAt || "")}
-						<br />
-						Mã đơn hàng:{" "}
-						<strong>{service?.serviceBookingId}</strong>
-					</span>
-				</div>
+        <div className="flex flex-col justify-center items-center w-full gap-1">
+          <span className="text-sm text-gray-700">Tổng tiền</span>
+          <span className="font-bold text-center text-2xl bg-gray-400 rounded-md shadow-md px-1 py-.5">
+            {formatCurrency(service?.totalPrice || 0)}
+          </span>
+          <span className="text-gray-700 text-sm text-center">
+            {DateUtils.formatVietNamDate(service?.createdAt || "")}
+            <br />
+            Mã đơn hàng: <strong>{service?.serviceBookingId}</strong>
+          </span>
+        </div>
 
-				{/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 					<div className="space-y-4">
 						<div>
 							<label className="block text-sm font-semibold text-gray-700">
@@ -87,29 +86,27 @@ const ServiceDetail = ({ id }: { id: string }) => {
 						</div>
 					</div>
 				</div> */}
-			</div>
+      </div>
 
-			{/* Service Items */}
-			<div className="relative">
-				<div className="border-2 border-gray-200 rounded-lg">
-					<div className="px-4 py-2 border-b-2 border-gray-200 font-bold text-lg ">
-						Thông tin dịch vụ
-					</div>
-					<div className="">
-						{service?.tasks?.map((item, idx) => (
-							<>
-								<ServiceItemSelected
-									task={item as IResponseBackendTask}
-								/>
-								<Divider className="max-w-[93%] !mx-auto" />
-							</>
-						))}
-						<SummaryServicePayment service={service} />
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+      {/* Service Items */}
+      <div className="relative">
+        <div className="border-2 border-gray-200 rounded-lg">
+          <div className="px-4 py-2 border-b-2 border-gray-200 font-bold text-lg ">
+            Thông tin dịch vụ
+          </div>
+          <div className="">
+            {service?.tasks?.map((item, idx) => (
+              <div key={item.taskId}>
+                <ServiceItemSelected task={item as IResponseBackendTask} />
+                <Divider className="max-w-[93%] !mx-auto" />
+              </div>
+            ))}
+            <SummaryServicePayment service={service} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ServiceDetail;

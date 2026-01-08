@@ -96,46 +96,13 @@ export function useRaffleStepper({
 			return;
 		}
 
-		console.log("currentIndex", currentIndex);
 		const nextIndex = Math.min(steps.length - 1, currentIndex + 1);
 		const nextStep = steps[nextIndex];
-		console.log("nextStep", nextStep);
 		if (nextStep) {
 			setDirection(1);
 			updateStep(nextStep);
 		}
 	}, [updateStep, steps, currentStep]);
-
-	// const handleSubmitRaffle = useCallback(
-	// 	(raffleFormSubmit: RaffleSubmitForm) => {
-	// 		if (!raffleFormSubmit) return;
-	// 		const payload: IRequestRaffleJoin = {
-	// 			customerId: user?.customerId || null,
-	// 			raffleId: raffleFormSubmit?.raffleId || "",
-	// 			shipping: {
-	// 				address: raffleFormSubmit?.address || "",
-	// 				city: raffleFormSubmit?.city || "",
-	// 				companyName: raffleFormSubmit?.companyName || "",
-	// 				zipCode: raffleFormSubmit?.zipCode || "",
-	// 				shippingMethod: raffleFormSubmit?.shippingMethod || {
-	// 					name: "",
-	// 					price: null,
-	// 				},
-	// 			},
-	// 			name: raffleFormSubmit?.fullName || "",
-	// 			email: raffleFormSubmit?.email || "",
-	// 			phone: raffleFormSubmit?.phone || "",
-	// 			raffleItemSelections: raffleFormSubmit.productSelections.filter(
-	// 				(item) => item.selected && item.priority !== null
-	// 			),
-	// 			...(raffleData?.isHaveSecretKey
-	// 				? { secretKey: raffleFormSubmit?.secretKey }
-	// 				: {}),
-	// 		};
-	// 		mutate({ payload });
-	// 	},
-	// 	[user, mutate, raffleData]
-	// );
 
 	useEffect(() => {
 		if (open) {

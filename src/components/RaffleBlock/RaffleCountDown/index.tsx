@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/Auth";
 import { EnumRaffleStatus } from "@/interface/Client/Raffle";
 import { IAuthUser } from "@/interface/Context/auth";
+import DateUtils from "@/utils/DateUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -9,18 +10,6 @@ interface RaffleCountDownProps {
 	endDate: string | Date;
 	raffleStatus: EnumRaffleStatus;
 	className?: string;
-}
-
-function getTimeLeft(start: Date, end: Date, now: Date) {
-	if (now < start) {
-		const diff = start.getTime() - now.getTime();
-		return { mode: "upcoming", diff };
-	}
-	if (now >= start && now <= end) {
-		const diff = end.getTime() - now.getTime();
-		return { mode: "running", diff };
-	}
-	return { mode: "ended", diff: 0 };
 }
 
 function formatTime(ms: number) {
@@ -40,9 +29,6 @@ const STATUS_COLORS: Record<EnumRaffleStatus, string> = {
 	[EnumRaffleStatus.ACTIVE]: "from-[#a8ffeb] to-[#43cea2]",
 	[EnumRaffleStatus.COMPLETED]: "from-[#e0eafc] to-[#cfdef3]",
 	[EnumRaffleStatus.CANCELLED]: "from-[#f5f5f5] to-[#dcdcdc]",
-	// upcoming: "bg-gray-100",
-	// running: "bg-gray-100",
-	// ended: "bg-gray-100",
 };
 
 const STATUS_TEXT = {
@@ -87,12 +73,17 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
-		const start = new Date(startDate);
-		const end = new Date(endDate);
+		const start = DateUtils.parseServerDate(startDate);
+		const end = DateUtils.parseServerDate(endDate);
 
 		const update = () => {
+			// nowDate is local time; getTimeLeft compares timestamps so using Date objects is fine
 			const nowDate = new Date();
-			const { mode: m, diff } = getTimeLeft(start, end, nowDate);
+			const { mode: m, diff } = DateUtils.getTimeLeft(
+				start,
+				end,
+				nowDate
+			);
 			setMode(m as typeof mode);
 			setTimeLeft(formatTime(diff));
 			setNow(nowDate);
@@ -132,17 +123,6 @@ const RaffleCountDown: React.FC<RaffleCountDownProps> = ({
 				letterSpacing: "0.02em",
 				boxShadow: "0 4px 24px 0 rgba(0,0,0,0.25)",
 			}}>
-			{/* <AnimatePresence mode="wait" initial={false}>
-				<motion.span
-					key={mode}
-					variants={textVariants}
-					initial="initial"
-					animate="animate"
-					exit="exit"
-					className="text-lg font-bold tracking-wide">
-					{STATUS_TEXT[mode]}
-				</motion.span>
-			</AnimatePresence> */}
 			{mode !== EnumRaffleStatus.COMPLETED ? (
 				<div className="flex gap-1 text-[20px] font-mono font-bold items-start">
 					<div className="flex flex-col items-center min-w-[44px]">

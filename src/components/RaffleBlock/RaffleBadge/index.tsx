@@ -129,7 +129,7 @@ const RaffleBadge: React.FC<RaffleBadgeProps> = ({ type, className = "" }) => {
 				<style dangerouslySetInnerHTML={{ __html: style }} />
 			)}
 			<span
-				className={`inline-flex items-center px-2 py-0.5 rounded-sm border text-lg font-semibold shadow-sm ${config?.bg} ${config?.text} ${config?.border} ${className} ${
+				className={`h-[36px] inline-flex items-center px-2 py-0.5 rounded-sm border text-lg font-semibold shadow-sm ${config?.bg} ${config?.text} ${config?.border} ${className} ${
 					type === EnumRaffleType.RAFFLE
 						? "raffle-badge-animated"
 						: ""

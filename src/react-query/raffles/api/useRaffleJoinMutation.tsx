@@ -30,18 +30,7 @@ export function useRaffleJoinMutation(
 			resp: IResponse<IResponseBackendServicePayment>,
 			variables: IVariable
 		) => {
-			console.log("resp", resp);
 			if (resp.status !== "OK") return;
-			queryClient.invalidateQueries(
-				appQueryKeys.raffle.getDetailRaffle({
-					raffleId: variables.payload?.raffleId || "",
-				})
-			);
-			queryClient.invalidateQueries(
-				appQueryKeys.raffle.getRaffles({
-					featuredOnly: true,
-				})
-			);
 		},
 		...mutationOptions,
 	});

@@ -62,7 +62,7 @@ const LoginPage = (): JSX.Element => {
 						handleRegister(values);
 					}}>
 					{({ errors, touched }) => (
-						<Form className="mx-auto flex flex-col max-w-3xl gap-4">
+						<Form className="mx-auto flex flex-col gap-4">
 							<div className="flex flex-col gap-1">
 								<label
 									className="uppercase font-bold"

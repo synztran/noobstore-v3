@@ -31,7 +31,7 @@ export function useDeleteProductMutation(
 		},
 		onSuccess: (_, variables) => {
 			const { productId } = variables.payload;
-			NotifyUtils.success(<SuccessDeleteProduct productId={productId} />);
+			NotifyUtils.success(<CheckCircleDeleteProduct productId={productId} />);
 			queryClient.invalidateQueries(
 				appQueryKeys.product.getAllProducts()
 			);

@@ -15,6 +15,13 @@ interface Props {
 	value?: string;
 }
 
+const defaultSelection = {
+	name: "Lựa chọn",
+	slug: "",
+	type: "",
+	code: "",
+};
+
 const SelectWithIcon = ({
 	label = "",
 	selectList = [],
@@ -23,6 +30,7 @@ const SelectWithIcon = ({
 	setFieldValue,
 	value,
 }: Props) => {
+	console.log("selectList", selectList);
 	const [selected, setSelected] = useState<{
 		name: string;
 		slug: string;
@@ -37,7 +45,6 @@ const SelectWithIcon = ({
 		type: string;
 		code: string;
 	}) => {
-		console.log("newValue", newValue);
 		if (newValue) {
 			setSelected(newValue);
 			setFieldValue(name, newValue);
@@ -55,10 +62,14 @@ const SelectWithIcon = ({
 				imageUrl: found.imageUrl as string,
 			});
 		}
+		setSelected(defaultSelection);
 	}, [value]);
 
 	return (
-		<Listbox value={selected} onChange={handleChange}>
+		<Listbox
+			value={selected}
+			onChange={handleChange}
+			defaultValue={defaultSelection}>
 			{({ open }) => (
 				<div>
 					<Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">
