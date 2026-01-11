@@ -5,7 +5,8 @@ import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { IResponse } from "@/interface/Client/interface";
 import { EnumUploadStatus } from "@/interface/interface";
 import NotifyUtils from "@/utils/NotifyUtils";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -193,19 +194,16 @@ const UploadImage: React.FC<IUploadImageProps> = ({
         </Typography>
       )}
       <Button
-        component="label"
-        role={undefined}
-        variant="contained"
-        tabIndex={-1}
-        startIcon={<AttachFileIcon className="text-black mx-0 px-0" />}
-        className="!px-2 !py-1 !bg-[#e5e5e7] mt-2"
+        variant="secondary"
+        className="px-2 py-1 bg-[#e5e5e7] mt-2 text-black"
         onClick={() => {
           if (fileInputRef.current) {
             fileInputRef.current.click();
           }
         }}
       >
-        <span className="normal-case text-black font-bold font-nunito text-sm">
+        <AttachFileIcon className="text-black mx-0 px-0 mr-2" />
+        <span className="text-black font-bold font-nunito text-sm">
           {uploadedImages?.length > 0 ? "Lựa chọn thêm ảnh" : "Tải ảnh lên"}
         </span>
       </Button>
@@ -303,8 +301,9 @@ const BlockImageUploaded = ({
                 </span>
               </div>
               <span
-                className={`${UploadStatusProperty[image.status]
-                  ?.color} flex items-center gap-1 text-xs`}
+                className={`${
+                  UploadStatusProperty[image.status]?.color
+                } flex items-center gap-1 text-xs`}
               >
                 {UploadStatusProperty[image.status]?.icon}
                 {UploadStatusProperty[image.status]?.text}

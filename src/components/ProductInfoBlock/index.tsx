@@ -11,7 +11,8 @@ import { formatCurrency } from "@/utils/FormatNumber";
 import useStoreProductDetail, {
   useStoreProductDetailAction,
 } from "@/zustand/useProductDetail";
-import { Box, Button, CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import CollapseText from "../collapse";
 import InputQuantity from "../InputQuatity";

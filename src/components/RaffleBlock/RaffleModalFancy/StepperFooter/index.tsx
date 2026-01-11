@@ -10,7 +10,8 @@ import { IAuthUser } from "@/interface/Context/auth";
 import { useRaffleJoinMutation } from "@/react-query/raffles/api/useRaffleJoinMutation";
 import NotifyUtils from "@/utils/NotifyUtils";
 import useRaffle from "@/zustand/useRaffle";
-import { Button, Spinner } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import React, { useState } from "react";
 
 interface IButtonProps {
@@ -109,10 +110,10 @@ const StepperRaffleFooter = ({
     if (currentStep?.props.stepValue === steps[0]?.props.stepValue) {
       return (
         <Button
-          variant="outlined"
+          variant="outline"
           type="button"
           onClick={handleClose}
-          className="duration-350 rounded px-1 py-0.5 transition text-neutral-700 hover:bg-gray-400 min-w-[6rem] bg-gray-300 font-bold capitalize text-lg"
+          className="duration-350 rounded px-1 py-0.5 transition text-neutral-700 hover:bg-gray-400 min-w-[6rem] bg-gray-300 font-bold text-lg"
           disabled={isSubmitting || isRaffleLoading}
           // {...backButtonProps.attributes}
           style={{
@@ -127,7 +128,7 @@ const StepperRaffleFooter = ({
 
     return (
       <Button
-        variant="outlined"
+        variant="outline"
         onClick={() => {
           if (isRaffleEnded) {
             handleClose();
@@ -135,7 +136,7 @@ const StepperRaffleFooter = ({
             handleBack();
           }
         }}
-        className="duration-350 rounded px-1 py-0.5 transition text-neutral-700 hover:bg-gray-400 min-w-[6rem] bg-gray-300 font-bold capitalize text-lg"
+        className="duration-350 rounded px-1 py-0.5 transition text-neutral-700 hover:bg-gray-400 min-w-[6rem] bg-gray-300 font-bold text-lg"
         {...backButtonProps}
         disabled={isSubmitting || isRaffleLoading}
         style={{
@@ -191,11 +192,11 @@ const StepperRaffleFooter = ({
     if (isSubmitStep) {
       return (
         <Button
-          variant="contained"
+          variant="default"
           onClick={handleSubmitRaffle.bind(null, raffleSubmitForm)}
-          className={`duration-350 flex items-center justify-center rounded-lg bg-[var(--primary-color)] py-1.5 px-3.5 tracking-tight text-white transition hover:bg-red-600 active:bg-red-700 ml-auto text-lg capitalize font-bold ${
+          className={`duration-350 flex items-center justify-center rounded-lg bg-[var(--primary-color)] py-1.5 px-3.5 tracking-tight text-white transition hover:bg-red-600 active:bg-red-700 ml-auto text-lg font-bold ${
             isSubmitting
-              ? "opacity-50 cursor-not-allowed pointer-events-none !bg-gray-400"
+              ? "opacity-50 cursor-not-allowed pointer-events-none bg-gray-400"
               : ""
           }`}
           {...nextButtonProps}
@@ -212,11 +213,11 @@ const StepperRaffleFooter = ({
 
     return (
       <Button
-        variant="contained"
+        variant="default"
         onClick={handleNext}
-        className={`duration-350 flex items-center justify-center rounded-lg bg-[var(--primary-color)] py-1.5 px-3.5 font-bold tracking-tight text-white transition hover:bg-red-600 active:bg-red-700 ml-auto capitalize text-lg  ${
+        className={`duration-350 flex items-center justify-center rounded-lg bg-[var(--primary-color)] py-1.5 px-3.5 font-bold tracking-tight text-white transition hover:bg-red-600 active:bg-red-700 ml-auto text-lg  ${
           nextDisabled
-            ? "opacity-50 !bg-gray-400 cursor-not-allowed pointer-events-none"
+            ? "opacity-50 bg-gray-400 cursor-not-allowed pointer-events-none"
             : ""
         }`}
         {...nextButtonProps}

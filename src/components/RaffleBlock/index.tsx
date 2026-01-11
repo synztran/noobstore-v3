@@ -17,8 +17,9 @@ import useDialogLogin, {
   useDialogLoginAction,
 } from "@/zustand/useDialogLogin";
 import { useRaffleAction } from "@/zustand/useRaffle";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Button, Divider, Tooltip } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Divider, Tooltip } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { formatDistanceToNow } from "date-fns";
 import { Calendar, Dot, ShieldCheck } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -175,7 +176,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 
   if (isLoading) {
     return (
-      <div className="container max-w-7xl mx-auto py-4 !px-0">
+      <div className="container max-w-7xl mx-auto py-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* Left: Image Skeleton */}
           <div className="col-span-8 gap-4 h-full flex flex-col">
@@ -245,7 +246,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
             </div>
 
             {/* Button */}
-            <div className="w-full h-12 bg-gray-200 animate-pulse rounded-50"></div>
+            <div className="w-full h-12 bg-gray-200 animate-pulse rounded-md"></div>
           </div>
         </div>
       </div>
@@ -255,7 +256,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
   if (!raffleData) return null;
 
   return (
-    <div className="container max-w-7xl mx-auto py-4 !px-0">
+    <div className="container max-w-7xl mx-auto p-4 bg-gray-50 rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Left: Image Swiper */}
         <div className="col-span-7 flex flex-col items-center justify-center h-full relative max-h-max gap-4">
@@ -279,7 +280,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
                 </button>
               ) : null}
               {/* Animate image change */}
-              <div className="w-full h-[34rem] relative">
+              <div className="w-full h-136 relative">
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={raffleData?.productOptions?.[currentImageIndex]?.id}
@@ -591,7 +592,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
           />
 
           <Button
-            variant="contained"
+            variant="default"
             type="button"
             onClick={handleOpenRaffleForm}
             disabled={
@@ -599,12 +600,12 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
               statusRaffleBasingTime !== EnumRaffleStatus.ONGOING ||
               raffleData?.isHasJoined
             }
-            className={`flex !mt-auto items-center justify-center gap-2 w-full py-3 rounded-md text-white !font-semibold !text-lg transition ${
+            className={`flex mt-auto items-center justify-center gap-2 w-full py-3 rounded-md text-white font-semibold text-lg transition ${
               raffleData?.status === EnumRaffleStatus.ONGOING ||
               statusRaffleBasingTime === EnumRaffleStatus.ONGOING
                 ? "bg-red-400 hover:bg-red-500"
                 : ""
-            } ${raffleData?.isHasJoined ? "!bg-gray-400" : ""}`}
+            } ${raffleData?.isHasJoined ? "bg-gray-400" : ""}`}
           >
             {labelButton(
               raffleData?.status as EnumRaffleStatus,
@@ -625,7 +626,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
           damping: 20,
           delay: 0.2,
         }}
-        className="max-w-max mt-4 px-6 py-3 rounded-50 bg-gradient-to-r from-pink-500 via-red-400 to-yellow-400 text-white font-bold text-base shadow-lg flex items-center gap-2 group focus:outline-none mx-auto"
+        className="max-w-max mt-4 px-6 py-3 rounded-md bg-gradient-to-r from-pink-500 via-red-400 to-yellow-400 text-white font-bold text-base shadow-lg flex items-center gap-2 group focus:outline-none mx-auto"
         onClick={() => (window.location.href = "/raffles")}
       >
         <span className="drop-shadow-sm text-white">

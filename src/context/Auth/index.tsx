@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   token: string;
   redirectUrl: string;
   source: string;
-}): JSX.Element => {
+}): React.ReactElement => {
   const [user, setUser] = useState<IAuthUser | null>(null);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -137,29 +137,154 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     setCookies({ info: null }, false);
     removeCookies();
 
+    // Clear cached user data
+    localStorage.removeItem("cached_user");
+    localStorage.removeItem("cached_user_timestamp");
+
     window.location.href = "/";
     setIsLoading(false);
   };
 
   const loadUserFromCookies = useCallback(
-    async (callback?: (data: any) => void) => {
-      const respUser = await UserClient.getCurrentUser();
-      if (respUser?.status === "OK") {
-        const userInfo = respUser?.data;
-        const cookiesValue = Cookies.get(ACCESS_TOKEN);
-        if (cookiesValue && cookiesValue.length > 0) {
-          setCookies({ bearerToken: cookiesValue }, true);
+    async (callback?: (data: any) => void, retryCount = 0) => {
+      // If user is already loaded and authenticated, don't make another API call
+      console.log(user, isAuthenticated);
+      if (user && isAuthenticated && !isLoading) {
+        if (callback && typeof callback === "function") callback(user);
+        return;
+      }
+
+      // Check if we have cached user data in localStorage
+      const cachedUser = localStorage.getItem("cached_user");
+      const cacheTimestamp = localStorage.getItem("cached_user_timestamp");
+      const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+      console.log("cachedUser", cachedUser);
+
+      if (cachedUser && cacheTimestamp) {
+        const isExpired =
+          Date.now() - parseInt(cacheTimestamp) > CACHE_DURATION;
+        if (!isExpired) {
+          try {
+            const userInfo = JSON.parse(cachedUser);
+            setInfoUser(userInfo);
+            setIsLoading(false);
+            if (callback && typeof callback === "function") callback(userInfo);
+            return;
+          } catch (error) {
+            // If parsing fails, continue with API call
+            localStorage.removeItem("cached_user");
+            localStorage.removeItem("cached_user_timestamp");
+          }
+        }
+      }
+
+      try {
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error("API timeout")), 10000); // 10 second timeout
+        });
+
+        const apiPromise = UserClient.getCurrentUser();
+        const respUser = (await Promise.race([
+          apiPromise,
+          timeoutPromise,
+        ])) as any;
+
+        console.log("respUser", respUser);
+        if (respUser?.status === "OK") {
+          const userInfo = respUser?.data;
+          const cookiesValue = Cookies.get(ACCESS_TOKEN);
+          if (cookiesValue && cookiesValue.length > 0) {
+            setCookies({ bearerToken: cookiesValue }, true);
+          }
+
+          if (userInfo) {
+            // Cache user data in localStorage
+            localStorage.setItem("cached_user", JSON.stringify(userInfo));
+            localStorage.setItem(
+              "cached_user_timestamp",
+              Date.now().toString()
+            );
+
+            queryClient.invalidateQueries(appQueryKeys.cart.cartData);
+          }
+          setInfoUser(userInfo);
+          setIsLoading(false);
+          if (callback && typeof callback === "function") callback(userInfo);
+        } else {
+          // API returned error status
+          console.warn("Failed to get user data:", respUser?.status);
+          handleApiFailure();
+        }
+      } catch (error) {
+        console.error("Error loading user from cookies:", error);
+
+        // Retry logic for network errors (but not for timeouts on first try)
+        if (retryCount < 2 && (error as any).message !== "API timeout") {
+          console.log(`Retrying API call (attempt ${retryCount + 1})`);
+          setTimeout(
+            () => {
+              loadUserFromCookies(callback, retryCount + 1);
+            },
+            1000 * (retryCount + 1)
+          ); // Exponential backoff
+          return;
         }
 
-        if (userInfo) {
-          queryClient.invalidateQueries(appQueryKeys.cart.cartData);
+        handleApiFailure();
+      }
+
+      function handleApiFailure() {
+        // Check if we have valid cookies but API failed
+        const cookiesValue = Cookies.get(ACCESS_TOKEN);
+
+        if (cookiesValue && cookiesValue.length > 0) {
+          // We have a token but API failed - use cached data if available
+          if (cachedUser) {
+            try {
+              const userInfo = JSON.parse(cachedUser);
+              console.log("Using cached user data due to API failure");
+              setInfoUser(userInfo);
+              setIsLoading(false);
+              if (callback && typeof callback === "function")
+                callback(userInfo);
+              return;
+            } catch (parseError) {
+              console.error("Failed to parse cached user data:", parseError);
+            }
+          }
+
+          // If no cached data, set as unauthenticated but don't remove cookies yet
+          // (maybe it's just a temporary network issue)
+          console.log(
+            "API failed but token exists - setting as unauthenticated temporarily"
+          );
+          setInfoUser(null);
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        } else {
+          // No token, definitely not authenticated
+          console.log("No token found - user not authenticated");
+          setInfoUser(null);
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          removeCookies();
         }
-        setInfoUser(userInfo);
-        setIsLoading(false);
-        if (callback && typeof callback === "function") callback(userInfo);
+
+        if (callback && typeof callback === "function") callback(null);
       }
     },
-    [getUserInfo, setIsLoading]
+    [
+      getUserInfo,
+      setIsLoading,
+      user,
+      isAuthenticated,
+      isLoading,
+      queryClient,
+      setCookies,
+      removeCookies,
+    ] // Added dependencies
   );
 
   const login = (info: any, rememberMe: boolean) => {
@@ -226,17 +351,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       });
   };
 
+  // Initial load effect - only runs once on mount
   useEffect(() => {
-    loadUserFromCookies(async () => {
-      if (token) {
-        if (redirectUrl) {
-          router.push(redirectUrl);
-        } else {
-          router.push(router.pathname);
-        }
+    loadUserFromCookies();
+  }, []); // Empty dependency array - runs only once
+
+  // Handle token/redirect changes separately
+  useEffect(() => {
+    if (token && user) {
+      if (redirectUrl) {
+        router.push(redirectUrl);
       }
-    });
-  }, [pathname, loadUserFromCookies, token, redirectUrl, source]);
+    }
+  }, [token, redirectUrl, user]); // Only when these specific values change
 
   return (
     <AuthContext.Provider

@@ -1,5 +1,6 @@
 import { preventKeyInNumber } from "@/utils/ValidateUtils";
-import { Box, Button, Tooltip, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import {
   FormControl,
   InputLabel,
@@ -97,7 +98,7 @@ const ProductOptions: React.FC<IProps> = (props) => {
           />
           <Button
             className="min-h-[20px] p-0 border-none text-red-400 hover:rounded-lg"
-            variant="outlined"
+            variant="outline"
             onClick={() => handleDeleteOption(index)}
           >
             <CircleX />
@@ -107,9 +108,8 @@ const ProductOptions: React.FC<IProps> = (props) => {
       {options.length < MAX_OPTIONS && (
         <div className="w-full flex justify-end items-center mt-2 gap-2">
           <Button
-            color="primary"
-            variant="outlined"
-            className="flex items-center"
+            variant="outline"
+            className="flex items-center text-blue-600 border-blue-600"
             onClick={handleAddOption}
           >
             Thêm tùy chọn

@@ -5,7 +5,8 @@ import {
   EnumStatusDialog,
   useDialogLoginAction,
 } from "@/zustand/useDialogLogin";
-import { Box, Button, Spinner, Typography } from "@mui/material";
+import { Box, Spinner, Typography } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 

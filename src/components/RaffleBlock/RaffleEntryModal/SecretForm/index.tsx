@@ -2,7 +2,8 @@ import { IStepProps } from "@/interface/Raffle";
 import { useRaffleSubmitSecretMutation } from "@/react-query/raffles/api/useRaffleSubmitSecretMutation";
 import NotifyUtils from "@/utils/NotifyUtils";
 import useRaffle, { useRaffleAction } from "@/zustand/useRaffle";
-import { Button, CircularProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { memo, useRef, useState } from "react";
 
 const StepSecretKey: React.FC<IStepProps> = memo(({ raffleData }) => {
@@ -110,7 +111,7 @@ const StepSecretKey: React.FC<IStepProps> = memo(({ raffleData }) => {
 
             <Button
               type="submit"
-              variant="contained"
+              variant="default"
               disabled={isLoading}
               className="w-full bg-red-400 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-md transition-colors my-auto text-lg flex items-center justify-center disabled:"
             >

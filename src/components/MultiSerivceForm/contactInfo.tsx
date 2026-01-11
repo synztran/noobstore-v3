@@ -4,7 +4,7 @@ import { IAuthUser } from "@/interface/Context/auth";
 import { useDialogLoginAction } from "@/zustand/useDialogLogin";
 import { useServiceAction } from "@/zustand/useServices";
 import { Divider, FormGroup, FormHelperText } from "@mui/material";
-import Button from "@mui/material/Button";
+import { Button } from "@/components/ReUIComponent/Button";
 import { Field, Form, Formik } from "formik";
 import React, { useEffect } from "react";
 import * as Yup from "yup";
@@ -63,15 +63,15 @@ const ServiceContactInfo: React.FC = () => {
           <>
             <div className="flex gap-2 mt-2">
               <Button
-                variant="outlined"
-                className="bg-white !border-gray-400 !border-1 rounded-lg font-semibold w-1/2 !normal-case"
+                variant="outline"
+                className="bg-white border-gray-400 border-1 rounded-lg font-semibold w-1/2"
               >
                 <GoogleLogo width={20} height={20} />
                 &nbsp; Tiếp tục bằng Google
               </Button>
               <Button
-                variant="outlined"
-                className="!normal-case font-semibold bg-[#e7e6e9] rounded-lg py-1 w-1/2 !border-gray-400 !border-1"
+                variant="outline"
+                className="font-semibold bg-[#e7e6e9] rounded-lg py-1 w-1/2 border-gray-400 border-1"
                 onClick={() => toggleDialogLogin(true)}
               >
                 Đăng nhập

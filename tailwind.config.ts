@@ -1,37 +1,16 @@
-// const { letterSpacing } = require("@material-ui/system");
-const plugin = require("tailwindcss/plugin");
-// const colors = require("tailwindcss/colors");
+// Tailwind CSS v4 configuration
+import { type Config } from 'tailwindcss';
 
-const generateNumbers = (start, end, space = 10) => {
-	const numbers = {};
+const generateNumbers = (start: number, end: number, space = 10) => {
+	const numbers: Record<string, string> = {};
 	for (let i = start; i <= end; i += space) {
 		numbers[Math.round(i)] = `${Math.round(i)}px`;
 	}
 	return numbers;
 };
 
-const generatePercents = (start, end) => {
-	const percents = {};
-	for (let i = start; i <= end; i++) {
-		percents[i] = `${i}%`;
-	}
-	return percents;
-};
-
-module.exports = {
-	// corePlugins: {
-	// 	preflight: false,
-	// },
-	import: "#_next",
-	// prefix: 'th-',
+export default {
 	content: ["./src/**/*.{js,ts,jsx,tsx}", "./packages/**/*.{js,ts,jsx,tsx}"],
-	// purge: {
-	// 	enabled: true,
-	// 	content: ["./**/*.html", "./*.html", "./**/*.js", "./*.js"],
-	// 	options: {
-	// 		safelist: [],
-	// 	},
-	// },
 	theme: {
 		borderWidth: {
 			DEFAULT: "1px",
@@ -80,6 +59,7 @@ module.exports = {
 				xl: "1920px",
 			},
 			colors: {
+				// Existing colors
 				primary: {
 					100: "#E6F6FE",
 					200: "#C0EAFC",
@@ -90,6 +70,8 @@ module.exports = {
 					700: "#026592",
 					800: "#014C6E",
 					900: "#013349",
+					DEFAULT: "hsl(var(--primary))",
+					foreground: "hsl(var(--primary-foreground))",
 				},
 				gray: {
 					100: "#f7fafc",
@@ -105,7 +87,36 @@ module.exports = {
 				blue: {
 					bgMenu: "#f6f9ff",
 				},
-				// ...colors,
+				// REUI semantic colors
+				border: "hsl(var(--border))",
+				input: "hsl(var(--input))",
+				ring: "hsl(var(--ring))",
+				background: "hsl(var(--background))",
+				foreground: "hsl(var(--foreground))",
+				secondary: {
+					DEFAULT: "hsl(var(--secondary))",
+					foreground: "hsl(var(--secondary-foreground))",
+				},
+				destructive: {
+					DEFAULT: "hsl(var(--destructive))",
+					foreground: "hsl(var(--destructive-foreground))",
+				},
+				muted: {
+					DEFAULT: "hsl(var(--muted))",
+					foreground: "hsl(var(--muted-foreground))",
+				},
+				accent: {
+					DEFAULT: "hsl(var(--accent))",
+					foreground: "hsl(var(--accent-foreground))",
+				},
+				popover: {
+					DEFAULT: "hsl(var(--popover))",
+					foreground: "hsl(var(--popover-foreground))",
+				},
+				card: {
+					DEFAULT: "hsl(var(--card))",
+					foreground: "hsl(var(--card-foreground))",
+				},
 			},
 			lineHeight: {
 				hero: "4.5rem",
@@ -173,6 +184,9 @@ module.exports = {
 				sm: "0.25rem",
 				half: "50%",
 				full: "100%",
+				lg: "var(--radius)",
+				md: "calc(var(--radius) - 2px)",
+				DEFAULT: "calc(var(--radius) - 4px)",
 				...generateNumbers(0, 100),
 			},
 			animation: {
@@ -205,7 +219,7 @@ module.exports = {
 				},
 			},
 			width: {
-				...generateNumbers(100, 1000), // generate withs from 100 to 1000
+				...generateNumbers(100, 1000),
 			},
 			translate: {
 				half: "50%",
@@ -244,64 +258,4 @@ module.exports = {
 			},
 		},
 	},
-	variants: [
-		"responsive",
-		"group-hover",
-		"focus-within",
-		"first",
-		"last",
-		"odd",
-		"even",
-		"hover",
-		"focus",
-		"active",
-		"visited",
-		"disabled",
-	],
-	plugins: [
-		require("@tailwindcss/forms"),
-		plugin(function ({ addComponents, theme }) {
-			const screens = theme("screens", {});
-			addComponents([
-				{
-					".container": { width: "100%" },
-				},
-				{
-					[`@media (min-width: ${screens.sm})`]: {
-						".container": {
-							"max-width": "640px",
-						},
-					},
-				},
-				{
-					[`@media (min-width: ${screens.md})`]: {
-						".container": {
-							"max-width": "1080px",
-						},
-					},
-				},
-				{
-					[`@media (min-width: ${screens.lg})`]: {
-						".container": {
-							"max-width": "1280px",
-						},
-					},
-				},
-				{
-					[`@media (min-width: ${screens.xl})`]: {
-						".container": {
-							"max-width": "1440px",
-						},
-					},
-				},
-				{
-					[`@media (min-width: ${screens["2xl"]})`]: {
-						".container": {
-							"max-width": "1600px",
-						},
-					},
-				},
-			]);
-		}),
-	],
-};
+} satisfies Config;

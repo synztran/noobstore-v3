@@ -1,6 +1,6 @@
 import { useAuth } from "@/context/Auth";
 import useOrderQuery from "@/react-query/order/api/useOrderQueries";
-import { Button } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { Check } from "lucide-react";
 import Link from "next/link";
 import React from "react";

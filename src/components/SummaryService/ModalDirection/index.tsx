@@ -1,4 +1,5 @@
-import { Box, Button, Modal, Typography } from "@mui/material";
+import { Box, Modal, Typography } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -82,10 +83,9 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
           Redirecting in {remainingTime} seconds...
         </Typography>
         <Button
-          variant="contained"
-          color="primary"
+          variant="default"
           onClick={handleForceRedirect}
-          style={{ marginTop: "24px" }}
+          className="mt-6 bg-blue-600 text-white"
         >
           Redirect Now
         </Button>

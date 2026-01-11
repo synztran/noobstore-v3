@@ -1,6 +1,6 @@
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { ThemeProvider } from "@material-ui/core/styles";
+import { CssBaseline } from "@mui/material";
 import theme from ".";
+import { ThemeProvider } from "styled-components";
 
 const MuiThemeProvider = ({ children }) => (
 	<ThemeProvider theme={theme}>

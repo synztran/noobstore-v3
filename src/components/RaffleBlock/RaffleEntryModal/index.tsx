@@ -71,8 +71,8 @@ const Stepper: React.FC<{ activeStep: number }> = ({ activeStep }) => (
             activeStep === idx
               ? "bg-blue-600 border-blue-600 text-white"
               : activeStep > idx
-              ? "bg-green-500 border-green-500 text-white"
-              : "bg-gray-200 border-gray-300 text-gray-500"
+                ? "bg-green-500 border-green-500 text-white"
+                : "bg-gray-200 border-gray-300 text-gray-500"
           } font-bold`}
         >
           {idx + 1}
@@ -110,7 +110,7 @@ const RaffleEntryModal: React.FC<RaffleEntryModalProps> = ({
   const [activeStep, setActiveStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const recaptchaRef = useRef<RecaptchaWrapperRef>(null);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<RaffleEntryForm>({
     fullName: "",
     email: "",
     phone: "",
@@ -394,8 +394,8 @@ const RaffleEntryModal: React.FC<RaffleEntryModalProps> = ({
                 {isSubmitting
                   ? "Đang xử lý..."
                   : activeStep === 2
-                  ? "Hoàn tất đăng ký"
-                  : "Tiếp theo"}
+                    ? "Hoàn tất đăng ký"
+                    : "Tiếp theo"}
               </button>
             </>
           )}

@@ -1,14 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-// const withBundleAnalyzer =
-// 	process.env.ANALYZE === "true"
-// 		? require("@next/bundle-analyzer")({ enabled: true })
-// 		: (config) => config;
-
 const withTM = require("next-transpile-modules")([
 	"@mui/material",
 	"@mui/system",
 	"@mui/icons-material", // If @mui/icons-material is being used
-	// "gsap", // Add GSAP to transpiled modules
 ]);
 
 function getFormattedDate(date, format = "DD/MM/YYYY") {
@@ -32,14 +26,12 @@ const withPlugins = require("next-compose-plugins");
 const generateBuildId = () => getFormattedDate(new Date(), "YYYYMMDDHHmmss");
 
 const plugins = [];
-// plugins.push([withBundleAnalyzer]);
 
 const buildID = generateBuildId();
 
 const nextConfigs = {
 	assetPrefix: undefined,
 	poweredByHeader: false,
-	swcMinify: true,
 	webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
 		const customPlugins = [
 			new webpack.DefinePlugin({
@@ -50,6 +42,7 @@ const nextConfigs = {
 		return config;
 	},
 	output: "standalone",
+	outputFileTracingRoot: __dirname,
 
 	compiler: {
 		styledComponents: true,
@@ -60,9 +53,9 @@ const nextConfigs = {
 	typescript: {
 		ignoreBuildErrors: false,
 	},
-	publicRuntimeConfig: {
-		buildId: buildID,
-	},
+	// env: {
+	// 	BUILD_ID: buildID,
+	// },
 	images: {
 		remotePatterns: [
 			{

@@ -12,7 +12,7 @@ const Base = ({
   styles,
   isNonStrutured = true,
 }: {
-  children?: JSX.Element | null;
+  children?: React.ReactNode | null;
   isLoading?: boolean;
   styles?: React.CSSProperties;
   isNonStrutured?: boolean;
@@ -35,7 +35,7 @@ const Base = ({
 
   if (isLoading) {
     return (
-      <div className="text-gray-600 antialiased bg-gray-100 w-full h-screen">
+      <div className="text-gray-600 antialiased bg-gray-50 w-full h-screen">
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <CircularProgress
             size={84}
@@ -53,7 +53,7 @@ const Base = ({
       <Header />
       <div
         className={classNames(
-          `max-w-7xl text-gray-600 antialiased bg-gray-100 container mx-auto`
+          `max-w-7xl text-gray-600 antialiased container mx-auto`
         )}
         id="webpage"
         style={{

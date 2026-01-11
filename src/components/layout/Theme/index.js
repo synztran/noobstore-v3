@@ -1,4 +1,4 @@
-import { createTheme } from "@material-ui/core/styles";
+import { createTheme } from "@mui/material";
 import { viVN as coreViVN } from "@mui/material/locale";
 import { viVN } from "@mui/x-date-pickers/locales";
 import { palette } from "constants/Colors";

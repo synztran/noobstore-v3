@@ -3,7 +3,7 @@ import { EnumSaleStatus } from "@/interface/interface";
 import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/20/solid";
 import { FunnelIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Button } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { useRouter } from "next/router";
 import { Dispatch, Fragment, SetStateAction, useEffect, useState } from "react";
 
@@ -247,9 +247,8 @@ const FilterSection = ({
               {isAllowToSell ? (
                 <div className="mt-4">
                   <Button
-                    variant="contained"
-                    color="primary"
-                    className="text-xl normal-case bg-red-400 w-full"
+                    variant="default"
+                    className="text-xl bg-red-400 hover:bg-red-500 text-white w-full"
                     onClick={toggleSellProduct}
                   >
                     {" "}

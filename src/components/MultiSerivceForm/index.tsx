@@ -5,7 +5,8 @@ import {
 } from "@/constants/Images";
 import { EnumServiceType } from "@/interface/interface";
 import useServices, { useServiceAction } from "@/zustand/useServices";
-import { Button, Button as MUIButton } from "@mui/material";
+import { Button as MUIButton } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { Divider } from "@mui/material";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -142,8 +143,8 @@ const MultiServiceForm: React.FC = () => {
             <strong className="text-xl">Danh sách dịch vụ bàn phím</strong>
             <Button
               id="guide-add-new-task-keyboard"
-              className="!normal-case !px-3 !py-1 bg-blue-600"
-              variant="contained"
+              className="px-3 py-1 bg-blue-600 text-white"
+              variant="default"
               disabled={isKeyboardLimit}
               onClick={() => addKeyboardItem()}
             >
@@ -188,8 +189,8 @@ const MultiServiceForm: React.FC = () => {
           <div className="flex justify-between items-center">
             <strong className="text-xl">Danh sách dịch vụ switch</strong>
             <Button
-              className="!normal-case !px-3 !py-1 bg-blue-600"
-              variant="contained"
+              className="px-3 py-1 bg-blue-600 text-white"
+              variant="default"
               disabled={isSwitchLimit}
               onClick={() => addSwitchItem()}
             >
@@ -236,8 +237,8 @@ const MultiServiceForm: React.FC = () => {
           <div className="flex justify-between items-center">
             <strong className="text-xl">Danh sách dịch vụ stabilizer</strong>
             <Button
-              className="!normal-case !px-3 !py-1 bg-blue-600"
-              variant="contained"
+              className="px-3 py-1 bg-blue-600 text-white"
+              variant="default"
               disabled={isStabilizerLimit}
               onClick={() => addStabilizerItem()}
             >

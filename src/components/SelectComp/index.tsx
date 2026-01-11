@@ -1,5 +1,6 @@
 import { formatCurrency } from "@/utils/FormatNumber";
-import { Button, CircularProgress, Input } from "@mui/material";
+import { CircularProgress, Input } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { styled } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { Check, ChevronsUpDown, Plus, X } from "lucide-react";
@@ -292,21 +293,23 @@ const SearchableSelect: React.FC<IProps> = ({
                   />
                   <div className="flex gap-2">
                     <Button
+                      variant="default"
                       onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
                       onClick={handleAddNew}
                       disabled={!newOption.trim()}
-                      className="w-full capitalize"
+                      className="w-full"
                     >
                       <Check size={16} className="mr-2" />
                       Thêm
                     </Button>
                     <Button
+                      variant="secondary"
                       onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
                       onClick={() => {
                         setAdding(false);
                         setNewOption("");
                       }}
-                      className="w-full capitalize"
+                      className="w-full"
                     >
                       <X size={16} className="mr-2" />
                       Hủy
@@ -315,7 +318,8 @@ const SearchableSelect: React.FC<IProps> = ({
                 </div>
               ) : (
                 <Button
-                  className={`w-full justify-start text-gray-600 capitalize`}
+                  variant="ghost"
+                  className={`w-full justify-start text-gray-600`}
                   onMouseDown={(e) => e.preventDefault()} // Prevent blur before click
                   onClick={() => {
                     if (isAddOn) {

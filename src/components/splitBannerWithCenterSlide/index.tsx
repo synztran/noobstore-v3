@@ -1,5 +1,6 @@
 import { HOME_LEFT_BANNER } from "@/constants/Images";
-import { Box, Button, Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";

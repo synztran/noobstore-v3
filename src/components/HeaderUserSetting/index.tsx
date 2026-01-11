@@ -57,10 +57,9 @@ const HeaderUserSetting = () => {
           >
             <Popover.Button
               ref={buttonRef}
-              className={`rounded-50 px-2 py-1
-                 bg-gray-200 hover:bg-gray-300 focus:outline-none transition-all duration-150 ${
-                   open ? "ring-2 ring-indigo-500 ring-offset-2" : ""
-                 }`}
+              className={`rounded-xl px-2 py-1 bg-gray-200 hover:bg-gray-300 focus:outline-none transition-all duration-150 ${
+                open ? "ring-2 ring-indigo-500 ring-offset-2" : ""
+              }`}
             >
               <div className="flex gap-2 items-center">
                 <span className="rounded-full p-1">

@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+import { X } from "lucide-react";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { styled } from "@mui/material/styles";
 import { linearProgressClasses, tooltipClasses } from "@mui/material";
@@ -313,7 +314,7 @@ const drawReward = (
   ctx.restore();
 };
 
-const LuckyWheelContainer = (): JSX.Element => {
+const LuckyWheelContainer = () => {
   const router = useRouter();
   const { user }: any = useAuth();
 
@@ -1112,13 +1113,7 @@ const LuckyWheelContainer = (): JSX.Element => {
     }
   }, [isEffectOOT]);
 
-  const TitleTooltip = ({
-    name,
-    url,
-  }: {
-    name: string;
-    url: string;
-  }): JSX.Element => {
+  const TitleTooltip = ({ name, url }: { name: string; url: string }) => {
     return (
       <Box className={styles.tooltipPrizeWrapper}>
         <Box className={styles.tooltipImageWrapper}>
@@ -1771,8 +1766,8 @@ const LuckyWheelContainer = (): JSX.Element => {
 interface IButtonSpin {
   spin: () => void;
   reset: () => void;
-  btnSpinRef: RefObject<HTMLDivElement>;
-  btnSpinHeadRef: RefObject<HTMLDivElement>;
+  btnSpinRef: RefObject<HTMLDivElement | null>;
+  btnSpinHeadRef: RefObject<HTMLDivElement | null>;
   isSpinning: boolean;
   isStop: boolean;
   turns: number;

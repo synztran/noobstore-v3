@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, CircularProgress, Tooltip } from "@mui/material";
+import { CircularProgress, Tooltip } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import useGeolocation, { GeolocationCoordinates } from "@/hook/useGeolocation";
 import { MapPin } from "lucide-react";
@@ -9,8 +10,14 @@ interface LocationRequestButtonProps {
   onError?: (error: string) => void;
   disabled?: boolean;
   className?: string;
-  variant?: "text" | "outlined" | "contained";
-  size?: "small" | "medium" | "large";
+  variant?:
+    | "default"
+    | "outline"
+    | "secondary"
+    | "destructive"
+    | "ghost"
+    | "link";
+  size?: "sm" | "default" | "lg" | "icon";
   fullWidth?: boolean;
 }
 
@@ -19,8 +26,8 @@ const LocationRequestButton: React.FC<LocationRequestButtonProps> = ({
   onError,
   disabled = false,
   className = "",
-  variant = "outlined",
-  size = "medium",
+  variant = "outline",
+  size = "default",
   fullWidth = false,
 }) => {
   const { loading, error, getCurrentLocation, clearError } = useGeolocation();
@@ -53,32 +60,17 @@ const LocationRequestButton: React.FC<LocationRequestButtonProps> = ({
         <Button
           variant={variant}
           size={size}
-          fullWidth={fullWidth}
           disabled={disabled || loading}
           onClick={handleLocationRequest}
-          startIcon={
-            loading ? (
-              <CircularProgress size={28} />
-            ) : (
-              <MapPin size={28} className="stroke-black fill-red-600" />
-            )
-          }
-          className={`text-lg ${className} ${
+          className={`text-lg ${fullWidth ? "w-full" : ""} ${className} ${
             error ? "text-red-500 border-red-500" : ""
           }`}
-          // sx={{
-          // 	textTransform: "none",
-          // 	borderRadius: "8px",
-          // 	...(error && {
-          // 		borderColor: "error.main",
-          // 		color: "error.main",
-          // 		"&:hover": {
-          // 			borderColor: "error.dark",
-          // 			backgroundColor: "error.light",
-          // 		},
-          // 	}),
-          // }}
         >
+          {loading ? (
+            <CircularProgress size={28} className="mr-2" />
+          ) : (
+            <MapPin size={28} className="stroke-black fill-red-600 mr-2" />
+          )}
           {loading ? "Đang lấy vị trí..." : "Lấy vị trí hiện tại"}
         </Button>
       </span>

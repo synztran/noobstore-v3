@@ -12,7 +12,7 @@ import useMusicPlayer, {
 interface IProps {
   open: boolean;
   onClose: () => void;
-  audioRef: React.RefObject<HTMLAudioElement>;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
 }
 
 const MusicPlayList: React.FC<IProps> = ({ open, onClose, audioRef }) => {

@@ -1,47 +1,61 @@
 import { useAuth } from "@/context/Auth";
 import {
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-} from "@mui/material";
+  Dialog,
+  DialogPortal,
+  DialogBackdrop,
+  DialogViewport,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ReUIComponent/Dialog";
+import { Button } from "@/components/ReUIComponent/Button";
 
 const PopupLogOut = ({
-	open,
-	handleClose,
+  open,
+  handleClose,
 }: {
-	open: boolean;
-	handleClose: () => void;
+  open: boolean;
+  handleClose: () => void;
 }) => {
-	const { logout } = useAuth() as unknown as { logout: () => void };
-	const handleLogout = () => {
-		if (logout) logout();
-	};
+  const { logout } = useAuth() as unknown as { logout: () => void };
+  const handleLogout = () => {
+    if (logout) logout();
+  };
 
-	return (
-		<Dialog onClose={handleClose} open={open}>
-			<DialogTitle>Đăng xuất tài khoản</DialogTitle>
-			<DialogContent>
-				<DialogContentText id="alert-dialog-description">
-					Bạn có chắc chắn muốn đăng xuất không?
-				</DialogContentText>
-			</DialogContent>
-			<DialogActions className="flex justify-end items-center gap-2">
-				<Button variant="outlined" className="" onClick={handleClose}>
-					<span className="normal-case">Đóng</span>
-				</Button>
-				<Button
-					variant="contained"
-					onClick={handleLogout}
-					autoFocus
-					className="bg-red-500 hover:bg-red-600">
-					<span className="normal-case">Thoát</span>
-				</Button>
-			</DialogActions>
-		</Dialog>
-	);
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogPortal>
+        <DialogBackdrop />
+        <DialogViewport>
+          <DialogContent showClose={false}>
+            <DialogHeader>
+              <DialogTitle>Đăng xuất tài khoản</DialogTitle>
+              <DialogDescription>
+                Bạn có chắc chắn muốn đăng xuất không?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex justify-end items-center gap-2">
+              <DialogClose asChild>
+                <Button variant="outline" onClick={handleClose}>
+                  Đóng
+                </Button>
+              </DialogClose>
+              <Button
+                variant="default"
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white"
+              >
+                Thoát
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </DialogViewport>
+      </DialogPortal>
+    </Dialog>
+  );
 };
 
 export default PopupLogOut;

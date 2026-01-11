@@ -40,7 +40,7 @@
   animation: shine 3s ease-in-out .5s infinite;
 }
 
-.symbol:nth-child(3)&:before, .symbol:nth-child(3):after {
+.symbol:nth-child(3):before, .symbol:nth-child(3):after {
   content: '';
   width: 12px;
   height: 4px;
@@ -130,6 +130,7 @@
   transition: background .5s ease;
   overflow: hidden;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 .box_button:before {

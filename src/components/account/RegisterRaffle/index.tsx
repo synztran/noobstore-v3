@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Modal, Tabs, Tab, Divider, Button } from "@mui/material";
+import { Modal, Tabs, Tab, Divider } from "@mui/material";
+import { Button } from "@/components/ReUIComponent/Button";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
@@ -337,9 +338,9 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
         </div>
         <div className="fixed bottom-0 left-0 w-full flex items-center justify-end border-t border-gray-200 bg-white p-4">
           <Button
-            size="medium"
-            variant="outlined"
-            className="normal-case"
+            size="default"
+            variant="outline"
+            className=""
             onClick={onClose}
           >
             <span className="text-sm text-black font-bold">Đóng</span>
