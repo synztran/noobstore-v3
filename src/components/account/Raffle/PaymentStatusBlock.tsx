@@ -1,37 +1,22 @@
 import {
 	MapPaymentMethod,
 	mappingEnumRafflePaymentStatus,
-	mappingLabelPaymentForm,
 	mappingLabelPaymentMethod,
 } from "@/constants";
-import {
-	I3D_INFORMATION,
-	I3D_NUMBER_ONE,
-	I3D_NUMBER_RAFFLE_WHEEL,
-	I3D_NUMBER_THREE,
-	I3D_NUMBER_TWO,
-	I3D_ORDER_PACKAGE,
-	I3D_SHIPPING_TRUCK,
-	I3D_SUMMARY_PRICE_LIST,
-	LOGO_STORE,
-} from "@/constants/Images";
+import { I3D_SHIPPING_TRUCK, I3D_SUMMARY_PRICE_LIST } from "@/constants/Images";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
-import {
-	EnumPaymentForm,
-	EnumRafflePaymentStatus,
-} from "@/interface/interface";
+import { EnumRafflePaymentStatus } from "@/interface/interface";
 import DateUtils from "@/utils/DateUtils";
 import { formatCurrency } from "@/utils/FormatNumber";
-import { MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";
 
 interface IProps {
 	raffle: TResponseRaffleEntry;
-	winningProduct?: IBEResponseRaffleProductSelection | null;
+	winningProducts?: IBEResponseRaffleProductSelection[] | null;
 }
 
-const RafflePaymentStatusBlock = ({ raffle, winningProduct }: IProps) => {
+const RafflePaymentStatusBlock = ({ raffle, winningProducts }: IProps) => {
 	const paymentStatusInfo =
 		mappingEnumRafflePaymentStatus[raffle.paymentStatus] || {};
 
@@ -112,7 +97,11 @@ const RafflePaymentStatusBlock = ({ raffle, winningProduct }: IProps) => {
 								value={
 									<span className="font-bold text-sm">
 										{formatCurrency(
-											winningProduct?.price || 0
+											winningProducts?.reduce(
+												(acc, product) =>
+													acc + product.price,
+												0
+											) || 0
 										)}
 									</span>
 								}

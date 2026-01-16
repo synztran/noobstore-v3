@@ -1,3 +1,4 @@
+import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
 import {
 	EnumPaymentForm,
@@ -7,32 +8,36 @@ import {
 import { Divider, Modal } from "@mui/material";
 import { X } from "lucide-react";
 import Image from "next/image";
-import React, { useState, useMemo, useEffect } from "react";
-import PaymentStatusChecking from "@/components/ServiceComponent/PaymentStatusChecking";
+import React, { useEffect, useMemo } from "react";
 import RafflePaymentBlock from "./Raffle/PaymentBlock";
 import RafflePaymentStatusBlock from "./Raffle/PaymentStatusBlock";
-import RaffleSubmittedForm from "./Raffle/SubmittedForm";
 import RaffleProductWin from "./Raffle/ProductWin";
+import RaffleSubmittedForm from "./Raffle/SubmittedForm";
 
 interface RafflePaymentModalProps {
 	open: boolean;
 	onClose: () => void;
 	selected: TResponseRaffleEntry | null;
+	mapRaffleProductWin: Record<string, IBEResponseRaffleProductSelection>;
 }
 
 const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 	open,
 	onClose,
 	selected,
+	mapRaffleProductWin,
 }) => {
 	// Get winning product info
-	const winningProduct = useMemo(() => {
-		if (!selected || !selected.raffleWinInfo) return null;
-		const product = selected.productSelections.find(
-			(p) => p.productId === selected.raffleWinInfo?.productId
+	const winningProducts = useMemo(() => {
+		if (!selected || !selected.isWinner) return [];
+		return (
+			selected?.raffleWinInfo
+				?.map(({ productId }) => mapRaffleProductWin[productId])
+				.filter((p): p is IBEResponseRaffleProductSelection =>
+					Boolean(p)
+				) || []
 		);
-		return product;
-	}, [selected]);
+	}, [selected, mapRaffleProductWin]);
 
 	// Transform raffle entry to service booking format for PaymentBlock/PaymentStatusChecking
 	const transformedService = useMemo(() => {
@@ -40,19 +45,26 @@ const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 
 		return {
 			serviceBookingId: selected.raffleId,
-			totalPrice: winningProduct?.price || 0,
+			totalPrice:
+				winningProducts?.reduce(
+					(acc, product) => acc + product.price,
+					0
+				) || 0,
 			paymentStatus: selected.paymentStatus,
 			payment: {
 				transitionId: `RAFFLE-${selected.raffleId}`,
 				submittedAt: new Date().toISOString(),
 				paymentMethod: EnumPaymentMethod.BANK_TRANSFER,
 				paymentForm: EnumPaymentForm.FULL,
-				paidAmount: winningProduct?.price || 0,
+				paidAmount:
+					winningProducts?.reduce(
+						(acc, product) => acc + product.price,
+						0
+					) || 0,
 				remainingAmount: 0,
 			},
 		};
-	}, [selected, winningProduct]);
-
+	}, [selected, winningProducts]);
 	useEffect(() => {
 		if (open) {
 			document.body.style.overflow = "hidden";
@@ -81,7 +93,7 @@ const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 				{/* Header */}
 				<div className="grid grid-cols-12 gap-4">
 					<div className="col-span-7 flex gap-2">
-						<div className="w-36 h-36 relative flex-shrink-0">
+						<div className="w-36 h-36 relative">
 							<Image
 								src={selected?.raffleInfo.thumbnail.path}
 								alt={selected?.raffleInfo.thumbnail.alt}
@@ -114,10 +126,12 @@ const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 							</div>
 						</div>
 					</div>
-					{winningProduct &&
+					{winningProducts &&
 					selected?.paymentStatus !== EnumRafflePaymentStatus.PAID ? (
 						<div className="col-span-5">
-							<RaffleProductWin winningProduct={winningProduct} />
+							<RaffleProductWin
+								winningProducts={winningProducts}
+							/>
 						</div>
 					) : null}
 				</div>
@@ -178,12 +192,12 @@ const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 						EnumRafflePaymentStatus.PAID ? (
 							<RafflePaymentStatusBlock
 								raffle={selected}
-								winningProduct={winningProduct}
+								winningProducts={winningProducts}
 							/>
 						) : (
 							<RafflePaymentBlock
 								raffle={selected}
-								winningProduct={winningProduct}
+								winningProducts={winningProducts}
 							/>
 						)}
 					</div>
@@ -191,7 +205,7 @@ const RafflePaymentModal: React.FC<RafflePaymentModalProps> = ({
 					<div className="col-span-5 relative flex-1 min-h-0 flex flex-col gap-4 overflow-y-auto">
 						<RaffleSubmittedForm
 							raffle={selected}
-							winningProduct={winningProduct}
+							winningProducts={winningProducts}
 						/>
 					</div>
 				</div>

@@ -234,3 +234,17 @@ export interface IRequestRaffleJoin {
 	secretKey?: string;
 	note?: string;
 }
+
+export interface ISubmitRafflePaymentDonation {
+	donation_amount: number;
+	message?: string;
+}
+
+export interface IPayloadSubmitRafflePayment {
+	donation: ISubmitRafflePaymentDonation;
+	sub_price?: number;
+	shipping_fee?: number;
+	tax?: number;
+	total_price: number;
+	payment_method: EnumPaymentMethod;
+}

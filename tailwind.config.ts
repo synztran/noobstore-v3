@@ -1,5 +1,5 @@
 // Tailwind CSS v4 configuration
-import { type Config } from 'tailwindcss';
+import { type Config } from "tailwindcss";
 
 const generateNumbers = (start: number, end: number, space = 10) => {
 	const numbers: Record<string, string> = {};

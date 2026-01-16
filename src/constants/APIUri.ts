@@ -99,4 +99,5 @@ export const RAFFLE_API = {
 	GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
 	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
 	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
+	POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,
 };

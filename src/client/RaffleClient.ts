@@ -35,9 +35,15 @@ const postRaffleSubmitSecretKey = async (payload: {
 	return POST({ url, body: payload, isAuth: true });
 };
 
+const postRaffleSubmitPayment = async (payload: any) => {
+	const url = RAFFLE_API.POST_RAFFLE_SUBMIT_PAYMENT;
+	return POST({ url, body: payload, isAuth: true });
+};
+
 export default {
 	getDetailRaffle,
 	getRaffles,
 	postRaffleJoin,
 	postRaffleSubmitSecretKey,
+	postRaffleSubmitPayment,
 };

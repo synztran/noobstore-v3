@@ -1,4 +1,5 @@
 import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
+import { EnumPaymentMethod } from "@/interface/interface";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
@@ -43,8 +44,14 @@ export type TRaffleFormPayment = {
 		message?: string;
 	};
 	subPrice: number;
-	shippingPrice: number;
+	shippingFee: number;
+	tax?: number;
 	totalPrice: number;
+	paymentMethod: EnumPaymentMethod;
+	attachment?: {
+		path: string;
+		alt: string;
+	}[];
 };
 
 // Trạng thái chính
@@ -63,6 +70,7 @@ interface Actions {
 	setRaffleLoading: (payload: boolean) => void;
 	setScrollToBottom: (payload: boolean) => void;
 	initRafflePaymentForm: (payload: TRaffleFormPayment) => void;
+	updateRafflePaymentForm: (updates: TRaffleFormPayment) => void;
 }
 
 type RaffleState = States & { actions: Actions };
@@ -201,6 +209,16 @@ const useRaffle = create<RaffleState>()(
 				set((state) => ({
 					...state,
 					rafflePaymentForm: payload,
+				}));
+			},
+			updateRafflePaymentForm(updates) {
+				const current = get().rafflePaymentForm;
+				set((state) => ({
+					...state,
+					rafflePaymentForm: {
+						...current,
+						...updates,
+					},
 				}));
 			},
 		},

@@ -82,7 +82,7 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 	raffleWinInfo?: {
 		productId: string;
 		entryId: string;
-	};
+	}[];
 	joinedAt: string;
 	isWinner?: boolean;
 	makerInfo?: {

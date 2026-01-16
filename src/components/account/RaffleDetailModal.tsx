@@ -1,20 +1,13 @@
 import {
-	mappingEnumRafflePaymentStatus,
-	mappingRaffleStatusLabel,
-} from "@/constants";
-import {
 	I3D_NUMBER_ONE,
-	I3D_NUMBER_RAFFLE_WHEEL,
 	I3D_NUMBER_THREE,
 	I3D_NUMBER_TWO,
-	I3D_WINNER_RANK,
 } from "@/constants/Images";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
-import { EnumRafflePaymentStatus } from "@/interface/interface";
 import DateUtils from "@/utils/DateUtils";
 import { formatCurrency } from "@/utils/FormatNumber";
-import { Divider, Modal, Tooltip } from "@mui/material";
-import { CircleAlert, X } from "lucide-react";
+import { Divider, Modal } from "@mui/material";
+import { X } from "lucide-react";
 import Image from "next/image";
 import React, { useRef } from "react";
 
@@ -160,7 +153,7 @@ const RaffleDetailModal: React.FC<RaffleDetailModalProps> = ({
 								<div
 									key={option?.productId ?? option.name}
 									className="flex items-start gap-2 border rounded-md p-2 bg-gray-100 border-gray-400 max-w-max">
-									<div className="w-20 h-20 relative">
+									<div className="w-24 h-24 relative">
 										<Image
 											src={option.thumbnail?.path ?? ""}
 											alt={

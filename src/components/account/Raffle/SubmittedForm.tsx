@@ -5,10 +5,8 @@ import {
 	I3D_NUMBER_RAFFLE_WHEEL,
 	I3D_NUMBER_THREE,
 	I3D_NUMBER_TWO,
-	I3D_SHIPPING_TRUCK,
 	I3D_STAR_POINT,
 	I3D_WINNER_CUP,
-	I3D_WINNER_RANK,
 	VIETINBANK_QR,
 } from "@/constants/Images";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
@@ -20,27 +18,29 @@ import FinancingCard from "./FinancingCard";
 
 const RaffleSubmittedForm = ({
 	raffle,
-	winningProduct,
+	winningProducts,
 }: {
 	raffle: TResponseRaffleEntry;
-	winningProduct?: IBEResponseRaffleProductSelection | null;
+	winningProducts?: IBEResponseRaffleProductSelection[] | null;
 }) => {
 	const { rafflePaymentForm } = useRaffle();
 	console.log("rafflePaymentForm", rafflePaymentForm);
 
-	if (winningProduct && raffle?.paymentStatus !== "PAID") {
+	if (winningProducts && raffle?.paymentStatus !== "PAID") {
 		return (
 			<div className="space-y-4 relative h-full">
-				<FinancingCard
-					title={winningProduct?.name}
-					paymentDescription="1 lần thanh toán đầy đủ"
-					firstDueDate="1 Tháng 1, 2025"
-					installmentAmount={winningProduct?.price || 0}
-					arp={13.35}
-					total={10000.25}
-					paymentIcon={VIETINBANK_QR}
-					onFinanceClick={() => console.log("Finance clicked")}
-				/>
+				{winningProducts?.map((winningProduct) => (
+					<FinancingCard
+						title={winningProduct?.name}
+						paymentDescription="1 lần thanh toán đầy đủ"
+						firstDueDate="1 Tháng 1, 2025"
+						installmentAmount={winningProduct?.price || 0}
+						arp={13.35}
+						total={10000.25}
+						paymentIcon={VIETINBANK_QR}
+						onFinanceClick={() => console.log("Finance clicked")}
+					/>
+				))}
 				{/* summary total payment */}
 				<div className="p-4 bg-gray-200 rounded-lg space-y-2">
 					<div className="flex flex-col justify-between gap-4">
@@ -197,35 +197,39 @@ const RaffleSubmittedForm = ({
 					/>
 					Sản phẩm đã trúng
 				</div>
-				{winningProduct ? (
-					<div className="relative p-2 border-2 border-yellow-400 rounded-bl-xl rounded-br-xl">
-						<div
-							key={winningProduct?.productId}
-							className="flex flex-col items-start gap-1 border rounded-md p-2 bg-gray-100 border-gray-400 relative overflow-hidden group cursor-pointer max-w-max">
-							<div className="w-24 h-24 relative z-10">
-								<Image
-									src={winningProduct?.thumbnail?.path ?? ""}
-									alt={
-										winningProduct?.thumbnail?.alt ??
-										winningProduct?.name ??
-										"Hình ảnh tùy chọn"
-									}
-									fill
-									className="rounded-md object-cover hover:scale-105 transition-all duration-300"
-									draggable={false}
-								/>
-							</div>
-							<div className="flex flex-col w-full flex-1 relative z-10 ">
-								<div className="text-xs font-bold line-clamp-1 max-w-[96px]">
-									{winningProduct.name}
+				{winningProducts &&
+					winningProducts?.map((winningProduct) => (
+						<div className="relative p-2 border-2 border-yellow-400 rounded-bl-xl rounded-br-xl">
+							<div
+								key={winningProduct?.productId}
+								className="flex flex-col items-start gap-1 border rounded-md p-2 bg-gray-100 border-gray-400 relative overflow-hidden group cursor-pointer max-w-max">
+								<div className="w-24 h-24 relative z-10">
+									<Image
+										src={
+											winningProduct?.thumbnail?.path ??
+											""
+										}
+										alt={
+											winningProduct?.thumbnail?.alt ??
+											winningProduct?.name ??
+											"Hình ảnh tùy chọn"
+										}
+										fill
+										className="rounded-md object-cover hover:scale-105 transition-all duration-300"
+										draggable={false}
+									/>
 								</div>
-								<div className="text-xs text-gray-700 font-normal">
-									{formatCurrency(winningProduct.price)}
+								<div className="flex flex-col w-full flex-1 relative z-10 ">
+									<div className="text-xs font-bold line-clamp-1 max-w-[96px]">
+										{winningProduct.name}
+									</div>
+									<div className="text-xs text-gray-700 font-normal">
+										{formatCurrency(winningProduct.price)}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-				) : null}
+					))}
 			</div>
 			<div className="relative">
 				<div className="font-bold bg-gray-200 p-2 rounded-tl-xl rounded-tr-xl flex items-center text-lg ">
