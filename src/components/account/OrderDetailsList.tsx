@@ -71,23 +71,27 @@ const iconMap: Record<string, React.ReactNode> = {
 
 const OrderDetailsList: React.FC<IProps> = ({ winProduct }) => {
 	if (!winProduct || winProduct.length === 0) return null;
+
+	// const tempProduct = Array(10).fill(winProduct).flat();
 	return (
-		<div className="bg-white rounded-xl border border-gray-200 shadow p-4 w-full max-w-md mx-auto h-full">
-			<div className="text-lg text-gray-500 font-bold mb-4">
+		<div className="bg-white rounded-xl border border-gray-200 shadow p-4 w-full mx-auto h-full space-y-4">
+			<div className="text-lg text-gray-500 font-bold">
 				Đơn hàng bao gồm
 			</div>
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-2 h-full min-h-0 overflow-y-auto pb-10 pl-1 py-0.5">
 				{winProduct?.map((item, idx) => (
-					<div key={idx} className="flex items-center gap-4">
-						<div className="w-20 h-20 bg-gray-50 rounded-lg relative">
+					<div key={idx} className="flex items-center gap-2">
+						<div className="min-w-14 w-14 h-14 relative cursor-pointer">
 							{item.thumbnail ? (
 								<Image
 									src={
 										item.thumbnail.path || NEW_MISSING_IMAGE
 									}
 									alt={item.thumbnail.alt || "Item Image"}
-									className="w-8 h-8 object-cover rounded"
+									className="hover:scale-105 transition-all duration-300 rounded-md"
 									fill
+									objectFit="cover"
+									draggable={false}
 								/>
 							) : null}
 						</div>

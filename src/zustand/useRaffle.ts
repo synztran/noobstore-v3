@@ -39,10 +39,10 @@ export type TRaffleFormSubmit = {
 };
 
 export type TRaffleFormPayment = {
-	donation: {
-		amount: number;
-		message?: string;
-	};
+	// donation: {
+	// 	amount?: string;
+	// 	message?: string;
+	// };
 	subPrice: number;
 	shippingFee: number;
 	tax?: number;
@@ -54,12 +54,21 @@ export type TRaffleFormPayment = {
 	}[];
 };
 
+export type TRaffleFormDonation = {
+	amount?: string;
+	message?: string;
+};
+
 // Trạng thái chính
 interface States {
 	raffleSubmitForm: TRaffleFormSubmit | null;
 	isRaffleLoading: boolean;
 	isScrollToBottom: boolean;
 	rafflePaymentForm: TRaffleFormPayment | null;
+	raffleDonationForm: TRaffleFormDonation | null;
+	// price
+	raffleSubTotalPrice: number;
+	raffleTotalPrice: number;
 }
 
 interface Actions {
@@ -70,7 +79,10 @@ interface Actions {
 	setRaffleLoading: (payload: boolean) => void;
 	setScrollToBottom: (payload: boolean) => void;
 	initRafflePaymentForm: (payload: TRaffleFormPayment) => void;
+	// payment & donation
 	updateRafflePaymentForm: (updates: TRaffleFormPayment) => void;
+	updateRaffleDonationForm: (updates: TRaffleFormDonation) => void;
+	updateRafflePriceForm: (subTotal: number, total: number) => void;
 }
 
 type RaffleState = States & { actions: Actions };
@@ -80,6 +92,10 @@ const InitialState: States = {
 	isRaffleLoading: false,
 	isScrollToBottom: false,
 	rafflePaymentForm: null,
+	raffleDonationForm: null,
+	// prices
+	raffleSubTotalPrice: 0,
+	raffleTotalPrice: 0,
 };
 
 const useRaffle = create<RaffleState>()(
@@ -180,7 +196,7 @@ const useRaffle = create<RaffleState>()(
 									...p,
 									priority: null,
 									selected: false,
-								})
+								}),
 							),
 						secretKey: "",
 						shipping: {
@@ -211,18 +227,39 @@ const useRaffle = create<RaffleState>()(
 					rafflePaymentForm: payload,
 				}));
 			},
-			updateRafflePaymentForm(updates) {
+			updateRafflePaymentForm(updates: Partial<TRaffleFormPayment>) {
 				const current = get().rafflePaymentForm;
 				set((state) => ({
 					...state,
-					rafflePaymentForm: {
-						...current,
-						...updates,
-					},
+					rafflePaymentForm: current
+						? {
+								...current,
+								...updates,
+							}
+						: (updates as TRaffleFormPayment),
+				}));
+			},
+			updateRaffleDonationForm(updates: Partial<TRaffleFormDonation>) {
+				const current = get().raffleDonationForm;
+				set((state) => ({
+					...state,
+					raffleDonationForm: current
+						? {
+								...current,
+								...updates,
+							}
+						: (updates as TRaffleFormDonation),
+				}));
+			},
+			updateRafflePriceForm: (subTotal: number, total: number) => {
+				set((state) => ({
+					...state,
+					raffleSubTotalPrice: subTotal,
+					raffleTotalPrice: total,
 				}));
 			},
 		},
-	}))
+	})),
 );
 
 // Selector hooks

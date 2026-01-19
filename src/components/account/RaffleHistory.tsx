@@ -21,14 +21,14 @@ const RaffleHistory: React.FC = () => {
 	const mapRaffleProductWin = useMemo(() => {
 		return (
 			raffleHistory?.find(
-				(raffle) => raffle.raffleId === selected?.raffleId
+				(raffle) => raffle.raffleId === selected?.raffleId,
 			)?.productSelections || []
 		).reduce(
 			(acc, product) => {
 				acc[product.productId] = product;
 				return acc;
 			},
-			{} as Record<string, TResponseRaffleEntry["productSelections"][0]>
+			{} as Record<string, TResponseRaffleEntry["productSelections"][0]>,
 		);
 	}, [raffleHistory, selected]);
 
@@ -67,8 +67,6 @@ const RaffleHistory: React.FC = () => {
 	if (raffleHistory && raffleHistory?.length === 0) {
 		return <div className="">Bạn chưa tham gia raffle nào.</div>;
 	}
-
-	console.log("selected", selected?.isWinner);
 
 	return (
 		<div className="relative">

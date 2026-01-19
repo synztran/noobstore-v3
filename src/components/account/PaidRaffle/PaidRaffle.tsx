@@ -1,8 +1,9 @@
 import { Button } from "@/components/ReUIComponent";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
+import { useRaffleAction } from "@/zustand/useRaffle";
 import { Modal } from "@mui/material";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import OrderDetailsCard from "../OrderDetailsCard";
 import OrderDetailsList from "../OrderDetailsList";
 import RafflePaymentBlock from "../Raffle/PaymentBlock";
@@ -22,6 +23,7 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 	selected,
 	mapRaffleProductWin,
 }) => {
+	const { updateRafflePriceForm } = useRaffleAction();
 	console.log("selected", selected?.raffleWinInfo, mapRaffleProductWin);
 	const winProducts: IBEResponseRaffleProductSelection[] = useMemo(() => {
 		if (!selected || !selected.isWinner) return [];
@@ -29,10 +31,21 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 			selected?.raffleWinInfo
 				?.map(({ productId }) => mapRaffleProductWin[productId])
 				.filter((p): p is IBEResponseRaffleProductSelection =>
-					Boolean(p)
+					Boolean(p),
 				) || []
 		);
 	}, [selected, mapRaffleProductWin]);
+
+	useEffect(() => {
+		if (!winProducts || winProducts.length === 0) return;
+		const subTotal = winProducts.reduce(
+			(acc, product) => acc + product.price,
+			0,
+		);
+		const total =
+			subTotal + (selected?.shipping?.shippingMethod?.price || 0); // Adjust this if you have shipping, tax, etc.
+		updateRafflePriceForm(subTotal, total);
+	}, [winProducts]);
 
 	console.log("winProducts", winProducts);
 
@@ -40,31 +53,18 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 	return (
 		<Modal open={open} onClose={onClose}>
 			<div
-				className="bg-white rounded-lg shadow-lg w-full p-4 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh] overflow-hidden flex flex-col"
+				className="bg-white rounded-lg shadow-lg w-full p-4 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[80vh] overflow-hidden flex flex-col"
 				onMouseDown={(e) => e.stopPropagation()}
-				style={{ maxWidth: "max(1080px, 90vw)" }}>
+				style={{ maxWidth: "min(1524px, 80vw)" }}>
 				<div className="flex justify-between items-center mb-4 shrink-0">
-					<h2 className="font-bold text-xl">Đơn hàng raffle</h2>
+					<h2 className="font-bold text-2xl">Đơn hàng</h2>
 				</div>
 
 				<div className="grid grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
 					<div className="col-span-3 space-y-4 overflow-y-auto">
 						<OrderDetailsCard
-							total={0}
-							cardType="VISA"
-							last4={"1"}
-							cardStatus="AUTHORIZED"
-							cardStatusColor="bg-green-100 text-green-700"
-							cardNote="This card was authorized for any future bookings. This text needs to be on 2 lines."
-							servicePrice={0}
-							bookingFee={1.99}
-							waitlistFee={2.99}
-							currency="USD"
-							issued="Bank of America"
-							type="Online"
-							token={selected?.raffleId}
-							processor="stripe"
-							processorColor="text-indigo-600 font-semibold"
+							raffle={selected}
+							winningProducts={winProducts}
 						/>
 						<RafflePaidMaker maker={selected?.makerInfo} />
 					</div>
@@ -78,7 +78,7 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
 							<OrderDetailsList winProduct={winProducts} />
 						</div>
-						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
+						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden max-h-max">
 							<ShopSummaryCard selected={selected} />
 						</div>
 						{/* <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">

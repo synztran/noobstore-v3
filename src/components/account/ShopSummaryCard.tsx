@@ -10,9 +10,9 @@ interface IProps {
 
 const ShopSummaryCard: React.FC<IProps> = ({ selected }) => {
 	return (
-		<div className="bg-white rounded-xl shadow p-4 w-full mx-auto border border-gray-200 space-y-4 h-full">
+		<div className="bg-white rounded-xl shadow p-4 w-full mx-auto border border-gray-200 flex flex-col gap-2">
 			<SimpleMap address={selected?.shipping?.address || ""} />
-			<div>
+			<div className="min-h-0 overflow-y-auto h-full flex-1 pr-2">
 				<div className="font-bold">{selected?.shipping?.city}</div>
 				<div className="text-sm text-gray-400 mb-4">
 					{selected?.shipping?.address}
@@ -43,7 +43,8 @@ const ShopSummaryCard: React.FC<IProps> = ({ selected }) => {
 						<span className="font-medium text-gray-700">
 							{selected?.raffleInfo?.deliveryEstimate ? (
 								DateUtils.formatVietNamDate(
-									selected?.raffleInfo?.deliveryEstimate || ""
+									selected?.raffleInfo?.deliveryEstimate ||
+										"",
 								)
 							) : (
 								<CircularProgress size={16} />
