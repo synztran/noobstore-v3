@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 
 interface IProps {
 	price?: string;
@@ -67,4 +67,4 @@ const VndPriceInput: React.FC<IProps> = ({
 	);
 };
 
-export default VndPriceInput;
+export default memo(VndPriceInput);

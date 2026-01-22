@@ -1,6 +1,7 @@
 import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
 import Image from "next/image";
+import { memo } from "react";
 
 interface IProps {
 	maker: TResponseRaffleEntry["makerInfo"];
@@ -34,4 +35,4 @@ const RafflePaidMaker: React.FC<IProps> = ({ maker }) => {
 	);
 };
 
-export default RafflePaidMaker;
+export default memo(RafflePaidMaker);

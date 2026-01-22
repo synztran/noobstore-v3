@@ -1,4 +1,5 @@
 import { EnumRaffleStatus, IBEResponseRaffleEntry } from "../Client/Raffle";
+import { EnumPaymentMethod } from "../interface";
 
 export type TShippingAt = IRequestShippingAddress;
 
@@ -43,7 +44,7 @@ export interface IBEResponseRafflePaymentMethod {
 	bankName?: string;
 	isActive: boolean;
 	isVerified: boolean;
-	platform: "BANK_TRANSFER" | "PAYPAL" | "MOMO" | "COD";
+	platform: EnumPaymentMethod;
 	qrCode: {
 		path: string;
 		alt: string;
@@ -74,10 +75,11 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 			path: string;
 			alt: string;
 		};
-		makerId?: string;
-		paymentMethods?: IBEResponseRafflePaymentMethod[];
+		makerId: string;
+		paymentMethods: IBEResponseRafflePaymentMethod[];
 		createdAt?: string;
 		deliveryEstimate?: string;
+		taxPercent?: number;
 	};
 	raffleWinInfo?: {
 		productId: string;
@@ -109,5 +111,6 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 			path: string;
 			alt: string;
 		}[];
+		raffleTimes: number;
 	};
 };

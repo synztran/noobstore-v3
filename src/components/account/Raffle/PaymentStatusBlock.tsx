@@ -1,5 +1,4 @@
 import {
-	MapPaymentMethod,
 	mappingEnumRafflePaymentStatus,
 	mappingLabelPaymentMethod,
 } from "@/constants";
@@ -43,11 +42,11 @@ const RafflePaymentStatusBlock = ({ raffle, winningProducts }: IProps) => {
 						value={
 							<div className="text-sm font-bold">
 								{DateUtils.formatVietNamDate(
-									raffle?.joinedAt || ""
+									raffle?.joinedAt || "",
 								)}{" "}
 								-{" "}
 								{DateUtils.formatVietNamTime(
-									raffle?.joinedAt || ""
+									raffle?.joinedAt || "",
 								)}
 							</div>
 						}
@@ -61,7 +60,7 @@ const RafflePaymentStatusBlock = ({ raffle, winningProducts }: IProps) => {
 									<div className="font-bold inline-flex gap-1 items-right text-sm">
 										<Image
 											src={
-												MapPaymentMethod[
+												mappingLabelPaymentMethod[
 													raffle?.payment
 														?.paymentMethod || ""
 												]?.icon || ""
@@ -100,8 +99,8 @@ const RafflePaymentStatusBlock = ({ raffle, winningProducts }: IProps) => {
 											winningProducts?.reduce(
 												(acc, product) =>
 													acc + product.price,
-												0
-											) || 0
+												0,
+											) || 0,
 										)}
 									</span>
 								}
@@ -148,11 +147,11 @@ const RafflePaymentStatusBlock = ({ raffle, winningProducts }: IProps) => {
 						value={
 							<div className="text-sm font-bold">
 								{DateUtils.formatVietNamDate(
-									raffle?.joinedAt || ""
+									raffle?.joinedAt || "",
 								)}{" "}
 								-{" "}
 								{DateUtils.formatVietNamTime(
-									raffle?.joinedAt || ""
+									raffle?.joinedAt || "",
 								)}
 							</div>
 						}

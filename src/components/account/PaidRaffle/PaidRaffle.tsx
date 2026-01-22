@@ -1,7 +1,7 @@
 import { Button } from "@/components/ReUIComponent";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
-import { useRaffleAction } from "@/zustand/useRaffle";
+import useRaffle, { useRaffleAction } from "@/zustand/useRaffle";
 import { Modal } from "@mui/material";
 import React, { useEffect, useMemo } from "react";
 import OrderDetailsCard from "../OrderDetailsCard";
@@ -23,7 +23,8 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 	selected,
 	mapRaffleProductWin,
 }) => {
-	const { updateRafflePriceForm } = useRaffleAction();
+	const { updateRafflePriceForm, initRafflePaymentForm } = useRaffleAction();
+	const { raffleDonationForm, rafflePaymentForm } = useRaffle();
 	console.log("selected", selected?.raffleWinInfo, mapRaffleProductWin);
 	const winProducts: IBEResponseRaffleProductSelection[] = useMemo(() => {
 		if (!selected || !selected.isWinner) return [];
@@ -38,14 +39,32 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 
 	useEffect(() => {
 		if (!winProducts || winProducts.length === 0) return;
+		let total = 0;
 		const subTotal = winProducts.reduce(
 			(acc, product) => acc + product.price,
 			0,
 		);
-		const total =
-			subTotal + (selected?.shipping?.shippingMethod?.price || 0); // Adjust this if you have shipping, tax, etc.
-		updateRafflePriceForm(subTotal, total);
-	}, [winProducts]);
+		total = subTotal + (selected?.shipping?.shippingMethod?.price || 0); // Adjust this if you have shipping, tax, etc.
+		if (
+			raffleDonationForm &&
+			raffleDonationForm.amount &&
+			parseInt(raffleDonationForm.amount, 10) > 0
+		) {
+			total += parseInt(raffleDonationForm.amount, 10);
+		}
+		const tax = (subTotal * (selected?.raffleInfo?.taxPercent || 0)) / 100;
+		updateRafflePriceForm(subTotal, total, tax);
+	}, [winProducts, raffleDonationForm]);
+
+	useEffect(() => {
+		initRafflePaymentForm({
+			paymentMethod: null,
+			shippingFee: 0,
+			subPrice: 0,
+			totalPrice: 0,
+			tax: 0,
+		});
+	}, []);
 
 	console.log("winProducts", winProducts);
 
@@ -55,7 +74,7 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 			<div
 				className="bg-white rounded-lg shadow-lg w-full p-4 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[80vh] overflow-hidden flex flex-col"
 				onMouseDown={(e) => e.stopPropagation()}
-				style={{ maxWidth: "min(1524px, 80vw)" }}>
+				style={{ maxWidth: "min(1224px, 90vw)" }}>
 				<div className="flex justify-between items-center mb-4 shrink-0">
 					<h2 className="font-bold text-2xl">Đơn hàng</h2>
 				</div>
@@ -78,7 +97,7 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
 							<OrderDetailsList winProduct={winProducts} />
 						</div>
-						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden max-h-max">
+						<div className="flex gap-4 flex-2 min-h-0 overflow-hidden max-h-max">
 							<ShopSummaryCard selected={selected} />
 						</div>
 						{/* <div className="flex gap-4 flex-1 min-h-0 overflow-hidden">

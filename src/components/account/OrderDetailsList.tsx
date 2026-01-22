@@ -2,7 +2,7 @@ import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { formatCurrency } from "@/utils/FormatNumber";
 import Image from "next/image";
-import React from "react";
+import React, { memo } from "react";
 
 interface IProps {
 	winProduct: IBEResponseRaffleProductSelection[];
@@ -110,4 +110,4 @@ const OrderDetailsList: React.FC<IProps> = ({ winProduct }) => {
 	);
 };
 
-export default OrderDetailsList;
+export default memo(OrderDetailsList);

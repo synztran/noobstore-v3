@@ -151,9 +151,9 @@
   border-color: var(--white);
 }
 
-.box_button::before:hover::before {
+/* .box_button::before:hover::before {
   transform: translateX(250px) rotate(45deg);
-}
+} */
 
 @keyframes shine {
   0% {

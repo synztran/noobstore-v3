@@ -241,10 +241,12 @@ export interface ISubmitRafflePaymentDonation {
 }
 
 export interface IPayloadSubmitRafflePayment {
+	raffleId: string;
+	entryId: string;
 	donation: ISubmitRafflePaymentDonation;
-	sub_price?: number;
-	shipping_fee?: number;
+	subPrice?: number;
+	shippingFee?: number;
 	tax?: number;
-	total_price: number;
-	payment_method: EnumPaymentMethod;
+	totalPrice: number;
+	paymentMethod: EnumPaymentMethod;
 }

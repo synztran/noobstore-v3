@@ -1,7 +1,7 @@
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
 import DateUtils from "@/utils/DateUtils";
 import { CircularProgress } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import SimpleMap from "./SimpleMap";
 
 interface IProps {
@@ -67,4 +67,4 @@ const ShopSummaryCard: React.FC<IProps> = ({ selected }) => {
 	);
 };
 
-export default ShopSummaryCard;
+export default memo(ShopSummaryCard);

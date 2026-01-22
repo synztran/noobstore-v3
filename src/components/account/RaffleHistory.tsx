@@ -8,7 +8,7 @@ import { EnumRafflePaymentStatus } from "@/interface/interface";
 import useUserRaffleEntryQueries from "@/react-query/user/api/useUserRaffleEntryQueries";
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
-import PaidRaffle from "./PaidRaffle/PaidRaffle";
+import PaidRaffleModal from "./PaidRaffle/PaidRaffle";
 import RegisterRaffleModal from "./RegisterRaffle/RegisterRaffle";
 
 const RaffleHistory: React.FC = () => {
@@ -211,8 +211,9 @@ const RaffleHistory: React.FC = () => {
 					setSelected(null);
 				}}
 				selected={selected}
+				mapRaffleProductWin={mapRaffleProductWin}
 			/> */}
-			<PaidRaffle
+			<PaidRaffleModal
 				open={openPayment}
 				onClose={() => {
 					setOpenPayment(false);

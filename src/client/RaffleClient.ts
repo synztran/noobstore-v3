@@ -1,6 +1,9 @@
 import { RAFFLE_API } from "@/constants/APIUri";
 import { IResponse } from "@/interface/Client/interface";
-import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
+import {
+	IBEResponseRaffleInfo,
+	IPayloadSubmitRafflePayment,
+} from "@/interface/Client/Raffle";
 import { GET, POST } from ".";
 
 const getDetailRaffle = async (params?: {
@@ -35,7 +38,9 @@ const postRaffleSubmitSecretKey = async (payload: {
 	return POST({ url, body: payload, isAuth: true });
 };
 
-const postRaffleSubmitPayment = async (payload: any) => {
+const postRaffleSubmitPayment = async (
+	payload: IPayloadSubmitRafflePayment,
+) => {
 	const url = RAFFLE_API.POST_RAFFLE_SUBMIT_PAYMENT;
 	return POST({ url, body: payload, isAuth: true });
 };

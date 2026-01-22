@@ -10,17 +10,17 @@ import {
 } from "@tanstack/react-query";
 
 interface IVariable {
-	payload?: IPayloadSubmitRafflePayment;
+	payload: IPayloadSubmitRafflePayment;
 }
 
 export function useRaffleSubmitPaymentMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {},
 ) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (variables) => {
 			const resp = await RaffleClient.postRaffleSubmitPayment(
-				variables.payload
+				variables.payload,
 			);
 			return resp;
 		},

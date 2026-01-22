@@ -39,15 +39,11 @@ export type TRaffleFormSubmit = {
 };
 
 export type TRaffleFormPayment = {
-	// donation: {
-	// 	amount?: string;
-	// 	message?: string;
-	// };
 	subPrice: number;
 	shippingFee: number;
 	tax?: number;
 	totalPrice: number;
-	paymentMethod: EnumPaymentMethod;
+	paymentMethod: EnumPaymentMethod | null;
 	attachment?: {
 		path: string;
 		alt: string;
@@ -69,6 +65,7 @@ interface States {
 	// price
 	raffleSubTotalPrice: number;
 	raffleTotalPrice: number;
+	raffleTaxAmount?: number;
 }
 
 interface Actions {
@@ -80,9 +77,13 @@ interface Actions {
 	setScrollToBottom: (payload: boolean) => void;
 	initRafflePaymentForm: (payload: TRaffleFormPayment) => void;
 	// payment & donation
-	updateRafflePaymentForm: (updates: TRaffleFormPayment) => void;
-	updateRaffleDonationForm: (updates: TRaffleFormDonation) => void;
-	updateRafflePriceForm: (subTotal: number, total: number) => void;
+	updateRafflePaymentForm: (updates: Partial<TRaffleFormPayment>) => void;
+	updateRaffleDonationForm: (updates: Partial<TRaffleFormDonation>) => void;
+	updateRafflePriceForm: (
+		subTotal: number,
+		total: number,
+		taxAmount: number,
+	) => void;
 }
 
 type RaffleState = States & { actions: Actions };
@@ -251,11 +252,16 @@ const useRaffle = create<RaffleState>()(
 						: (updates as TRaffleFormDonation),
 				}));
 			},
-			updateRafflePriceForm: (subTotal: number, total: number) => {
+			updateRafflePriceForm: (
+				subTotal: number,
+				total: number,
+				taxAmount?: number,
+			) => {
 				set((state) => ({
 					...state,
 					raffleSubTotalPrice: subTotal,
 					raffleTotalPrice: total,
+					raffleTaxAmount: taxAmount,
 				}));
 			},
 		},

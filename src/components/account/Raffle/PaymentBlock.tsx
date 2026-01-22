@@ -1,4 +1,3 @@
-import { Button } from "@/components/ReUIComponent";
 import { mappingBankInfo, mappingLabelPaymentMethod } from "@/constants";
 import { HUNDRED_PERCENT_ICON } from "@/constants/Images";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
@@ -11,10 +10,13 @@ import {
 	EnumPaymentMethod,
 	EnumRafflePaymentStatus,
 } from "@/interface/interface";
+import { useRaffleSubmitPaymentMutation } from "@/react-query/raffles/api/useRaffleSubmitPaymentMutation";
 import NotifyUtils from "@/utils/NotifyUtils";
+import useRaffle, { useRaffleAction } from "@/zustand/useRaffle";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo } from "react";
+import { ButtonCancelOrder, ButtonSubmitPayment } from "./ButtonPaymentForm";
 import RafflePaymnetDonation from "./RaffleDonation";
 
 interface RafflePaymentBlockProps {
@@ -28,24 +30,29 @@ const RafflePaymentBlock = ({
 	winningProducts,
 	onPaymentSuccess,
 }: RafflePaymentBlockProps) => {
-	console.log("raffle", raffle);
-	const [paymentMethod, setPaymentMethod] =
-		useState<IBEResponseRafflePaymentMethod | null>(null);
-	const [donationAmount, setDonationAmount] = useState(0);
-	const [isPending, setIsPending] = useState(false);
-
-	const getTotalAmount = (): number => {
-		return (
-			winningProducts?.reduce((acc, product) => acc + product.price, 0) ||
-			0
-		);
-	};
-
-	const total = getTotalAmount();
-	const fullPayWithDonation = Math.round(total + donationAmount);
+	const { raffleInfo } = raffle || {};
+	const {
+		rafflePaymentForm,
+		raffleDonationForm,
+		raffleSubTotalPrice,
+		raffleTotalPrice,
+	} = useRaffle();
+	const { updateRafflePaymentForm } = useRaffleAction();
+	const rafflePaymentMutation = useRaffleSubmitPaymentMutation();
+	const { mutate, isPending: isLoading } = rafflePaymentMutation;
 
 	const isDisabledChange =
 		raffle?.paymentStatus !== EnumRafflePaymentStatus.PENDING;
+
+	const makerPaymentInfo = useMemo(() => {
+		if (!rafflePaymentForm?.paymentMethod) return null;
+
+		return (
+			raffleInfo?.paymentMethods.find(
+				(method) => method.platform === rafflePaymentForm.paymentMethod,
+			) || null
+		);
+	}, [rafflePaymentForm, raffleInfo.paymentMethods]);
 
 	// Only one payment option: 100% full payment
 	const paymentFormOptions = [
@@ -55,8 +62,8 @@ const RafflePaymentBlock = ({
 			description: "Thanh toán toàn bộ giá trị sản phẩm để nhận hàng",
 			isActive: true,
 			discount: 0,
-			percentage: 1,
-			paid: total,
+			percentage: 100,
+			paid: raffleTotalPrice,
 			remaining: 0,
 			icon: HUNDRED_PERCENT_ICON,
 			value: EnumPaymentForm.FULL,
@@ -64,50 +71,78 @@ const RafflePaymentBlock = ({
 	];
 
 	// Auto-select the only option
-	const selectedPaymentFormOption = useMemo(() => {
-		return paymentFormOptions[0];
-	}, []);
+	// const selectedPaymentFormOption = useMemo(() => {
+	// 	return paymentFormOptions[0];
+	// }, []);
 
 	useEffect(() => {
-		if (!paymentMethod) {
-			if (raffle?.raffleInfo?.paymentMethods?.length === 1) {
-				setPaymentMethod(
-					raffle?.raffleInfo?.paymentMethods?.[0] || null
-				);
-			} else {
-				NotifyUtils.error(
-					"Maker chưa cung cấp phương thức thanh toán. Liên hệ ngay với Noobstore hoặc maker"
-				);
-			}
+		if (!raffleInfo?.paymentMethods?.length) {
+			NotifyUtils.error(
+				"Không có phương thức thanh toán khả dụng. Vui lòng liên hệ với Noobstore hoặc maker",
+			);
+			return;
 		}
-	}, []);
+		updateRafflePaymentForm({
+			paymentMethod:
+				raffleInfo?.paymentMethods?.length > 1
+					? null
+					: raffleInfo?.paymentMethods[0]?.platform || null,
+		});
+	}, [raffle, raffleInfo.paymentMethods]);
 
-	const handleSubmitPayment = async () => {
-		if (!paymentMethod) return;
-
-		setIsPending(true);
+	const handleSubmitPayment = useCallback(async () => {
+		if (!rafflePaymentForm?.paymentMethod) {
+			NotifyUtils.error("Vui lòng chọn phương thức thanh toán");
+			return;
+		}
 
 		try {
 			// TODO: Implement raffle payment submission
 			// This will handle the payment request to the backend
 			console.log("Processing payment for raffle:", {
 				raffleId: raffle.raffleId,
-				amount: fullPayWithDonation,
-				paymentMethod: paymentMethod.platform,
+				amount: raffleTotalPrice,
+				paymentMethod: rafflePaymentForm.paymentMethod,
 				paymentForm: EnumPaymentForm.FULL,
-				donation: donationAmount,
+				donation: raffleDonationForm?.amount || 0,
 			});
 
-			setIsPending(false);
-			onPaymentSuccess?.();
+			mutate({
+				payload: {
+					totalPrice: raffleTotalPrice,
+					tax: rafflePaymentForm.tax,
+					raffleId: raffle.raffleId,
+					entryId: raffle?.entryId,
+					subPrice: raffleSubTotalPrice,
+					shippingFee: raffle.shipping?.shippingMethod?.price || 0,
+					paymentMethod: rafflePaymentForm.paymentMethod,
+					donation: {
+						donation_amount:
+							parseFloat(raffleDonationForm?.amount || "0") || 0,
+						message: raffleDonationForm?.message || "",
+					},
+				},
+			});
 		} catch (error) {
 			console.error("Payment error:", error);
-			setIsPending(false);
 		}
-	};
+	}, [
+		rafflePaymentForm?.paymentMethod,
+		raffle.raffleId,
+		raffleTotalPrice,
+		raffleDonationForm?.amount,
+		onPaymentSuccess,
+	]);
+
+	const handleCancelOrder = useCallback(() => {
+		// TODO: Implement raffle cancellation
+		console.log("Canceling raffle order:", raffle.raffleId);
+	}, [raffle.raffleId]);
+
+	console.log("makerPaymentInfo", makerPaymentInfo);
 
 	return (
-		<div className="flex flex-col h-full p-4 border border-gray-200 rounded-lg space-y-4 ">
+		<div className="flex flex-col h-full p-4 border border-gray-200 rounded-lg space-y-4">
 			<div className="text-gray-500 font-bold text-lg">Thanh toán</div>
 
 			{/* Payment Status */}
@@ -117,48 +152,29 @@ const RafflePaymentBlock = ({
 						Phương thức thanh toán
 					</div>
 					<div className="space-y-2">
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							{raffle?.raffleInfo?.paymentMethods?.map(
 								(option) => (
 									<Option
 										option={option}
-										paymentMethod={paymentMethod}
-										setPaymentMethod={setPaymentMethod}
+										selectedPaymentMethod={makerPaymentInfo}
 										isDisabledChange={isDisabledChange}
 									/>
-								)
+								),
 							)}
 						</div>
-						{paymentMethod ? (
+						{rafflePaymentForm?.paymentMethod ? (
 							<div className="rounded-xl shadow-lg border-2 border-blue-200 p-2 space-y-2">
-								{/* <div className="flex items-center gap-2">
-									<Image
-										src={I3D_NOTE}
-										width={40}
-										height={40}
-										alt="note"
-									/>
-									<div>
-										<h3 className="font-bold text-blue-800 text-sm">
-											Hướng dẫn thực hiện giao dịch
-										</h3>
-										<p className="text-blue-600 text-xs">
-											Vui lòng chuyển khoản theo thông tin
-											bên dưới
-										</p>
-									</div>
-								</div> */}
-
 								<div className="bg-white rounded-lg p-2 space-y-4">
 									<div className="flex gap-4">
 										<div
 											className={`w-1/2 flex flex-col gap-2 h-auto ${
-												paymentMethod?.platform ===
+												rafflePaymentForm?.paymentMethod ===
 												EnumPaymentMethod.BANK_TRANSFER
 													? "justify-between"
 													: ""
 											}`}>
-											{paymentMethod?.platform ===
+											{rafflePaymentForm?.paymentMethod ===
 											EnumPaymentMethod.BANK_TRANSFER ? (
 												<div className="w-full border-b border-gray-300">
 													<label className="block font-semibold text-gray-700 mb-1 text-sm">
@@ -168,7 +184,7 @@ const RafflePaymentBlock = ({
 														<Image
 															src={
 																mappingBankInfo[
-																	paymentMethod?.bankCode as keyof typeof mappingBankInfo
+																	makerPaymentInfo?.bankCode as keyof typeof mappingBankInfo
 																]?.logo || ""
 															}
 															alt="Bank Logo"
@@ -183,7 +199,7 @@ const RafflePaymentBlock = ({
 													💳 Số tài khoản
 												</label>
 												<p className="font-mono bg-gray-200 p-2 rounded font-bold text-blue-600">
-													{paymentMethod?.accountNumber ||
+													{makerPaymentInfo?.accountNumber ||
 														""}
 												</p>
 											</div>
@@ -192,7 +208,7 @@ const RafflePaymentBlock = ({
 													👤 Chủ tài khoản
 												</label>
 												<p className="text-base bg-gray-200 p-2 rounded">
-													{paymentMethod?.accountName ||
+													{makerPaymentInfo?.accountName ||
 														""}
 												</p>
 											</div>
@@ -214,7 +230,7 @@ const RafflePaymentBlock = ({
 												className={`w-full h-full relative overflow-hidden`}>
 												<Image
 													src={
-														paymentMethod?.qrCode
+														makerPaymentInfo?.qrCode
 															.path || ""
 													}
 													alt="QR Code"
@@ -302,81 +318,49 @@ const RafflePaymentBlock = ({
 				</div> */}
 			</div>
 
-			<div className="flex items-center gap-4">
+			<div className="w-full border-t border-gray-300" />
+
+			<div className="flex items-center justify-end gap-4">
 				<ButtonCancelOrder
 					isDisabled={false}
-					handleClick={() => {}}
+					handleClick={handleCancelOrder}
 					isLoading={false}
 				/>
 				<ButtonSubmitPayment
 					isDisabled={
-						isPending ||
+						isLoading ||
 						raffle.paymentStatus === EnumRafflePaymentStatus.PAID ||
-						!paymentMethod
+						!makerPaymentInfo
 					}
 					handleClick={handleSubmitPayment}
-					paymentStatus={raffle.paymentStatus}
-					selectedPaymentMethod={paymentMethod}
-					isLoading={isPending}
+					isLoading={isLoading}
 				/>
 			</div>
-
-			{/* Payment Button */}
-			{/* <button
-				type="button"
-				onClick={handlePay}
-				disabled={
-					isPending ||
-					raffle.paymentStatus === EnumRafflePaymentStatus.PAID ||
-					!paymentMethod
-				}
-				className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-[1.02] disabled:transform-none disabled:cursor-not-allowed shadow-xl flex-shrink-0">
-				{isPending ? (
-					<div className="flex items-center justify-center">
-						<div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
-						Đang xử lý thanh toán...
-					</div>
-				) : raffle.paymentStatus === EnumRafflePaymentStatus.PAID ? (
-					<div className="flex items-center justify-center">
-						<span className="mr-3 text-xl">✅</span>
-						Đã thanh toán
-					</div>
-				) : (
-					<div className="flex items-center justify-center text-white text-xl">
-						<span className="mr-3 text-lg">💳</span>
-						{!paymentMethod ? "Chọn phương thức thanh toán" : ""}
-						{paymentMethod ? (
-							<>
-								Thanh toán {formatCurrency(fullPayWithDonation)}
-							</>
-						) : null}
-					</div>
-				)}
-			</button> */}
 		</div>
 	);
 };
 
 export default RafflePaymentBlock;
 
-const Option = ({
-	option,
-	paymentMethod,
-	setPaymentMethod,
-	isDisabledChange,
-}: {
-	option: IBEResponseRafflePaymentMethod;
-	paymentMethod: IBEResponseRafflePaymentMethod | null;
-	setPaymentMethod: (method: IBEResponseRafflePaymentMethod) => void;
-	isDisabledChange: boolean;
-}) => {
-	return (
-		<div key={option.platform} className="relative">
-			<label
-				className={`w-full h-full
+const Option = memo(
+	({
+		option,
+		selectedPaymentMethod,
+		isDisabledChange,
+	}: {
+		option: IBEResponseRafflePaymentMethod;
+		selectedPaymentMethod: IBEResponseRafflePaymentMethod | null;
+		isDisabledChange: boolean;
+	}) => {
+		const { updateRafflePaymentForm } = useRaffleAction();
+		return (
+			<div key={option.platform} className="relative">
+				<label
+					className={`w-full h-full
 								flex p-2 border-2 border-gray-400 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg relative
 								${
-									paymentMethod?.platform === option.platform
+									selectedPaymentMethod?.platform ===
+									option.platform
 										? "border-green-500 bg-gradient-to-r from-green-50 to-green-100 shadow-lg"
 										: "hover:border-blue-300"
 								}
@@ -386,94 +370,62 @@ const Option = ({
 						: ""
 				}
 							`}>
-				<input
-					id={option.platform}
-					type="radio"
-					value={option.platform}
-					disabled={!option.isActive || isDisabledChange}
-					checked={paymentMethod?.platform === option.platform} // force  checked is bank transfer
-					defaultChecked={option.platform === "BANK_TRANSFER"}
-					onChange={() => {
-						if (isDisabledChange) return;
-						setPaymentMethod(option);
-					}}
-					className="mr-4 w-5 h-5 sr-only"
-				/>
-				<div className="flex-1">
-					<div className="flex items-center gap-2">
-						<Image
-							src={
-								mappingLabelPaymentMethod[
-									option.platform as keyof typeof mappingLabelPaymentMethod
-								].icon || ""
-							}
-							alt={
-								mappingLabelPaymentMethod[
-									option.platform as keyof typeof mappingLabelPaymentMethod
-								].label || ""
-							}
-							objectFit="contain"
-							draggable={false}
-							width={40}
-							height={40}
-						/>
-						<span className="font-bold text-sm">{option.name}</span>
-					</div>
-				</div>
-				{paymentMethod?.platform === option.platform && (
-					<div className="absolute -top-1 -right-1 -translate-y-1 translate-x-1">
-						<span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600 text-white shadow">
-							<Check
-								size={14}
-								className="stroke-white"
-								style={{
-									strokeWidth: 4,
-								}}
+					<input
+						id={option.platform}
+						type="radio"
+						value={option.platform}
+						disabled={!option.isActive || isDisabledChange}
+						checked={
+							selectedPaymentMethod?.platform === option.platform
+						} // force  checked is bank transfer
+						defaultChecked={option.platform === "BANK_TRANSFER"}
+						onChange={() => {
+							if (isDisabledChange) return;
+							// setPaymentMethod(option);
+							updateRafflePaymentForm({
+								paymentMethod: option.platform,
+							});
+						}}
+						className="mr-4 w-5 h-5 sr-only"
+					/>
+					<div className="flex-1">
+						<div className="flex items-center gap-2">
+							<Image
+								src={
+									mappingLabelPaymentMethod[
+										option.platform as keyof typeof mappingLabelPaymentMethod
+									].icon || ""
+								}
+								alt={
+									mappingLabelPaymentMethod[
+										option.platform as keyof typeof mappingLabelPaymentMethod
+									].label || ""
+								}
+								objectFit="contain"
+								draggable={false}
+								width={40}
+								height={40}
 							/>
-						</span>
+							<span className="font-bold text-sm">
+								{option.name}
+							</span>
+						</div>
 					</div>
-				)}
-			</label>
-		</div>
-	);
-};
-
-const ButtonSubmitPayment = ({
-	selectedPaymentMethod,
-	paymentStatus,
-	isLoading = false,
-	handleClick,
-	isDisabled = false,
-}: {
-	selectedPaymentMethod: IBEResponseRafflePaymentMethod | null;
-	paymentStatus: EnumRafflePaymentStatus;
-	isLoading?: boolean;
-	handleClick: () => void;
-	isDisabled?: boolean;
-}) => {
-	return (
-		<Button type="button" variant="primary" onClick={handleClick}>
-			Xác nhận thanh toán
-		</Button>
-	);
-};
-
-const ButtonCancelOrder = ({
-	isLoading = false,
-	handleClick,
-	isDisabled = false,
-}: {
-	isLoading?: boolean;
-	handleClick: () => void;
-	isDisabled?: boolean;
-}) => {
-	return (
-		<Button
-			type="button"
-			variant={"destructive"}
-			onClick={handleClick}
-			disabled={isDisabled}>
-			Hủy đơn hàng
-		</Button>
-	);
-};
+					{selectedPaymentMethod?.platform === option.platform && (
+						<div className="absolute -top-1 -right-1 -translate-y-1 translate-x-1">
+							<span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-600 text-white shadow">
+								<Check
+									size={14}
+									className="stroke-white"
+									style={{
+										strokeWidth: 4,
+									}}
+								/>
+							</span>
+						</div>
+					)}
+				</label>
+			</div>
+		);
+	},
+);

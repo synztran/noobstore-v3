@@ -2,9 +2,8 @@ import { I3D_VERIFY_SHIELD, NEW_MISSING_IMAGE } from "@/constants/Images";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
 import { formatCurrency } from "@/utils/FormatNumber";
 import useRaffle, { useRaffleAction } from "@/zustand/useRaffle";
-import { Divider } from "@mui/material";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Activity, memo, useEffect, useState } from "react";
 import PriceInput from "./PriceInput";
 
 interface IProps {
@@ -54,6 +53,8 @@ const RafflePaymnetDonation = ({ raffle }: IProps) => {
 		return () => clearTimeout(timer);
 	}, [raffleDonationForm?.message]);
 
+	console.log("raffleDonationForm", raffleDonationForm);
+
 	return (
 		<div className="relative flex flex-col gap-2 pr-2">
 			<div className="flex items-center gap-2">
@@ -86,7 +87,8 @@ const RafflePaymnetDonation = ({ raffle }: IProps) => {
 						) : null}
 					</div>
 					<div className="text-sm text-gray-600">
-						100% tiền ủng hộ sẽ được chuyển đến maker
+						100% tiền ủng hộ sẽ được chuyển đến maker, phần tiền ủng
+						hộ sẽ không tính thuế
 					</div>
 				</div>
 			</div>
@@ -102,7 +104,8 @@ const RafflePaymnetDonation = ({ raffle }: IProps) => {
 				handleUpdatePrice={handleInputChange}
 				handleClear={handleClear}
 			/>
-			<Divider />
+
+			<div className="w-full border-t border-gray-300" />
 
 			{/* Quick Add-on Buttons */}
 			<div>
@@ -145,24 +148,32 @@ const RafflePaymnetDonation = ({ raffle }: IProps) => {
 				)}
 
 			{/* Message to Maker */}
-			<div>
-				<label className="block text-sm font-semibold text-gray-700 mb-2">
-					Gửi lời nhắn cho Maker (không bắt buộc)
-				</label>
-				<textarea
-					value={raffleDonationForm?.message || ""}
-					onChange={handleMessageChange}
-					placeholder="Viết lời nhắn cảm ơn hoặc khích lệ cho maker..."
-					maxLength={500}
-					className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-sm font-medium resize-none"
-					rows={4}
-				/>
-				<div className="text-xs text-gray-500 mt-1 text-right">
-					{(raffleDonationForm?.message || "").length}/500 ký tự
+			<Activity
+				mode={
+					raffleDonationForm?.amount &&
+					parseInt(raffleDonationForm.amount, 10) > 0
+						? "visible"
+						: "hidden"
+				}>
+				<div>
+					<label className="block text-sm font-semibold text-gray-700">
+						Gửi lời nhắn cho Maker (không bắt buộc)
+					</label>
+					<textarea
+						value={raffleDonationForm?.message || ""}
+						onChange={handleMessageChange}
+						placeholder="Viết lời nhắn cảm ơn hoặc khích lệ cho maker..."
+						maxLength={500}
+						className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-sm font-medium field-sizing-content resize-none min-h-32"
+						rows={4}
+					/>
+					<div className="text-xs text-gray-500 text-right">
+						{(raffleDonationForm?.message || "").length}/500 ký tự
+					</div>
 				</div>
-			</div>
+			</Activity>
 		</div>
 	);
 };
 
-export default RafflePaymnetDonation;
+export default memo(RafflePaymnetDonation);
