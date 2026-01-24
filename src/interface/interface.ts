@@ -198,6 +198,23 @@ export enum EnumRafflePaymentStatus {
 	PAID = "PAID",
 	REFUNDED = "REFUNDED",
 	CANCELLED = "CANCELLED",
+	CHECKING = "CHECKING",
+}
+
+export enum EnumRafflePaymentStepType {
+	CREATED = "CREATED",
+	PAYMENT = "PAYMENT",
+	PROCESSING = "PROCESSING",
+	REFUND = "REFUND",
+	PACKING_AND_DELIVERY = "PACKING_AND_DELIVERY",
+	COMPLETED = "COMPLETED",
+}
+
+export enum EnumRafflePaymentStepStatus {
+	PENDING = "PENDING",
+	IN_PROCESS = "IN_PROCESS",
+	COMPLETED = "COMPLETED",
+	CANCELLED = "CANCELLED",
 }
 
 // Interfaces & Types

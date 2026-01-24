@@ -22,6 +22,7 @@ import {
 	EnumPostPriceType,
 	EnumProductType,
 	EnumRafflePaymentStatus,
+	EnumRafflePaymentStepStatus,
 	EnumSaleStatus,
 	EnumServiceType,
 	EnumShippingMethodCode,
@@ -1517,6 +1518,16 @@ export const mappingBookingServiceStatus: Record<
 	[EnumBackendServiceStepStatus.CANCELLED]: "Đã hủy",
 };
 
+export const mappingRaffleTimelineStatus: Record<
+	EnumRafflePaymentStepStatus,
+	string
+> = {
+	[EnumRafflePaymentStepStatus.PENDING]: "Chờ xử lý",
+	[EnumRafflePaymentStepStatus.IN_PROCESS]: "Đang xử lý",
+	[EnumRafflePaymentStepStatus.COMPLETED]: "Hoàn thành",
+	[EnumRafflePaymentStepStatus.CANCELLED]: "Đã hủy",
+};
+
 export const mappingRaffleStatusLabel: Record<
 	EnumRaffleStatus,
 	{ label: string; color: string; bgColor?: string; icon?: string }
@@ -1546,12 +1557,20 @@ export const mappingRaffleStatusLabel: Record<
 
 export const mappingEnumRafflePaymentStatus: Record<
 	EnumRafflePaymentStatus,
-	{ label: string; color: string; bgColor?: string }
+	{
+		label: string;
+		color: string;
+		bgColor: string;
+		icon?: string;
+		iconBadge?: React.ReactNode;
+		subLabel?: string;
+	}
 > = {
 	[EnumRafflePaymentStatus.PAID]: {
 		label: "Đã thanh toán",
 		color: "text-white",
 		bgColor: "bg-green-600",
+		icon: GIF_PAYMENT_PAID_SUCCESS,
 	},
 	[EnumRafflePaymentStatus.PENDING]: {
 		label: "Đợi Thanh toán",
@@ -1572,6 +1591,16 @@ export const mappingEnumRafflePaymentStatus: Record<
 		label: "Chưa thanh toán",
 		color: "text-gray-600",
 		bgColor: "bg-gray-100",
+	},
+	[EnumRafflePaymentStatus.CHECKING]: {
+		label: "Đang kiểm tra",
+		color: "text-blue-600",
+		bgColor: "bg-gray-100",
+		icon: GIF_PAYMENT_CHECKING,
+		iconBadge: (
+			<CircularProgress size={16} sx={{ color: "rgb(37 99 235)" }} />
+		),
+		subLabel: "Thanh toán đang được xác nhận. Vui lòng chờ xử lý.",
 	},
 };
 

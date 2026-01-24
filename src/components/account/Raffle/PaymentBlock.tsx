@@ -98,15 +98,6 @@ const RafflePaymentBlock = ({
 
 		try {
 			// TODO: Implement raffle payment submission
-			// This will handle the payment request to the backend
-			console.log("Processing payment for raffle:", {
-				raffleId: raffle.raffleId,
-				amount: raffleTotalPrice,
-				paymentMethod: rafflePaymentForm.paymentMethod,
-				paymentForm: EnumPaymentForm.FULL,
-				donation: raffleDonationForm?.amount || 0,
-			});
-
 			mutate({
 				payload: {
 					totalPrice: raffleTotalPrice,

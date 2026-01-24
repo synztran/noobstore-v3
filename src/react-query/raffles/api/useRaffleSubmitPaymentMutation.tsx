@@ -27,10 +27,36 @@ export function useRaffleSubmitPaymentMutation(
 		onError: (_) => {
 			NotifyUtils.error("Có lỗi xảy ra. Không thể gửi thanh toán");
 		},
-		onSuccess: (resp: IResponse<any>, variables: IVariable) => {
-			if (resp.status !== "OK") return;
+		onSuccess: (
+			resp: IResponse<{
+				raffleId: string;
+				entryId: string;
+			}>,
+			variables: IVariable,
+		) => {
+			console.log("resp", resp);
+
+			// Always try to invalidate the raffle detail query
+			if (resp.data?.[0]?.raffleId) {
+				queryClient.invalidateQueries(
+					appQueryKeys.user.getRaffleEntries,
+				);
+			}
+
+			// Then handle the response status
+			if (resp.status !== "OK") {
+				NotifyUtils.error("Có lỗi xảy ra. Không thể gửi thanh toán");
+				return;
+			}
+
+			if (resp.data?.length === 0 || !resp.data?.[0]) {
+				NotifyUtils.error(
+					"Không tìm thấy đơn hàng để cập nhật trạng thái thanh toán",
+				);
+				return;
+			}
+
 			NotifyUtils.success("Thanh toán thành công");
-			queryClient.invalidateQueries(appQueryKeys.raffle.getRaffles());
 		},
 		...mutationOptions,
 	});

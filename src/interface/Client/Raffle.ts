@@ -199,6 +199,14 @@ export interface IBEResponseRaffleEntry {
 		}[];
 		createdAt: string;
 		updatedAt: string;
+		totalPrice: number;
+		shippingFee: number;
+		tax: number;
+		subPrice: number;
+		donation: {
+			donationAmount: number;
+			message?: string;
+		};
 	}; // customer payment schema
 	paymentStatus: EnumRafflePaymentStatus;
 	isWinner: boolean;

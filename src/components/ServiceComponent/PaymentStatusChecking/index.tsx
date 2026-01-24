@@ -3,14 +3,11 @@ import {
 	mappingLabelPaymentForm,
 	mappingLabelPaymentMethod,
 } from "@/constants";
-import { LOGO_STORE } from "@/constants/Images";
 import { IResponseBackendServiceBooking } from "@/interface/Client/Service";
 import { EnumPaymentForm, EnumPaymentStatus } from "@/interface/interface";
 import DateUtils from "@/utils/DateUtils";
 import { formatCurrency } from "@/utils/FormatNumber";
-import { MessageCircle, Phone } from "lucide-react";
 import Image from "next/image";
-import { title } from "process";
 import BookingStepper from "../BookingStepper";
 
 interface IProps {
@@ -19,6 +16,8 @@ interface IProps {
 
 const PaymentStatusChecking = ({ service }: IProps) => {
 	const paymentStatusInfo = mapPaymentStatus[service.paymentStatus] || {};
+
+	console.log("paymentStatusInfo", paymentStatusInfo);
 
 	const { label, subLabel, icon } = paymentStatusInfo;
 
@@ -59,11 +58,11 @@ const PaymentStatusChecking = ({ service }: IProps) => {
 								value={
 									<div className="text-sm font-bold">
 										{DateUtils.formatVietNamDate(
-											service?.payment.submittedAt || ""
+											service?.payment.submittedAt || "",
 										)}{" "}
 										-{" "}
 										{DateUtils.formatVietNamTime(
-											service?.payment.submittedAt || ""
+											service?.payment.submittedAt || "",
 										)}
 									</div>
 								}
@@ -126,7 +125,7 @@ const PaymentStatusChecking = ({ service }: IProps) => {
 								value={
 									<span className="font-bold text-sm">
 										{formatCurrency(
-											service?.payment.paidAmount
+											service?.payment.paidAmount,
 										)}
 									</span>
 								}
@@ -141,7 +140,7 @@ const PaymentStatusChecking = ({ service }: IProps) => {
 											<span className="font-bold text-sm">
 												{formatCurrency(
 													service?.payment
-														.remainingAmount
+														.remainingAmount,
 												)}
 											</span>
 										}

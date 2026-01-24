@@ -1,5 +1,9 @@
 import { EnumRaffleStatus, IBEResponseRaffleEntry } from "../Client/Raffle";
-import { EnumPaymentMethod } from "../interface";
+import {
+	EnumPaymentMethod,
+	EnumRafflePaymentStepStatus,
+	EnumRafflePaymentStepType,
+} from "../interface";
 
 export type TShippingAt = IRequestShippingAddress;
 
@@ -113,4 +117,19 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 		}[];
 		raffleTimes: number;
 	};
+	timeline?: {
+		id: number;
+		stepType: EnumRafflePaymentStepType;
+		title: string;
+		description: string;
+		status: EnumRafflePaymentStepStatus;
+		isCurrent: boolean;
+		timestamp: string;
+		linkRedirect?: string;
+		attachments?: {
+			path: string;
+			alt: string;
+		}[];
+		metadata: Record<string, any>;
+	}[];
 };

@@ -1,12 +1,14 @@
 import { Button } from "@/components/ReUIComponent";
 import { IBEResponseRaffleProductSelection } from "@/interface/Client/Raffle";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
+import { EnumRafflePaymentStatus } from "@/interface/interface";
 import useRaffle, { useRaffleAction } from "@/zustand/useRaffle";
 import { Modal } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { Activity, useEffect, useMemo } from "react";
 import OrderDetailsCard from "../OrderDetailsCard";
 import OrderDetailsList from "../OrderDetailsList";
 import RafflePaymentBlock from "../Raffle/PaymentBlock";
+import RafflePaymentStatusChecking from "../Raffle/PaymentStatusChecking";
 import ShopSummaryCard from "../ShopSummaryCard";
 import RafflePaidMaker from "./RaffleMaker";
 
@@ -25,7 +27,6 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 }) => {
 	const { updateRafflePriceForm, initRafflePaymentForm } = useRaffleAction();
 	const { raffleDonationForm, rafflePaymentForm } = useRaffle();
-	console.log("selected", selected?.raffleWinInfo, mapRaffleProductWin);
 	const winProducts: IBEResponseRaffleProductSelection[] = useMemo(() => {
 		if (!selected || !selected.isWinner) return [];
 		return (
@@ -66,8 +67,6 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 		});
 	}, []);
 
-	console.log("winProducts", winProducts);
-
 	if (!selected) return null;
 	return (
 		<Modal open={open} onClose={onClose}>
@@ -88,10 +87,31 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 						<RafflePaidMaker maker={selected?.makerInfo} />
 					</div>
 					<div className="col-span-6 flex flex-col flex-1 min-h-0 overflow-hidden">
-						<RafflePaymentBlock
-							raffle={selected}
-							winningProducts={winProducts}
-						/>
+						<Activity
+							mode={
+								[
+									EnumRafflePaymentStatus.UNPAID,
+									EnumRafflePaymentStatus.PENDING,
+								].includes(selected?.paymentStatus)
+									? "visible"
+									: "hidden"
+							}>
+							<RafflePaymentBlock
+								raffle={selected}
+								winningProducts={winProducts}
+							/>
+						</Activity>
+						<Activity
+							mode={
+								[
+									EnumRafflePaymentStatus.CHECKING,
+									EnumRafflePaymentStatus.PAID,
+								].includes(selected?.paymentStatus)
+									? "visible"
+									: "hidden"
+							}>
+							<RafflePaymentStatusChecking raffle={selected} />
+						</Activity>
 					</div>
 					<div className="col-span-3 flex flex-col gap-4 min-h-0 overflow-hidden">
 						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden">

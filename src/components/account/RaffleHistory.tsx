@@ -19,6 +19,16 @@ const RaffleHistory: React.FC = () => {
 	const [selected, setSelected] = useState<TResponseRaffleEntry | null>(null);
 
 	const mapRaffleProductWin = useMemo(() => {
+		// Update selected state when raffleHistory data changes
+		if (selected && raffleHistory && raffleHistory.length > 0) {
+			const updatedSelected = raffleHistory.find(
+				(raffle) => raffle.raffleId === selected?.raffleId,
+			);
+			if (updatedSelected && updatedSelected !== selected) {
+				setSelected(updatedSelected);
+			}
+		}
+
 		return (
 			raffleHistory?.find(
 				(raffle) => raffle.raffleId === selected?.raffleId,
