@@ -12,6 +12,7 @@ const LUCKY_WHEEL_PREFIX = `${DOMAIN_PREFIX}/lucky-wheel`;
 const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`;
 const SERVICE_PREFIX = `${DOMAIN_PREFIX}/service`;
 const RAFFLE_PREFIX = `${DOMAIN_PREFIX}/raffle`;
+const MAKER_PREFIX = `${DOMAIN_PREFIX}/maker`;
 
 export const CATEGORY_API = {
 	ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
@@ -100,4 +101,11 @@ export const RAFFLE_API = {
 	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
 	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
 	POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,
+	POST_CREATE_MAKER: `${RAFFLE_PREFIX}/create-maker`,
+};
+
+export const MAKER_API = {
+	GET_MAKER_INFO: `${MAKER_PREFIX}/get-info/{makerId}`,
+	POST_CREATE_MAKER: `${MAKER_PREFIX}/register`,
+	POST_SEND_VERIFY_MAKER_EMAIL: `${MAKER_PREFIX}/send-verification-email`,
 };

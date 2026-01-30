@@ -34,8 +34,6 @@ export function useRaffleSubmitPaymentMutation(
 			}>,
 			variables: IVariable,
 		) => {
-			console.log("resp", resp);
-
 			// Always try to invalidate the raffle detail query
 			if (resp.data?.[0]?.raffleId) {
 				queryClient.invalidateQueries(

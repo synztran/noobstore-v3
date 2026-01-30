@@ -25,6 +25,7 @@ export interface IAuthUser {
 	verified: boolean;
 	verifiedAt: string; // Assuming this is also a string
 	role?: string; // "admin" | "user"
+	makerId?: string;
 }
 
 export interface IRequestShippingAddress {
@@ -131,5 +132,7 @@ export type TResponseRaffleEntry = IBEResponseRaffleEntry & {
 			alt: string;
 		}[];
 		metadata: Record<string, any>;
+		message?: string;
 	}[];
+	bonusPointEarned?: number;
 };

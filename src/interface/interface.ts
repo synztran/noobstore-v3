@@ -217,6 +217,19 @@ export enum EnumRafflePaymentStepStatus {
 	CANCELLED = "CANCELLED",
 }
 
+export enum EnumDeliveryStatus {
+	PENDING = "PENDING",
+	DELIVERING = "DELIVERING",
+	DELIVERED = "DELIVERED",
+	RETURNED = "RETURNED",
+	CANCELLED = "CANCELLED",
+}
+
+export interface IImage {
+	path: string;
+	alt: string;
+}
+
 // Interfaces & Types
 export interface ICartProduct {
 	type: string;

@@ -10,7 +10,7 @@ import OrderDetailsList from "../OrderDetailsList";
 import RafflePaymentBlock from "../Raffle/PaymentBlock";
 import RafflePaymentStatusChecking from "../Raffle/PaymentStatusChecking";
 import ShopSummaryCard from "../ShopSummaryCard";
-import RafflePaidMaker from "./RaffleMaker";
+import RafflePaidPointReward from "./PointReward";
 
 interface PaidRaffleModalProps {
 	open: boolean;
@@ -59,61 +59,73 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 
 	useEffect(() => {
 		initRafflePaymentForm({
-			paymentMethod: null,
-			shippingFee: 0,
-			subPrice: 0,
-			totalPrice: 0,
-			tax: 0,
+			paymentMethod: selected?.payment?.paymentMethod || null,
+			shippingFee: selected?.shipping?.shippingMethod?.price || 0,
+			subPrice: selected?.payment?.subPrice || 0,
+			totalPrice: selected?.payment?.totalPrice || 0,
+			tax: selected?.payment?.tax || 0,
 		});
-	}, []);
+	}, [selected]);
 
 	if (!selected) return null;
 	return (
 		<Modal open={open} onClose={onClose}>
 			<div
-				className="bg-white rounded-lg shadow-lg w-full p-4 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[80vh] overflow-hidden flex flex-col"
+				className="bg-white rounded-lg shadow-lg w-full p-4 animate-fade-in absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[85vh] overflow-hidden flex flex-col"
 				onMouseDown={(e) => e.stopPropagation()}
 				style={{ maxWidth: "min(1224px, 90vw)" }}>
-				<div className="flex justify-between items-center mb-4 shrink-0">
+				<div
+					className="flex justify-between items-center mb-4 shrink-0"
+					style={{ flex: "0 0 auto" }}>
 					<h2 className="font-bold text-2xl">Đơn hàng</h2>
 				</div>
 
-				<div className="grid grid-cols-12 gap-4 flex-1 min-h-0 overflow-hidden">
-					<div className="col-span-3 space-y-4 overflow-y-auto">
-						<OrderDetailsCard
-							raffle={selected}
-							winningProducts={winProducts}
+				<div className="flex gap-4 min-h-0 overflow-hidden flex-1">
+					<div className="w-[30%] min-h-0 overflow-hidden flex flex-col gap-4 justify-between">
+						<div className="flex min-h-0 overflow-hidden">
+							<OrderDetailsCard
+								raffle={selected}
+								winningProducts={winProducts}
+							/>
+						</div>
+						<RafflePaidPointReward
+							points={selected?.bonusPointEarned || 0}
+							makerName={selected?.makerInfo?.brandName || ""}
 						/>
-						<RafflePaidMaker maker={selected?.makerInfo} />
+						{/* <div className="flex flex-col min-h-0 overflow-hidden">
+							<RafflePaidMaker maker={selected?.makerInfo} />
+						</div> */}
 					</div>
-					<div className="col-span-6 flex flex-col flex-1 min-h-0 overflow-hidden">
-						<Activity
-							mode={
-								[
-									EnumRafflePaymentStatus.UNPAID,
-									EnumRafflePaymentStatus.PENDING,
-								].includes(selected?.paymentStatus)
-									? "visible"
-									: "hidden"
-							}>
+					<Activity
+						mode={
+							[
+								EnumRafflePaymentStatus.UNPAID,
+								EnumRafflePaymentStatus.PENDING,
+							].includes(selected?.paymentStatus)
+								? "visible"
+								: "hidden"
+						}>
+						<div className="w-[45%] flex flex-col flex-1 min-h-0 overflow-hidden h-full">
 							<RafflePaymentBlock
 								raffle={selected}
 								winningProducts={winProducts}
 							/>
-						</Activity>
-						<Activity
-							mode={
-								[
-									EnumRafflePaymentStatus.CHECKING,
-									EnumRafflePaymentStatus.PAID,
-								].includes(selected?.paymentStatus)
-									? "visible"
-									: "hidden"
-							}>
+						</div>
+					</Activity>
+					<Activity
+						mode={
+							[
+								EnumRafflePaymentStatus.CHECKING,
+								EnumRafflePaymentStatus.PAID,
+							].includes(selected?.paymentStatus)
+								? "visible"
+								: "hidden"
+						}>
+						<div className="w-[45%] flex flex-col min-h-0 overflow-hidden">
 							<RafflePaymentStatusChecking raffle={selected} />
-						</Activity>
-					</div>
-					<div className="col-span-3 flex flex-col gap-4 min-h-0 overflow-hidden">
+						</div>
+					</Activity>
+					<div className="w-[25%] flex flex-col gap-4 min-h-0 overflow-hidden">
 						<div className="flex gap-4 flex-1 min-h-0 overflow-hidden">
 							<OrderDetailsList winProduct={winProducts} />
 						</div>
@@ -139,10 +151,10 @@ const PaidRaffleModal: React.FC<PaidRaffleModalProps> = ({
 						</div> */}
 					</div>
 				</div>
-				<div className="flex justify-end mt-4 shrink-0">
-					<Button
-						className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 max-w-max"
-						onClick={onClose}>
+				<div
+					className="flex justify-end mt-4 shrink-0"
+					style={{ flex: "0 0 auto" }}>
+					<Button variant={"outline"} onClick={onClose}>
 						Đóng
 					</Button>
 				</div>

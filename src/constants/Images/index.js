@@ -1,5 +1,6 @@
 export const NEW_MISSING_IMAGE = "/images/not_found.png";
 export const LOGO_STORE = "/assets/icons/logo.png";
+export const STORE_POINT_ICON = "/assets/icons/store_point_icon.png";
 
 export const FLAGS_VIETNAM = `/assets/icons/flag/vietnam.png`;
 export const MOMO_LOGO = `/assets/icons/brand/momo_logo.svg`;
@@ -136,6 +137,7 @@ export const HUNDRED_PERCENT_ICON = "/assets/icons/sale_percentage/100.svg";
 // maker
 export const MAKER_FB_ICON = "/assets/icons/maker/fb.svg";
 export const MAKER_DISCORD_ICON = "/assets/icons/maker/discord.svg";
+export const MAKER_IG_ICON = "/assets/icons/maker/ig.svg";
 
 // 3d icons
 export const I3D_WINNER_RANK = "/assets/3dIcons/winner.png";

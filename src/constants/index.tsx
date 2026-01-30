@@ -3,6 +3,7 @@ import FacebookIcon from "@/icons/facebook";
 import KeyboardIcon from "@/icons/keyboard";
 import KeysetIcon from "@/icons/keyset";
 import vnmkLogo from "@/icons/vnmk";
+import { EnumMakerStatus } from "@/interface/Client/Maker";
 import { EnumRaffleStatus } from "@/interface/Client/Raffle";
 import {
 	EnumBackendServiceStepStatus,
@@ -14,6 +15,7 @@ import {
 	ENUM_SPRING_TYPE,
 	ENUM_SWITCH_TYPE,
 	EnumCategoryType,
+	EnumDeliveryStatus,
 	EnumFeeType,
 	EnumOrderStatus,
 	EnumPaymentForm,
@@ -1467,6 +1469,7 @@ export const mappingLabelPaymentMethod: Record<
 	{
 		label: string;
 		icon?: string;
+		bgColor?: string;
 	}
 > = {
 	[EnumPaymentMethod.CASH_ON_DELIVERY]: {
@@ -1476,6 +1479,7 @@ export const mappingLabelPaymentMethod: Record<
 	[EnumPaymentMethod.BANK_TRANSFER]: {
 		label: "Chuyển khoản",
 		icon: I3D_CREDIT_CARD,
+		bgColor: "bg-green-300",
 	},
 	[EnumPaymentMethod.MOMO]: {
 		label: "Ví MoMo",
@@ -1626,4 +1630,64 @@ export const mapLabelEnumStabilizerMountType: Record<
 > = {
 	[EnumStabilizerMountType.PCB_MOUNTED]: "PCB mount",
 	[EnumStabilizerMountType.PLATE_MOUNTED]: "Plate mount",
+};
+
+export const mapLabelEnumDeliveryStatus: Record<
+	EnumDeliveryStatus,
+	{
+		label: string;
+		color: string;
+		bgColor: string;
+	}
+> = {
+	[EnumDeliveryStatus.PENDING]: {
+		label: "Chờ xử lý",
+		color: "text-gray-600",
+		bgColor: "bg-gray-100",
+	},
+	[EnumDeliveryStatus.DELIVERING]: {
+		label: "Đang vận chuyển",
+		color: "text-blue-600",
+		bgColor: "bg-blue-100",
+	},
+	[EnumDeliveryStatus.DELIVERED]: {
+		label: "Giao hàng thành công",
+		color: "text-white",
+		bgColor: "bg-green-600",
+	},
+	[EnumDeliveryStatus.RETURNED]: {
+		label: "Trả hàng",
+		color: "text-red-600",
+		bgColor: "bg-red-100",
+	},
+	[EnumDeliveryStatus.CANCELLED]: {
+		label: "Đã hủy",
+		color: "text-red-600",
+		bgColor: "bg-red-100",
+	},
+};
+
+export const mapLabelEnumMakerStatus: Record<
+	EnumMakerStatus,
+	{
+		label: string;
+		color: string;
+		bgColor: string;
+	}
+> = {
+	[EnumMakerStatus.NOT_VERIFY]: {
+		label: "Chờ duyệt",
+		color: "text-gray-600",
+		bgColor: "bg-gray-100",
+	},
+	[EnumMakerStatus.VERIFIED]: {
+		label: "Đã xác thực",
+		color: "text-green-600",
+		bgColor: "bg-green-100",
+	},
+	[EnumMakerStatus.REJECTED]: {
+		label: "Bị từ chối",
+		color: "text-red-600",
+		bgColor: "bg-red-100",
+	},
 };

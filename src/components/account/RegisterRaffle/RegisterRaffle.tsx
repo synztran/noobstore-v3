@@ -32,7 +32,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 			hidden={value !== index}
 			id={`raffle-tabpanel-${index}`}
 			aria-labelledby={`raffle-tab-${index}`}
-			className="w-full overflow-y-auto mt-4 h-74 transition-all duration-300 ease-in-out">
+			className="w-full overflow-y-auto mt-4 h-100 transition-all duration-300 ease-in-out">
 			{value === index ? children : null}
 		</div>
 	);
@@ -82,7 +82,7 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 
 	const handleTabChange = (
 		_event: React.SyntheticEvent,
-		newValue: number
+		newValue: number,
 	) => {
 		setTabValue(newValue);
 	};
@@ -90,7 +90,7 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 	return (
 		<Modal open={open} onClose={onClose}>
 			<div
-				className="bg-white rounded-lg shadow-lg max-w-xl w-full px-6 pt-6 pb-18 animate-fade-in flex flex-col gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[70vh]"
+				className="bg-white rounded-lg shadow-lg max-w-xl w-full px-6 pt-6 pb-18 animate-fade-in flex flex-col gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh]"
 				onMouseDown={(e) => e.stopPropagation()}>
 				{/* Product Image */}
 				<div className="flex items-start justify-between">
@@ -159,11 +159,11 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 							</p>
 							<p className="font-semibold text-gray-900">
 								{DateUtils.formatVietNamTime(
-									selected.createdAt
+									selected.createdAt,
 								)}
 								&nbsp;-&nbsp;
 								{DateUtils.formatVietNamDate(
-									selected.createdAt
+									selected.createdAt,
 								)}
 							</p>
 						</div>
@@ -173,7 +173,7 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 							</p>
 							<p className="font-semibold text-gray-900 truncate">
 								{DateUtils.formatVietNamDate(
-									selected.raffleInfo.deliveryEstimate || ""
+									selected.raffleInfo.deliveryEstimate || "",
 								) || "Đang cập nhật"}
 							</p>
 						</div>
@@ -211,12 +211,12 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 					<TabPanel value={tabValue} index={0}>
 						<div className="space-y-4">
 							{/* Entry Timeline */}
-							<div className="grid grid-cols-2 gap-4">
+							<div className="grid grid-cols-1 gap-4">
 								{selected.productSelections.map((product) => (
 									<div
 										key={`${product.productId}-${product.name}`}
-										className="bg-gray-50 border border-gray-200 rounded-lg p-2 flex gap-4">
-										<div className="w-24 h-24 relative flex-shrink-0 border border-gray-200 rounded overflow-hidden bg-white">
+										className="bg-gray-50 border border-gray-200 rounded-lg p-2 flex gap-4 relative ">
+										<div className="w-24 h-24 relative shrink-0 border border-gray-200 rounded bg-white">
 											<Image
 												src={
 													product.thumbnail?.path ||
@@ -229,35 +229,35 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 												}
 												fill
 												objectFit="cover"
-												className="rounded"
+												className="rounded hover:scale-110 transition-transform duration-300"
 											/>
-											<div className="absolute right-1 top-1 bg-gray-50 rounded-full">
-												{product.priority &&
-												PRIORITY_ICON[
-													product.priority as keyof typeof PRIORITY_ICON
-												]?.src ? (
-													<Image
-														src={
-															PRIORITY_ICON[
-																product.priority as keyof typeof PRIORITY_ICON
-															]?.src
-														}
-														alt={
-															PRIORITY_ICON[
-																product.priority as keyof typeof PRIORITY_ICON
-															]?.alt
-														}
-														width={24}
-														height={24}
-													/>
-												) : null}
-											</div>
 										</div>
+										{/* <div className="absolute right-0.5 bottom-0.5 bg-gray-300 rounded-full p-0.5">
+											{product.priority &&
+											PRIORITY_ICON[
+												product.priority as keyof typeof PRIORITY_ICON
+											]?.src ? (
+												<Image
+													src={
+														PRIORITY_ICON[
+															product.priority as keyof typeof PRIORITY_ICON
+														]?.src
+													}
+													alt={
+														PRIORITY_ICON[
+															product.priority as keyof typeof PRIORITY_ICON
+														]?.alt
+													}
+													width={24}
+													height={24}
+												/>
+											) : null}
+										</div> */}
 										<div className="flex-1">
-											<p className="font-semibold text-sm text-gray-900 line-clamp-2">
+											<p className="font-semibold text-gray-900 line-clamp-2">
 												{product.name}
 											</p>
-											<p className="text-sm font-bold text-gray-900 mt-1">
+											<p className="text-gray-600 mt-1">
 												{formatCurrency(product.price)}
 											</p>
 										</div>
@@ -449,11 +449,7 @@ const RegisterRaffleModal: React.FC<RegisterRaffleModalProps> = ({
 					</TabPanel>
 				</div>
 				<div className="fixed bottom-0 left-0 w-full flex items-center justify-end border-t border-gray-200 bg-white p-4">
-					<Button
-						size="default"
-						variant="outline"
-						className=""
-						onClick={onClose}>
+					<Button variant="outline" onClick={onClose}>
 						<span className="text-sm text-black font-bold">
 							Đóng
 						</span>

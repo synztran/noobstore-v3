@@ -14,12 +14,12 @@ type IQueryOptions = {
 	Partial<UseQueryOptions<IBEResponseRaffleInfo[], Error>>;
 
 export default function useRafflesQuery(
-	queryOptions?: IQueryOptions
+	queryOptions?: IQueryOptions,
 ): UseQueryResult<IBEResponseRaffleInfo[], Error> {
 	const enabled = queryOptions?.enabled ?? true;
 	const queryConfig = {
 		...appQueryKeys.raffle.getRaffles(queryOptions?.params),
-		...queryPresets.longLived,
+		...queryPresets.temporary,
 		...queryOptions,
 		enabled,
 	};

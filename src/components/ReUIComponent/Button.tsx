@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { CircularProgress } from "@mui/material";
 import { cva, type VariantProps } from "class-variance-authority";
 import React from "react";
 
@@ -14,7 +15,7 @@ const buttonVariants = cva(
 				outline:
 					"border border-input bg-background hover:bg-accent hover:text-accent-foreground",
 				primary:
-					"bg-blue-600 text-primary-foreground hover:bg-blue-700 font-semibold",
+					"bg-red-400 text-primary-foreground hover:bg-red-500 font-semibold",
 				secondary:
 					"bg-secondary text-secondary-foreground hover:bg-secondary/80",
 				ghost: "hover:bg-accent hover:text-accent-foreground",
@@ -25,6 +26,12 @@ const buttonVariants = cva(
 				sm: "h-9 rounded-md px-3",
 				lg: "h-11 rounded-md px-8",
 				icon: "h-10 w-10",
+			},
+			fontSize: {
+				xs: "text-xs",
+				sm: "text-sm",
+				md: "text-base",
+				lg: "text-lg",
 			},
 		},
 		defaultVariants: {
@@ -39,16 +46,35 @@ export interface ButtonProps
 		React.ButtonHTMLAttributes<HTMLButtonElement>,
 		VariantProps<typeof buttonVariants> {
 	asChild?: boolean;
+	isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-	({ className, variant, size, asChild = false, ...props }, ref) => {
+	(
+		{
+			className,
+			variant,
+			size,
+			fontSize,
+			asChild = false,
+			isLoading = false,
+			children,
+			disabled,
+			...props
+		},
+		ref,
+	) => {
 		return (
 			<button
-				className={cn(buttonVariants({ variant, size, className }))}
+				className={cn(
+					buttonVariants({ variant, size, fontSize, className }),
+				)}
 				ref={ref}
-				{...props}
-			/>
+				disabled={disabled || isLoading}
+				{...props}>
+				{isLoading && <CircularProgress size={16} className="mr-2" />}
+				{children}
+			</button>
 		);
 	},
 );

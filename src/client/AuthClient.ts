@@ -24,7 +24,11 @@ export const getAccountInfo = async ({ ctx }: { ctx?: unknown }) =>
 	GET({ ctx, url: ACCOUNT_API.CURRENT_ACCOUNT });
 
 export const postVerifyMail = async (data: IPostVerifyMail) =>
-	POST({ url: AUTH_API.VERIFY_EMAIL, body: data, isAuth: false });
+	POST({
+		url: AUTH_API.VERIFY_EMAIL,
+		body: data,
+		isAuth: data.type !== "customer",
+	});
 
 export default {
 	postRegister,

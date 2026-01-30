@@ -12,4 +12,5 @@ export interface IPostLogin {
 
 export interface IPostVerifyMail {
 	token: string;
+	type: "customer" | "maker";
 }

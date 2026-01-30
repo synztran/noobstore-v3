@@ -5,8 +5,8 @@ import {
 	NEW_MISSING_IMAGE,
 } from "@/constants/Images";
 import { useAuth } from "@/context/Auth";
+import { EnumMakerStatus } from "@/interface/Client/Maker";
 import {
-	EnumMakerStatus,
 	EnumRaffleStatus,
 	IBEResponseRaffleInfo,
 } from "@/interface/Client/Raffle";
@@ -94,7 +94,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 	// Sync image with option
 	useEffect(() => {
 		const idx = raffleData?.productOptions?.findIndex(
-			(o) => o.id === selectedOption
+			(o) => o.id === selectedOption,
 		);
 		if (!idx) return;
 		if (idx !== -1) setCurrentImageIndex(idx);
@@ -121,7 +121,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 		queryClient.invalidateQueries(
 			appQueryKeys.raffle.getRaffles({
 				featuredOnly: true,
-			})
+			}),
 		);
 	};
 
@@ -130,7 +130,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 			toggleDialogLogin(
 				isOpenDialogLogin
 					? Boolean(EnumStatusDialog.CLOSE)
-					: Boolean(EnumStatusDialog.OPEN)
+					: Boolean(EnumStatusDialog.OPEN),
 			);
 		} else {
 			setShowRaffleModal(true);
@@ -274,7 +274,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 												raffleData?.productOptions
 													?.length) %
 												raffleData?.productOptions
-													?.length
+													?.length,
 										)
 									}
 									className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
@@ -326,7 +326,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 											if (info.offset.x < -threshold) {
 												handleImageChange(
 													(currentImageIndex + 1) %
-														length
+														length,
 												);
 												return;
 											}
@@ -336,7 +336,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 													(currentImageIndex -
 														1 +
 														length) %
-														length
+														length,
 												);
 												return;
 											}
@@ -368,7 +368,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 										handleImageChange(
 											(currentImageIndex + 1) %
 												raffleData?.productOptions
-													?.length
+													?.length,
 										)
 									}
 									className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
@@ -533,8 +533,8 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 										setSelectedOption(opt.id);
 										setCurrentImageIndex(
 											raffleData?.productOptions?.findIndex(
-												(o) => o.id === opt.id
-											)
+												(o) => o.id === opt.id,
+											),
 										);
 									}}
 									className={`relative p-0.5 rounded-full border-2 font-medium transition overflow-hidden w-[80px] h-[80px] ${
@@ -600,13 +600,13 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 									new Date(raffleData?.endAt || ""),
 									{
 										addSuffix: true,
-									}
+									},
 								)}{" "}
 								~{" "}
 								<span className="font-semibold">
 									{new Date(
 										new Date().getTime() +
-											7 * 24 * 60 * 60 * 1000
+											7 * 24 * 60 * 60 * 1000,
 									).toLocaleDateString("vi-VN")}
 								</span>
 							</span>
@@ -646,7 +646,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 						} ${raffleData?.isHasJoined ? "bg-gray-400" : ""}`}>
 						{labelButton(
 							raffleData?.status as EnumRaffleStatus,
-							raffleData?.isHasJoined || false
+							raffleData?.isHasJoined || false,
 						)}
 					</Button>
 				</div>

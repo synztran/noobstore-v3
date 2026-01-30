@@ -74,7 +74,7 @@ const OrderDetailsList: React.FC<IProps> = ({ winProduct }) => {
 
 	// const tempProduct = Array(10).fill(winProduct).flat();
 	return (
-		<div className="bg-white rounded-xl border border-gray-200 shadow p-4 w-full mx-auto h-full space-y-4">
+		<div className="bg-white rounded-xl border-2 border-gray-200 shadow p-4 w-full mx-auto h-full space-y-4">
 			<div className="text-lg text-gray-500 font-bold">
 				Đơn hàng bao gồm
 			</div>
@@ -96,10 +96,10 @@ const OrderDetailsList: React.FC<IProps> = ({ winProduct }) => {
 							) : null}
 						</div>
 						<div className="flex-1">
-							<div className="font-semibold text-gray-600 leading-tight">
+							<div className="font-semibold text-gray-600 leading-tight text-sm">
 								{item.name}
 							</div>
-							<div className={`text-sm text-gray-400`}>
+							<div className={`text-sm text-gray-500`}>
 								{formatCurrency(item.price)}
 							</div>
 						</div>

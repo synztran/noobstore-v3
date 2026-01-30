@@ -108,7 +108,7 @@ const RafflePaymentBlock = ({
 					shippingFee: raffle.shipping?.shippingMethod?.price || 0,
 					paymentMethod: rafflePaymentForm.paymentMethod,
 					donation: {
-						donation_amount:
+						donationAmount:
 							parseFloat(raffleDonationForm?.amount || "0") || 0,
 						message: raffleDonationForm?.message || "",
 					},

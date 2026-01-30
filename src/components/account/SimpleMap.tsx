@@ -29,7 +29,7 @@ const SimpleMap = ({ address }: IProps) => {
 	// }, [address, geocodeAddress]);
 
 	return (
-		<div className="h-40 p-0 overflow-hidden border border-gray-200 rounded-lg">
+		<div className="h-32 p-0 overflow-hidden border border-gray-200 rounded-lg">
 			<Map center={[coords.longitude, coords.latitude]} zoom={10}>
 				<MapControls showZoom={false} showLocate={false} />
 			</Map>

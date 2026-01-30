@@ -1,4 +1,5 @@
 import { EnumPaymentMethod, EnumRafflePaymentStatus } from "../interface";
+import { EnumMakerStatus, IBEResponseMakerMember } from "./Maker";
 
 interface IImage {
 	path: string;
@@ -15,12 +16,6 @@ export enum EnumRaffleStatus {
 	ONGOING = "ONGOING",
 	ENDED = "ENDED",
 	CANCELLED = "CANCELLED",
-}
-
-export enum EnumMakerStatus {
-	PENDING = "PENDING",
-	VERIFIED = "VERIFIED",
-	REJECTED = "REJECTED",
 }
 
 export interface IBEResponseRaffleProduct {
@@ -59,18 +54,10 @@ export interface IBEResponsePaymentMethod {
 	createdAt: Date;
 }
 
-export interface IBEResponseMakerMember {
-	id: string;
-	name: string;
-	isActive: boolean;
-	createdAt: Date;
-	updatedAt?: Date;
-}
-
 export interface IBEResponseMakerInfo {
 	brandName: string;
 	makerId: string;
-	teamMember?: IBEResponseMakerMember[];
+	teamMembers?: IBEResponseMakerMember[];
 	email: string;
 	isActive: boolean;
 	websiteUrl?: string;
@@ -178,6 +165,8 @@ export interface IBEResponseRaffleShipping {
 		name: string;
 		price: number | null;
 	};
+	trackingNumber?: string;
+	expectedDelivery?: string;
 }
 
 export interface IBEResponseRaffleEntry {
@@ -244,7 +233,7 @@ export interface IRequestRaffleJoin {
 }
 
 export interface ISubmitRafflePaymentDonation {
-	donation_amount: number;
+	donationAmount: number;
 	message?: string;
 }
 

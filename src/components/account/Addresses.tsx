@@ -11,11 +11,11 @@ const Addresses: React.FC = () => {
 	console.log("address", addresses);
 
 	return (
-		<div className="p-4 space-y-4">
+		<div className="space-y-4">
 			<div className="flex items-center justify-between border-b border-gray-400 pb-2">
 				<h2 className="font-bold text-xl">Sổ địa chỉ</h2>
 				<Button disabled className="bg-blue-600 text-white">
-					<Plus className="stroke-white !stroke-2 mr-2" size={18} />
+					<Plus className="stroke-white stroke-2! mr-2" size={18} />
 					<span className="font-bold text-white text-sm">
 						Thêm mới
 					</span>
@@ -45,9 +45,7 @@ const Addresses: React.FC = () => {
 								</div>
 								<div className="flex flex-col">
 									<div className="text-gray-700 text-sm">
-										<span className="bg-sky-500 px-1 rounded-lg text-white font-bold text-sm mr-1">
-											+84
-										</span>
+										+84&nbsp;
 										{addr.phoneNumber}
 									</div>
 									<span className="text-sm text-gray-700">

@@ -1,15 +1,80 @@
 import {
+	mapLabelEnumDeliveryStatus,
 	mappingEnumRafflePaymentStatus,
 	mappingRaffleStatusLabel,
 } from "@/constants";
 import { I3D_WINNER_CROWN_LUX } from "@/constants/Images";
 import { TResponseRaffleEntry } from "@/interface/Context/auth";
-import { EnumRafflePaymentStatus } from "@/interface/interface";
+import {
+	EnumRafflePaymentStatus,
+	EnumRafflePaymentStepStatus,
+	EnumRafflePaymentStepType,
+} from "@/interface/interface";
 import useUserRaffleEntryQueries from "@/react-query/user/api/useUserRaffleEntryQueries";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import PaidRaffleModal from "./PaidRaffle/PaidRaffle";
 import RegisterRaffleModal from "./RegisterRaffle/RegisterRaffle";
+
+const WinnerPaymentStatus: React.FC<{
+	paymentStatus: EnumRafflePaymentStatus;
+	isWinner: boolean;
+	selected: TResponseRaffleEntry | null;
+}> = memo(({ paymentStatus, isWinner, selected }) => {
+	const isDelivered =
+		selected?.timeline?.find(
+			(event) => event.stepType === EnumRafflePaymentStepType.COMPLETED,
+		)?.status === EnumRafflePaymentStepStatus.COMPLETED;
+
+	if (isDelivered) {
+		return (
+			<div
+				className={`${mapLabelEnumDeliveryStatus.DELIVERED?.bgColor} ${
+					mapLabelEnumDeliveryStatus.DELIVERED?.color
+				} rounded-md max-w-max text-sm font-semibold text-center px-2 py-1 ml-auto `}>
+				{mapLabelEnumDeliveryStatus.DELIVERED?.label}
+			</div>
+		);
+	}
+
+	return (
+		<div
+			className={`${
+				mappingEnumRafflePaymentStatus[paymentStatus]?.bgColor
+			} ${
+				mappingEnumRafflePaymentStatus[paymentStatus]?.color
+			} rounded-md max-w-max text-sm font-semibold text-center px-2 py-1 ml-auto ${
+				isWinner && paymentStatus !== EnumRafflePaymentStatus.PAID
+					? "hover:scale-105 cursor-pointer shadow-md transition-all duration-200 z-10"
+					: ""
+			}`}>
+			{mappingEnumRafflePaymentStatus[paymentStatus]?.label}
+		</div>
+	);
+});
+
+const RaffleStatusBadge: React.FC<{
+	status: TResponseRaffleEntry["raffleInfo"]["status"];
+}> = memo(({ status }) => {
+	return (
+		<div
+			className={`${mappingRaffleStatusLabel[status]?.color} ${
+				mappingRaffleStatusLabel[status]?.bgColor
+			} rounded-md font-semibold px-2 py-1 text-sm max-w-max ml-auto overflow-hidden flex items-center gap-1`}>
+			{mappingRaffleStatusLabel[status]?.icon ? (
+				<Image
+					src={mappingRaffleStatusLabel[status]?.icon!}
+					alt="Raffle Status Icon"
+					width={32}
+					height={32}
+					className="inline-block scale-[2.25]"
+					unoptimized
+				/>
+			) : null}
+			{mappingRaffleStatusLabel[status]?.label}
+		</div>
+	);
+});
 
 const RaffleHistory: React.FC = () => {
 	const { data: raffleHistory, isPending: isLoading } =
@@ -94,7 +159,7 @@ const RaffleHistory: React.FC = () => {
 						{/* badge */}
 						{entry?.isWinner ? (
 							<div
-								className={`ml-auto absolute -top-[30px] min-h-[30px] -right-[1.5px] flex items-center gap-1 bg-yellow-400 max-w-max py-1 px-2 overflow-hidden rounded-tl-md rounded-tr-md shadow-lg`}>
+								className={`ml-auto absolute -top-7.5 min-h-7.5 -right-[1.5px] flex items-center gap-1 bg-yellow-400 max-w-max py-1 px-2 overflow-hidden rounded-tl-md rounded-tr-md shadow-lg`}>
 								<Image
 									src={I3D_WINNER_CROWN_LUX}
 									alt="Winner Rank"
@@ -107,19 +172,19 @@ const RaffleHistory: React.FC = () => {
 								</span>
 							</div>
 						) : null}
-						<div className="min-w-[144px] h-36 relative">
+						<div className="min-w-34 h-34 relative">
 							<Image
 								src={entry.raffleInfo.thumbnail.path}
 								alt={entry.raffleInfo.thumbnail.alt}
 								fill
 								objectFit="cover"
-								className="rounded-md"
+								className="rounded-md hover:scale-105 transition-all duration-300"
 							/>
 						</div>
 						<div className="w-full flex flex-col gap-2 justify-between">
 							<div className="relative">
 								<div className="flex justify-between items-start gap-2">
-									<span className="font-bold line-clamp-2">
+									<span className="font-bold line-clamp-1">
 										{entry.raffleInfo.title ||
 											"Raffle không xác định"}
 									</span>
@@ -130,70 +195,34 @@ const RaffleHistory: React.FC = () => {
 										.join(" | ")}
 								</div>
 							</div>
-							<div className="text-sm text-gray-800">
-								Ngày tham gia:{" "}
-								{new Date(entry.joinedAt).toLocaleDateString()}
+							<div>
+								<div className="text-sm text-gray-800">
+									Ngày tham gia:{" "}
+									<span className="font-semibold">
+										{new Date(
+											entry.joinedAt,
+										).toLocaleDateString()}
+									</span>
+								</div>
+								<div className="text-sm text-gray-800">
+									Maker:{" "}
+									<span className="font-semibold">
+										{entry.makerInfo?.brandName ||
+											"Không xác định"}
+									</span>
+								</div>
 							</div>
+
 							{entry.isWinner ? (
-								<div
-									// onClick={(e) => {
-									// 	e.stopPropagation();
-									// 	handleOpenPayment(entry);
-									// }}
-									className={`${
-										mappingEnumRafflePaymentStatus[
-											entry.paymentStatus
-										]?.bgColor
-									} ${
-										mappingEnumRafflePaymentStatus[
-											entry.paymentStatus
-										]?.color
-									} rounded-md max-w-max text-sm font-semibold text-center px-2 py-1 ml-auto ${
-										entry.isWinner &&
-										entry.paymentStatus !==
-											EnumRafflePaymentStatus.PAID
-											? "hover:scale-105 cursor-pointer shadow-md transition-all duration-200 z-10"
-											: ""
-									}`}>
-									{
-										mappingEnumRafflePaymentStatus[
-											entry.paymentStatus
-										]?.label
-									}
-								</div>
+								<WinnerPaymentStatus
+									paymentStatus={entry.paymentStatus}
+									isWinner={entry.isWinner}
+									selected={entry}
+								/>
 							) : (
-								<div
-									className={`${
-										mappingRaffleStatusLabel[
-											entry.raffleInfo.status
-										]?.color
-									} ${
-										mappingRaffleStatusLabel[
-											entry.raffleInfo.status
-										]?.bgColor
-									} rounded-md font-semibold px-2 py-1 text-sm max-w-max ml-auto overflow-hidden flex items-center gap-1`}>
-									{mappingRaffleStatusLabel[
-										entry.raffleInfo.status
-									]?.icon ? (
-										<Image
-											src={
-												mappingRaffleStatusLabel[
-													entry.raffleInfo.status
-												]?.icon!
-											}
-											alt="Raffle Status Icon"
-											width={32}
-											height={32}
-											className="inline-block scale-[2.25]"
-											unoptimized
-										/>
-									) : null}
-									{
-										mappingRaffleStatusLabel[
-											entry.raffleInfo.status
-										]?.label
-									}
-								</div>
+								<RaffleStatusBadge
+									status={entry.raffleInfo.status}
+								/>
 							)}
 						</div>
 					</div>

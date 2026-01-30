@@ -1,4 +1,3 @@
-import { PAGE_LINK } from "@/constants";
 import { EnumSideMenu } from "@/constants/Enums";
 import { useAuth } from "@/context/Auth";
 import { classNames } from "@/utils/AppConfig";
@@ -54,7 +53,7 @@ const AccountMenu = [
 	{
 		icon: StarIcon,
 		href: "/account#raffleHistory",
-		label: "Lịch sử tham gia raffle",
+		label: "Lịch sử raffle",
 		sublabel: "Xem các raffle đã tham gia",
 		id: "raffleHistory",
 		isActive: true,
@@ -91,25 +90,34 @@ const OtherMenu = [
 	{
 		icon: Cog6ToothIcon,
 		href: "/account#preferences",
-		label: "Cài đặt & ưu tiên",
-		sublabel: "Cài đặt tài khoản, thông báo",
+		label: "Thiết lập",
+		sublabel: "Thiết lập tài khoản",
 		id: "preferences",
 	},
 ];
 
+import useMakerQuery from "@/react-query/makers/api/useMakerQuery";
 import React from "react";
+import { Button } from "../ReUIComponent";
+import MakerBlock from "./MakerBlock";
 
 interface UserSideMenuProps {
 	selectedMenu: string;
 	onSelectMenu: (id: string) => void;
+	handleRegisterMaker: () => void;
 }
 
 const UserSideMenu: React.FC<UserSideMenuProps> = ({
 	selectedMenu,
 	onSelectMenu,
+	handleRegisterMaker,
 }) => {
 	const { user } = useAuth() || {};
 	const [openLogout, setOpenLogout] = useState(false);
+	const { data: makerData, isLoading } = useMakerQuery({
+		params: { makerId: user?.makerId },
+		enabled: !!user?.makerId,
+	});
 
 	const handleClick = (menu: any) => {
 		if (menu.id === EnumSideMenu.LOGOUT) {
@@ -123,15 +131,17 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 		setOpenLogout(false);
 	};
 
+	console.log("makerData", makerData);
+
 	return (
 		<div className="w-full">
-			<main className="mx-auto max-w-7xl">
+			<main className="mx-auto">
 				{/* Account Block */}
 				<section className="mb-6">
 					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Account
 					</div>
-					<div className="rounded-xl bg-white shadow p-2 space-y-2">
+					<div className="rounded-xl bg-white shadow p-2 space-y-2 border border-gray-200">
 						{AccountMenu.map((menu, idx) => (
 							<div
 								key={menu.id}
@@ -139,10 +149,10 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 									"flex items-center gap-3 py-3 px-2 cursor-pointer hover:bg-gray-200 rounded-md group transition",
 									menu.isActive
 										? ""
-										: "bg-gray-100 opacity-[50%] pointer-events-none",
+										: "bg-gray-100 opacity-50 pointer-events-none",
 									selectedMenu === menu.id
-										? "!bg-red-50 border-r-4 !border-red-400"
-										: ""
+										? "bg-red-50! border-r-4 border-red-400!"
+										: "",
 								)}
 								onClick={() => handleClick(menu)}>
 								<menu.icon className="w-7 h-7 text-gray-500 group-hover:text-red-400" />
@@ -150,7 +160,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 									<span className="font-semibold text-base text-gray-900 truncate">
 										{menu.label}
 									</span>
-									<span className="text-xs text-gray-700 truncate">
+									<span className="text-xs text-gray-700 line-clamp-2">
 										{menu.isActive
 											? menu.sublabel
 											: "Chức năng sắp ra mắt"}
@@ -166,41 +176,50 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Maker
 					</div>
-					<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100">
-						{user?.role === "Maker" ? (
-							MakerMenu.map((menu, idx) => (
-								<div
-									key={menu.id}
-									className={classNames(
-										"flex items-center gap-3 py-3 px-2 cursor-pointer hover:bg-gray-50 group transition",
-										selectedMenu === menu.id
-											? "bg-blue-50 border-r-4 border-blue-400"
-											: ""
-									)}
-									onClick={() => handleClick(menu)}>
-									<menu.icon className="w-7 h-7 text-gray-500 group-hover:text-blue-500" />
-									<div className="flex flex-col flex-1 min-w-0">
-										<span className="font-semibold text-base text-gray-900 truncate">
-											{menu.label}
-										</span>
-										<span className="text-xs text-gray-500 truncate">
-											{menu.sublabel}
-										</span>
-									</div>
+					{/* {isLoading ? (
+						<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100 border border-gray-200 space-y-2">
+							<div className="flex items-center gap-3 py-3 px-2">
+								<Skeleton
+									variant="circular"
+									width={28}
+									height={28}
+								/>
+								<div className="flex flex-col flex-1 min-w-0 gap-2">
+									<Skeleton
+										variant="text"
+										width="60%"
+										height={20}
+									/>
+									<Skeleton
+										variant="text"
+										width="80%"
+										height={16}
+									/>
 								</div>
-							))
+							</div>
+						</div>
+					) : null} */}
+					<div
+						className={`rounded-xl bg-white shadow p-2 divide-y divide-gray-100 border border-gray-200 ${isLoading ? "hidden" : ""}`}>
+						{makerData ? (
+							<MakerBlock
+								isLoading={isLoading}
+								maker={makerData}
+								selectedMenu={selectedMenu}
+								onSelectMenu={onSelectMenu}
+								onVerifyAgain={() => {}}
+							/>
 						) : (
 							<div className="flex flex-col items-center py-6">
-								<span className="text-gray-500 mb-2">
-									Bạn chưa phải là Maker.
+								<span className="mb-2 font-semibold">
+									Bạn chưa là Maker.
 								</span>
-								<button
-									className="px-4 py-2 rounded bg-blue-500 text-white font-bold hover:bg-blue-600 transition"
-									onClick={() =>
-										alert("Hiển thị form đăng ký Maker")
-									}>
+								<Button
+									variant={"primary"}
+									fontSize={"sm"}
+									onClick={handleRegisterMaker}>
 									Đăng ký trở thành Maker
-								</button>
+								</Button>
 							</div>
 						)}
 					</div>
@@ -211,7 +230,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 					<div className="mb-2 font-bold text-gray-600 uppercase tracking-widest pl-2">
 						Thông tin
 					</div>
-					<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100">
+					<div className="rounded-xl bg-white shadow p-2 divide-y divide-gray-100 border border-gray-200">
 						{OtherMenu.map((menu, idx) => (
 							<div
 								key={menu.id}
@@ -219,7 +238,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 									"flex items-center gap-3 py-3 px-2 cursor-pointer hover:bg-gray-50 group transition",
 									selectedMenu === menu.id
 										? "bg-yellow-50 border-r-4 border-yellow-400"
-										: ""
+										: "",
 								)}
 								onClick={() => handleClick(menu)}>
 								<menu.icon className="w-7 h-7 text-gray-500 group-hover:text-yellow-500" />
@@ -239,7 +258,7 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 								"flex items-center gap-3 py-3 px-2 cursor-pointer hover:bg-gray-50 group transition",
 								selectedMenu === EnumSideMenu.LOGOUT
 									? "bg-red-50 border-r-4 border-red-400"
-									: ""
+									: "",
 							)}
 							onClick={() =>
 								handleClick({ id: EnumSideMenu.LOGOUT })
