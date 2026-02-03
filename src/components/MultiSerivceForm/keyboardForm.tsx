@@ -62,7 +62,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	}, [serviceDefaultTasks, keyboardItems, itemId]);
 
 	const stabilizerSelected = useMemo(() => {
-		console.log("props.value", props.value);
 		const formatedData: IStabilizerFormItem = {
 			id: props.itemId,
 			type: props.value.stabilizer.type || null,
@@ -121,12 +120,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	});
 
 	const totalPriceStabilizer = useMemo(() => {
-		console.log(
-			props.value.stabilizer.wires,
-			props.value.stabilizer.packs,
-			props.value.services.stabilizer?.handle?.price,
-			serviceOptions?.stabilizer?.handle?.unitPrice
-		);
 		return calculatePriceWireAndPack({
 			wires: props.value.stabilizer.wires,
 			packs: props.value.stabilizer.packs,
@@ -179,7 +172,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 				name,
 			});
 		},
-		[itemId, props.value]
+		[itemId, props.value],
 	);
 
 	const debounceRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
@@ -238,8 +231,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 				serviceName as keyof (typeof serviceOptions)[typeof parentName]
 			]?.unitPrice || {};
 
-		console.log("serviceUnitPrice", serviceUnitPrice);
-
 		if (itemId) {
 			updateKeyboardItem(itemId, {
 				services: {
@@ -259,7 +250,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 	};
 
 	const handleOnChangeStabSelection = (updater: IStabilizerFormItem) => {
-		console.log("updater", updater);
 		if (!itemId) {
 			NotifyUtils.error("Không tìm thấy mục stabilizer để cập nhật.");
 			return;
@@ -272,8 +262,6 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 			},
 		});
 	};
-
-	console.log("serviceOptions", serviceOptions);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -803,7 +791,7 @@ const ServiceKeyboardForm: React.FC<IProps> = (props) => {
 						publicUrl: item.publicUrl || "",
 					}))}
 					handleSyncData={(
-						data: { publicUrl: string; size: number }[]
+						data: { publicUrl: string; size: number }[],
 					) => {
 						if (itemId) {
 							updateKeyboardItem(itemId, {

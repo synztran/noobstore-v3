@@ -10,7 +10,6 @@ interface IProps {
 
 export default function DynamicLuckyWheel(props: IProps) {
 	const { rewards, turns } = props;
-	console.log("rewards", rewards, turns);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [wheel, setWheel] = useState<LuckyWheel | null>(null);
 	const [rendered, setRenderer] = useState<WheelRenderer | null>(null);
@@ -21,7 +20,6 @@ export default function DynamicLuckyWheel(props: IProps) {
 	useEffect(() => {
 		if (canvasRef.current && rewards.length > 0) {
 			const newWheel = new LuckyWheel(rewards, turns);
-			console.log("newWheel", newWheel);
 			const newRenderer = new WheelRenderer(canvasRef.current, rewards);
 			setWheel(newWheel);
 			setRenderer(newRenderer);
@@ -35,7 +33,6 @@ export default function DynamicLuckyWheel(props: IProps) {
 	}, [rewards]);
 
 	const handleSpin = async () => {
-		console.log(wheel, result);
 		if (wheel && !result) {
 			try {
 				const prize = await wheel.spin();
@@ -112,13 +109,12 @@ function ButtonSpin({
 	btnHeadRef,
 	btnBottomRef,
 }: IButtonSpin) {
-	console.log("isSpinning", isSpinning);
 	return (
 		<div
 			ref={ref}
 			className={classNames(
 				"w-[200px] h-[135px] relative cursor-pointer flex justify-center my-0 mx-auto z-10",
-				isSpinning ? "pointer-events-none" : ""
+				isSpinning ? "pointer-events-none" : "",
 			)}
 			onClick={isSpinning ? handleReset : handleSpin}>
 			<div

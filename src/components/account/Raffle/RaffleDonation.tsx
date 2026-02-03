@@ -53,8 +53,6 @@ const RafflePaymnetDonation = ({ raffle }: IProps) => {
 		return () => clearTimeout(timer);
 	}, [raffleDonationForm?.message]);
 
-	console.log("raffleDonationForm", raffleDonationForm);
-
 	return (
 		<div className="relative flex flex-col gap-2 pr-2">
 			<div className="flex items-center gap-2">

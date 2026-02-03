@@ -16,7 +16,7 @@ export class LuckyWheel {
 		initialTurns: number = 0,
 		isFreeTurn: boolean = false,
 		onSpinComplete?: (reward: IReward) => void,
-		onHistoryUpdate?: (history: IReward[]) => void
+		onHistoryUpdate?: (history: IReward[]) => void,
 	) {
 		this.rewards = initialRewards;
 		this.turns = initialTurns;
@@ -80,7 +80,7 @@ export class LuckyWheel {
 		// Calculate random reward based on percentages
 		const totalPercentage = this.rewards.reduce(
 			(sum, reward) => sum + reward.percentage,
-			0
+			0,
 		);
 
 		const random = Math.random() * totalPercentage;
@@ -101,7 +101,7 @@ export class LuckyWheel {
 
 		// Calculate rotation
 		const rewardIndex = this.rewards.findIndex(
-			(r) => r.code === selectedReward?.code
+			(r) => r.code === selectedReward?.code,
 		);
 		const baseRotation = 360 * 5; // 5 full rotations
 		const targetRotation = (360 / this.rewards.length) * rewardIndex;
@@ -138,7 +138,7 @@ export class WheelRenderer {
 	constructor(
 		canvas: HTMLCanvasElement,
 		rewards: IReward[],
-		radius: number = 340
+		radius: number = 340,
 	) {
 		this.canvas = canvas;
 		this.ctx = canvas.getContext("2d")!;
@@ -170,7 +170,7 @@ export class WheelRenderer {
 		radius: number,
 		angle: number,
 		arcsweep: number,
-		color: string
+		color: string,
 	) {
 		ctx.save();
 		ctx.translate(cx * 2, cy * 2);
@@ -199,10 +199,8 @@ export class WheelRenderer {
 		const sweep = PI2 / numOptions;
 		const cw = this.canvas.width;
 		const ch = this.canvas.height;
-		console.log(cw, ch);
 		const cx = this.canvas.width / 2;
 		const cy = this.canvas.height / 2;
-		console.log(cx, cy);
 
 		for (let i = 0; i < numOptions; i++) {
 			const reward = this.rewards[i];
@@ -263,7 +261,7 @@ export class WheelRenderer {
 				this.radius,
 				sweep * i,
 				sweep,
-				bgColor
+				bgColor,
 			);
 		}
 	}

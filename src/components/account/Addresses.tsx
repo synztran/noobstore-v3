@@ -8,8 +8,6 @@ const Addresses: React.FC = () => {
 	const { user } = auth || {};
 	const addresses = user?.shippingAt || [];
 
-	console.log("address", addresses);
-
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between border-b border-gray-400 pb-2">

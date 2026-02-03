@@ -86,7 +86,7 @@ const useRaffleStep = create<RaffleStepStore>()(
 				}
 				const currentIndex = steps.findIndex(
 					(step) =>
-						step.props.stepValue === currentStep?.props.stepValue
+						step.props.stepValue === currentStep?.props.stepValue,
 				);
 				const prevIndex = Math.max(0, currentIndex - 1);
 				const prevStep = steps[prevIndex];
@@ -101,7 +101,7 @@ const useRaffleStep = create<RaffleStepStore>()(
 				set((state) => ({ ...state, direction: 1 }));
 				const currentIndex = steps.findIndex(
 					(step) =>
-						step.props.stepValue === currentStep?.props.stepValue
+						step.props.stepValue === currentStep?.props.stepValue,
 				);
 				const nextIndex = Math.min(steps.length - 1, currentIndex + 1);
 				const nextStep = steps[nextIndex];
@@ -110,11 +110,10 @@ const useRaffleStep = create<RaffleStepStore>()(
 				}
 			},
 			init: ({ children }) => {
-				console.log("children in init:", children);
 				// set((state) => ({ ...state, user }));
 				const childrenSteps = React.Children.toArray(children)
 					.filter((child): child is React.ReactElement =>
-						React.isValidElement(child)
+						React.isValidElement(child),
 					)
 					.map((el) => ({
 						props: {
@@ -132,7 +131,7 @@ const useRaffleStep = create<RaffleStepStore>()(
 				});
 			},
 		},
-	}))
+	})),
 );
 
 export const useRaffleStepAction = () =>

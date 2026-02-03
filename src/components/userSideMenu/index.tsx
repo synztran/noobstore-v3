@@ -131,8 +131,6 @@ const UserSideMenu: React.FC<UserSideMenuProps> = ({
 		setOpenLogout(false);
 	};
 
-	console.log("makerData", makerData);
-
 	return (
 		<div className="w-full">
 			<main className="mx-auto">

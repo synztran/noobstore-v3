@@ -11,7 +11,6 @@ const VndPriceInput: React.FC<IProps> = ({
 	handleUpdatePrice,
 	handleClear,
 }) => {
-	console.log("price", price);
 	// const [value, setValue] = useState<string>(price ?? "0"); // Initial value without decimals
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

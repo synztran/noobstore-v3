@@ -7,7 +7,6 @@ export const configQueryKeys = createQueryKeys("config", {
 		queryKey: null,
 		async queryFn() {
 			const response = await ConfigClient.getAllConfig();
-			console.log(response);
 			if (!isValid(response)) {
 				return {};
 			}

@@ -84,8 +84,6 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 		});
 	}, [apiOptions]);
 
-	console.log("serviceOptions", serviceOptions);
-
 	const handleSwitchChecked = ({
 		name,
 		value,
@@ -93,8 +91,6 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 		name: "lube" | "film" | "clean" | "spring" | "quickClean";
 		value: boolean;
 	}) => {
-		console.log("checked", name, value);
-
 		const switchServiceOption = serviceOptions?.switch?.[name];
 		const { price = 0, unitPrice = 0 } = switchServiceOption || {};
 
@@ -154,7 +150,7 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 			updateSwitchItem(itemId, payload);
 			resetTaskItem(itemId, "switchItems");
 		},
-		[itemId]
+		[itemId],
 	);
 
 	return (
@@ -346,7 +342,7 @@ const ServicesSwitchesForm: React.FC<IProps> = (props: IProps) => {
 						publicUrl: item.publicUrl || "",
 					}))}
 					handleSyncData={(
-						data: { publicUrl: string; size: number }[]
+						data: { publicUrl: string; size: number }[],
 					) => {
 						if (itemId) {
 							updateSwitchItem(itemId, {

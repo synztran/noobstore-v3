@@ -39,7 +39,6 @@ export function useMakerSendVerifyEmailMutation(
 			}>,
 			variables: IVariable,
 		) => {
-			console.log("resp", resp, resp?.data);
 			// Always try to invalidate the raffle detail query
 			if (resp.data?.[0]?.makerId) {
 				queryClient.invalidateQueries(appQueryKeys.user.getAccountInfo);

@@ -7,7 +7,6 @@ interface IProps {
 
 const EmojiPicker = forwardRef((props: IProps, ref) => {
 	const [open, setOpen] = useState(false);
-	console.log("open", open);
 
 	useImperativeHandle(
 		ref,
@@ -22,7 +21,7 @@ const EmojiPicker = forwardRef((props: IProps, ref) => {
 				return open;
 			},
 		}),
-		[ref]
+		[ref],
 	);
 
 	return open ? (

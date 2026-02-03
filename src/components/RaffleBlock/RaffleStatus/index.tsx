@@ -42,7 +42,6 @@ const textVariants = {
 };
 
 const RaffleStatus = ({ mode }: IProps) => {
-	console.log("raffle status", mode);
 	return (
 		<AnimatePresence mode="wait" initial={false}>
 			<motion.span

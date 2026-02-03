@@ -114,7 +114,6 @@ const RegisterMakerModal: React.FC<RegisterMakerModalProps> = ({
 
 	const handleSubmit = async (values: RegisterMakerFormData) => {
 		try {
-			console.log("Form submitted:", values);
 			// TODO: Call API to register maker
 			const payload: IPayloadCreateMaker = {
 				ownerName: values.ownerName,
@@ -144,7 +143,6 @@ const RegisterMakerModal: React.FC<RegisterMakerModalProps> = ({
 					alt: "Maker Logo",
 				},
 			};
-			console.log(payload);
 			const resp = await mutateAsync({ payload });
 			if (resp.status === "OK") {
 				handleClose();

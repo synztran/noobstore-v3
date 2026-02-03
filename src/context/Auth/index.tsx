@@ -149,7 +149,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 	const loadUserFromCookies = useCallback(
 		async (callback?: (data: any) => void, retryCount = 0) => {
 			// If user is already loaded and authenticated, don't make another API call
-			console.log(user, isAuthenticated);
 			if (user && isAuthenticated && !isLoading) {
 				if (callback && typeof callback === "function") callback(user);
 				return;
@@ -193,7 +192,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 					timeoutPromise,
 				])) as any;
 
-				console.log("respUser", respUser);
 				if (respUser?.status === "OK") {
 					const userInfo = respUser?.data;
 					const cookiesValue = Cookies.get(ACCESS_TOKEN);
@@ -233,9 +231,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 					retryCount < 2 &&
 					(error as any).message !== "API timeout"
 				) {
-					console.log(
-						`Retrying API call (attempt ${retryCount + 1})`,
-					);
 					setTimeout(
 						() => {
 							loadUserFromCookies(callback, retryCount + 1);
@@ -257,9 +252,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 					if (cachedUser) {
 						try {
 							const userInfo = JSON.parse(cachedUser);
-							console.log(
-								"Using cached user data due to API failure",
-							);
 							setInfoUser(userInfo);
 							setIsLoading(false);
 							if (callback && typeof callback === "function")
@@ -275,15 +267,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
 					// If no cached data, set as unauthenticated but don't remove cookies yet
 					// (maybe it's just a temporary network issue)
-					console.log(
-						"API failed but token exists - setting as unauthenticated temporarily",
-					);
 					setInfoUser(null);
 					setIsAuthenticated(false);
 					setIsLoading(false);
 				} else {
 					// No token, definitely not authenticated
-					console.log("No token found - user not authenticated");
 					setInfoUser(null);
 					setIsAuthenticated(false);
 					setIsLoading(false);

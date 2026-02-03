@@ -429,12 +429,12 @@ interface Actions {
 	removeKeyboardItem: (id: string) => void;
 	updateKeyboardItem: (
 		id: string,
-		updater: Partial<IKeyboardFormItem>
+		updater: Partial<IKeyboardFormItem>,
 	) => void;
 	// resetTaskKeyboardItem: (id: string) => void;
 	resetTaskItem: (
 		taskId: string,
-		name: "switchItems" | "stabilizerItems"
+		name: "switchItems" | "stabilizerItems",
 	) => void;
 
 	resetKeyboardTaskItem: ({
@@ -457,7 +457,7 @@ interface Actions {
 	removeStabilizerItem: (id: string) => void;
 	updateStabilizerItem: (
 		id: string,
-		updater: Partial<IStabilizerFormItem>
+		updater: Partial<IStabilizerFormItem>,
 	) => void;
 
 	// Contact and shipping actions
@@ -466,13 +466,13 @@ interface Actions {
 	updateFees: (key: keyof States["fees"], value: number) => void;
 	updateServiceOutOfTimeFee: (
 		fee: number,
-		key: "pickup" | "delivery"
+		key: "pickup" | "delivery",
 	) => void;
 
 	// Options management
 	addServiceOption: (
 		category: keyof States["serviceOptions"],
-		option: IServiceOption
+		option: IServiceOption,
 	) => void;
 
 	// Form utilities
@@ -494,7 +494,7 @@ interface Actions {
 	}) => number;
 	getPriceServiceById: (
 		serviceId: string,
-		type: "switch" | "stabilizer"
+		type: "switch" | "stabilizer",
 	) => number;
 
 	validateForm: () => Record<string, string>;
@@ -677,29 +677,29 @@ const useServices = create<ServiceState>()(
 				set((state) => ({
 					...state,
 					keyboardItems: state.keyboardItems.filter(
-						(it) => it.id !== id
+						(it) => it.id !== id,
 					),
 				}));
 			},
 			updateKeyboardItem: (
 				id: string,
-				updater: Partial<IKeyboardFormItem>
+				updater: Partial<IKeyboardFormItem>,
 			) => {
 				set((state) => ({
 					...state,
 					keyboardItems: state.keyboardItems.map((it) =>
-						it.id === id ? { ...it, ...updater } : it
+						it.id === id ? { ...it, ...updater } : it,
 					),
 				}));
 			},
 			resetTaskItem: (
 				taskId: string,
-				name: "keyboardItems" | "switchItems" | "stabilizerItems"
+				name: "keyboardItems" | "switchItems" | "stabilizerItems",
 			) => {
 				set((state) => ({
 					...state,
 					[name]: state[name].map((it) =>
-						it.id === taskId ? { ...it, services: {} } : it
+						it.id === taskId ? { ...it, services: {} } : it,
 					),
 				}));
 			},
@@ -740,12 +740,12 @@ const useServices = create<ServiceState>()(
 			},
 			updateSwitchItem: (
 				id: string,
-				updater: Partial<ISwitchFormItem>
+				updater: Partial<ISwitchFormItem>,
 			) => {
 				set((state) => ({
 					...state,
 					switchItems: state.switchItems.map((it) =>
-						it.id === id ? { ...it, ...updater } : it
+						it.id === id ? { ...it, ...updater } : it,
 					),
 				}));
 			},
@@ -764,18 +764,18 @@ const useServices = create<ServiceState>()(
 				set((state) => ({
 					...state,
 					stabilizerItems: state.stabilizerItems.filter(
-						(it) => it.id !== id
+						(it) => it.id !== id,
 					),
 				}));
 			},
 			updateStabilizerItem: (
 				id: string,
-				updater: Partial<IStabilizerFormItem>
+				updater: Partial<IStabilizerFormItem>,
 			) => {
 				set((state) => ({
 					...state,
 					stabilizerItems: state.stabilizerItems.map((it) =>
-						it.id === id ? { ...it, ...updater } : it
+						it.id === id ? { ...it, ...updater } : it,
 					),
 				}));
 			},
@@ -796,7 +796,7 @@ const useServices = create<ServiceState>()(
 			updateDiscount: (codes: string[]) => {
 				const discounts = codes.map((code) => {
 					const found = SUGGESTED_DISCOUNT_CODES.find(
-						(d) => d.code === code
+						(d) => d.code === code,
 					);
 					return {
 						discountCode: code,
@@ -805,7 +805,7 @@ const useServices = create<ServiceState>()(
 				});
 				const totalDiscount = discounts.reduce(
 					(acc, curr) => acc + (curr.discountAmount || 0),
-					0
+					0,
 				);
 
 				set((state) => ({
@@ -822,7 +822,7 @@ const useServices = create<ServiceState>()(
 			},
 			updateServiceOutOfTimeFee: (
 				fee: number,
-				key: "pickup" | "delivery"
+				key: "pickup" | "delivery",
 			) => {
 				set((state) => ({
 					...state,
@@ -839,7 +839,7 @@ const useServices = create<ServiceState>()(
 			// Options management
 			addServiceOption: (
 				category: keyof States["serviceOptions"],
-				option: IServiceOption
+				option: IServiceOption,
 			) => {
 				set((state) => ({
 					...state,
@@ -879,7 +879,7 @@ const useServices = create<ServiceState>()(
 				total += state.shippingInfo.deliveryMethod.price;
 				total += state.shippingInfo.addOns.reduce(
 					(acc, addOn) => acc + addOn.price,
-					0
+					0,
 				);
 
 				// Add fees
@@ -887,7 +887,6 @@ const useServices = create<ServiceState>()(
 				total += state.fees.serviceOutOfTimeFee.delivery;
 				total += state.fees.platFormFee;
 
-				console.log("totalServicePrice", totalServicePrice);
 				return total + totalServicePrice;
 			},
 			calculateTotalServicePrice: () => {
@@ -906,7 +905,7 @@ const useServices = create<ServiceState>()(
 											if (!stabService.isUse) return;
 											if (
 												["handle", "clean"].includes(
-													stabService.name
+													stabService.name,
 												)
 											) {
 												const unitPrice =
@@ -926,7 +925,7 @@ const useServices = create<ServiceState>()(
 														wireTotalPrice +=
 															pricePerWire *
 															wire.quantity;
-													}
+													},
 												);
 
 												item.stabilizer.packs.forEach(
@@ -934,14 +933,14 @@ const useServices = create<ServiceState>()(
 														packTotalPrice +=
 															pack.quantity *
 															packPrice;
-													}
+													},
 												);
 
 												total +=
 													wireTotalPrice +
 													packTotalPrice;
 											}
-										}
+										},
 									);
 									break;
 								}
@@ -967,7 +966,7 @@ const useServices = create<ServiceState>()(
 												total +=
 													switchService?.price || 0;
 											}
-										}
+										},
 									);
 									break;
 								}
@@ -976,18 +975,17 @@ const useServices = create<ServiceState>()(
 										(stabService) => {
 											if (!stabService.isUse) return;
 											total += stabService?.price || 0;
-										}
+										},
 									);
 									break;
 								}
 							}
-						}
+						},
 					);
 				});
 
 				// Add switch service prices
 				state.switchItems.forEach((switchItem) => {
-					console.log("switchItem calc", switchItem);
 					if (!Object.values(switchItem.services || {}).length)
 						return;
 					Object.values(switchItem.services || {}).forEach(
@@ -1006,7 +1004,7 @@ const useServices = create<ServiceState>()(
 							} else {
 								total += service?.price || 0;
 							}
-						}
+						},
 					);
 				});
 
@@ -1018,7 +1016,7 @@ const useServices = create<ServiceState>()(
 							if (!stabService.isUse) return;
 							if (
 								["handle", "clean"].includes(
-									stabService?.name || ""
+									stabService?.name || "",
 								)
 							) {
 								const unitPrice = stabService?.unitPrice || {};
@@ -1039,11 +1037,9 @@ const useServices = create<ServiceState>()(
 
 								total += wireTotalPrice + packTotalPrice;
 							}
-						}
+						},
 					);
 				});
-
-				console.log("total", total);
 
 				return total;
 			},
@@ -1069,10 +1065,8 @@ const useServices = create<ServiceState>()(
 				const state = get();
 				let total = 0;
 
-				console.log("state", state.keyboardItems);
-
 				const found = state.keyboardItems.find(
-					(item) => item.id === itemId
+					(item) => item.id === itemId,
 				);
 				if (!found || !found.services) return 0;
 
@@ -1085,7 +1079,7 @@ const useServices = create<ServiceState>()(
 										if (!stabService.isUse) return;
 										if (
 											["handle", "clean"].includes(
-												stabService.name
+												stabService.name,
 											)
 										) {
 											const unitPrice =
@@ -1103,7 +1097,7 @@ const useServices = create<ServiceState>()(
 													wireTotalPrice +=
 														pricePerWire *
 														wire.quantity;
-												}
+												},
 											);
 
 											found.stabilizer.packs.forEach(
@@ -1111,13 +1105,13 @@ const useServices = create<ServiceState>()(
 													packTotalPrice +=
 														pack.quantity *
 														packPrice;
-												}
+												},
 											);
 
 											total +=
 												wireTotalPrice + packTotalPrice;
 										}
-									}
+									},
 								);
 								break;
 							}
@@ -1141,7 +1135,7 @@ const useServices = create<ServiceState>()(
 										} else {
 											total += switchService?.price || 0;
 										}
-									}
+									},
 								);
 								break;
 							}
@@ -1150,12 +1144,12 @@ const useServices = create<ServiceState>()(
 									(stabService) => {
 										if (!stabService.isUse) return;
 										total += stabService?.price || 0;
-									}
+									},
 								);
 								break;
 							}
 						}
-					}
+					},
 				);
 
 				return total;
@@ -1176,7 +1170,7 @@ const useServices = create<ServiceState>()(
 			},
 			getPriceServiceById: (
 				serviceId: string,
-				type: "switch" | "stabilizer"
+				type: "switch" | "stabilizer",
 			) => {
 				if (!serviceId) return 0;
 				const state = get();
@@ -1191,7 +1185,7 @@ const useServices = create<ServiceState>()(
 				}
 
 				const found = findingItems.find(
-					(item) => item.id === serviceId
+					(item) => item.id === serviceId,
 				);
 
 				if (!found || !found.services) return 0;
@@ -1202,7 +1196,7 @@ const useServices = create<ServiceState>()(
 						case "stabilizer": {
 							if (
 								["handle", "clean"].includes(
-									service?.name || ""
+									service?.name || "",
 								)
 							) {
 								const unitPrice = service?.unitPrice || {};
@@ -1216,14 +1210,14 @@ const useServices = create<ServiceState>()(
 											unitPrice[wire.type] || 0;
 										wireTotalPrice +=
 											pricePerWire * wire.quantity;
-									}
+									},
 								);
 
 								(found as IStabilizerFormItem).packs.forEach(
 									(pack) => {
 										packTotalPrice +=
 											pack.quantity * packPrice;
-									}
+									},
 								);
 
 								total += wireTotalPrice + packTotalPrice;
@@ -1354,7 +1348,7 @@ const useServices = create<ServiceState>()(
 								!keyboard.keyboard.pcb ||
 								!keyboard.keyboard.size
 							);
-						}
+						},
 					);
 					if (isMissingInformation) {
 						errors.keyboardServices =
@@ -1371,9 +1365,9 @@ const useServices = create<ServiceState>()(
 							return Object.values(switchItem.services).some(
 								(service) => {
 									return service.isUse;
-								}
+								},
 							);
-						}
+						},
 					);
 					const isMissingInformation = state.switchItems.some(
 						(switchItem) => {
@@ -1383,7 +1377,7 @@ const useServices = create<ServiceState>()(
 								!switchItem.quantity ||
 								!switchItem.status
 							);
-						}
+						},
 					);
 					if (isMissingInformation) {
 						errors.switchServices =
@@ -1401,9 +1395,9 @@ const useServices = create<ServiceState>()(
 							return Object.values(stabilizer.services).some(
 								(service) => {
 									return service.isUse;
-								}
+								},
 							);
-						}
+						},
 					);
 					const isMissingInformation = state.stabilizerItems.some(
 						(stabilizer) => {
@@ -1413,7 +1407,7 @@ const useServices = create<ServiceState>()(
 								!stabilizer.brand ||
 								!stabilizer.status
 							);
-						}
+						},
 					);
 					if (isMissingInformation) {
 						errors.stabilizerServices =
@@ -1461,7 +1455,7 @@ const useServices = create<ServiceState>()(
 							serviceType: EnumServiceType.KEYBOARD,
 							totalPrice:
 								state.actions.getPriceKeyboardServiceById(
-									item.id
+									item.id,
 								),
 						});
 					});
@@ -1476,7 +1470,7 @@ const useServices = create<ServiceState>()(
 							serviceType: EnumServiceType.SWITCH,
 							totalPrice: state.actions.getPriceServiceById(
 								item.id,
-								"switch"
+								"switch",
 							),
 						});
 					});
@@ -1491,7 +1485,7 @@ const useServices = create<ServiceState>()(
 							serviceType: EnumServiceType.STABILIZER,
 							totalPrice: state.actions.getPriceServiceById(
 								item.id,
-								"stabilizer"
+								"stabilizer",
 							),
 						});
 					});
@@ -1567,10 +1561,7 @@ const useServices = create<ServiceState>()(
 			submitServiceBooking: async () => {
 				try {
 					const formattedData = get().actions.formatDataForBackend();
-					console.log("Submitting service booking:", formattedData);
 					const isValidSubmitData = get().actions.validateForm();
-
-					console.log("isValidSubmitData", isValidSubmitData);
 
 					if (Object.values(isValidSubmitData).length) {
 						return isValidSubmitData;
@@ -1578,7 +1569,6 @@ const useServices = create<ServiceState>()(
 
 					const response =
 						await ServiceClient.postBookingService(formattedData);
-					console.log("Booking submitted successfully:", response);
 
 					return response;
 
@@ -1601,7 +1591,7 @@ const useServices = create<ServiceState>()(
 				set((state) => ({ ...state, serviceForm: payload }));
 			},
 		},
-	}))
+	})),
 );
 
 // Selector hooks for easy access to computed values
@@ -1617,7 +1607,7 @@ export const useServiceSelectors = () => ({
 	serviceOptions: useServices((state) => state.serviceOptions),
 	totalPrice: useServices((state) => state.actions.calculateTotalPrice()),
 	isFormValid: useServices(
-		(state) => Object.values(state.actions.validateForm()).length === 0
+		(state) => Object.values(state.actions.validateForm()).length === 0,
 	),
 
 	// Legacy selectors for backward compatibility

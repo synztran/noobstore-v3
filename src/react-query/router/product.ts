@@ -68,7 +68,7 @@ export const productQueryKeys = createQueryKeys("product", {
 							}
 							return acc;
 						},
-						{} as Record<string, IProductOption[]>
+						{} as Record<string, IProductOption[]>,
 					) || {};
 			}
 
@@ -77,8 +77,6 @@ export const productQueryKeys = createQueryKeys("product", {
 				products,
 				productOptions,
 			};
-
-			console.log("data", data);
 
 			return data;
 		},

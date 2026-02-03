@@ -26,8 +26,17 @@ const postSendVerifyEmail = async (payload: IPayloadVerifyEmailMaker) => {
 	return POST({ url, body: payload, isAuth: true });
 };
 
+const getMakerDashboardStats = async (params: {
+	makerId: string;
+	search?: string;
+}): Promise<IResponse<IBEResponseMaker>> => {
+	const url = MAKER_API.GET_MAKER_DASHBOARD_STATS;
+	return GET({ url, params, isAuth: true });
+};
+
 export default {
 	postCreateMaker,
 	getMakerInfo,
 	postSendVerifyEmail,
+	getMakerDashboardStats,
 };

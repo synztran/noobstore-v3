@@ -30,7 +30,6 @@ const SelectWithIcon = ({
 	setFieldValue,
 	value,
 }: Props) => {
-	console.log("selectList", selectList);
 	const [selected, setSelected] = useState<{
 		name: string;
 		slug: string;
@@ -125,7 +124,7 @@ const SelectWithIcon = ({
 												active
 													? "bg-indigo-600 text-white"
 													: "text-gray-900",
-												"relative cursor-default select-none py-2 pl-3 pr-9"
+												"relative cursor-default select-none py-2 pl-3 pr-9",
 											)
 										}
 										value={child}>
@@ -146,7 +145,7 @@ const SelectWithIcon = ({
 															selected
 																? "font-semibold"
 																: "font-normal",
-															"ml-3 block truncate"
+															"ml-3 block truncate",
 														)}>
 														{child.name}
 													</span>
@@ -158,7 +157,7 @@ const SelectWithIcon = ({
 															active
 																? "text-white"
 																: "text-indigo-600",
-															"absolute inset-y-0 right-0 flex items-center pr-4"
+															"absolute inset-y-0 right-0 flex items-center pr-4",
 														)}>
 														<CheckIcon
 															className="h-5 w-5"

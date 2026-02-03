@@ -11,7 +11,6 @@ export const categoryQueryKeys = createQueryKeys("category", {
 				params,
 				signal,
 			});
-			console.log("response", response);
 			if (!isValid(response)) {
 				return [];
 			}

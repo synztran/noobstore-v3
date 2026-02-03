@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { Base } from "templates/Base";
 import * as Yup from "yup";
 
-const LoginPage = (): JSX.Element => {
+const LoginPage = (): React.ReactElement => {
 	const router = useRouter();
 
 	const SigupSchema = Yup.object().shape({
@@ -58,7 +58,6 @@ const LoginPage = (): JSX.Element => {
 					}}
 					validationSchema={SigupSchema}
 					onSubmit={(values) => {
-						console.log(values);
 						handleRegister(values);
 					}}>
 					{({ errors, touched }) => (

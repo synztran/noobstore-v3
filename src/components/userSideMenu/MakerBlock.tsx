@@ -12,6 +12,7 @@ import { Skeleton } from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ReUIComponent";
+import { useRouter } from "next/router";
 
 interface IProps {
 	isLoading: boolean;
@@ -27,7 +28,7 @@ const MakerMenu = [
 		label: "Maker dashboard",
 		sublabel: "Quản lý sản phẩm, đơn hàng của bạn",
 		id: "makerDashboard",
-		redirectLink: "/maker/dashboard",
+		redirectLink: "/maker",
 	},
 	{
 		icon: GiftIcon,
@@ -44,6 +45,7 @@ const MakerBlock: React.FC<IProps> = ({
 	selectedMenu,
 	onSelectMenu,
 }) => {
+  const router = useRouter();
 	const { mutateAsync, isPending } = useMakerSendVerifyEmailMutation();
 	const [countdown, setCountdown] = useState(0);
 
@@ -207,7 +209,8 @@ const MakerBlock: React.FC<IProps> = ({
 								maker?.verificationStatus ===
 								EnumMakerStatus.VERIFIED
 							) {
-								onSelectMenu(menu.id);
+                // onSelectMenu(menu.id);
+                router.push(menu.redirectLink);
 							}
 						}}>
 						<menu.icon

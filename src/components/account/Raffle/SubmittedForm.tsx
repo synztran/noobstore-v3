@@ -24,7 +24,6 @@ const RaffleSubmittedForm = ({
 	winningProducts?: IBEResponseRaffleProductSelection[] | null;
 }) => {
 	const { rafflePaymentForm } = useRaffle();
-	console.log("rafflePaymentForm", rafflePaymentForm);
 
 	if (winningProducts && raffle?.paymentStatus !== "PAID") {
 		return (

@@ -15,7 +15,7 @@ interface IVariable {
 }
 
 export function useDeleteProductOptionMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {},
 ) {
 	const queryClient = useQueryClient();
 	return useMutation({
@@ -24,7 +24,6 @@ export function useDeleteProductOptionMutation(
 				body: { productOptionId: variables.payload.productOptionId },
 				signal: new AbortController().signal,
 			});
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: (_) => {
@@ -33,10 +32,10 @@ export function useDeleteProductOptionMutation(
 		onSuccess: (_, variables) => {
 			const { productOptionId } = variables.payload;
 			NotifyUtils.success(
-				<CheckCircleDeleteProduct productId={productOptionId} />
+				<CheckCircleDeleteProduct productId={productOptionId} />,
 			);
 			queryClient.invalidateQueries(
-				appQueryKeys.product.getProductOptions({})
+				appQueryKeys.product.getProductOptions({}),
 			);
 		},
 		...mutationOptions,

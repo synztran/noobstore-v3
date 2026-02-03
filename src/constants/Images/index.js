@@ -138,6 +138,14 @@ export const HUNDRED_PERCENT_ICON = "/assets/icons/sale_percentage/100.svg";
 export const MAKER_FB_ICON = "/assets/icons/maker/fb.svg";
 export const MAKER_DISCORD_ICON = "/assets/icons/maker/discord.svg";
 export const MAKER_IG_ICON = "/assets/icons/maker/ig.svg";
+export const MAKER_DASHBOARD_ICON = "/assets/3dIcons/maker_dashboard.png";
+export const MAKER_CALENDAR_ICON = "/assets/3dIcons/maker_calendar.png";
+export const MAKER_GROUP_ICON = "/assets/3dIcons/maker_group.png";
+export const MAKER_ADD_ICON = "/assets/3dIcons/maker_add.png";
+export const MAKER_QUESTION_ICON = "/assets/3dIcons/maker_question.png";
+export const MAKER_EXIST_ICON = "/assets/3dIcons/maker_log_out.png";
+export const MAKER_CUSTOMER_ICON = "/assets/3dIcons/customer.png";
+export const MAKER_SETTING_ICON = "/assets/3dIcons/setting.png";
 
 // 3d icons
 export const I3D_WINNER_RANK = "/assets/3dIcons/winner.png";

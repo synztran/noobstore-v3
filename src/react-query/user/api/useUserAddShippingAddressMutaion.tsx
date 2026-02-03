@@ -14,21 +14,20 @@ interface IVariable {
 }
 
 export function useUserAddShippingAddressMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {},
 ) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (variables) => {
 			const resp = await UserClient.postNewUserShippingAddress(
-				variables.payload
+				variables.payload,
 			);
 
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: (_) => {
 			NotifyUtils.error(
-				"Có lỗi xảy ra. Không thể thêm địa chỉ giao hàng"
+				"Có lỗi xảy ra. Không thể thêm địa chỉ giao hàng",
 			);
 		},
 		onSuccess: (resp: IResponse<unknown>, variables: IVariable) => {

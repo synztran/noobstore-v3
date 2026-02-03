@@ -94,8 +94,6 @@ const ModalCartItem = ({ open, handleClose }: Props) => {
 		router.push("/checkout");
 	};
 
-	console.log("cart", cart);
-
 	return (
 		<Modal
 			open={open}

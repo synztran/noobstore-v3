@@ -4,7 +4,7 @@ export function formatCurrency(
 	n: number,
 	separate = ".",
 	currency = "đ",
-	isShorten = false
+	isShorten = false,
 ) {
 	const num = ValidateUtils.isNumber(n) ? Number(n) : 0;
 	const [integerPart, decimalPart] = num?.toFixed(0).split(".");
@@ -123,7 +123,6 @@ export function checkUsedServiceAddonPrice({
 	minServicePrice?: number;
 }) {
 	const percentPrice = productPrice * (servicePrice / 100);
-	console.log("percentPrice", percentPrice, productPrice, minServicePrice);
 	if (isPercent && percentPrice > minServicePrice) {
 		return percentPrice;
 	}

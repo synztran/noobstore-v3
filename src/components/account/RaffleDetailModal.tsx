@@ -28,8 +28,6 @@ const RaffleDetailModal: React.FC<RaffleDetailModalProps> = ({
 }) => {
 	const modalDetailRaffle = useRef<HTMLDivElement | null>(null);
 
-	console.log("selected", selected);
-
 	if (!open || !selected) return null;
 
 	return (
@@ -78,7 +76,7 @@ const RaffleDetailModal: React.FC<RaffleDetailModalProps> = ({
 								Thời gian:{" "}
 								<span className="font-semibold">
 									{DateUtils.formatVietNamDate(
-										selected.raffleInfo?.createdAt || ""
+										selected.raffleInfo?.createdAt || "",
 									)}
 								</span>
 							</span>
@@ -137,7 +135,7 @@ const RaffleDetailModal: React.FC<RaffleDetailModalProps> = ({
 									</strong>
 									<div className="">
 										{DateUtils.formatVietNamDate(
-											selected.createdAt
+											selected.createdAt,
 										) || "Chưa xác định"}
 									</div>
 								</div>

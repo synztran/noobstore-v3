@@ -82,7 +82,6 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 		const now = new Date();
 		const start = DateUtils.parseServerDate(raffleData?.startAt || "");
 		const end = DateUtils.parseServerDate(raffleData?.endAt || "");
-		console.log(start, end);
 
 		if (now < start) return EnumRaffleStatus.UPCOMING;
 		if (now >= start && now <= end) return EnumRaffleStatus.ONGOING;
@@ -140,7 +139,6 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 	const handleInputChange =
 		(field: string) =>
 		(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-			console.log("input", field, e);
 			const value = e.target.value;
 			updateRaffleSubmitForm({
 				__field: field,
@@ -149,7 +147,6 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 		};
 
 	const handleSelectChange = (field: string) => (value: string) => {
-		console.log("select", field, value);
 		updateRaffleSubmitForm({
 			__field: field,
 			__value: value,
@@ -175,8 +172,6 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 			return "Raffle đã kết thúc";
 		return "Raffle không khả dụng";
 	};
-
-	console.log("showRaffleModal", showRaffleModal);
 
 	if (isLoading) {
 		return (
@@ -264,7 +259,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 				<div className="col-span-7 flex flex-col items-center justify-center h-full relative max-h-max gap-4">
 					<div className="w-full rounded-xl shadow-md bg-white flex justify-center relative h-full max-h-max p-4">
 						<div className="flex-1 flex items-center justify-center relative">
-							{raffleData?.productOptions?.length ? (
+							{raffleData?.productOptions?.length > 1 ? (
 								<button
 									type="button"
 									onClick={() =>
@@ -353,7 +348,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 													currentImageIndex
 												]?.label || ""
 											}
-											className="w-full object-cover rounded-md shadow-md select-none"
+											className="w-full object-cover rounded-md shadow-lg select-none"
 											objectFit="cover"
 											fill
 											draggable={false}
@@ -361,7 +356,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 									</motion.div>
 								</AnimatePresence>
 							</div>
-							{raffleData?.productOptions?.length ? (
+							{raffleData?.productOptions?.length > 1 ? (
 								<button
 									type="button"
 									onClick={() =>
@@ -389,7 +384,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 										alt={opt.label || ""}
 										fill
 										objectFit="cover"
-										className={`rounded cursor-pointer border-2 ${
+										className={`rounded-lg cursor-pointer border-2 ${
 											idx === currentImageIndex
 												? "border-red-400"
 												: "border-gray-200"

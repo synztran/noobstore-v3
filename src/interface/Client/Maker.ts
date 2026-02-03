@@ -89,3 +89,10 @@ export interface IPayloadVerifyEmailMaker {
 	brandName: string;
 	ownerName: string;
 }
+
+export interface IBEResponseMakerDashboard {
+	totalRaffles: number;
+	endedRaffles: number;
+	runningRaffles: number;
+	unpaidCustomers: number;
+}

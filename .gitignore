@@ -5,3 +5,5 @@ node_modules
 .yarnrc.yml
 .github
 out
+.yarn
+.agents

@@ -11,16 +11,15 @@ interface IVariable {
 }
 
 export function useRaffleSubmitSecretMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {},
 ) {
 	// const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (variables) => {
 			const resp = await RaffleClient.postRaffleSubmitSecretKey(
-				variables.payload
+				variables.payload,
 			);
 
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: (_) => {

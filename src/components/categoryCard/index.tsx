@@ -33,8 +33,6 @@ const CategoryCard = ({ category }: Props) => {
 		tags,
 	} = category || {};
 
-	console.log(category);
-
 	if (!isActive) return null;
 
 	return (
@@ -76,15 +74,15 @@ const CategoryCard = ({ category }: Props) => {
 														full
 															? "fill-yellow-400"
 															: half
-															? "fill-yellow-400"
-															: "fill-gray-300"
+																? "fill-yellow-400"
+																: "fill-gray-300",
 													)}
 													style={
 														half
 															? {
 																	clipPath:
 																		"polygon(0 0, 50% 0, 50% 100%, 0 100%)",
-															  }
+																}
 															: undefined
 													}
 												/>

@@ -538,11 +538,8 @@ const LuckyWheelContainer = () => {
         itemUrl: imageUrl,
         backgroundColor: bgc = "#fff",
       } = reward;
-      console.log(spinnerInfo.rewards[i]);
-      console.log(name, imageUrl, bgc);
       const image = new Image();
       image.src = imageUrl;
-      console.log(image.src);
       try {
         // eslint-disable-next-line no-await-in-loop
         await loadImage(image);

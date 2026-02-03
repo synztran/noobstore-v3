@@ -108,4 +108,5 @@ export const MAKER_API = {
 	GET_MAKER_INFO: `${MAKER_PREFIX}/get-info/{makerId}`,
 	POST_CREATE_MAKER: `${MAKER_PREFIX}/register`,
 	POST_SEND_VERIFY_MAKER_EMAIL: `${MAKER_PREFIX}/send-verification-email`,
+	GET_MAKER_DASHBOARD_STATS: `${MAKER_PREFIX}/analytics`,
 };

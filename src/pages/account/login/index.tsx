@@ -9,7 +9,7 @@ import { Base } from "templates/Base";
 
 import * as Yup from "yup";
 
-const RegisterPage = (): JSX.Element => {
+const RegisterPage = (): React.ReactElement => {
 	const router = useRouter();
 	const { isAuthenticated } = useAuth() as unknown as {
 		isAuthenticated: boolean;
@@ -75,7 +75,6 @@ const RegisterPage = (): JSX.Element => {
 					}}
 					validationSchema={SigupSchema}
 					onSubmit={(values) => {
-						console.log("values", values);
 						handleOnClickLogin(values);
 					}}>
 					{({ errors, touched }) => (

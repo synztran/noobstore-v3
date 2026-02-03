@@ -82,31 +82,29 @@ const deliveryAddressAndFee = async ({
 	let distance = "";
 
 	const deliveryDistanceAndFeeResult = await calculateDeliveryDistanceAndFee(
-		orderInfo.deliveryAddress
+		orderInfo.deliveryAddress,
 	);
 
 	fee += deliveryDistanceAndFeeResult.extraFee || 0;
 	distance = `Phạm vi đăng ký dịch vụ cách phạm vi hoạt động ${deliveryDistanceAndFeeResult.distance}km`;
-
-	console.log("deliveryDistanceAndFeeResult", deliveryDistanceAndFeeResult);
 
 	return { distance, fee };
 };
 
 // Helper: parse address string to coordinates using Nominatim API
 async function getCoordinatesFromAddress(
-	address: string
+	address: string,
 ): Promise<{ latitude: number; longitude: number } | null> {
 	try {
 		const response = await fetch(
 			`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-				address
+				address,
 			)}`,
 			{
 				headers: {
 					Accept: "application/json",
 				},
-			}
+			},
 		);
 		const data = await response.json();
 		if (data && data.length > 0) {
@@ -123,7 +121,7 @@ async function getCoordinatesFromAddress(
 }
 
 async function calculateDeliveryDistanceAndFee(
-	deliveryAddress: string
+	deliveryAddress: string,
 ): Promise<{ distance: number | null; extraFee: number }> {
 	if (!deliveryAddress) return { distance: null, extraFee: 0 };
 	const coords = await getCoordinatesFromAddress(deliveryAddress);

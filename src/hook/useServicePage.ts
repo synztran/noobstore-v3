@@ -211,18 +211,18 @@ export const useServicePage = () => {
 			setState((prev) => ({
 				...prev,
 				keyboardServices: prev.keyboardServices.map((service) =>
-					service.id === id ? { ...service, ...updates } : service
+					service.id === id ? { ...service, ...updates } : service,
 				),
 			}));
 		},
-		[]
+		[],
 	);
 
 	const removeKeyboardService = useCallback((id: string) => {
 		setState((prev) => ({
 			...prev,
 			keyboardServices: prev.keyboardServices.filter(
-				(service) => service.id !== id
+				(service) => service.id !== id,
 			),
 		}));
 	}, []);
@@ -255,18 +255,18 @@ export const useServicePage = () => {
 			setState((prev) => ({
 				...prev,
 				switchServices: prev.switchServices.map((service) =>
-					service.id === id ? { ...service, ...updates } : service
+					service.id === id ? { ...service, ...updates } : service,
 				),
 			}));
 		},
-		[]
+		[],
 	);
 
 	const removeSwitchService = useCallback((id: string) => {
 		setState((prev) => ({
 			...prev,
 			switchServices: prev.switchServices.filter(
-				(service) => service.id !== id
+				(service) => service.id !== id,
 			),
 		}));
 	}, []);
@@ -292,18 +292,18 @@ export const useServicePage = () => {
 			setState((prev) => ({
 				...prev,
 				stabilizerServices: prev.stabilizerServices.map((service) =>
-					service.id === id ? { ...service, ...updates } : service
+					service.id === id ? { ...service, ...updates } : service,
 				),
 			}));
 		},
-		[]
+		[],
 	);
 
 	const removeStabilizerService = useCallback((id: string) => {
 		setState((prev) => ({
 			...prev,
 			stabilizerServices: prev.stabilizerServices.filter(
-				(service) => service.id !== id
+				(service) => service.id !== id,
 			),
 		}));
 	}, []);
@@ -316,7 +316,7 @@ export const useServicePage = () => {
 				shippingInfo: { ...prev.shippingInfo, ...updates },
 			}));
 		},
-		[]
+		[],
 	);
 
 	const updateContactInfo = useCallback((updates: Partial<IContactInfo>) => {
@@ -330,7 +330,7 @@ export const useServicePage = () => {
 	const addOption = useCallback(
 		(
 			category: keyof IServicePageState["options"],
-			option: IServiceOption
+			option: IServiceOption,
 		) => {
 			setState((prev) => ({
 				...prev,
@@ -340,7 +340,7 @@ export const useServicePage = () => {
 				},
 			}));
 		},
-		[]
+		[],
 	);
 
 	// Calculate total price
@@ -417,7 +417,7 @@ export const useServicePage = () => {
 									(service.isSelected ? service.price : 0)
 								);
 							},
-							0
+							0,
 						)
 					);
 				}, 0),
@@ -460,7 +460,7 @@ export const useServicePage = () => {
 										: 0)
 								);
 							},
-							0
+							0,
 						)
 					);
 				}, 0),
@@ -489,11 +489,11 @@ export const useServicePage = () => {
 										service.price * stabilizer.quantity
 									);
 								},
-								0
+								0,
 							)
 						);
 					},
-					0
+					0,
 				),
 			});
 		}
@@ -518,8 +518,6 @@ export const useServicePage = () => {
 	const submitServiceBooking = useCallback(async () => {
 		try {
 			const formattedData = formatDataForBackend();
-			console.log("Submitting service booking:", formattedData);
-
 			const response =
 				await ServiceClient.postBookingService(formattedData);
 
@@ -575,10 +573,10 @@ export const useServicePage = () => {
 		(min: number, max: number, services?: any[]) => {
 			const currentDate = new Date();
 			const minDateObj = new Date(
-				currentDate.getTime() + min * 24 * 60 * 60 * 1000
+				currentDate.getTime() + min * 24 * 60 * 60 * 1000,
 			);
 			const maxDateObj = new Date(
-				currentDate.getTime() + max * 24 * 60 * 60 * 1000
+				currentDate.getTime() + max * 24 * 60 * 60 * 1000,
 			);
 
 			const formatDate = (date: Date) => {
@@ -595,7 +593,7 @@ export const useServicePage = () => {
 				maxDate,
 			};
 		},
-		[]
+		[],
 	);
 
 	return {

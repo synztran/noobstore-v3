@@ -99,7 +99,6 @@ const SimpleTextField: React.FC<SimpleTextFieldProps> = ({
 		}
 		let num = parseInt(value, 10);
 		let newValue = value;
-		console.log("newValue", newValue, max, currentAmount);
 		if (max !== undefined && num > max && currentAmount) {
 			newValue =
 				max - currentAmount >= 0

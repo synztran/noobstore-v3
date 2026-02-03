@@ -20,12 +20,11 @@ interface Variables {
 }
 
 export function useAddToCartMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, Variables> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, Variables> = {},
 ) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (variables) => {
-			console.log(variables);
 			const resp = await CartClient.updateCart(variables.payload);
 			if (resp.status !== HTTP_STATUS.Ok) {
 				throw resp; // Throw the entire response object to access its properties in onError
@@ -38,11 +37,9 @@ export function useAddToCartMutation(
 			errorCode: string;
 			message: string;
 		}) => {
-			console.log("errorCode", error?.errorCode);
 			const mappingMessage = ERROR_MESSAGES[error?.errorCode];
-			console.log("mappingMessage", mappingMessage);
 			NotifyUtils.error(
-				`${mappingMessage || error?.message || "Có lỗi xảy ra. Vui lòng thử lại"}`
+				`${mappingMessage || error?.message || "Có lỗi xảy ra. Vui lòng thử lại"}`,
 			);
 		},
 		onSuccess: (_, variables) => {
@@ -51,7 +48,7 @@ export function useAddToCartMutation(
 			queryClient.invalidateQueries(
 				appQueryKeys.product.getProductOptions({
 					productPart: variables?.payload?.products?.[0]?.productPart,
-				})
+				}),
 			);
 		},
 		...mutationOptions,

@@ -10,7 +10,7 @@ import { use, useEffect, useMemo } from "react";
 
 interface IProps {
 	handleInputChange: (
-		field: string
+		field: string,
 	) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	handleSelectChange: (field: string) => (value: string) => void;
 }
@@ -31,7 +31,7 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 				if (a.code === "79" || a.code === "01") return -1;
 				if (b.code === "79" || b.code === "01") return 1;
 				return 0;
-			}
+			},
 		);
 	}, [VNCity]);
 
@@ -59,8 +59,6 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 			});
 		}
 	}, [shippingInfomation]);
-
-	console.log("shippingInfomation", shippingInfomation);
 
 	return (
 		<div className="space-y-4">
@@ -157,7 +155,7 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 								raffleSubmitForm?.shipping?.companyName || ""
 							}
 							onChange={handleInputChange?.(
-								"shipping.companyName"
+								"shipping.companyName",
 							)}
 						/>
 					</div>
@@ -169,7 +167,7 @@ const StepDeliveryInfo: React.FC<IProps> = ({
 								value={raffleSubmitForm?.shipping?.city || ""}
 								onChange={(e) =>
 									handleSelectChange?.("shipping.city")(
-										e.target.value
+										e.target.value,
 									)
 								}
 								className="w-full border border-gray-300 rounded px-3 py-2 text-base focus:outline-none focus:ring-2 focus:ring-green-400 bg-white">

@@ -25,15 +25,14 @@ interface IVariable {
 }
 
 export function useSubmitPaymentMutation(
-	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {}
+	mutationOptions: UseMutationOptions<unknown, Error, IVariable> = {},
 ) {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (variables) => {
 			const resp = await ServiceClient.postSubmitPayment(
-				variables.pSubmitPayment
+				variables.pSubmitPayment,
 			);
-			console.log("resp", resp);
 			return resp;
 		},
 		onError: (_) => {
@@ -41,20 +40,19 @@ export function useSubmitPaymentMutation(
 		},
 		onSuccess: (
 			resp: IResponse<IResponseBackendServicePayment>,
-			variables: IVariable
+			variables: IVariable,
 		) => {
-			console.log("respSuccess", resp);
-			console.log("variables", variables);
 			if (resp.status !== "OK") return;
 			const { serviceBookingId, transitionId } =
 				variables.pSubmitPayment?.payment || {};
-			console.log("transitionId", transitionId);
-			console.log("serviceBookingId", serviceBookingId);
-			NotifyUtils.success(
-				<CheckCircleSubmitPayment serviceBookingId={serviceBookingId} />
-			);
+			// NotifyUtils.success(
+			// 	<CheckCircleSubmitPayment
+			// 		serviceBookingId={serviceBookingId}
+			// 	/>,
+			// );
+			NotifyUtils.success("Gửi thanh toán thành công");
 			queryClient.invalidateQueries(
-				appQueryKeys.service.getBookingService(serviceBookingId || "")
+				appQueryKeys.service.getBookingService(serviceBookingId || ""),
 			);
 		},
 		...mutationOptions,

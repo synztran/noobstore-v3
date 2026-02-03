@@ -7,7 +7,6 @@ export const userQueryKeys = createQueryKeys("user", {
 		queryKey: null,
 		async queryFn() {
 			const response = await UserClient.getCurrentUser({});
-			console.log("response", response);
 			if (!isValid(response)) {
 				return {};
 			}

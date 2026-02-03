@@ -17,8 +17,6 @@ interface IProps {
 const PaymentStatusChecking = ({ service }: IProps) => {
 	const paymentStatusInfo = mapPaymentStatus[service.paymentStatus] || {};
 
-	console.log("paymentStatusInfo", paymentStatusInfo);
-
 	const { label, subLabel, icon } = paymentStatusInfo;
 
 	return (

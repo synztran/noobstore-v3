@@ -13,19 +13,15 @@ const CategoryDetailPage = () => {
 	const params = useParams();
 	const { id } = params || {};
 	const [categoryDetail, setCategoryDetail] = useState<ICategory | null>(
-		null
+		null,
 	);
 
-	console.log(params);
-
 	useEffect(() => {
-		console.log("id", id);
 		if (id) {
 			(async () => {
 				const resp = await CategoryClient.getCategoryById({
 					id: id as string,
 				});
-				console.log("resp", resp, getFirst(resp));
 				if (isValid(resp)) {
 					setCategoryDetail(getFirst(resp) as ICategory);
 				}

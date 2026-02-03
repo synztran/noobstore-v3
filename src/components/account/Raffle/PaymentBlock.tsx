@@ -130,8 +130,6 @@ const RafflePaymentBlock = ({
 		console.log("Canceling raffle order:", raffle.raffleId);
 	}, [raffle.raffleId]);
 
-	console.log("makerPaymentInfo", makerPaymentInfo);
-
 	return (
 		<div className="flex flex-col h-full p-4 border border-gray-200 rounded-lg space-y-4">
 			<div className="text-gray-500 font-bold text-lg">Thanh toán</div>
