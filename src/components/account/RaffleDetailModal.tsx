@@ -34,7 +34,7 @@ const RaffleDetailModal: React.FC<RaffleDetailModalProps> = ({
 		<Modal open={open} onClose={onClose}>
 			<div
 				ref={modalDetailRaffle}
-				className="bg-white rounded-lg shadow-lg max-w-xl w-full p-4 animate-fade-in flex flex-col gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh]"
+				className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-4 animate-fade-in flex flex-col gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh]"
 				onMouseDown={(e) => e.stopPropagation()}>
 				<button
 					className="absolute -top-3 -right-2 bg-gray-400 rounded-full p-1 hover:scale-110 transition-all duration-300 hover:shadow-md"

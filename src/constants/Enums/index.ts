@@ -9,3 +9,14 @@ export enum EnumSideMenu {
 	"ORDERS" = "orders",
 	"LOGOUT" = "logout",
 }
+
+export enum EnumMakerSideMenu {
+	DASHBOARD = "dashboard",
+	RAFFLES = "raffles",
+	CUSTOMERS = "customers",
+	SCHEDULE = "schedule",
+	TEAM = "team",
+	SETTINGS = "settings",
+	SUPPORT = "support",
+	ORDERS = "orders",
+}

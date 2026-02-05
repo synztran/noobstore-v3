@@ -1,18 +1,3 @@
-import React, { useState } from "react";
-import {
-	ListChecks,
-	CalendarDays,
-	BarChart,
-	Users,
-	Settings,
-	HelpCircle,
-	LogOut,
-	ChevronLeft,
-	ChevronRight,
-} from "lucide-react";
-import useMakerQuery from "@/react-query/makers/api/useMakerQuery";
-import { Button } from "../ReUIComponent";
-import { useAuth } from "@/context/Auth";
 import {
 	I3D_NUMBER_RAFFLE_WHEEL,
 	MAKER_CALENDAR_ICON,
@@ -24,17 +9,28 @@ import {
 	MAKER_SETTING_ICON,
 	NEW_MISSING_IMAGE,
 } from "@/constants/Images";
+import { useAuth } from "@/context/Auth";
+import useMakerQuery from "@/react-query/makers/api/useMakerQuery";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { memo } from "react";
+import { Button } from "../ReUIComponent";
 
 interface IProps {
+	selectedMenu: string;
+	onSelectMenu: (id: string) => void;
 	isExpanded?: boolean;
 	handleToggle?: () => void;
 }
 
-const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
+const SideMenu = ({
+	selectedMenu,
+	onSelectMenu,
+	isExpanded,
+	handleToggle,
+}: IProps) => {
 	const auth = useAuth();
 	const { user } = auth || {};
-	const [selectedItem, setSelectedItem] = useState("dashboard");
 	const { data: maker, isLoading } = useMakerQuery({
 		params: { makerId: user?.makerId },
 		enabled: !!user?.makerId,
@@ -45,9 +41,10 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 		{
 			icon: I3D_NUMBER_RAFFLE_WHEEL,
 			label: "Danh sách raffle",
-			id: "list",
+			id: "raffles",
 		},
-		{ icon: MAKER_CUSTOMER_ICON, label: "Khách hàng", id: "raffles" },
+		{ icon: MAKER_CUSTOMER_ICON, label: "Khách hàng", id: "customers" },
+		{ icon: "", label: "Đơn hàng", id: "orders" },
 		{ icon: MAKER_CALENDAR_ICON, label: "Lịch trình", id: "calendar" },
 		{ icon: MAKER_GROUP_ICON, label: "Team", id: "team" },
 	];
@@ -58,13 +55,9 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 		{ icon: MAKER_EXIST_ICON, label: "Đăng xuất", id: "logout" },
 	];
 
-	const handleItemClick = (id: string) => {
-		setSelectedItem(id);
-	};
-
 	return (
 		<div
-			className={`bg-gray-100 rounded-xl h-screen p-4 flex flex-col justify-between ${
+			className={`bg-gray-100 shadow-md rounded-xl h-screen p-4 flex flex-col justify-between ${
 				isExpanded ? "w-full" : "w-20"
 			} transition-all duration-300`}>
 			{/* Header */}
@@ -84,9 +77,10 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 						</h1>
 					)}
 				</div>
-				<Button onClick={handleToggle} className="px-1">
-					{isExpanded ? <ChevronLeft /> : <ChevronRight />}
-				</Button>
+				<ButtonArrow
+					isExpanded={isExpanded}
+					handleToggle={handleToggle}
+				/>
 			</div>
 
 			{/* Menu */}
@@ -98,13 +92,13 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 					{menuItems.map((item, index) => (
 						<li
 							key={index}
-							onClick={() => handleItemClick(item.id)}
+							onClick={() => onSelectMenu(item.id)}
 							className={`relative flex items-center gap-2 cursor-pointer ${
-								selectedItem === item.id
+								selectedMenu === item.id
 									? "font-semibold"
 									: "text-gray-500 hover:text-green-600"
 							} `}>
-							{item.id === selectedItem ? (
+							{item.id === selectedMenu ? (
 								<div className="absolute -left-4 w-1.5 h-[110%] rounded-tr-2xl rounded-br-2xl bg-linear-to-l from-green-600 to-green-700" />
 							) : null}
 							<div
@@ -114,7 +108,7 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 									alt={item.label}
 									objectFit="cover"
 									fill
-									className={`${selectedItem === item.id ? "" : "grayscale-100"}`}
+									className={`${selectedMenu === item.id ? "" : "grayscale-100"}`}
 								/>
 							</div>
 							{isExpanded && <span>{item.label}</span>}
@@ -129,9 +123,9 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 					{generalItems.map((item, index) => (
 						<li
 							key={index}
-							onClick={() => handleItemClick(item.id)}
+							onClick={() => onSelectMenu(item.id)}
 							className={`flex items-center gap-2  cursor-pointer ${
-								selectedItem === item.id
+								selectedMenu === item.id
 									? "font-semibold"
 									: "text-gray-500 hover:text-green-600"
 							} `}>
@@ -142,7 +136,7 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 									alt={item.label}
 									objectFit="cover"
 									fill
-									className={`${selectedItem === item.id ? "" : "grayscale-100"}`}
+									className={`${selectedMenu === item.id ? "" : "grayscale-100"}`}
 								/>
 							</div>
 							{isExpanded && <span>{item.label}</span>}
@@ -171,4 +165,20 @@ const SideMenu = ({ isExpanded, handleToggle }: IProps) => {
 	);
 };
 
-export default SideMenu;
+export default memo(SideMenu);
+
+const ButtonArrow = memo(
+	({
+		isExpanded,
+		handleToggle,
+	}: {
+		isExpanded?: boolean;
+		handleToggle?: () => void;
+	}) => {
+		return (
+			<Button onClick={handleToggle} className="px-1">
+				{isExpanded ? <ChevronLeft /> : <ChevronRight />}
+			</Button>
+		);
+	},
+);
