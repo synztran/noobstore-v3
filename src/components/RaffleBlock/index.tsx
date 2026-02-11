@@ -341,7 +341,8 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 											src={
 												raffleData?.productOptions?.[
 													currentImageIndex
-												]?.thumbnail?.path || ""
+												]?.thumbnail?.path ||
+												NEW_MISSING_IMAGE
 											}
 											alt={
 												raffleData?.productOptions?.[
@@ -380,7 +381,10 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 									key={idx}>
 									<Image
 										key={opt.id}
-										src={opt.thumbnail?.path || ""}
+										src={
+											opt.thumbnail?.path ||
+											NEW_MISSING_IMAGE
+										}
 										alt={opt.label || ""}
 										fill
 										objectFit="cover"
@@ -397,7 +401,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 					</div>
 					<div className="w-full max-h-max h-full rounded-xl shadow-md bg-white p-4 flex gap-4">
 						<div className="flex items-center gap-3 mt-2 w-5/12">
-							<div className="min-w-[80px] h-20 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600">
+							<div className="min-w-20 h-20 bg-gray-200 rounded-full relative overflow-hidden border border-gray-600">
 								<Image
 									src={
 										raffleData?.makerInfo?.logo?.path ||
@@ -409,7 +413,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 									}
 									fill
 									objectFit="cover"
-									className="w-12 h-12 rounded-full"
+									className="rounded-full"
 								/>
 							</div>
 							<div className="space-y-1">
@@ -493,12 +497,11 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 							className="text-center"
 						/> */}
 						<div>
-							<div className="text-xl font-bold line-clamp-1">
+							<div className="text-2xl font-bold line-clamp-1 capitalize">
 								{raffleData?.title}
 							</div>
 							<div
-								className="text-gray-700 max-h-[15rem] overflow-y-auto text-sm"
-								style={{ textIndent: "0.5rem" }}
+								className="text-gray-700 max-h-60 overflow-y-auto text-sm"
 								dangerouslySetInnerHTML={{
 									__html: raffleData?.description,
 								}}
@@ -509,9 +512,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 					{/* Option Select (sync with image) */}
 					<div className="relative">
 						<div className="font-semibold mb-1 flex items-center justify-between overflow-hidden">
-							<span className="min-w-[90px] text-lg">
-								Sản phẩm
-							</span>
+							<span className="min-w-22.5 text-lg">Sản phẩm</span>
 							<Divider className="border-gray-400 w-[80%]" />
 						</div>
 						<div className="text-base font-bold flex items-center gap-1">
@@ -532,17 +533,20 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 											),
 										);
 									}}
-									className={`relative p-0.5 rounded-full border-2 font-medium transition overflow-hidden w-[80px] h-[80px] ${
+									className={`relative p-0.5 rounded-full border-2 font-medium transition overflow-hidden w-15 h-15 ${
 										selectedOption === opt.id
 											? "text-white border-red-600"
 											: "text-gray-700 border-gray-300 hover:bg-gray-100"
 									} cursor-pointer`}>
 									<Image
-										src={opt.thumbnail?.path || ""}
+										src={
+											opt.thumbnail?.path ||
+											NEW_MISSING_IMAGE
+										}
 										alt={opt.label}
 										objectFit="cover"
 										fill
-										className="w-[80px] h-[80px] rounded-full cursor-pointer border-2"
+										className="rounded-full cursor-pointer border-2"
 									/>
 								</button>
 							))}
@@ -552,7 +556,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 					{/* Features */}
 					<div className="relative">
 						<div className="font-semibold mb-1 flex items-center justify-between overflow-hidden">
-							<span className="min-w-[90px] text-lg">
+							<span className="min-w-22.5 text-lg">
 								Thông tin
 							</span>
 							<Divider className="border-gray-400 w-[80%]" />
@@ -625,7 +629,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 					/>
 
 					<Button
-						type="button"
+						variant={"primary"}
 						onClick={handleOpenRaffleForm}
 						disabled={
 							raffleData?.status !== EnumRaffleStatus.ONGOING ||

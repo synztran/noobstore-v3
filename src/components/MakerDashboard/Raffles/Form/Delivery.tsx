@@ -3,6 +3,97 @@ import { IconButton, TextField } from "@mui/material";
 import { FieldArray } from "formik";
 import { DeleteIcon, Plus } from "lucide-react";
 import { ISectionProps } from "./interface";
+import { useDebouncedField } from "./useDebouncedField";
+
+// Debounced Delivery Method Fields
+const DebouncedDeliveryFields: React.FC<{
+	index: number;
+	method: any;
+	touched: any;
+	errors: any;
+	handleChange: any;
+	handleBlur: any;
+	setFieldValue: any;
+}> = ({
+	index,
+	method,
+	touched,
+	errors,
+	handleChange,
+	handleBlur,
+	setFieldValue,
+}) => {
+	const nameField = useDebouncedField(
+		`deliveryMethods.${index}.name`,
+		method.name,
+		setFieldValue,
+	);
+	const estimatedDaysField = useDebouncedField(
+		`deliveryMethods.${index}.estimatedDays`,
+		method.estimatedDays,
+		setFieldValue,
+	);
+
+	return (
+		<>
+			<TextField
+				fullWidth
+				label="Tên phương thức *"
+				name={`deliveryMethods.${index}.name`}
+				value={nameField.value}
+				onChange={nameField.onChange}
+				onBlur={handleBlur}
+				error={
+					touched.deliveryMethods?.[index]?.name &&
+					Boolean((errors.deliveryMethods as any)?.[index]?.name)
+				}
+				helperText={
+					touched.deliveryMethods?.[index]?.name &&
+					(errors.deliveryMethods as any)?.[index]?.name
+				}
+				placeholder="VD: Giao hàng nhanh"
+			/>
+
+			<TextField
+				fullWidth
+				type="number"
+				label="Phí vận chuyển (VNĐ) *"
+				name={`deliveryMethods.${index}.price`}
+				value={method.price}
+				onChange={handleChange}
+				onBlur={handleBlur}
+				error={
+					touched.deliveryMethods?.[index]?.price &&
+					Boolean((errors.deliveryMethods as any)?.[index]?.price)
+				}
+				helperText={
+					touched.deliveryMethods?.[index]?.price &&
+					(errors.deliveryMethods as any)?.[index]?.price
+				}
+			/>
+
+			<TextField
+				fullWidth
+				label="Thời gian dự kiến *"
+				name={`deliveryMethods.${index}.estimatedDays`}
+				value={estimatedDaysField.value}
+				onChange={estimatedDaysField.onChange}
+				onBlur={handleBlur}
+				error={
+					touched.deliveryMethods?.[index]?.estimatedDays &&
+					Boolean(
+						(errors.deliveryMethods as any)?.[index]?.estimatedDays,
+					)
+				}
+				helperText={
+					touched.deliveryMethods?.[index]?.estimatedDays &&
+					(errors.deliveryMethods as any)?.[index]?.estimatedDays
+				}
+				placeholder="VD: 2-3 ngày"
+			/>
+		</>
+	);
+};
 
 const DeliverySection: React.FC<ISectionProps> = ({
 	values,
@@ -37,79 +128,14 @@ const DeliverySection: React.FC<ISectionProps> = ({
 							</div>
 
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-								<TextField
-									fullWidth
-									label="Tên phương thức *"
-									name={`deliveryMethods.${index}.name`}
-									value={method.name}
-									onChange={handleChange}
-									onBlur={handleBlur}
-									error={
-										touched.deliveryMethods?.[index]
-											?.name &&
-										Boolean(
-											(errors.deliveryMethods as any)?.[
-												index
-											]?.name,
-										)
-									}
-									helperText={
-										touched.deliveryMethods?.[index]
-											?.name &&
-										(errors.deliveryMethods as any)?.[index]
-											?.name
-									}
-									placeholder="VD: Giao hàng nhanh"
-								/>
-
-								<TextField
-									fullWidth
-									type="number"
-									label="Phí vận chuyển (VNĐ) *"
-									name={`deliveryMethods.${index}.price`}
-									value={method.price}
-									onChange={handleChange}
-									onBlur={handleBlur}
-									error={
-										touched.deliveryMethods?.[index]
-											?.price &&
-										Boolean(
-											(errors.deliveryMethods as any)?.[
-												index
-											]?.price,
-										)
-									}
-									helperText={
-										touched.deliveryMethods?.[index]
-											?.price &&
-										(errors.deliveryMethods as any)?.[index]
-											?.price
-									}
-								/>
-
-								<TextField
-									fullWidth
-									label="Thời gian dự kiến *"
-									name={`deliveryMethods.${index}.estimatedDays`}
-									value={method.estimatedDays}
-									onChange={handleChange}
-									onBlur={handleBlur}
-									error={
-										touched.deliveryMethods?.[index]
-											?.estimatedDays &&
-										Boolean(
-											(errors.deliveryMethods as any)?.[
-												index
-											]?.estimatedDays,
-										)
-									}
-									helperText={
-										touched.deliveryMethods?.[index]
-											?.estimatedDays &&
-										(errors.deliveryMethods as any)?.[index]
-											?.estimatedDays
-									}
-									placeholder="VD: 2-3 ngày"
+								<DebouncedDeliveryFields
+									index={index}
+									method={method}
+									touched={touched}
+									errors={errors}
+									handleChange={handleChange}
+									handleBlur={handleBlur}
+									setFieldValue={setFieldValue}
 								/>
 							</div>
 						</div>

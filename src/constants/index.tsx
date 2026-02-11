@@ -1534,12 +1534,19 @@ export const mappingRaffleTimelineStatus: Record<
 
 export const mappingRaffleStatusLabel: Record<
 	EnumRaffleStatus,
-	{ label: string; color: string; bgColor?: string; icon?: string }
+	{
+		label: string;
+		color: string;
+		bgColor?: string;
+		icon?: string;
+		iconColor?: string;
+	}
 > = {
 	[EnumRaffleStatus.UPCOMING]: {
 		label: "Sắp diễn ra",
 		color: "text-white",
 		bgColor: "bg-blue-600",
+		iconColor: "text-blue-600",
 	},
 	[EnumRaffleStatus.ONGOING]: {
 		label: "Đang diễn ra",

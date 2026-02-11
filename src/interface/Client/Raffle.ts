@@ -18,6 +18,13 @@ export enum EnumRaffleStatus {
 	CANCELLED = "CANCELLED",
 }
 
+export enum EnumPlatformPayment {
+	BANK_TRANSFER = "BANK_TRANSFER",
+	PAYPAL = "PAYPAL",
+	MOMO = "MOMO",
+	COD = "COD",
+}
+
 export interface IBEResponseRaffleProduct {
 	id?: string;
 	raffleId: string;
@@ -246,4 +253,70 @@ export interface IPayloadSubmitRafflePayment {
 	tax?: number;
 	totalPrice: number;
 	paymentMethod: EnumPaymentMethod;
+}
+
+export interface IRequestProductOption {
+	label: string;
+	thumbnail?: IImage;
+	price: number;
+	raffleQuantity?: number;
+}
+
+export interface IRequestDeliveryMethod {
+	name: string;
+	price: number;
+	estimatedDays: string;
+}
+
+export interface IRequestPaymentMethod {
+	updatedAt?: Date;
+	platform: EnumPlatformPayment;
+	name: string;
+	accountNumber: string;
+	accountName: string;
+	bankBranch?: string;
+	bankName?: string;
+	isVerified: boolean;
+	isActive: boolean;
+	createdAt: Date;
+	qrCode?: IImage;
+}
+
+export interface IRequestRaffleCreation {
+	title: string;
+	description: string;
+	makerId: string;
+
+	productOptions: IRequestProductOption[];
+
+	images: IImage[];
+	thumbnail?: IImage;
+	features: string[];
+
+	totalEntries?: number;
+	totalJoined?: number;
+	entriesLimit?: number;
+	entryPrice?: number;
+	maxEntryPerPerson?: number;
+	maxWinPerEntries?: number;
+	deliveryMethods?: IRequestDeliveryMethod[];
+	paymentMethods?: IRequestPaymentMethod[];
+
+	// winner configuration
+	maxWinners?: number;
+	// special key
+	secretKey?: string;
+
+	// timing
+	startAt: Date;
+	endAt: Date;
+	// status and metadata
+	raffleType: EnumRaffleType;
+	status: EnumRaffleStatus;
+	isPublic: boolean;
+	rules?: string;
+	termsAndConditions?: string;
+
+	// condition pickup winner
+	winnerCondition?: { [key: string]: any }[];
 }

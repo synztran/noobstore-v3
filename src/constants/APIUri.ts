@@ -102,6 +102,7 @@ export const RAFFLE_API = {
 	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
 	POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,
 	POST_CREATE_MAKER: `${RAFFLE_PREFIX}/create-maker`,
+	POST_RAFFLE_CREATE: `${RAFFLE_PREFIX}/create`,
 };
 
 export const MAKER_API = {

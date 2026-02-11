@@ -5,7 +5,7 @@ import GuildAndTutorials from "@/components/GuildAndTutorials";
 import BannerTagPriceName from "@/components/home/BannerTagPriceName";
 import TitleWithMenuQuickAccess from "@/components/home/TitleWithMenuQuickAccess";
 import HomeProductBlock from "@/components/HomeProductBlock";
-import RaffleBlock from "@/components/RaffleBlock";
+import RaffleBlockV2 from "@/components/RaffleBlockV2";
 import StrongPoint from "@/components/StrongPoint";
 // import useRaffleFeaturedQueries from "@/react-query/raffles/api/useRaffleDetailQueries";
 import useRafflesQuery from "@/react-query/raffles/api/useRafflesQueries";
@@ -21,7 +21,11 @@ const HomePage = ({}) => {
 		<Base>
 			<div className="flex flex-col gap-12 my-8">
 				<TitleWithMenuQuickAccess />
-				<RaffleBlock
+				{/* <RaffleBlock
+					raffleData={raffleFeaturedData?.[0]}
+					isLoading={isLoadingFeaturedRaffle}
+				/> */}
+				<RaffleBlockV2
 					raffleData={raffleFeaturedData?.[0]}
 					isLoading={isLoadingFeaturedRaffle}
 				/>

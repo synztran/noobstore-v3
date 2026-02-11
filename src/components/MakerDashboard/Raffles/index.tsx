@@ -1,6 +1,11 @@
 import { Badge } from "@/components/ReUIComponent/Badge";
 import { Button } from "@/components/ReUIComponent/Button";
 import { NEW_MISSING_IMAGE } from "@/constants/Images";
+import { useAuth } from "@/context/Auth";
+import { IRequestRaffleCreation } from "@/interface/Client/Raffle";
+import useMakerQuery from "@/react-query/makers/api/useMakerQuery";
+import { useRaffleCreateMutation } from "@/react-query/raffles/api/useRaffleCreateMutation";
+import NotifyUtils from "@/utils/NotifyUtils";
 import {
 	Add as AddIcon,
 	Edit as EditIcon,
@@ -118,10 +123,18 @@ const statConfig = {
 };
 
 const MakerRafflesComp = () => {
+	const auth = useAuth();
+	const { user } = auth || {};
+
+	const { data: makerData } = useMakerQuery({
+		params: { makerId: user?.makerId },
+		enabled: !!user?.makerId,
+	});
 	const [searchQuery, setSearchQuery] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [raffles, setRaffles] = useState(mockRaffles);
 	const [isOpen, toggleOpen] = useState(false);
+	const { mutateAsync, isPending: isLoading } = useRaffleCreateMutation();
 
 	const filteredRaffles = raffles.filter((raffle) => {
 		// Filter by status
@@ -155,6 +168,50 @@ const MakerRafflesComp = () => {
 
 	const handleClose = () => {
 		toggleOpen(false);
+	};
+
+	const handleSubmitForm = async (data: any) => {
+		if (!makerData) {
+			NotifyUtils.error("Maker data not found. Cannot create raffle.");
+			return;
+		}
+
+		console.log("Data", data);
+		const payload: IRequestRaffleCreation = {
+			title: data.title,
+			makerId: makerData?.makerId,
+			description: data?.description,
+			entryPrice: data.entryPrice,
+			startAt: data.startAt,
+			endAt: data.endAt,
+			maxWinners: data.maxWinners,
+			deliveryMethods: data.deliveryMethods,
+			paymentMethods: data.paymentMethods,
+			secretKey: data.secretKey,
+			features: data.features,
+			isPublic: data.isPublic,
+			productOptions: data.productOptions,
+			raffleType: data.raffleType,
+			status: data.status,
+			images: data.images,
+			entriesLimit: data.entriesLimit,
+			maxEntryPerPerson: data.maxEntryPerPerson,
+			maxWinPerEntries: data.maxWinPerEntries,
+		};
+
+		console.log("payload", payload);
+
+		try {
+			const resp = await mutateAsync({ payload });
+			console.log("resp", resp);
+			if (resp.status === "OK") {
+				// Close form
+				handleClose();
+				// Optionally, refresh raffle list or show success message
+			}
+		} catch (error) {
+			console.error("Error creating raffle:", error);
+		}
 	};
 
 	// Calculate stats
@@ -404,7 +461,7 @@ const MakerRafflesComp = () => {
 			<RaffleForm
 				isOpen={isOpen}
 				handleClose={handleClose}
-				onSubmit={() => {}}
+				onSubmit={handleSubmitForm}
 			/>
 		</div>
 	);

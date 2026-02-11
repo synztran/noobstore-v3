@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/utils/FormatNumber";
 import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
@@ -19,16 +20,17 @@ const inputVariants = cva(
 				lg: "h-10 px-4 text-sm rounded-md file:pe-4 file:me-4",
 				md: "h-9 px-3 text-sm rounded-md file:pe-3 file:me-3",
 				sm: "h-8 px-2.5 text-xs rounded-md file:pe-2.5 file:me-2.5",
+				error: "h-10 px-2.5 text-xs rounded-md border-destructive/60 ring-destructive/10 dark:border-destructive dark:ring-destructive/20",
 			},
 		},
 		defaultVariants: {
-			variant: "md",
+			variant: "lg",
 		},
 	},
 );
 
 const inputAddonVariants = cva(
-	"flex items-center shrink-0 justify-center bg-muted border border-input shadow-xs shadow-[rgba(0,0,0,0.05)] text-secondary-foreground [&_svg]:text-secondary-foreground/60",
+	"flex items-center shrink-0 justify-center bg-muted border border-input shadow-xs shadow-[rgba(0,0,0,0.05)] text-secondary-foreground [&_svg]:text-secondary-foreground/60 font-semibold",
 	{
 		variants: {
 			variant: {
@@ -42,7 +44,7 @@ const inputAddonVariants = cva(
 			},
 		},
 		defaultVariants: {
-			variant: "md",
+			variant: "lg",
 			mode: "default",
 		},
 	},
@@ -129,14 +131,43 @@ function Input({
 	type,
 	variant,
 	...props
-}: React.ComponentProps<"input"> & VariantProps<typeof inputVariants>) {
+}: React.ComponentProps<"input"> &
+	VariantProps<typeof inputVariants> & {
+		errorMessage?: string;
+		type?:
+			| "number"
+			| "text"
+			| "email"
+			| "password"
+			| "file"
+			| "date"
+			| "tel"
+			| "url";
+	}) {
+	const { errorMessage } = props || {};
 	return (
-		<input
-			data-slot="input"
-			type={type}
-			className={cn(inputVariants({ variant }), className)}
-			{...props}
-		/>
+		<div className="flex flex-col">
+			<input
+				data-slot="input"
+				type={type}
+				className={cn(
+					inputVariants({ variant }),
+					errorMessage && cn(inputVariants({ variant: "error" })),
+					className,
+				)}
+				{...props}
+			/>
+			{type === "number" && props.value && (
+				<small>
+					{formatNumber(parseInt(props.value as string, 10) || 0)}
+				</small>
+			)}
+			{errorMessage && (
+				<p className="text-sm text-red-500">
+					{typeof errorMessage === "string" ? errorMessage : "N/a"}
+				</p>
+			)}
+		</div>
 	);
 }
 
@@ -168,6 +199,35 @@ function InputGroup({
 	);
 }
 
+// function InputField({
+// 	className,
+// 	error,
+// 	helperText,
+// 	...props
+// }: React.ComponentProps<"div"> &
+// 	VariantProps<typeof inputGroupVariants> & {
+// 		error?: boolean;
+// 		helperText?: React.ReactNode;
+// 	}) {
+// 	return (
+// 		<div className="flex flex-col gap-1">
+// 			<InputGroup
+// 				className={cn(error && "has-[[aria-invalid=true]]:", className)}
+// 				{...props}
+// 			/>
+// 			{helperText && (
+// 				<p
+// 					className={cn(
+// 						"text-sm",
+// 						error ? "text-red-500" : "text-muted-foreground",
+// 					)}>
+// 					{helperText}
+// 				</p>
+// 			)}
+// 		</div>
+// 	);
+// }
+
 function InputWrapper({
 	className,
 	variant,
@@ -190,6 +250,7 @@ export {
 	Input,
 	InputAddon,
 	inputAddonVariants,
+	// InputField,
 	InputGroup,
 	inputVariants,
 	InputWrapper,

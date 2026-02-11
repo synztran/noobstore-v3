@@ -6,9 +6,8 @@ import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import { IResponse } from "@/interface/Client/interface";
 import { EnumUploadStatus } from "@/interface/interface";
 import NotifyUtils from "@/utils/NotifyUtils";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
+import { Paperclip, Trash2 } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -25,6 +24,7 @@ interface IUploadImageProps {
 	isRequired?: boolean;
 	isCustomerUpload?: boolean;
 	handleSyncUploadedFiles?: (files: UploadedImage[]) => void;
+	className?: string;
 }
 
 export interface UploadedImage {
@@ -54,6 +54,7 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 	subLabel,
 	isCustomerUpload = false,
 	handleSyncUploadedFiles,
+	className = "",
 }) => {
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
 	const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>(
@@ -182,8 +183,9 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 	};
 
 	return (
-		<Box component="fieldset" className="border p-4 rounded-lg h-full">
-			<Typography component="legend" className="text-base text-black">
+		<fieldset
+			className={`border p-4 rounded-sm h-full relative ${className}`}>
+			<legend className="text-base text-black absolute -top-3 left-3 bg-gray-50 px-1">
 				{label}&nbsp;
 				<span
 					className={`text-sm ${
@@ -191,13 +193,9 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 					}`}>
 					({isRequired ? "Bắt buộc" : "Không bắt buộc"})
 				</span>
-			</Typography>
+			</legend>
 			{subLabel ? (
-				<Typography
-					component="legend"
-					className="text-sm text-gray-600">
-					{subLabel}
-				</Typography>
+				<div className="text-sm text-gray-600">{subLabel}</div>
 			) : null}
 			<Button
 				variant="secondary"
@@ -207,7 +205,7 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 						fileInputRef.current.click();
 					}
 				}}>
-				<AttachFileIcon className="text-black mx-0 px-0 mr-2" />
+				<Paperclip className="text-black mx-0 px-0 mr-2" />
 				<span className="text-black font-bold font-nunito text-sm">
 					{uploadedImages?.length > 0
 						? "Lựa chọn thêm ảnh"
@@ -216,8 +214,8 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 			</Button>
 			<br />
 			{acceptedFileTypes?.length ? (
-				<span className="text-sm text-gray-500">
-					Định dạng file ảnh{" "}
+				<span className="text-xs text-gray-500">
+					Hỗ trợ định dạng{" "}
 					<strong>
 						{acceptedFileTypes
 							.toString()
@@ -251,7 +249,7 @@ const UploadImage: React.FC<IUploadImageProps> = ({
 					</Typography>
 				</>
 			)}
-		</Box>
+		</fieldset>
 	);
 };
 
@@ -268,14 +266,14 @@ const BlockImageUploaded = ({
 }: IBlockImageUploaded) => {
 	return (
 		<div style={{ marginTop: "20px" }}>
-			<label>Ảnh đã tải lên:</label>
+			<label className="text-sm">Ảnh đã tải lên:</label>
 			<div className="flex gap-4">
 				{uploadedImages.map((image, index) => (
 					<div key={index} className="flex flex-col justify-between">
 						<div className="relative max-w-max">
 							{image.status === EnumUploadStatus.DONE && (
-								<DeleteIcon
-									className="absolute top-1 right-1 cursor-pointer z-10 text-red-400 bg-white rounded-full p-1 fill-red-600"
+								<Trash2
+									className="absolute top-1 right-1 cursor-pointer z-10 text-red-600 bg-white rounded-full p-1"
 									onClick={() => handleRemoveImage?.(index)}
 								/>
 							)}

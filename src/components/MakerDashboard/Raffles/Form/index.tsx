@@ -157,6 +157,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 	handleClose,
 }) => {
 	const modalDetailRaffle = useRef<HTMLDivElement | null>(null);
+	const formikRef = useRef<any>(null);
 	const [activeSection, setActiveSection] = useState<string>("basic");
 
 	const initialValues: IRaffleFormValues = {
@@ -218,13 +219,14 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 		<Modal open={isOpen} onClose={handleClose}>
 			<div
 				ref={modalDetailRaffle}
-				className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-4 animate-fade-in flex flex-col gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh]"
+				className="bg-white rounded-lg shadow-lg max-w-3xl w-full p-4 animate-fade-in flex flex-col gap-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90vh] min-h-[80vh]"
 				onMouseDown={(e) => e.stopPropagation()}>
 				<div className="text-xl font-semibold">Tạo mới raffle</div>
 				<Formik
 					initialValues={initialValues}
 					validationSchema={makerRaffleFormValidationSchema}
 					onSubmit={onSubmit}
+					innerRef={formikRef}
 					enableReinitialize>
 					{({
 						values,
@@ -273,7 +275,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 								</div>
 							</div>
 
-							<Form className="w-full mt-4 flex-1 overflow-y-auto">
+							<Form className="w-full flex-1 overflow-y-auto relative py-2">
 								{/* Error Block */}
 								{(() => {
 									const sectionErrors = getSectionErrors(
@@ -284,7 +286,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 										<div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
 											<AlertCircle
 												size={20}
-												className="text-red-500 flex-shrink-0 mt-0.5"
+												className="text-red-500 shrink-0 mt-0.5"
 											/>
 											<div>
 												<div className="font-semibold text-red-700 mb-1">
@@ -322,7 +324,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 								})()}
 
 								{/* Form Actions */}
-								<div className="flex justify-end gap-4 mt-8 pt-6 border-t">
+								{/* <div className="flex justify-end gap-4 relative bottom-0 bg-white mt-auto">
 									{onCancel && (
 										<Button
 											type="button"
@@ -340,11 +342,35 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 											? "Tạo raffle"
 											: "Cập nhật raffle"}
 									</Button>
-								</div>
+								</div> */}
 							</Form>
 						</>
 					)}
 				</Formik>
+				<div className="flex justify-between gap-4 relative bottom-0 bg-white mt-auto border-t border-gray-200 pt-4">
+					{/* {onCancel && (
+						<Button
+							type="button"
+							variant="outline"
+							onClick={onCancel}
+							disabled={isLoading}>
+							Hủy
+						</Button>
+					)} */}
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleClose}>
+						Đóng
+					</Button>
+
+					<Button
+						variant="primary"
+						isLoading={isLoading}
+						onClick={() => formikRef.current?.handleSubmit()}>
+						{mode === "create" ? "Tạo raffle" : "Cập nhật raffle"}
+					</Button>
+				</div>
 			</div>
 		</Modal>
 	);

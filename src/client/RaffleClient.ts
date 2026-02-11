@@ -3,6 +3,7 @@ import { IResponse } from "@/interface/Client/interface";
 import {
 	IBEResponseRaffleInfo,
 	IPayloadSubmitRafflePayment,
+	IRequestRaffleCreation,
 } from "@/interface/Client/Raffle";
 import { GET, POST } from ".";
 
@@ -45,10 +46,16 @@ const postRaffleSubmitPayment = async (
 	return POST({ url, body: payload, isAuth: true });
 };
 
+const postRaffleCreation = async (payload: IRequestRaffleCreation) => {
+	const url = RAFFLE_API.POST_RAFFLE_CREATE;
+	return POST({ url, body: payload, isAuth: true });
+};
+
 export default {
 	getDetailRaffle,
 	getRaffles,
 	postRaffleJoin,
 	postRaffleSubmitSecretKey,
 	postRaffleSubmitPayment,
+	postRaffleCreation,
 };
