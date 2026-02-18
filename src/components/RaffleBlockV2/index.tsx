@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/Auth";
 import {
 	EnumRaffleStatus,
+	IBEResponseProductOption,
 	IBEResponseRaffleInfo,
 } from "@/interface/Client/Raffle";
 import { appQueryKeys } from "@/react-query/root";
@@ -32,8 +33,44 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 	const { toggleDialogLogin } = useDialogLoginAction();
 	const queryClient = useQueryClient();
 	const [showRaffleModal, setShowRaffleModal] = useState(false);
-	const [selectedOption, setSelectedOption] = useState("");
+	const [selectedOption, setSelectedOption] =
+		useState<IBEResponseProductOption | null>(null);
 	const [currentImageIndex, setCurrentImageIndex] = useState(0);
+	const combinedProductImages: {
+		id?: string;
+		path: string;
+		alt: string;
+		index: number;
+	}[] = useMemo(() => {
+		const optionThumbnails =
+			raffleData?.productOptions?.map((opt) => {
+				return {
+					...opt.thumbnail,
+					productId: opt.productId,
+				};
+			}) || [];
+		const combinedImages = [
+			raffleData?.thumbnail,
+			...optionThumbnails,
+			...(raffleData?.images || []),
+		];
+
+		// Remove duplicates based on image path
+		const uniqueImagesMap: Record<string, any> = {};
+		combinedImages.forEach((img) => {
+			if (img && img.path) {
+				uniqueImagesMap[img.path] = img;
+			}
+		});
+
+		// Add incremental index to each unique image
+		return Object.values(uniqueImagesMap).map((img, idx) => ({
+			...img,
+			index: idx,
+		}));
+	}, [raffleData]);
+
+	console.log("combinedProductImages", combinedProductImages);
 
 	const [minPrice, maxPrice] = useMemo(() => {
 		if (!raffleData?.productOptions?.length) {
@@ -46,9 +83,10 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 	}, [raffleData]);
 
 	// Find the selected option object for price display
-	const selectedOptionObj =
-		raffleData?.productOptions?.find((o) => o.id === selectedOption) ||
-		raffleData?.productOptions?.[0];
+	// const selectedOptionObj =
+	// 	raffleData?.productOptions?.find(
+	// 		(o) => o.productId === selectedOption?.productId,
+	// 	) || raffleData?.productOptions?.[0];
 
 	const statusRaffleBasingTime = useMemo(() => {
 		const now = new Date();
@@ -63,13 +101,21 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 	}, [raffleData?.startAt, raffleData?.endAt]);
 
 	// Sync image with option
-	useEffect(() => {
-		const idx = raffleData?.productOptions?.findIndex(
-			(o) => o.id === selectedOption,
-		);
-		if (!idx) return;
-		if (idx !== -1) setCurrentImageIndex(idx);
-	}, [selectedOption, raffleData]);
+	// useEffect(() => {
+	// 	console.log("selectedOption", selectedOption);
+	// 	const foundProduct = raffleData?.productOptions?.find(
+	// 		(o) => o.productId === selectedOption,
+	//   );
+	//   console.log("foundProduct", foundProduct)
+
+	//   if (foundProduct) {
+
+	//   }
+
+	// 	console.log("sync idx", idx);
+	// 	if (idx === -1 || idx === undefined) return;
+	// 	if (idx !== -1) setCurrentImageIndex(idx);
+	// }, [selectedOption, raffleData]);
 
 	useEffect(() => {
 		if (raffleData) {
@@ -78,9 +124,13 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 	}, [raffleData]);
 
 	// Sync option with image
-	const handleImageChange = (idx: number) => {
-		setCurrentImageIndex(idx);
-		setSelectedOption(raffleData?.productOptions?.[idx]?.id || "");
+	const handleImageChange = (imageIndex: number, productId?: string) => {
+		console.log("idx", imageIndex, productId);
+		setCurrentImageIndex(imageIndex);
+		const found = raffleData?.productOptions?.find(
+			(o) => o.productId === productId,
+		);
+		setSelectedOption(found || null);
 	};
 
 	// const progressPercentage =
@@ -124,11 +174,15 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 			__value: value,
 		} as any);
 	};
+
+	if (!raffleData) return null;
+
 	return (
 		<div className="flex rounded-lg bg-gray-50">
 			<div className="w-3/5">
 				<RaffleBlockV2Image
 					productOptions={raffleData?.productOptions || []}
+					combinedProductImages={combinedProductImages}
 					currentImageIndex={currentImageIndex}
 					onChange={handleImageChange}
 					status={statusRaffleBasingTime}
@@ -136,10 +190,11 @@ const RaffleBlockV2 = ({ raffleData, isLoading }: IProps) => {
 			</div>
 			<div className="w-2/5">
 				<RaffleBlockV2Information
-					raffle={raffleData!}
+					raffle={raffleData}
+					combinedProductImages={combinedProductImages}
 					statusRaffleBasingTime={statusRaffleBasingTime}
 					selectedOption={selectedOption}
-					selectedOptionObj={selectedOptionObj}
+					// selectedOptionObj={selectedOptionObj}
 					setSelectedOption={setSelectedOption}
 					setCurrentImageIndex={setCurrentImageIndex}
 					handleOpenRaffleForm={handleOpenRaffleForm}

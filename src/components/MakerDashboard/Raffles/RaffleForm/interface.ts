@@ -1,5 +1,5 @@
 import { FormikErrors, FormikTouched } from "formik";
-import { IRaffleFormValues } from "../form";
+import { IRaffleFormValues } from ".";
 
 export interface ISectionProps {
 	values: IRaffleFormValues;

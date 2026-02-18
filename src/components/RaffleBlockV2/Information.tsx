@@ -1,6 +1,7 @@
 import { NEW_MISSING_IMAGE } from "@/constants/Images";
 import {
 	EnumRaffleStatus,
+	IBEResponseProductOption,
 	IBEResponseRaffleInfo,
 } from "@/interface/Client/Raffle";
 import { formatCurrency } from "@/utils/FormatNumber";
@@ -17,24 +18,28 @@ import RaffleV2Countdown from "./Countdown";
 
 interface IProps {
 	raffle: IBEResponseRaffleInfo;
+	combinedProductImages: {
+		productId?: string;
+		index: number;
+		path: string;
+		alt: string;
+	}[];
 	statusRaffleBasingTime: string;
-	selectedOption: string;
-	selectedOptionObj: any;
-	setSelectedOption: (optionId: string) => void;
+	selectedOption: IBEResponseProductOption | null;
+	setSelectedOption: (option: IBEResponseProductOption | null) => void;
 	setCurrentImageIndex: (index: number) => void;
 	handleOpenRaffleForm: () => void;
 }
 
 const RaffleBlockV2Information = ({
 	raffle,
+	combinedProductImages,
 	statusRaffleBasingTime,
 	selectedOption,
-	selectedOptionObj,
 	setSelectedOption,
 	setCurrentImageIndex,
 	handleOpenRaffleForm,
 }: IProps) => {
-	console.log("selectedOption", selectedOption);
 	const labelButton = (status: EnumRaffleStatus, isHasJoined: boolean) => {
 		if (isHasJoined) return "Đã tham gia";
 		if (
@@ -83,7 +88,7 @@ const RaffleBlockV2Information = ({
 						{raffle.title}
 					</div>
 					<span className="text-xl font-bold text-red-600">
-						{formatCurrency(selectedOptionObj?.price || 0)}
+						{formatCurrency(selectedOption?.price || 0)}
 					</span>
 				</div>
 				<div className="flex gap-2 flex-wrap empty:hidden">
@@ -110,29 +115,31 @@ const RaffleBlockV2Information = ({
 					<span className="min-w-22.5 text-base">Phiên bản</span>
 				</div>
 				<div className="grid grid-cols-4 gap-2">
-					{raffle.productOptions?.map((opt) => (
+					{raffle?.productOptions?.map((opt) => (
 						<Button
-							key={opt.id}
+							key={opt.productId}
 							type="button"
-							className={`w-full h-full flex flex-col items-center col-span-1 rounded-lg border-2 border-gray-200 p-2 relative ${
-								selectedOption === opt.id
+							className={`w-full h-full flex flex-col items-center col-span-1 rounded-lg border-2 border-gray-200 p-2 relative transition-all duration-200 ${
+								selectedOption?.productId === opt.productId
 									? "text-white border-blue-600 bg-gray-100"
 									: "text-gray-700"
 							}`}
 							onClick={() => {
-								setSelectedOption(opt.id);
+								setSelectedOption(opt);
 								setCurrentImageIndex(
-									raffle.productOptions?.findIndex(
-										(o) => o.id === opt.id,
+									combinedProductImages?.findIndex(
+										(o) => o.productId === opt.productId,
 									),
 								);
 							}}>
-							<CircleCheckIcon
-								size={32}
-								className="fill-blue-600 absolute -top-3 -right-3"
-							/>
+							{selectedOption?.productId === opt.productId ? (
+								<CircleCheckIcon
+									size={32}
+									className="fill-blue-600 absolute -top-3 -right-3"
+								/>
+							) : null}
 							<div
-								className={`relative rounded-sm w-12 h-12 cursor-pointer bg-transparent`}>
+								className={`relative rounded-sm w-15 h-15 cursor-pointer bg-transparent`}>
 								<Image
 									src={
 										opt.thumbnail?.path || NEW_MISSING_IMAGE
@@ -159,7 +166,7 @@ const RaffleBlockV2Information = ({
 					</span>
 				</div>
 				<div
-					className="grid grid-cols-2 gap-1"
+					className="grid grid-cols-1 gap-1"
 					style={{ paddingInlineStart: "0.5rem" }}>
 					{raffle.features.map((feature, idx) => (
 						<div key={idx} className="flex items-center gap-1">
@@ -168,7 +175,7 @@ const RaffleBlockV2Information = ({
 								strokeWidth={3}
 								className="text-blue-600"
 							/>
-							<span className="text-gray-700 text-base">
+							<span className="text-gray-600 text-sm">
 								{feature}
 							</span>
 						</div>

@@ -182,7 +182,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 			: "",
 		isHaveSecretKey: initialData?.isHaveSecretKey || false,
 		secretKey: initialData?.secretKey || "",
-		isPublic: initialData?.isPublic ?? true,
+		isPublic: initialData?.isPublic || false,
 		featured: initialData?.featured || false,
 		isHomepageMain: initialData?.isHomepageMain || false,
 		homepagePriority: initialData?.homepagePriority || 0,
@@ -203,7 +203,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 		rules: initialData?.rules || "",
 		termsAndConditions: initialData?.termsAndConditions || "",
 		tags: initialData?.tags || [],
-		requiresPayment: initialData?.requiresPayment ?? true,
+		requiresPayment: initialData?.requiresPayment || false,
 	};
 
 	const sections = [
@@ -365,6 +365,7 @@ const RaffleForm: React.FC<RaffleFormProps> = ({
 					</Button>
 
 					<Button
+						type="button"
 						variant="primary"
 						isLoading={isLoading}
 						onClick={() => formikRef.current?.handleSubmit()}>

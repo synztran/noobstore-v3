@@ -1,5 +1,8 @@
 import { NEW_MISSING_IMAGE } from "@/constants/Images";
-import { EnumRaffleStatus } from "@/interface/Client/Raffle";
+import {
+	EnumRaffleStatus,
+	IBEResponseProductOption,
+} from "@/interface/Client/Raffle";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
@@ -7,19 +10,27 @@ import { memo } from "react";
 import { Button } from "../ReUIComponent";
 
 interface IProps {
-	productOptions: any[];
+	productOptions: IBEResponseProductOption[];
+	combinedProductImages: {
+		productId?: string;
+		index: number;
+		path: string;
+		alt: string;
+	}[];
 	currentImageIndex: number;
-	onChange: (index: number) => void;
+	onChange: (imageIndex: number, productId?: string) => void;
 	status: string;
 }
 
 const RaffleBlockV2Image = ({
 	productOptions,
+	combinedProductImages,
 	currentImageIndex,
 	onChange,
 	status,
 }: IProps) => {
-	console.log(status);
+	console.log("currentImageIndexcurrentImageIndex", currentImageIndex);
+
 	return (
 		<div className="w-full flex justify-center relative h-full max-h-max">
 			<div className="flex-1 flex items-center justify-center relative">
@@ -39,27 +50,31 @@ const RaffleBlockV2Image = ({
 								: "Đã kết thúc"}
 					</span>
 				</div>
-				{productOptions?.length > 1 ? (
-					<button
-						type="button"
+				{combinedProductImages?.length > 1 ? (
+					<Button
+						variant="icon"
+						size="icon"
 						onClick={() =>
 							onChange(
 								(currentImageIndex -
 									1 +
-									productOptions?.length) %
-									productOptions?.length,
+									combinedProductImages?.length) %
+									combinedProductImages?.length,
 							)
 						}
-						className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
+						className="absolute left-2 top-1/2 -translate-y-1/2"
 						aria-label="Previous image">
 						<ChevronLeft />
-					</button>
+					</Button>
 				) : null}
 				{/* Animate image change */}
 				<div className="w-full h-full relative">
 					<AnimatePresence mode="wait" initial={false}>
 						<motion.div
-							key={productOptions?.[currentImageIndex]?.id}
+							key={
+								combinedProductImages?.[currentImageIndex]
+									?.index
+							}
 							initial={{
 								opacity: 0,
 								scale: 0.98,
@@ -86,51 +101,60 @@ const RaffleBlockV2Image = ({
 							dragMomentum={false}
 							onDragEnd={(_, info) => {
 								const threshold = 60;
-								const length = productOptions?.length ?? 0;
+								const length =
+									combinedProductImages?.length ?? 0;
 								if (!length) return;
 
 								// Slide left -> next image
 								if (info.offset.x < -threshold) {
-									onChange((currentImageIndex + 1) % length);
+									const nextIndex =
+										(currentImageIndex + 1) % length;
+									const nextImage =
+										combinedProductImages[nextIndex];
+									console.log("next", nextIndex);
+									onChange(nextIndex, nextImage?.productId);
 									return;
 								}
 								// Slide right -> prev image
 								if (info.offset.x > threshold) {
-									onChange(
+									const prevIndex =
 										(currentImageIndex - 1 + length) %
-											length,
-									);
+										length;
+									const prevImage =
+										combinedProductImages[prevIndex];
+									console.log("prev", prevIndex);
+									onChange(prevIndex, prevImage?.productId);
 									return;
 								}
 							}}
 							whileTap={{ cursor: "grabbing" }}>
 							<Image
 								src={
-									productOptions?.[currentImageIndex]
-										?.thumbnail?.path || NEW_MISSING_IMAGE
+									combinedProductImages?.[currentImageIndex]
+										?.path || NEW_MISSING_IMAGE
 								}
 								alt={
-									productOptions?.[currentImageIndex]
-										?.label || ""
+									combinedProductImages?.[currentImageIndex]
+										?.path || ""
 								}
-								className="w-full object-cover rounded-tl-md rounded-bl-md shadow-lg select-none"
-								objectFit="cover"
+								className="w-full object-left rounded-tl-md rounded-bl-md shadow-lg select-none"
 								fill
 								draggable={false}
 							/>
 						</motion.div>
 					</AnimatePresence>
 				</div>
-				{productOptions?.length > 1 ? (
+				{combinedProductImages?.length > 1 ? (
 					<Button
-						type="button"
+						size="icon"
+						variant="icon"
 						onClick={() =>
 							onChange(
 								(currentImageIndex + 1) %
-									productOptions?.length,
+									combinedProductImages?.length,
 							)
 						}
-						className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 z-10 rounded-full p-1 shadow"
+						className="absolute right-2 top-1/2 -translate-y-1/2"
 						aria-label="Next image">
 						<ChevronRight />
 					</Button>
@@ -138,22 +162,21 @@ const RaffleBlockV2Image = ({
 			</div>
 			{/* Swiper Thumbnails on the right */}
 			<div className="flex flex-col gap-2 mx-2 items-center justify-start">
-				{productOptions?.map((opt, idx) => (
+				{combinedProductImages?.map((opt) => (
 					<div
 						className="relative w-20 h-20 rounded-md shadow-sm"
-						key={idx}>
+						key={opt.index}>
 						<Image
-							key={opt.id}
-							src={opt.thumbnail?.path || NEW_MISSING_IMAGE}
-							alt={opt.label || ""}
+							src={opt?.path || NEW_MISSING_IMAGE}
+							alt={opt?.alt || ""}
 							fill
-							objectFit="cover"
+							objectFit="contain"
 							className={`rounded-lg cursor-pointer border-2 ${
-								idx === currentImageIndex
-									? "border-red-400"
+								opt.index === currentImageIndex
+									? "border-blue-600"
 									: "border-gray-200"
 							}`}
-							onClick={() => onChange(idx)}
+							onClick={() => onChange(opt.index, opt.productId)}
 						/>
 					</div>
 				))}

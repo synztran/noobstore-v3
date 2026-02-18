@@ -185,7 +185,7 @@ async function request({
 			if (!mapRequestPromise[link]) {
 				mapRequestPromise[link] = fetch(
 					link,
-					dataRequest as unknown as RequestInit
+					dataRequest as unknown as RequestInit,
 				)
 					.then(async (r) => {
 						const json = await r.json();
@@ -207,6 +207,7 @@ async function request({
 			return result;
 		}
 		const res = await fetch(link, dataRequest as unknown as RequestInit);
+		console.log("res", res);
 		const result = await res.json();
 		if (timeout != null && timeout > 0 && id) {
 			clearTimeout(id);

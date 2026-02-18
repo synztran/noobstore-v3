@@ -1,7 +1,8 @@
 // const DOMAIN_PREFIX = "https://noob-store.thuannc.com";
-const DOMAIN_PREFIX = "http://localhost:8000";
-// const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // when you try fetching data ssr should using this domain, try using local will cat error on connector port
-// const DOMAIN_PREFIX = "http://192.168.31.33:8080";
+// const DOMAIN_PREFIX = "http://localhost:8000"; // Use 127.0.0.1 for SSR/Server-side requests
+// const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // Use this for server-side rendering compatibility
+const DOMAIN_PREFIX =
+	process.env.NEXT_PUBLIC_API_DOMAIN || "http://localhost:8000";
 
 const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`;
 const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
@@ -98,6 +99,7 @@ export const SERVICE_API = {
 
 export const RAFFLE_API = {
 	GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
+	GET_RAFFLE_DETAIL: `${RAFFLE_PREFIX}/detail`, // {raffleId}
 	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
 	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
 	POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,

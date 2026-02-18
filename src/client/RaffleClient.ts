@@ -51,6 +51,13 @@ const postRaffleCreation = async (payload: IRequestRaffleCreation) => {
 	return POST({ url, body: payload, isAuth: true });
 };
 
+const getSingleRaffle = async (params: {
+	raffleId: string;
+}): Promise<IResponse<IBEResponseRaffleInfo>> => {
+	const url = RAFFLE_API.GET_RAFFLE_DETAIL;
+	return GET({ url, isAuth: false, params });
+};
+
 export default {
 	getDetailRaffle,
 	getRaffles,
@@ -58,4 +65,5 @@ export default {
 	postRaffleSubmitSecretKey,
 	postRaffleSubmitPayment,
 	postRaffleCreation,
+	getSingleRaffle,
 };

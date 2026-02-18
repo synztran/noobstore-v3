@@ -7,9 +7,7 @@ export const makerRaffleFormValidationSchema = Yup.object().shape({
 		.min(10, "Tiêu đề phải có ít nhất 10 ký tự")
 		.max(200, "Tiêu đề không được vượt quá 200 ký tự"),
 
-	description: Yup.string()
-		.required("Vui lòng nhập mô tả")
-		.min(50, "Mô tả phải có ít nhất 50 ký tự"),
+	description: Yup.string(),
 
 	raffleType: Yup.string()
 		.oneOf(Object.values(EnumRaffleType), "Loại raffle không hợp lệ")

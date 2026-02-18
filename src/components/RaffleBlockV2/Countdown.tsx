@@ -1,7 +1,5 @@
 import { mappingRaffleStatusLabel } from "@/constants";
-import { useAuth } from "@/context/Auth";
 import { EnumRaffleStatus } from "@/interface/Client/Raffle";
-import { IAuthUser } from "@/interface/Context/auth";
 import DateUtils from "@/utils/DateUtils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Timer } from "lucide-react";
@@ -63,8 +61,7 @@ const RaffleV2Countdown: React.FC<RaffleCountDownProps> = ({
 	raffleStatus,
 	className = "",
 }) => {
-	const { user } = useAuth() as unknown as { user: IAuthUser | null };
-	const [now, setNow] = useState<Date>(new Date());
+	// const [now, setNow] = useState<Date>(new Date());
 	const [mode, setMode] = useState<EnumRaffleStatus>(raffleStatus);
 	const [timeLeft, setTimeLeft] = useState<{
 		days: number;
@@ -88,7 +85,7 @@ const RaffleV2Countdown: React.FC<RaffleCountDownProps> = ({
 			);
 			setMode(m as typeof mode);
 			setTimeLeft(formatTime(diff));
-			setNow(nowDate);
+			// setNow(nowDate);
 		};
 
 		update();

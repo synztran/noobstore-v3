@@ -44,7 +44,7 @@ const BasicInfoSection: React.FC<ISectionProps> = ({
 				fullWidth
 				multiline
 				rows={4}
-				label="Mô tả *"
+				label="Mô tả"
 				name="description"
 				value={descriptionField.value}
 				onChange={descriptionField.onChange}

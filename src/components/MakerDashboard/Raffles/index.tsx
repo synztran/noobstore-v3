@@ -30,7 +30,7 @@ import {
 import { Check, Copy } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import RaffleForm from "./Form";
+import RaffleForm from "./RaffleForm";
 // Mock data
 const mockRaffles = [
 	{
@@ -171,6 +171,7 @@ const MakerRafflesComp = () => {
 	};
 
 	const handleSubmitForm = async (data: any) => {
+		console.log("Data", data);
 		if (!makerData) {
 			NotifyUtils.error("Maker data not found. Cannot create raffle.");
 			return;
@@ -197,6 +198,7 @@ const MakerRafflesComp = () => {
 			entriesLimit: data.entriesLimit,
 			maxEntryPerPerson: data.maxEntryPerPerson,
 			maxWinPerEntries: data.maxWinPerEntries,
+			thumbnail: data.thumbnail,
 		};
 
 		console.log("payload", payload);

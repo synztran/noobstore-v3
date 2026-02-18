@@ -43,12 +43,13 @@ export interface IBEResponseRaffleProduct {
 }
 
 export interface IBEResponseProductOption {
-	id: string;
+	// id: string;
 	label: string;
 	url?: string; // redirect to product page
 	price: number;
 	thumbnail?: IImage;
 	raffleQuantity: number | null;
+	productId: string;
 }
 
 export interface IBEResponsePaymentMethod {

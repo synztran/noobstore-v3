@@ -75,8 +75,9 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 
 	// Find the selected option object for price display
 	const selectedOptionObj =
-		raffleData?.productOptions?.find((o) => o.id === selectedOption) ||
-		raffleData?.productOptions?.[0];
+		raffleData?.productOptions?.find(
+			(o) => o.productId === selectedOption,
+		) || raffleData?.productOptions?.[0];
 
 	const statusRaffleBasingTime = useMemo(() => {
 		const now = new Date();
@@ -93,7 +94,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 	// Sync image with option
 	useEffect(() => {
 		const idx = raffleData?.productOptions?.findIndex(
-			(o) => o.id === selectedOption,
+			(o) => o.productId === selectedOption,
 		);
 		if (!idx) return;
 		if (idx !== -1) setCurrentImageIndex(idx);
@@ -108,7 +109,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 	// Sync option with image
 	const handleImageChange = (idx: number) => {
 		setCurrentImageIndex(idx);
-		setSelectedOption(raffleData?.productOptions?.[idx]?.id || "");
+		setSelectedOption(raffleData?.productOptions?.[idx]?.productId || "");
 	};
 
 	// const progressPercentage =
@@ -284,7 +285,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 										key={
 											raffleData?.productOptions?.[
 												currentImageIndex
-											]?.id
+											]?.productId
 										}
 										initial={{
 											opacity: 0,
@@ -380,7 +381,7 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 									className="relative w-20 h-20 rounded-md shadow-sm"
 									key={idx}>
 									<Image
-										key={opt.id}
+										key={opt.productId}
 										src={
 											opt.thumbnail?.path ||
 											NEW_MISSING_IMAGE
@@ -523,18 +524,20 @@ export default function RaffleBlock({ raffleData, isLoading }: IProps) {
 						<div className="flex gap-2 flex-wrap mt-2">
 							{raffleData?.productOptions?.map((opt) => (
 								<button
-									key={opt.id}
+									key={opt.productId}
 									type="button"
 									onClick={() => {
-										setSelectedOption(opt.id);
+										setSelectedOption(opt.productId);
 										setCurrentImageIndex(
 											raffleData?.productOptions?.findIndex(
-												(o) => o.id === opt.id,
+												(o) =>
+													o.productId ===
+													opt.productId,
 											),
 										);
 									}}
 									className={`relative p-0.5 rounded-full border-2 font-medium transition overflow-hidden w-15 h-15 ${
-										selectedOption === opt.id
+										selectedOption === opt.productId
 											? "text-white border-red-600"
 											: "text-gray-700 border-gray-300 hover:bg-gray-100"
 									} cursor-pointer`}>
