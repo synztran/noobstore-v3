@@ -1,177 +1,117 @@
-import {
-	EnumProductType,
-	ICategory,
-	ICollapseContent,
-	IProduct,
-	IProductOption,
-} from "@/interface/interface";
-import useProductQuery from "@/react-query/products/api/useProductQueries";
-import Skeleton from "@mui/material/Skeleton";
-import { clamp } from "@mui/utils";
-import { useMemo, useState } from "react";
-import ProductInfoBlock from "../ProductInfoBlock";
-import SliderSyncing from "../SliderSyncing";
-import { classNames } from "@/utils/AppConfig";
-import CollapseText from "../collapse";
-import SideUtilities from "../SideUtilities";
-import DetailRating from "../DetailRating";
-import ProductReviews from "../ProductReviews";
-import { useAuth } from "@/context/Auth";
-import { IAuthUser } from "@/interface/Context/auth";
+import { EnumProductType, ICategory, IProduct, IProductOption } from '@/interface/interface'
+import useProductQuery from '@/react-query/products/api/useProductQueries'
+import Skeleton from '@mui/material/Skeleton'
+import { useState } from 'react'
+import { classNames } from '@/utils/AppConfig'
+import ProductReviews from '../ProductReviews'
+import { useAuth } from '@/context/Auth'
+import { IAuthUser } from '@/interface/Context/auth'
+import { ProductImageGallery, ProductDetailInfo, ProductDetailTabs } from '../productDetail'
+import { ChevronRight } from 'lucide-react'
+import Link from 'next/link'
 
 interface Props {
-	slug: string;
+  slug: string
 }
 
 const ProductCard = ({ slug }: Props) => {
-	const { isAuthenticated = false } = useAuth() as unknown as {
-		user: IAuthUser | null;
-		isAuthenticated: boolean;
-	};
-	const { data: productData, isFetching: isLoading } = useProductQuery(
-		{ categoryId: slug as string },
-		{
-			enabled: !!slug,
-		}
-	);
-	const { categoryDetail, products, productOptions } = productData || {
-		categoryDetail: {},
-		products: [],
-		productOptions: {},
-	};
-	const { images = [] } = categoryDetail || {};
+  const { isAuthenticated = false } = useAuth() as unknown as {
+    user: IAuthUser | null
+    isAuthenticated: boolean
+  }
+  const { data: productData, isFetching: isLoading } = useProductQuery(
+    { categoryId: slug as string },
+    {
+      enabled: !!slug,
+    }
+  )
 
-	const [selectedOpt, setSelectedOpt] = useState<
-		Record<EnumProductType, IProductOption[]>
-	>(() => {
-		const initialSelectedOpt = {} as Record<
-			EnumProductType,
-			IProductOption[]
-		>;
-		if (products instanceof Array && products.length === 0) {
-			products?.forEach((product: IProduct) => {
-				product?.productOpts?.forEach((opt) => {
-					if (opt.productPart) {
-						if (!initialSelectedOpt[opt.productPart]) {
-							initialSelectedOpt[opt.productPart] = [];
-						} else {
-							initialSelectedOpt[opt.productPart].push(opt);
-						}
-					}
-				});
-			});
-		}
+  const { categoryDetail, products, productOptions } = productData || {
+    categoryDetail: {} as ICategory,
+    products: [],
+    productOptions: {},
+  }
+  const { images = [], brand, categoryName, collapseContent, description } = categoryDetail || {}
 
-		return initialSelectedOpt;
-	});
+  const [selectedOpt, setSelectedOpt] = useState<Record<EnumProductType, IProductOption[]>>(() => {
+    const initialSelectedOpt = {} as Record<EnumProductType, IProductOption[]>
+    if (products instanceof Array && products.length === 0) {
+      products?.forEach((product: IProduct) => {
+        product?.productOpts?.forEach((opt) => {
+          if (opt.productPart) {
+            if (!initialSelectedOpt[opt.productPart]) {
+              initialSelectedOpt[opt.productPart] = []
+            } else {
+              initialSelectedOpt[opt.productPart].push(opt)
+            }
+          }
+        })
+      })
+    }
 
-	return (
-		<div className="grid grid-cols-12 gap-4">
-			{/* image and slider */}
-			<div className="mb-auto w-full col-span-7">
-				{isLoading ? (
-					<>
-						<SkeletonBlock className="col-span-6" />
-						<SkeletonBlock className="col-span-6" />
-					</>
-				) : (
-					<div className="flex flex-col gap-4">
-						<SliderSyncing
-							imageList={images?.map((pic, index) => ({
-								src: pic.path,
-								alt: "",
-								id: index + 1,
-							}))}
-						/>
-						{/* <DetailRating
-							averageRating={4.99}
-							totalReviews={215}
-							ratingBreakdown={[
-								{
-									stars: 5,
-									percentage: 85,
-									count: 215,
-								},
-								{
-									stars: 4,
-									percentage: 10,
-									count: 215,
-								},
-								{
-									stars: 3,
-									percentage: 1,
-									count: 215,
-								},
-								{
-									stars: 2,
-									percentage: 1,
-									count: 215,
-								},
-								{
-									stars: 1,
-									percentage: 3,
-									count: 215,
-								},
-							]}
-							showRatingMethodology={true}
-						/> */}
-						<ProductReviews
-							productId={
-								productData?.categoryDetail?.categoryId || ""
-							}
-							canReview={isAuthenticated}
-						/>
-					</div>
-				)}
-			</div>
-			{/* Product info */}
-			<div className="col-span-5 gap-6 grid grid-cols-12">
-				{isLoading ? (
-					<SkeletonBlock className="col-span-8" />
-				) : (
-					<div className="max-w-full p-4 rounded-lg col-span-11 bg-white shadow-md max-h-max">
-						<ProductInfoBlock
-							products={products}
-							category={categoryDetail as ICategory}
-							productOptions={
-								productOptions as Record<
-									EnumProductType,
-									IProductOption[]
-								>
-							}
-							selectedOpt={selectedOpt}
-							setSelectedOpt={setSelectedOpt}
-						/>
-					</div>
-				)}
-				<div className="col-span-1 ml-auto">
-					{isLoading ? (
-						<SkeletonBlock className="w-full" />
-					) : (
-						<SideUtilities
-							showAvatar={true}
-							avatarUrl={categoryDetail?.author}
-						/>
-					)}
-				</div>
-			</div>
-		</div>
-	);
-};
+    return initialSelectedOpt
+  })
 
-export default ProductCard;
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <SkeletonBlock className="w-full h-150 rounded-xl" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 lg:px-8">
+      {/* Breadcrumb */}
+      <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+        <Link href="/" className="hover:text-primary transition-colors">
+          Trang chủ
+        </Link>
+        <ChevronRight className="w-4 h-4" />
+        <Link href="/shop" className="hover:text-primary transition-colors">
+          Shop
+        </Link>
+        {brand && (
+          <>
+            <ChevronRight className="w-4 h-4" />
+            <Link href={`/shop?brand=${brand}`} className="hover:text-primary transition-colors">
+              {brand}
+            </Link>
+          </>
+        )}
+        <ChevronRight className="w-4 h-4" />
+        <span className="text-slate-900 dark:text-white font-medium truncate max-w-50">{categoryName}</span>
+      </nav>
+
+      {/* Main Product Card */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm">
+        {/* Product Header: Image + Info */}
+        <div className="flex flex-col lg:flex-row">
+          {/* Image Gallery */}
+          <ProductImageGallery images={images || []} status={categoryDetail?.status} productName={categoryName || ''} />
+
+          {/* Product Info */}
+          <ProductDetailInfo category={categoryDetail as ICategory} products={products} productOptions={productOptions as Record<EnumProductType, IProductOption[]>} selectedOpt={selectedOpt} setSelectedOpt={setSelectedOpt} />
+        </div>
+
+        {/* Product Tabs */}
+        <ProductDetailTabs description={description} collapseContent={collapseContent} brand={brand} />
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm p-6 lg:p-10">
+        <ProductReviews productId={productData?.categoryDetail?.categoryId || ''} canReview={isAuthenticated} />
+      </div>
+    </div>
+  )
+}
+
+export default ProductCard
 
 export function SkeletonBlock({ className }: { className?: string }) {
-	return (
-		<div className={classNames(className || "", "w-full h-full")}>
-			<Skeleton
-				variant="rectangular"
-				width="100%"
-				style={{
-					height: clamp(550, 600, 610),
-				}}
-				animation="wave"
-			/>
-		</div>
-	);
+  return (
+    <div className={classNames(className || '', 'w-full h-full')}>
+      <Skeleton variant="rectangular" width="100%" height="100%" animation="wave" />
+    </div>
+  )
 }

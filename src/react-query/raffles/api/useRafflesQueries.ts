@@ -1,29 +1,24 @@
-import { IBEResponseRaffleInfo } from "@/interface/Client/Raffle";
-import {
-	useQuery,
-	UseQueryOptions,
-	UseQueryResult,
-} from "@tanstack/react-query";
-import { queryPresets } from "react-query/configs";
-import { appQueryKeys } from "react-query/root";
+import { IRaffleListParams } from '@/client/RaffleClient'
+import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query'
+import { queryPresets } from 'react-query/configs'
+import { appQueryKeys } from 'react-query/root'
+import { IPaginatedRafflesResponse } from '@/interface/Client/Raffle'
 
 type IQueryOptions = {
-	params?: { featuredOnly?: boolean };
-	enabled?: boolean | (() => boolean);
+  params?: IRaffleListParams
+  enabled?: boolean | (() => boolean)
 } & Partial<(typeof queryPresets)[keyof typeof queryPresets]> &
-	Partial<UseQueryOptions<IBEResponseRaffleInfo[], Error>>;
+  Partial<UseQueryOptions<IPaginatedRafflesResponse, Error>>
 
-export default function useRafflesQuery(
-	queryOptions?: IQueryOptions,
-): UseQueryResult<IBEResponseRaffleInfo[], Error> {
-	const enabled = queryOptions?.enabled ?? true;
-	const queryConfig = {
-		...appQueryKeys.raffle.getRaffles(queryOptions?.params),
-		...queryPresets.temporary,
-		...queryOptions,
-		enabled,
-	};
+export default function useRafflesQuery(queryOptions?: IQueryOptions): UseQueryResult<IPaginatedRafflesResponse, Error> {
+  const enabled = queryOptions?.enabled ?? true
+  const queryConfig = {
+    ...appQueryKeys.raffle.getRaffles(queryOptions?.params),
+    ...queryPresets.temporary,
+    ...queryOptions,
+    enabled,
+  }
 
-	const rafflesQuery = useQuery(queryConfig);
-	return rafflesQuery;
+  const rafflesQuery = useQuery(queryConfig)
+  return rafflesQuery
 }
