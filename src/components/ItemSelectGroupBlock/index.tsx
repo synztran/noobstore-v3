@@ -1,168 +1,126 @@
-import { LabelItemSelectedBlock } from "@/constants";
-import { NEW_MISSING_IMAGE, SOLD_OUT_ICON } from "@/constants/Images";
-import {
-  EnumProductType,
-  IProduct,
-  IProductOption,
-} from "@/interface/interface";
-import { classNames } from "@/utils/AppConfig";
-import { formatCurrency } from "@/utils/FormatNumber";
-import { useStoreProductDetailAction } from "@/zustand/useProductDetail";
-import { Tooltip } from "@mui/material";
-import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { styled } from "@mui/styles";
-import { Check, Info } from "lucide-react";
-import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useMemo } from "react";
-import styles from "./styles.module.css";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ReUIComponent/Tooltip'
+import { EnumProductType, IProduct, IProductOption } from '@/interface/interface'
+import { cn } from '@/lib/utils'
+import { useStoreProductDetailAction } from '@/zustand/useProductDetail'
+import { Check, Info } from 'lucide-react'
+import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
 
-interface Props {
-  product: IProduct;
-  productOptions: IProductOption[];
-  selectedOpt?: Record<EnumProductType, IProductOption[]>;
-  setSelectedOpt?: Dispatch<
-    SetStateAction<Record<EnumProductType, IProductOption[]>>
-  >;
-  toggleResetQuantity?: Dispatch<SetStateAction<number>>;
-  isMultipleSelection?: boolean;
+interface ItemSelectGroupBlockProps {
+  product: IProduct
+  productOptions: IProductOption[]
+  selectedOpt?: Record<EnumProductType, IProductOption[]>
+  setSelectedOpt?: Dispatch<SetStateAction<Record<EnumProductType, IProductOption[]>>>
+  toggleResetQuantity?: Dispatch<SetStateAction<number>>
 }
 
-const CustomToggleButton = styled(ToggleButton)({
-  "&.Mui-disabled": {
-    borderLeft: "none", // Remove the border-left for disabled buttons
-  },
-});
+// Sub-component: Selected option indicator with tooltip
+const SelectedOptionInfo = ({ option }: { option: IProductOption }) => (
+  <div className="flex gap-1 items-center">
+    <div className="text-sm text-gray-500 flex items-center gap-1">
+      <span>Đã chọn:</span>
+      <span className="font-medium text-gray-900">{option.name}</span>
+    </div>
+    {option.description && (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Info className="w-3 h-3 cursor-pointer text-gray-400 hover:text-gray-600" />
+          </TooltipTrigger>
+          <TooltipContent>
+            <div dangerouslySetInnerHTML={{ __html: option.description }} />
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )}
+  </div>
+)
 
-const ItemSelectGroupBlock = ({
-  product,
-  productOptions,
-  selectedOpt,
-  setSelectedOpt,
-  toggleResetQuantity,
-  isMultipleSelection = false,
-}: Props) => {
-  const { productPart, productName } = product || {};
-  const { updateOptSelected } = useStoreProductDetailAction();
-  const itemSelected = useMemo(() => {
-    return selectedOpt?.[productPart as EnumProductType]?.[0];
-  }, [selectedOpt]);
+// Sub-component: Check mark indicator for selected option
+const SelectedCheckMark = () => <Check className="absolute -top-1.5 -right-1.5 text-orange-800 w-5 h-5 border-2 border-orange-600 rounded-full bg-white p-0.5" />
 
-  const handelSelectedItem = (
-    event: React.MouseEvent<HTMLElement>,
-    newValue: IProductOption
-  ) => {
-    if (
-      newValue !== null &&
-      itemSelected?.productOptionId !== newValue?.productOptionId
-    ) {
-      const selectedOpt = {
-        [productPart]: [newValue],
-      };
+// Sub-component: Option button
+interface OptionButtonProps {
+  option: IProductOption
+  isSelected: boolean
+  isSoldOut: boolean
+  onClick: () => void
+}
+
+const OptionButton = ({ option, isSelected, isSoldOut, onClick }: OptionButtonProps) => {
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={isSoldOut}
+        className={cn(
+          'h-10 px-4 rounded-lg border text-sm font-medium transition-all',
+          'flex items-center justify-center min-w-25',
+          isSelected ? 'border-2 border-orange-400 bg-primary/5 text-orange-400 font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-900 hover:border-gray-300 hover:bg-gray-50',
+          isSoldOut && 'opacity-80 border-gray-200 text-gray-400'
+        )}
+      >
+        {option.name}
+      </button>
+      {/* {isSelected && <SelectedCheckMark />} */}
+    </div>
+  )
+}
+
+const ItemSelectGroupBlock = ({ product, productOptions, selectedOpt, setSelectedOpt, toggleResetQuantity }: ItemSelectGroupBlockProps) => {
+  const { productPart, productName } = product || {}
+  const { updateOptSelected } = useStoreProductDetailAction()
+
+  // Get currently selected option for this product part
+  const selectedOption = useMemo(() => {
+    return selectedOpt?.[productPart as EnumProductType]?.[0]
+  }, [selectedOpt, productPart])
+
+  // Handle option selection/deselection
+  const handleOptionClick = (option: IProductOption) => {
+    const isCurrentlySelected = selectedOption?.productOptionId === option.productOptionId
+
+    if (isCurrentlySelected) {
+      // Deselect current option
+      setSelectedOpt?.((prev) => {
+        const updated = { ...prev }
+        delete updated[productPart as EnumProductType]
+        return updated
+      })
+    } else {
+      // Select new option
       setSelectedOpt?.((prev) => ({
         ...prev,
-        ...selectedOpt,
-      }));
-      updateOptSelected(newValue);
-    } else {
-      setSelectedOpt?.((prev) => {
-        const newSelectedOpt = { ...prev };
-        delete newSelectedOpt[productPart as EnumProductType];
-        return newSelectedOpt;
-      });
+        [productPart]: [option],
+      }))
+      updateOptSelected(option)
     }
-  };
+  }
 
+  // Reset quantity when selection changes
   useEffect(() => {
-    toggleResetQuantity && toggleResetQuantity((prev) => prev + 1);
-  }, [itemSelected]);
+    toggleResetQuantity?.((prev) => prev + 1)
+  }, [selectedOption, toggleResetQuantity])
 
   return (
-    <div className={classNames(styles.container || "", "!mt-0")}>
-      <div className={classNames("flex gap-2")}>
-        <span className="text-lg capitalize font-bold text-gray-600">
-          {productName}
-        </span>
-        {itemSelected ? (
-          <>
-            |
-            <div className="flex gap-1 items-center">
-              {itemSelected?.name}
-              &nbsp;(+
-              {formatCurrency(
-                itemSelected?.salePrice || itemSelected?.price || 0
-              )}
-              )
-              <Tooltip
-                title={
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: itemSelected?.description || "",
-                    }}
-                  />
-                }
-                placement="top"
-                arrow
-              >
-                <Info className="w-4 h-4" />
-              </Tooltip>
-            </div>
-          </>
-        ) : null}
+    <div className="flex flex-col gap-3">
+      {/* Header: Product name and selected option info */}
+      <div className="flex gap-2 items-center justify-between">
+        <span className="text-sm font-bold text-gray-900">{productName}</span>
+        {selectedOption && <SelectedOptionInfo option={selectedOption} />}
       </div>
-      <ToggleButtonGroup
-        value={itemSelected}
-        exclusive
-        onChange={handelSelectedItem}
-        className={classNames("flex items-center gap-2 flex-wrap")}
-      >
-        {productOptions?.map((option: IProductOption, idx: number) => (
-          <div className="relative" key={idx}>
-            <ToggleButton
-              value={option}
-              className={classNames(
-                "relative max-w-max capitalize disabled:!border-l-gray-400 !p-1 !min-w-[120px] h-20 !rounded-lg overflow-hidden border border-l-gray-300 border-gray-300 flex items-center justify-center",
-                itemSelected?.productOptionId === option.productOptionId
-                  ? "!border-green-600"
-                  : "",
-                option.quantity === 0 ? "!border-gray-400 !text-gray-400" : ""
-              )}
-              disabled={option.quantity === 0}
-            >
-              {option.thumbnail && option.quantity === 0 && (
-                <Image
-                  src={SOLD_OUT_ICON}
-                  alt="sold out"
-                  width={100}
-                  height={100}
-                  className="absolute aspect-auto top-0 left-1/2 z-1 -translate-x-1/2"
-                />
-              )}
-              {option.thumbnail ? (
-                <Image
-                  src={option.thumbnail?.path || NEW_MISSING_IMAGE}
-                  fill
-                  alt={option.name || ""}
-                  className="object-cover select-none p-1 rounded-lg"
-                />
-              ) : (
-                <span>{option.name}</span>
-              )}
-            </ToggleButton>
-            {itemSelected?.productOptionId === option?.productOptionId ? (
-              <Check
-                className={classNames(
-                  "absolute text-green-600 w-5 h-5 border border-green-600 rounded-full bg-white p-0.5 stroke-green-600",
-                  option.thumbnail
-                    ? "-top-1.5 -right-1.5"
-                    : "-top-2.5 -right-2.5"
-                )}
-              />
-            ) : null}
-          </div>
-        ))}
-      </ToggleButtonGroup>
-    </div>
-  );
-};
 
-export default ItemSelectGroupBlock;
+      {/* Options grid */}
+      <div className="flex flex-wrap gap-3">
+        {productOptions?.map((option, index) => {
+          const isSoldOut = option.quantity === 0
+          const isSelected = selectedOption?.productOptionId === option.productOptionId
+
+          return <OptionButton key={option.productOptionId || index} option={option} isSelected={isSelected} isSoldOut={isSoldOut} onClick={() => handleOptionClick(option)} />
+        })}
+      </div>
+    </div>
+  )
+}
+
+export default ItemSelectGroupBlock
