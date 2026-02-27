@@ -45,8 +45,8 @@ const AccountPage: React.FC = () => {
 
   return (
     <Base>
-      <div className="mx-w-full p-6 sm:py-6 lg:px-8 relative z-1">
-        <Breadcumb mainRoot={BreadcumbTitle['account.detail'] as string} subRoot="Thông tin tài khoản" />
+      <div className="mx-w-full relative z-1">
+        {/* <Breadcumb mainRoot={BreadcumbTitle['account.detail'] as string} subRoot="Thông tin tài khoản" /> */}
         <article className="flex mt-4 gap-4 h-full min-h-0">
           <div className="w-[22%]">
             <UserSideMenu selectedMenu={selectedMenu} onSelectMenu={handleSelectMenu} handleRegisterMaker={() => toggle({ ...isOpen, registerMaker: true })} />

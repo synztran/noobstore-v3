@@ -1,115 +1,119 @@
 // const DOMAIN_PREFIX = "https://noob-store.thuannc.com";
 // const DOMAIN_PREFIX = "http://localhost:8000"; // Use 127.0.0.1 for SSR/Server-side requests
 // const DOMAIN_PREFIX = "http://127.0.0.1:8000"; // Use this for server-side rendering compatibility
-const DOMAIN_PREFIX =
-	process.env.NEXT_PUBLIC_API_DOMAIN || "http://localhost:8000";
+const DOMAIN_PREFIX = process.env.NEXT_PUBLIC_API_DOMAIN || 'http://localhost:8000'
 
-const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`;
-const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`;
-const ACCOUNT_PREFIX = `${DOMAIN_PREFIX}/account`;
-const UPLOAD_PREFIX = `${DOMAIN_PREFIX}/upload`;
-const USED_PRODUCT_PREFIX = `${DOMAIN_PREFIX}/used-product`;
-const LUCKY_WHEEL_PREFIX = `${DOMAIN_PREFIX}/lucky-wheel`;
-const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`;
-const SERVICE_PREFIX = `${DOMAIN_PREFIX}/service`;
-const RAFFLE_PREFIX = `${DOMAIN_PREFIX}/raffle`;
-const MAKER_PREFIX = `${DOMAIN_PREFIX}/maker`;
+const CATEGORY_PREFIX = `${DOMAIN_PREFIX}/category`
+const PRODUCT_PREFIX = `${DOMAIN_PREFIX}/product`
+const ACCOUNT_PREFIX = `${DOMAIN_PREFIX}/account`
+const UPLOAD_PREFIX = `${DOMAIN_PREFIX}/upload`
+const USED_PRODUCT_PREFIX = `${DOMAIN_PREFIX}/used-product`
+const LUCKY_WHEEL_PREFIX = `${DOMAIN_PREFIX}/lucky-wheel`
+const PRODUCT_OPTION_PREFIX = `${DOMAIN_PREFIX}/product-option`
+const SERVICE_PREFIX = `${DOMAIN_PREFIX}/service`
+const RAFFLE_PREFIX = `${DOMAIN_PREFIX}/raffle`
+const MAKER_PREFIX = `${DOMAIN_PREFIX}/maker`
 
 export const CATEGORY_API = {
-	ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
-	ALL_VALID_CATEGORY: `${CATEGORY_PREFIX}/get-all-valid`,
-	DETAIL: `${CATEGORY_PREFIX}`, // {id}
-	ALL_CATEGORIES_BY_IDS: `${CATEGORY_PREFIX}/getCategoriesByIds`, // {ids}
-	CREATE: `${CATEGORY_PREFIX}/add`,
-	UPDATE: `${CATEGORY_PREFIX}/update`,
-};
+  ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
+  ALL_VALID_CATEGORY: `${CATEGORY_PREFIX}/get-all-valid`,
+  DETAIL: `${CATEGORY_PREFIX}`, // {id}
+  ALL_CATEGORIES_BY_IDS: `${CATEGORY_PREFIX}/getCategoriesByIds`, // {ids}
+  CREATE: `${CATEGORY_PREFIX}/add`,
+  UPDATE: `${CATEGORY_PREFIX}/update`,
+}
 
 export const PRODUCTS_API = {
-	ALL_PRODUCT: `${PRODUCT_PREFIX}/get-all`,
-	DETAIL: `${PRODUCT_PREFIX}`, // {product_id}
-	ALL_DETAIL: `${PRODUCT_PREFIX}/all-products-by-category-id`, // {category_id}
-	PRODUCT_BY_PARAMS: `${PRODUCT_PREFIX}/get-by-params`, // {product_id, option_id}
-	PRODUCT_OPTIONS: `${PRODUCT_PREFIX}/product-options`, // {product_id}
-	DELETE_PRODUCT: `${PRODUCT_PREFIX}/delete`, // {product_id}
-	NEW_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/create`, // {product_id, option_name}
-	NEW_PRODUCT: `${PRODUCT_PREFIX}/create`, // {product_id, option_name}
-	DELETE_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/delete`, // {product_id, option_id}
-	UPDATE_PRODUCT: `${PRODUCT_PREFIX}/update`, // {product_id}
-};
+  ALL_PRODUCT: `${PRODUCT_PREFIX}/get-all`,
+  DETAIL: `${PRODUCT_PREFIX}`, // {product_id}
+  ALL_DETAIL: `${PRODUCT_PREFIX}/all-products-by-category-id`, // {category_id}
+  PRODUCT_BY_PARAMS: `${PRODUCT_PREFIX}/get-by-params`, // {product_id, option_id}
+  PRODUCT_OPTIONS: `${PRODUCT_PREFIX}/product-options`, // {product_id}
+  DELETE_PRODUCT: `${PRODUCT_PREFIX}/delete`, // {product_id}
+  NEW_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/create`, // {product_id, option_name}
+  NEW_PRODUCT: `${PRODUCT_PREFIX}/create`, // {product_id, option_name}
+  DELETE_PRODUCT_OPTION: `${PRODUCT_PREFIX}/product-option/delete`, // {product_id, option_id}
+  UPDATE_PRODUCT: `${PRODUCT_PREFIX}/update`, // {product_id}
+}
 
 export const ACCOUNT_API = {
-	ACCOUNT: `${ACCOUNT_PREFIX}`,
-	CURRENT_ACCOUNT: `${ACCOUNT_PREFIX}/get-user`,
-	POST_NEW_USER_SHIPPING_ADDRESS: `${ACCOUNT_PREFIX}/shipping-address`,
-	GET_RAFFLE_ENTRIES: `${ACCOUNT_PREFIX}/raffle-entries`,
-};
+  ACCOUNT: `${ACCOUNT_PREFIX}`,
+  CURRENT_ACCOUNT: `${ACCOUNT_PREFIX}/get-user`,
+  POST_NEW_USER_SHIPPING_ADDRESS: `${ACCOUNT_PREFIX}/shipping-address`,
+  GET_RAFFLE_ENTRIES: `${ACCOUNT_PREFIX}/raffle-entries`,
+}
 
 export const AUTH_API = {
-	REFRESH: `${DOMAIN_PREFIX}/auth/refresh`,
-	LOGOUT: `${DOMAIN_PREFIX}/auth/logout`,
-	LOGIN: `${DOMAIN_PREFIX}/auth/login`,
-	REGISTER: `${DOMAIN_PREFIX}/auth/register`,
-	VERIFY_EMAIL: `${DOMAIN_PREFIX}/auth/verify`,
-};
+  REFRESH: `${DOMAIN_PREFIX}/auth/refresh`,
+  LOGOUT: `${DOMAIN_PREFIX}/auth/logout`,
+  LOGIN: `${DOMAIN_PREFIX}/auth/login`,
+  REGISTER: `${DOMAIN_PREFIX}/auth/register`,
+  VERIFY_EMAIL: `${DOMAIN_PREFIX}/auth/verify`,
+}
 
 export const CART_API = {
-	GET_CART: `${DOMAIN_PREFIX}/cart`,
-	ADD_CART: `${DOMAIN_PREFIX}/cart`,
-	UPDATE_CART: `${DOMAIN_PREFIX}/cart`,
-	REMOVE_ITEM_CART: `${DOMAIN_PREFIX}/cart/remove-item`,
-	UPDATE_CART_PRODUCT: `${DOMAIN_PREFIX}/cart/update-cart-product`,
-};
+  GET_CART: `${DOMAIN_PREFIX}/cart`,
+  ADD_CART: `${DOMAIN_PREFIX}/cart`,
+  UPDATE_CART: `${DOMAIN_PREFIX}/cart`,
+  REMOVE_ITEM_CART: `${DOMAIN_PREFIX}/cart/remove-item`,
+  UPDATE_CART_PRODUCT: `${DOMAIN_PREFIX}/cart/update-cart-product`,
+}
 
 export const CHECKOUT_API = {
-	CHECKOUT: `${DOMAIN_PREFIX}/order/checkout`,
-	ORDER_DETAIL: `${DOMAIN_PREFIX}/order`, // {order_id}
-};
+  CHECKOUT: `${DOMAIN_PREFIX}/order/checkout`,
+  ORDER_DETAIL: `${DOMAIN_PREFIX}/order`, // {order_id}
+}
+
+export const ORDER_API = {
+  MY_ORDERS: `${DOMAIN_PREFIX}/order/my-orders`,
+  ORDER_DETAIL: `${DOMAIN_PREFIX}/order`, // {order_id}
+}
 
 export const PROMOTION_API = {
-	LUCKY_WHEEL: `${DOMAIN_PREFIX}/promotion/lucky-wheel/get`,
-};
+  LUCKY_WHEEL: `${DOMAIN_PREFIX}/promotion/lucky-wheel/get`,
+}
 
-export const CONFIG_API = { ALL_CONFIG: `${DOMAIN_PREFIX}/config` };
+export const CONFIG_API = { ALL_CONFIG: `${DOMAIN_PREFIX}/config` }
 
-export const UPLOAD_API = { IMAGE: `${UPLOAD_PREFIX}/image` };
+export const UPLOAD_API = { IMAGE: `${UPLOAD_PREFIX}/image` }
 
 export const USED_PRODUCT_API = {
-	POSTING: `${USED_PRODUCT_PREFIX}/post`,
-	GET_ALL: `${USED_PRODUCT_PREFIX}`,
-};
+  POSTING: `${USED_PRODUCT_PREFIX}/post`,
+  GET_ALL: `${USED_PRODUCT_PREFIX}`,
+}
 
 export const LUCKY_WHEEL_API = {
-	SPIN: `${LUCKY_WHEEL_PREFIX}/spin`,
-	GET: `${LUCKY_WHEEL_PREFIX}`,
-};
+  SPIN: `${LUCKY_WHEEL_PREFIX}/spin`,
+  GET: `${LUCKY_WHEEL_PREFIX}`,
+}
 
-export const PRODUCT_OPTIONS_API = { GET: `${PRODUCT_OPTION_PREFIX}/get` };
+export const PRODUCT_OPTIONS_API = { GET: `${PRODUCT_OPTION_PREFIX}/get` }
 
 export const SERVICE_API = {
-	GET_DEFINITIONS: `${SERVICE_PREFIX}/definitions`,
-	GET_PLANS: `${SERVICE_PREFIX}/plans`,
-	GET_TASKS: `${SERVICE_PREFIX}/tasks`,
-	GET_FEES: `${SERVICE_PREFIX}/fees`,
-	GET_SERVICE_OPTIONS: `${SERVICE_PREFIX}/options`,
-	GET_BOOKING: `${SERVICE_PREFIX}/booking`,
-	POST_BOOKING: `${SERVICE_PREFIX}/booking`,
-	GET_BOOKING_PAYMENT_CHECKING: `${SERVICE_PREFIX}/booking/checking-payment`,
-	POST_BOOKING_SUBMIT_PAYMENT: `${SERVICE_PREFIX}/booking/submit-payment`,
-};
+  GET_DEFINITIONS: `${SERVICE_PREFIX}/definitions`,
+  GET_PLANS: `${SERVICE_PREFIX}/plans`,
+  GET_TASKS: `${SERVICE_PREFIX}/tasks`,
+  GET_FEES: `${SERVICE_PREFIX}/fees`,
+  GET_SERVICE_OPTIONS: `${SERVICE_PREFIX}/options`,
+  GET_BOOKING: `${SERVICE_PREFIX}/booking`,
+  POST_BOOKING: `${SERVICE_PREFIX}/booking`,
+  GET_BOOKING_PAYMENT_CHECKING: `${SERVICE_PREFIX}/booking/checking-payment`,
+  POST_BOOKING_SUBMIT_PAYMENT: `${SERVICE_PREFIX}/booking/submit-payment`,
+}
 
 export const RAFFLE_API = {
-	GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
-	GET_RAFFLE_DETAIL: `${RAFFLE_PREFIX}/detail`, // {raffleId}
-	POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
-	POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
-	POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,
-	POST_CREATE_MAKER: `${RAFFLE_PREFIX}/create-maker`,
-	POST_RAFFLE_CREATE: `${RAFFLE_PREFIX}/create`,
-};
+  GET_RAFFLES: `${RAFFLE_PREFIX}/list`,
+  GET_RAFFLE_DETAIL: `${RAFFLE_PREFIX}/detail`, // {raffleId}
+  POST_RAFFLE_JOIN: `${RAFFLE_PREFIX}/join`,
+  POST_RAFFLE_SUBMIT_SECRET_KEY: `${RAFFLE_PREFIX}/submit-secret-key`,
+  POST_RAFFLE_SUBMIT_PAYMENT: `${RAFFLE_PREFIX}/submit-payment`,
+  POST_CREATE_MAKER: `${RAFFLE_PREFIX}/create-maker`,
+  POST_RAFFLE_CREATE: `${RAFFLE_PREFIX}/create`,
+}
 
 export const MAKER_API = {
-	GET_MAKER_INFO: `${MAKER_PREFIX}/get-info/{makerId}`,
-	POST_CREATE_MAKER: `${MAKER_PREFIX}/register`,
-	POST_SEND_VERIFY_MAKER_EMAIL: `${MAKER_PREFIX}/send-verification-email`,
-	GET_MAKER_DASHBOARD_STATS: `${MAKER_PREFIX}/analytics`,
-};
+  GET_MAKER_INFO: `${MAKER_PREFIX}/get-info/{makerId}`,
+  POST_CREATE_MAKER: `${MAKER_PREFIX}/register`,
+  POST_SEND_VERIFY_MAKER_EMAIL: `${MAKER_PREFIX}/send-verification-email`,
+  GET_MAKER_DASHBOARD_STATS: `${MAKER_PREFIX}/analytics`,
+}
