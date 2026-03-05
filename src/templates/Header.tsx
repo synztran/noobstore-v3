@@ -3,7 +3,7 @@ import HeaderUserSetting from '@/components/HeaderUserSetting'
 import ModalCartItem from '@/components/modalCartItem'
 import PopupLogOut from '@/components/PopupLogout'
 import { callsToAction, contact, news, services } from '@/constants'
-import { CHECKOUT_URL, SERVICES_DETAIL_URL, THANKS_URL } from '@/constants/path'
+import { CHECKOUT_URL, SERVICES_DETAIL_URL } from '@/constants/path'
 import { useAuth } from '@/context/Auth'
 import { IAuthUser } from '@/interface/Context/auth'
 import useCartQuery from '@/react-query/cart/api/useCartQueries'
@@ -53,8 +53,8 @@ export default function Header() {
     setOpenPopupLogout(!openPopupLogout)
   }
 
-  const isSimpleHeader = [CHECKOUT_URL, THANKS_URL, SERVICES_DETAIL_URL].includes(router.pathname)
-  const isHideHeader = [THANKS_URL].includes(router.pathname)
+  const isSimpleHeader = [CHECKOUT_URL, SERVICES_DETAIL_URL].includes(router.pathname)
+  const isHideHeader = [''].includes(router.pathname)
 
   if (isHideHeader) return null
 

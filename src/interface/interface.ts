@@ -77,17 +77,18 @@ export enum EnumCategorySaleType {
 }
 
 export enum EnumPaymentStatus {
-  SUBMITTED = 'SUBMITTED',
-  PAID = 'PAID',
   PENDING = 'PENDING',
+  CHECKING = 'CHECKING',
+  PAID = 'PAID',
   CANCELLED = 'CANCELLED',
   REFUNDED = 'REFUNDED',
 }
 
 export enum EnumOrderStatus {
   ORDERED = 'ORDERED',
-  PENDING = 'PENDING',
   PROCESSING = 'PROCESSING',
+  PACKING = 'PACKING',
+  SHIPPING = 'SHIPPING',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
 }

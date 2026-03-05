@@ -1,30 +1,22 @@
-import {
-  CHECKOUT_URL,
-  SERVICES_DETAIL_URL,
-  THANKS_URL,
-} from "@/constants/path";
-import DiscordIcon from "@/icons/discord";
-import { SendHorizontal } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useState } from "react";
+import { CHECKOUT_URL, SERVICES_DETAIL_URL, THANKS_URL } from '@/constants/path'
+import DiscordIcon from '@/icons/discord'
+import { SendHorizontal } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
 
 const Footer = () => {
-  const router = useRouter();
-  const isSimpleHeader = [
-    CHECKOUT_URL,
-    THANKS_URL,
-    SERVICES_DETAIL_URL,
-  ].includes(router.pathname);
-  const [email, setEmail] = useState("");
+  const router = useRouter()
+  const isSimpleHeader = [CHECKOUT_URL, THANKS_URL, SERVICES_DETAIL_URL].includes(router.pathname)
+  const [email, setEmail] = useState('')
 
   const handleSubmitMail = () => {
     // call API update field to send notification
-    console.log(email);
-  };
+    console.log(email)
+  }
 
   if (isSimpleHeader) {
-    return null;
+    return null
   }
 
   return (
@@ -32,17 +24,12 @@ const Footer = () => {
       <div className="container py-4 mx-auto max-w-full border-t border-gray-400 h-full">
         <div className="grid grid-cols-7 gap-8">
           <div className="col-span-3">
-            <h1 className="text-lg font-semibold tracking-tight text-gray-800 xl:text-2x">
-              Đăng ký nhận thông tin.
-            </h1>
-            <span className="text-gray-800 text-base">
-              Được thông báo về sản phẩm mới, sản phẩm quan tâm và các chương
-              trình khuyến mãi.
-            </span>
+            <h1 className="text-lg font-semibold tracking-tight text-gray-800 xl:text-2x">Đăng ký nhận thông tin.</h1>
+            <span className="text-gray-800 text-base">Được thông báo về sản phẩm mới, sản phẩm quan tâm và các chương trình khuyến mãi.</span>
             <form
               onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmitMail();
+                e.preventDefault()
+                handleSubmitMail()
               }}
             >
               <div className="relative w-full mt-4">
@@ -54,13 +41,7 @@ const Footer = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <button
-                  className={`absolute p-2 right-0 top-1/2 transition-all duration-300 -translate-y-1/2 rounded-tr-md rounded-br-md ${
-                    email.trim() ? "hover:scale-110" : "opacity-[.5]"
-                  }`}
-                  type="submit"
-                  disabled={!email.trim()}
-                >
+                <button className={`absolute p-2 right-0 top-1/2 transition-all duration-300 -translate-y-1/2 rounded-tr-md rounded-br-md ${email.trim() ? 'hover:scale-110' : 'opacity-[.5]'}`} type="submit" disabled={!email.trim()}>
                   <SendHorizontal className="w-5 h-5" />
                 </button>
               </div>
@@ -71,25 +52,13 @@ const Footer = () => {
             <p className="font-semibold text-gray-800 text-lg">Thông tin</p>
 
             <div className="grid items-start gap-2">
-              <Link
-                href="/documents"
-                target="_blank"
-                className="text-gray-600 transition-colors duration-300 hover:text-blue-500 "
-              >
+              <Link href="/documents" target="_blank" className="text-gray-600 transition-colors duration-300 hover:text-blue-500 ">
                 Tài liệu xử lý sự cố
               </Link>
-              <Link
-                href="/chat"
-                target="_blank"
-                className="text-gray-600 transition-colors duration-300 hover:text-blue-500"
-              >
+              <Link href="/chat" target="_blank" className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
                 Hỗ trợ / Tư vấn
               </Link>
-              <Link
-                href="/shop"
-                target="_blank"
-                className="text-gray-600 transition-colors duration-300 hover:text-blue-500"
-              >
+              <Link href="/shop" target="_blank" className="text-gray-600 transition-colors duration-300 hover:text-blue-500">
                 Cập nhật về sản phẩm
               </Link>
             </div>
@@ -101,11 +70,7 @@ const Footer = () => {
             <div className="flex flex-col items-start gap-2 text-gray-600 ">
               NoobStore
               <br />
-              <Link
-                href="https://maps.app.goo.gl/HXmDG3stY3fspqcz8"
-                target="_blank"
-                className="text-gray-600 transition-all duration-300 hover:text-blue-500"
-              >
+              <Link href="https://maps.app.goo.gl/HXmDG3stY3fspqcz8" target="_blank" className="text-gray-600 transition-all duration-300 hover:text-blue-500">
                 70/4b Đường 47 Hiệp Bình Chánh Thủ Đức, TP. Hồ Chí minh
               </Link>
             </div>
@@ -115,35 +80,19 @@ const Footer = () => {
         <div className="flex items-center justify-center mt-4 w-full">
           <div className="flex text-sm flex-wrap align-middle items-center">
             <div className="w-full flex flex-wrap align-middle items-center gap-2 justify-center uppercase">
-              <Link
-                href="/contact"
-                className="text-gray-600 transition-all duration-300 hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold"
-                aria-label="Discord"
-              >
+              <Link href="/contact" className="text-gray-600 transition-all duration-300 hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold" aria-label="Discord">
                 Thành viên NoobStore
               </Link>
               <div className="w-0 h-4 border border-solid border-gray-300 " />
-              <Link
-                href="/contact"
-                className="text-gray-600 transition-all duration-300 hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold"
-                aria-label="Discord"
-              >
+              <Link href="/contact" className="text-gray-600 transition-all duration-300 hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold" aria-label="Discord">
                 Gửi góp ý
               </Link>
               <div className="w-0 h-4 border border-solid border-gray-300 " />
-              <a
-                href="https://discord.gg/CrD4bCY9YJ"
-                className="text-gray-600 transition-all duration-300  hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold"
-                aria-label="Discord"
-              >
+              <a href="https://discord.gg/CrD4bCY9YJ" className="text-gray-600 transition-all duration-300  hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold" aria-label="Discord">
                 Chính sách đổi trả
               </a>
               <div className="w-0 h-4 border border-solid border-gray-300 " />
-              <a
-                href="https://discord.gg/CrD4bCY9YJ"
-                className="text-gray-600 transition-all duration-300  hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold"
-                aria-label="Discord"
-              >
+              <a href="https://discord.gg/CrD4bCY9YJ" className="text-gray-600 transition-all duration-300  hover:text-blue-500 max-w-max h-10 flex items-center align-middle text-sm font-semibold" aria-label="Discord">
                 Điều khoản dịch vụ
               </a>
               {/* <div className="w-0 h-4 border border-solid border-gray-300 " /> */}
@@ -156,9 +105,7 @@ const Footer = () => {
 									</a>
 								</div> */}
             </div>
-            <div className="w-full flex justify-center uppercase text-lg font-bold">
-              © NoobStore® 2026.
-            </div>
+            <div className="w-full flex justify-center uppercase text-lg font-bold">© NoobStore® 2026.</div>
             <div className="flex -mx-2 justify-center w-full my-2">
               {/* <a
 						href="https://shopee.vn/noobstore"
@@ -359,29 +306,12 @@ const Footer = () => {
 							/>
 						</svg>
 					</a> */}
-              <Link
-                href="https://facebook.com/noobassembly"
-                className="mx-2 text-gray-600 transition-all duration-300 hover:text-blue-500 w-6 h-6 hover:scale-110"
-                aria-label="Facebook"
-                target="_blank"
-              >
-                <svg
-                  width={24}
-                  height={24}
-                  className="fill-current"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+              <Link href="https://facebook.com/noobassembly" className="mx-2 text-gray-600 transition-all duration-300 hover:text-blue-500 w-6 h-6 hover:scale-110" aria-label="Facebook" target="_blank">
+                <svg width={24} height={24} className="fill-current" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.00195 12.002C2.00312 16.9214 5.58036 21.1101 10.439 21.881V14.892H7.90195V12.002H10.442V9.80204C10.3284 8.75958 10.6845 7.72064 11.4136 6.96698C12.1427 6.21332 13.1693 5.82306 14.215 5.90204C14.9655 5.91417 15.7141 5.98101 16.455 6.10205V8.56104H15.191C14.7558 8.50405 14.3183 8.64777 14.0017 8.95171C13.6851 9.25566 13.5237 9.68693 13.563 10.124V12.002H16.334L15.891 14.893H13.563V21.881C18.8174 21.0506 22.502 16.2518 21.9475 10.9611C21.3929 5.67041 16.7932 1.73997 11.4808 2.01722C6.16831 2.29447 2.0028 6.68235 2.00195 12.002Z"></path>
                 </svg>
               </Link>
-              <Link
-                href="https://discord.gg/CrD4bCY9YJ"
-                className="mx-2 text-gray-600 transition-all duration-300  hover:text-blue-500 w-6 h-6 hover:scale-110"
-                aria-label="Discord"
-                target="_blank"
-              >
+              <Link href="https://discord.gg/CrD4bCY9YJ" className="mx-2 text-gray-600 transition-all duration-300  hover:text-blue-500 w-6 h-6 hover:scale-110" aria-label="Discord" target="_blank">
                 <DiscordIcon />
               </Link>
             </div>
@@ -389,7 +319,7 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export { Footer };
+export { Footer }

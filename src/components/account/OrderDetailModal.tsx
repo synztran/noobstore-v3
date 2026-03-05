@@ -1,15 +1,15 @@
 'use client'
 
-import React from 'react'
-import { Package, MessageSquare, Phone, Truck, FileText, Eye, Download, Receipt } from 'lucide-react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, Timeline, TimelineItem, TimelineIndicator, TimelineConnector, TimelineContent, TimelineTitle, TimelineDescription } from '@/components/ReUIComponent'
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogHeader, DialogTitle, Timeline, TimelineConnector, TimelineContent, TimelineDescription, TimelineIndicator, TimelineItem, TimelineTitle } from '@/components/ReUIComponent'
+import { NEW_MISSING_IMAGE } from '@/constants/Images'
 import { IOrdered, IOrderProduct } from '@/interface/Client/Order'
 import { EnumOrderStatus, EnumPaymentStatus } from '@/interface/interface'
 import { formatCurrency } from '@/utils/FormatNumber'
-import PaymentStatusCard from './PaymentStatusCard'
 import dayjs from 'dayjs'
+import { Download, Eye, MessageSquare, Phone, Receipt } from 'lucide-react'
 import Image from 'next/legacy/image'
-import { NEW_MISSING_IMAGE } from '@/constants/Images'
+import React from 'react'
+import PaymentStatusCard from './PaymentStatusCard'
 
 interface OrderDetailModalProps {
   open: boolean
@@ -76,10 +76,10 @@ const getTimelineSteps = (order: IOrdered): TimelineStep[] => {
 const ProductItem: React.FC<{ product: IOrderProduct }> = ({ product }) => (
   <div className="flex gap-4 p-3 rounded-xl border border-slate-100 dark:border-slate-800/50 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all group">
     <div className="size-24 shrink-0 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden relative">
-      <Image src={product.thumbnail.path || NEW_MISSING_IMAGE} alt={product.productName} layout="fill" objectFit="cover" />
+      <Image src={product?.thumbnail?.path || NEW_MISSING_IMAGE} alt={product?.productName} layout="fill" objectFit="cover" />
     </div>
     <div className="flex flex-col justify-center w-full">
-      <h5 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-2">{product.productName}</h5>
+      <div className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-2">{product.productName}</div>
       {product.productOptions && product.productOptions.length > 0 && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{product.productOptions.map((opt) => opt.name).join(' • ')}</p>}
       <div className="mt-2 flex items-center justify-between gap-4">
         <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(product.totalPrice || product.price)}</span>

@@ -2,20 +2,22 @@ export { Button, buttonVariants, type ButtonProps } from './Button'
 
 export { Checkbox, checkboxVariants, type CheckboxProps } from './Checkbox'
 
-export { Dialog, DialogTrigger, DialogPortal, DialogContent, DialogHeader, DialogFooter, DialogBody, DialogTitle, DialogDescription, DialogClose } from './Dialog'
+export { Dialog, DialogBody, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogPortal, DialogTitle, DialogTrigger } from './Dialog'
+
+export { Drawer, DrawerBody, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerPortal, DrawerTitle, DrawerTrigger } from './Drawer'
 
 export {
   Timeline,
-  TimelineItem,
-  TimelineIndicator,
   TimelineConnector,
   TimelineContent,
-  TimelineTitle,
   TimelineDescription,
+  TimelineIndicator,
   timelineIndicatorVariants,
-  type TimelineItemProps,
-  type TimelineIndicatorProps,
+  TimelineItem,
+  TimelineTitle,
   type TimelineConnectorProps,
-  type TimelineTitleProps,
   type TimelineDescriptionProps,
+  type TimelineIndicatorProps,
+  type TimelineItemProps,
+  type TimelineTitleProps,
 } from './Timeline'

@@ -17,6 +17,8 @@ export interface IOrdered {
   fees?: ICartFees
   paymentMethod: EnumPaymentMethod
   deliveryMethod: EnumOrderDeliveryMethod
+  transitionId?: string[]
+  updatedAt?: string
 }
 
 interface IOrderInfo {

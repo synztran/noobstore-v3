@@ -1,310 +1,186 @@
-import {
-	GIF_SHOPPING_CART,
-	NEW_MISSING_IMAGE,
-	QUICK_ACCESS_KEYCAPS_ICON,
-	QUICK_ACCESS_LUBRICANT_ICON,
-	SERVICE_KEYBOARD_ICON,
-	SERVICE_NEW_SWITCH_ICON,
-} from "@/constants/Images";
-import { ICart, ICartProduct } from "@/interface/Client/Cart";
-import useCartQuery from "@/react-query/cart/api/useCartQueries";
-import { useRemoveItemMutation } from "@/react-query/cart/api/useRemoveItemMutation";
-import { formatCurrency } from "@/utils/FormatNumber";
-import NotifyUtils from "@/utils/NotifyUtils";
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import {
-	Box,
-	CircularProgress,
-	Divider,
-	IconButton,
-	Modal,
-	Typography,
-} from "@mui/material";
-import { MoveUpRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import InputQuantity from "../InputQuatity";
-import { Button } from "../ReUIComponent";
+import { NEW_MISSING_IMAGE, QUICK_ACCESS_KEYCAPS_ICON, QUICK_ACCESS_LUBRICANT_ICON, SERVICE_KEYBOARD_ICON, SERVICE_NEW_SWITCH_ICON } from '@/constants/Images'
+import { ICart, ICartProduct } from '@/interface/Client/Cart'
+import useCartQuery from '@/react-query/cart/api/useCartQueries'
+import { useRemoveItemMutation } from '@/react-query/cart/api/useRemoveItemMutation'
+import { formatCurrency } from '@/utils/FormatNumber'
+import NotifyUtils from '@/utils/NotifyUtils'
+import { CircularProgress } from '@mui/material'
+import { Lock, Plus, ShoppingBag, ShoppingCart, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import InputQuantity from '../InputQuatity'
+import { Drawer, DrawerBody, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '../ReUIComponent'
 
 interface Props {
-	open: boolean;
-	handleClose: () => void;
+  open: boolean
+  handleClose: () => void
 }
 
-const modalStyle = {
-	position: "absolute" as "absolute",
-	top: "50%",
-	left: "50%",
-	transform: "translate(-50%, -50%)",
-	width: "min(600px, 55vw)",
-	bgcolor: "background.paper",
-	boxShadow: 24,
-	minHeight: "80vh",
-	maxHeight: "90vh",
-	display: "flex",
-	flexDirection: "column",
-	borderRadius: "0.5rem",
-};
-
 const quickAccess = [
-	{
-		icon: SERVICE_KEYBOARD_ICON,
-		title: "Bàn phím",
-		url: "/products/keyboards",
-	},
-	{
-		icon: SERVICE_NEW_SWITCH_ICON,
-		title: "Switches",
-		url: "/products/switches",
-	},
-	{
-		icon: QUICK_ACCESS_KEYCAPS_ICON,
-		title: "Keycaps",
-		url: "/products/keycaps",
-	},
-	{
-		icon: QUICK_ACCESS_LUBRICANT_ICON,
-		title: "Dầu lube",
-		url: "/products/lubricant",
-	},
-];
+  { icon: SERVICE_KEYBOARD_ICON, title: 'Bàn phím', url: '/products/keyboards' },
+  { icon: SERVICE_NEW_SWITCH_ICON, title: 'Switches', url: '/products/switches' },
+  { icon: QUICK_ACCESS_KEYCAPS_ICON, title: 'Keycaps', url: '/products/keycaps' },
+  { icon: QUICK_ACCESS_LUBRICANT_ICON, title: 'Dầu lube', url: '/products/lubricant' },
+]
 
 const ModalCartItem = ({ open, handleClose }: Props) => {
-	const { data: cart } = useCartQuery();
-	const router = useRouter();
-	const handleRemoveProduct = useRemoveItemMutation();
-	const [isRemoving, setRemoving] = useState(false);
+  const { data: cart } = useCartQuery()
+  console.log('Cart data:', cart)
+  const router = useRouter()
+  const handleRemoveProduct = useRemoveItemMutation()
+  const [isRemoving, setRemoving] = useState(false)
 
-	const handleRemoveItemCart = async (
-		productId: string,
-		productName: string,
-	) => {
-		if (!cart?.cartId) return NotifyUtils.error("Giỏ hàng không tồn tại");
-		setRemoving(true);
-		handleRemoveProduct.mutate({
-			payload: { cartId: cart?.cartId as string, productId, productName },
-		});
-		setRemoving(false);
-	};
+  const handleRemoveItemCart = async (productId: string, productName: string) => {
+    if (!cart?.cartId) return NotifyUtils.error('Giỏ hàng không tồn tại')
+    setRemoving(true)
+    handleRemoveProduct.mutate({
+      payload: { cartId: cart?.cartId as string, productId, productName },
+    })
+    setRemoving(false)
+  }
 
-	const handleCheckout = () => {
-		router.push("/checkout");
-	};
+  const handleCheckout = () => {
+    handleClose()
+    router.push('/checkout')
+  }
 
-	return (
-		<Modal
-			open={open}
-			onClose={handleClose}
-			aria-labelledby="modal-modal-title"
-			aria-describedby="modal-modal-description">
-			<Box sx={modalStyle}>
-				<Box
-					position="relative"
-					display="flex"
-					alignItems="center"
-					justifyContent="space-between"
-					padding="16px">
-					<Typography
-						id="modal-modal-title"
-						variant="h6"
-						component="h2">
-						Giỏ hàng
-					</Typography>
-					<IconButton className="p-0.5" onClick={handleClose}>
-						<CloseIcon />
-					</IconButton>
-				</Box>
-				<Divider />
-				<div
-					className={`${
-						cart?.products?.length === 0
-							? "justify-center align-middle"
-							: ""
-					} p-4 flex flex-col gap-4 w-full min-h-full max-h-full flex-1 overflow-y-auto`}>
-					{cart?.products?.length ? (
-						cart?.products.map(
-							(item: ICartProduct, index: number) => (
-								<CartItem
-									item={item}
-									index={index}
-									cart={cart}
-									handleRemoveItemCart={handleRemoveItemCart}
-									isRemoving={isRemoving}
-									key={index}
-								/>
-							),
-						)
-					) : (
-						<div className="relative flex flex-col items-center justify-center gap-4">
-							<Image
-								src={GIF_SHOPPING_CART}
-								alt="gif sc"
-								width={150}
-								height={50}
-								unoptimized
-							/>
-							<Typography variant="body1" className="text-center">
-								Chưa có sản phẩm thêm vào giỏ!
-								<br />
-								<span className="text-sm text-gray-600">
-									Đã đến lúc tìm và thêm sản phẩm vào giỏ hàng
-									ngay
-								</span>
-							</Typography>
-							<div className="flex flex-col gap-2 w-full max-w-[60%]">
-								{quickAccess.map((item) => (
-									<Link
-										key={item.title}
-										href={item.url}
-										className="flex items-center justify-between gap-2 rounded-lg border border-gray-300 p-2 w-full hover:bg-gray-100 hover:scale-105 transition-all duration-200 ease-in-out">
-										<div className="flex items-center gap-2">
-											<Image
-												src={item.icon}
-												alt={item.title}
-												width={40}
-												height={40}
-												className="bg-gray-400 rounded-full"
-											/>
-											<strong>{item.title}</strong>
-										</div>
-										<button className="border border-gray-300 rounded-full p-1">
-											<MoveUpRight className="w-5 h-5" />
-										</button>
-									</Link>
-								))}
-							</div>
-						</div>
-					)}
-				</div>
-				{cart?.products?.length ? (
-					<div className="w-full p-2 border-t border-gray-200">
-						<span className="text-sm text-gray-600">
-							<strong className="text-base">
-								Phí và Giảm giá
-							</strong>{" "}
-							sẽ được tính toán ở bước tiếp theo
-						</span>
-						<br />
-						<span className="text-sm  text-gray-600">
-							Đơn hàng từ{" "}
-							<strong className="text-base">
-								{formatCurrency(3000000)}
-							</strong>{" "}
-							sẽ được miễn phí vận chuyện nội thành{" "}
-							<strong className="text-base">Hồ Chí Mình</strong>{" "}
-							từ shop
-						</span>
-					</div>
-				) : null}
-				{cart?.products?.length ? (
-					<Button
-						className="p-4 bg-red-400 font-bold hover:bg-red-500 rounded-tr-none rounded-tl-none top-0.5"
-						onClick={handleCheckout}>
-						<span className="text-white">
-							{" "}
-							Thanh toán {formatCurrency(cart?.totalPrice || 0)}
-						</span>
-					</Button>
-				) : null}
-			</Box>
-		</Modal>
-	);
-};
+  const hasProducts = cart?.products && cart.products.length > 0
 
-export default ModalCartItem;
+  return (
+    <Drawer open={open} onOpenChange={(isOpen: boolean) => !isOpen && handleClose()} direction="right">
+      <DrawerContent size="sm" showCloseButton>
+        {/* Header */}
+        <DrawerHeader className="flex-row items-center gap-3">
+          <ShoppingBag className="w-6 h-6 text-primary" />
+          <DrawerTitle>Giỏ hàng</DrawerTitle>
+        </DrawerHeader>
 
-const CartItem = ({
-	item,
-	isRemoving,
-	handleRemoveItemCart,
-	index,
-	cart,
-}: {
-	item: ICartProduct;
-	isRemoving: boolean;
-	handleRemoveItemCart: (productId: string, productName: string) => void;
-	index: number;
-	cart: ICart;
-}) => {
-	if (!item?.productOptions?.length) return;
-	return (
-		<div key={item?.productId}>
-			{item?.productOptions?.map((opt) => (
-				<>
-					<div
-						key={opt.productOptionId}
-						className="grid grid-cols-12 gap-4 min-h-[115px]">
-						<div className="relative col-span-3 min-w-[120px] min-h-[115px] border border-gray-200 rounded-10">
-							<Image
-								src={opt?.thumbnail?.path || NEW_MISSING_IMAGE}
-								alt={opt?.thumbnail?.alt || "product"}
-								className="hover:scale-105 transition-all duration-200 ease-in-out rounded-10 object-cover"
-								fill
-								sizes="100vw"
-							/>
-						</div>
-						<div className="col-span-5 flex flex-col justify-between">
-							<Typography className="text-lg text-ellipsis overflow-hidden text-blue-500 font-bold">
-								{item.categoryName || ""}
-							</Typography>
-							<Typography
-								className="text-sm"
-								style={{ color: "#656461" }}>
-								{item.productName}:&nbsp;
-								<strong>{opt.name || ""}</strong>
-							</Typography>
-							<Typography>
-								{formatCurrency(
-									item?.price +
-										item?.productOptions.reduce(
-											(acc, option) =>
-												acc + (option.price || 0),
-											0,
-										),
-								)}
-							</Typography>
-							<InputQuantity
-								quantity={item?.quantity}
-								productId={item?.productId}
-								productOptionId={
-									item?.productOptions?.[0]
-										?.productOptionId || ""
-								}
-							/>
-						</div>
-						<div className="col-span-4 relative w-full flex">
-							<div className="absolute top-0 right-0">
-								{isRemoving ? (
-									<CircularProgress
-										size={12}
-										color="primary"
-									/>
-								) : (
-									<IconButton
-										className="p-0.5"
-										onClick={() =>
-											handleRemoveItemCart(
-												item.productId,
-												item.productName,
-											)
-										}>
-										<DeleteOutlineOutlinedIcon className="fill-red-400" />
-									</IconButton>
-								)}
-							</div>
-							<div className="ml-auto mt-auto text-sm flex flex-col">
-								<span className="ml-auto">Tạm tính</span>
-								<strong className="text-lg text-right">
-									{formatCurrency(item?.totalPrice)}
-								</strong>
-							</div>
-						</div>
-					</div>
-				</>
-			))}
-		</div>
-	);
-};
+        {/* Content */}
+        {hasProducts ? (
+          <>
+            {/* Cart Items List */}
+            <DrawerBody className="space-y-6">
+              {cart?.products.map((item: ICartProduct, index: number) => (
+                <CartItem key={item.productId || index} item={item} cart={cart} handleRemoveItemCart={handleRemoveItemCart} isRemoving={isRemoving} />
+              ))}
+            </DrawerBody>
+
+            {/* Footer / Summary */}
+            <DrawerFooter className="bg-slate-50/50">
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-slate-500">
+                  <span className="text-sm">Tạm tính</span>
+                  <span className="text-sm font-medium">{formatCurrency(cart?.totalPrice || 0)}</span>
+                </div>
+                <div className="flex justify-between text-slate-500">
+                  <span className="text-sm">Phí vận chuyển</span>
+                  <span className="text-sm font-medium">Tính khi thanh toán</span>
+                </div>
+                <div className="flex justify-between text-slate-900 pt-2 border-t border-slate-200">
+                  <span className="text-base font-bold">Tổng cộng</span>
+                  <span className="text-xl font-bold">{formatCurrency(cart?.totalPrice || 0)}</span>
+                </div>
+              </div>
+              <button onClick={handleCheckout} className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <Lock className="w-5 h-5" />
+                Thanh toán ngay
+              </button>
+              <button onClick={handleClose} className="w-full text-slate-600 py-2 text-sm font-semibold hover:text-primary transition-colors underline underline-offset-4">
+                Tiếp tục mua sắm
+              </button>
+              <p className="text-xs text-slate-500 text-center">Miễn phí vận chuyển nội thành HCM cho đơn từ {formatCurrency(3000000)}</p>
+            </DrawerFooter>
+          </>
+        ) : (
+          /* Empty Cart State */
+          <DrawerBody>
+            <div className="h-full flex flex-col items-center text-center py-16 px-4">
+              <div className="size-24 bg-slate-100 rounded-full flex items-center justify-center mb-6">
+                <ShoppingCart className="w-12 h-12 text-slate-300" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Giỏ hàng trống</h3>
+              <p className="text-slate-500 mb-8 max-w-60">Chưa có sản phẩm nào trong giỏ hàng. Hãy khám phá các sản phẩm của chúng tôi!</p>
+              <Link href="/products" onClick={handleClose} className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <ShoppingBag className="w-5 h-5" />
+                Khám phá sản phẩm
+              </Link>
+
+              {/* Quick Access / Recommended */}
+              <div className="w-full mt-10 text-left">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Gợi ý cho bạn</h4>
+                <div className="space-y-3">
+                  {quickAccess.map((item) => (
+                    <Link key={item.title} href={item.url} onClick={handleClose} className="flex items-center gap-3 p-2 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group cursor-pointer">
+                      <div className="size-12 bg-slate-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <Image src={item.icon} alt={item.title} width={32} height={32} className="object-contain" />
+                      </div>
+                      <div className="flex-1">
+                        <h5 className="text-sm font-semibold text-slate-800">{item.title}</h5>
+                      </div>
+                      <div className="p-1.5 rounded-full bg-slate-100 text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </DrawerBody>
+        )}
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+export default ModalCartItem
+
+// Cart Item Component
+interface CartItemProps {
+  item: ICartProduct
+  cart: ICart
+  isRemoving: boolean
+  handleRemoveItemCart: (productId: string, productName: string) => void
+}
+
+const CartItem = ({ item, isRemoving, handleRemoveItemCart }: CartItemProps) => {
+  if (!item?.productOptions?.length) return null
+
+  const firstOption = item.productOptions[0]
+  const totalOptionPrice = item.productOptions.reduce((acc, opt) => acc + (opt.price || 0), 0)
+  const itemPrice = (item.price + totalOptionPrice) * item.quantity
+
+  return (
+    <div className="flex gap-4 group">
+      {/* Product Image */}
+      <div className="size-24 shrink-0 rounded-xl overflow-hidden border border-slate-100 bg-slate-50">
+        <div className="relative w-full h-full">
+          <Image src={firstOption?.thumbnail?.path || NEW_MISSING_IMAGE} alt={firstOption?.thumbnail?.alt || item.productName} fill className="object-cover" />
+        </div>
+      </div>
+
+      {/* Product Info */}
+      <div className="flex flex-1 flex-col justify-between min-w-0">
+        <div>
+          <div className="flex justify-between items-start gap-2">
+            <h3 className="font-semibold text-slate-900 leading-tight truncate">{item.categoryName || item.productName}</h3>
+            <p className="font-bold text-slate-900 shrink-0">{formatCurrency(itemPrice)}</p>
+          </div>
+          <p className="text-sm text-slate-500 mt-1 truncate">
+            {item.productName}: {firstOption?.name}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between mt-2">
+          <InputQuantity quantity={item?.quantity} productId={item?.productId} productOptionId={firstOption?.productOptionId || ''} isBuyGroup={item.isBuyGroup} />
+          <button onClick={() => handleRemoveItemCart(item.productId, item.productName)} disabled={isRemoving} className="text-xs font-semibold text-red-500 hover:text-red-600 flex items-center gap-1 uppercase tracking-wider transition-colors disabled:opacity-50">
+            {isRemoving ? <CircularProgress size={12} /> : <Trash2 className="w-4 h-4" />}
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

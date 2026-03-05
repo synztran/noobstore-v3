@@ -202,20 +202,31 @@ export const ShippingMethod = [
   // }
 ]
 
-export const PaymentMethod = [
-  { id: 0, name: 'Thanh toán khi nhận hàng', value: 'CASH_ON_DELIVERY' },
+export const PaymentMethod: {
+  id: number
+  name: string
+  value: EnumPaymentMethod
+  disabled?: boolean
+  imagesRight?: string[]
+}[] = [
+  // { id: 0, name: 'Thanh toán khi nhận hàng', value: 'CASH_ON_DELIVERY' },
+  {
+    id: 1,
+    name: 'Chuyển khoản ngân hàng',
+    value: EnumPaymentMethod.BANK_TRANSFER,
+  },
   {
     id: 2,
     name: 'Thanh toán qua ví Momo',
-    value: 'MOMO',
+    value: EnumPaymentMethod.MOMO,
     imagesRight: [MOMO_VERTICAL_LOGO],
   },
-  {
-    id: 3,
-    name: 'Thanh toán qua ngân hàng nội địa',
-    value: 'ATM',
-    disabled: true,
-  },
+  // {
+  //   id: 3,
+  //   name: 'Thanh toán qua ngân hàng nội địa',
+  //   value: 'ATM',
+  //   disabled: true,
+  // },
 ]
 
 export const BillingAddress = [

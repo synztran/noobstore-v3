@@ -15,8 +15,8 @@ const RAFFLE_PREFIX = `${DOMAIN_PREFIX}/raffle`
 const MAKER_PREFIX = `${DOMAIN_PREFIX}/maker`
 
 export const CATEGORY_API = {
-  ALL_CATEGORY: `${CATEGORY_PREFIX}/get-all`,
-  ALL_VALID_CATEGORY: `${CATEGORY_PREFIX}/get-all-valid`,
+  ALL_CATEGORY: `${CATEGORY_PREFIX}/all`,
+  ALL_VALID_CATEGORY: `${CATEGORY_PREFIX}/all-valid`,
   DETAIL: `${CATEGORY_PREFIX}`, // {id}
   ALL_CATEGORIES_BY_IDS: `${CATEGORY_PREFIX}/getCategoriesByIds`, // {ids}
   CREATE: `${CATEGORY_PREFIX}/add`,
@@ -41,6 +41,7 @@ export const ACCOUNT_API = {
   CURRENT_ACCOUNT: `${ACCOUNT_PREFIX}/get-user`,
   POST_NEW_USER_SHIPPING_ADDRESS: `${ACCOUNT_PREFIX}/shipping-address`,
   GET_RAFFLE_ENTRIES: `${ACCOUNT_PREFIX}/raffle-entries`,
+  PUT_SUBMIT_ORDER_PAYMENT: `${ACCOUNT_PREFIX}/order-payment-submit`,
 }
 
 export const AUTH_API = {

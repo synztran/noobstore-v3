@@ -1,16 +1,16 @@
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useAuth } from '@/context/Auth'
+import useMessageChat from '@/hook/useChat'
+import { useCalcBodyHeight } from '@/hook/useConfig'
+import { IAuthUser } from '@/interface/Context/auth'
 import { websocketService } from '@/services/ChatWS'
 import { Drawer } from '@mui/material'
-import { useAuth } from '@/context/Auth'
-import Image from 'next/image'
 import { X } from 'lucide-react'
-import { useCalcBodyHeight } from '@/hook/useConfig'
+import Image from 'next/image'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import ChatHeader from './ChatHeader'
 import ChatInput from './ChatInput'
-import { IAuthUser } from '@/interface/Context/auth'
-import useMessageChat from '@/hook/useChat'
 import ChatConnectionStatus from './connectionStatus'
 import CustomerInfoSidebar from './CustomerInfoSidebar'
-import ChatHeader from './ChatHeader'
 import MessageList from './MessageList'
 
 interface IProps {
@@ -18,7 +18,8 @@ interface IProps {
 }
 
 const ChatComponent = ({ isModule = false }: IProps) => {
-  const { user } = useAuth() as unknown as { user: IAuthUser }
+  const auth = useAuth()
+  const user = auth?.user as IAuthUser
   const [isOpen, setIsOpen] = useState(false)
   const [isInitializing, setInitializing] = useState(true)
   const [isSwichCustomer, setSwichCustomer] = useState(false)

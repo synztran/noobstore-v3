@@ -28,7 +28,7 @@ const statusConfig = {
   NEW: { label: 'MỚI', className: 'bg-emerald-500 text-white' },
   IN_STOCK: { label: 'CÒN HÀNG', className: 'bg-blue-500 text-white' },
   PRE_ORDER: { label: 'GROUP BUY', className: 'bg-primary text-white' },
-  SOLD_OUT: { label: 'RAFFLE', className: 'bg-amber-500 text-white' },
+  SOLD_OUT: { label: 'Hết hàng', className: 'bg-red-500 text-white' },
 }
 
 const ShopProductCard = ({ product, onFavoriteToggle, onClick }: Props) => {
