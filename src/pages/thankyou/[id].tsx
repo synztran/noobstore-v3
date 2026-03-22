@@ -105,7 +105,7 @@ const OrderTimeline = ({ orderStatus, orderedAt }: OrderTimelineProps) => {
   }, [orderStatus, orderedAt])
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-6 md:p-8">
+    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 md:p-4">
       <h3 className="text-lg font-bold text-slate-900 mb-6">Tiến trình đơn hàng</h3>
 
       {/* Horizontal Timeline for larger screens */}
@@ -177,7 +177,7 @@ interface LoyaltyPointsProps {
 }
 
 const LoyaltyPointsBanner = ({ points }: LoyaltyPointsProps) => (
-  <div className="bg-linear-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+  <div className="bg-linear-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
     <div className="flex items-center gap-4">
       <div className="w-16 h-16 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg text-yellow-900 animate-pulse">
         <span className="text-2xl">💰</span>
@@ -189,15 +189,15 @@ const LoyaltyPointsBanner = ({ points }: LoyaltyPointsProps) => (
         </p>
       </div>
     </div>
-    <Button variant="outline" className="whitespace-nowrap font-semibold">
+    <Link href="/rewards" className="whitespace-nowrap font-semibold">
       Xem phần thưởng
-    </Button>
+    </Link>
   </div>
 )
 
 // Product Item
 const ProductItem = ({ item }: { item: IOrderProduct }) => {
-  const thumbnail = item?.thumbnail?.path || NEW_MISSING_IMAGE
+  const thumbnail = item?.productOptions?.[0]?.thumbnail?.path || item?.thumbnail?.path || NEW_MISSING_IMAGE
   const productOptions = item?.productOptions || []
   const variantText = productOptions
     .map((opt) => opt.name)
@@ -212,8 +212,12 @@ const ProductItem = ({ item }: { item: IOrderProduct }) => {
       <div className="flex-1">
         <div className="flex justify-between items-start">
           <div>
-            <h4 className="text-slate-900 font-bold text-sm">{item.productName}</h4>
-            {variantText && <p className="text-slate-500 text-xs mt-1">{variantText}</p>}
+            <h4 className="text-slate-900 font-bold text-sm">{item.categoryName}</h4>
+            {variantText && (
+              <p className="text-slate-500 text-xs mt-1">
+                {item.productName}: {variantText}
+              </p>
+            )}
             <p className="text-slate-400 text-xs mt-0.5">x{item.quantity}</p>
           </div>
           <p className="text-slate-900 font-semibold text-sm">{formatCurrency(item.totalPrice)}</p>
@@ -238,16 +242,16 @@ const OrderSummaryCard = ({ order }: OrderSummaryProps) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden">
-      <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+      <div className="p-4 border-b border-slate-100 flex justify-between items-center">
         <h3 className="text-lg font-bold text-slate-900">Chi tiết đơn hàng</h3>
         <span className="text-sm text-slate-500">{order?.totalQuantity || 0} sản phẩm</span>
       </div>
-      <div className="p-6 space-y-6">
+      <div className="p-4 space-y-6">
         {products.map((item, index) => (
           <ProductItem key={item.productId || index} item={item} />
         ))}
       </div>
-      <div className="bg-slate-50 p-6 border-t border-slate-100">
+      <div className="bg-slate-50 p-4 border-t border-slate-100">
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="text-slate-500">Tạm tính</span>
@@ -275,7 +279,7 @@ const OrderSummaryCard = ({ order }: OrderSummaryProps) => {
 
 // Share Your Build Card
 const ShareBuildCard = () => (
-  <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-6 text-center">
+  <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 text-center">
     <h3 className="text-lg font-bold text-slate-900 mb-2">Chia sẻ với cộng đồng</h3>
     <p className="text-sm text-slate-500 mb-6">Khoe với mọi người về sản phẩm mới của bạn!</p>
     <div className="flex justify-center gap-4">
@@ -304,7 +308,7 @@ const CustomerDetailsCard = ({ order }: CustomerDetailsProps) => {
   const paymentMethod = order?.paymentMethod || EnumPaymentMethod.CASH_ON_DELIVERY
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-6 space-y-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-orange-100 p-4 space-y-4">
       <h3 className="text-lg font-bold text-slate-900">Thông tin khách hàng</h3>
       <div className="space-y-4 text-sm">
         <div>
@@ -363,14 +367,14 @@ const ThankYouPage = () => {
           {loyaltyPoints > 0 && <LoyaltyPointsBanner points={loyaltyPoints} />}
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Order Summary - Left (2 cols) */}
             <div className="lg:col-span-2">
               <OrderSummaryCard order={order} />
             </div>
 
             {/* Right Sidebar (1 col) */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
               <ShareBuildCard />
               <CustomerDetailsCard order={order} />
               <Link href="/" className="block w-full">

@@ -63,7 +63,7 @@ const OrderHeader = ({ orderId, isPaymentChecking }: OrderHeaderProps) => (
       <CheckCircle className="w-8 h-8" />
     </div>
     <div>
-      <h1 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900">{isPaymentChecking ? `Thanh toán đang được xác minh - Đơn hàng #${orderId?.replace('ORDER-', '')}` : `Đơn hàng #${orderId?.replace('ORDER-', '')} đã được đặt thành công`}</h1>
+      <h1 className="text-lg lg:text-xl font-black tracking-tight text-slate-900">{isPaymentChecking ? `Thanh toán đang được xác minh - Đơn hàng #${orderId?.replace('ORDER-', '')}` : `Đơn hàng #${orderId?.replace('ORDER-', '')} đã được đặt thành công`}</h1>
       <p className="text-slate-500 text-sm mt-1">{isPaymentChecking ? 'Chúng tôi đã nhận được thông báo thanh toán. Đội ngũ đang xác minh giao dịch của bạn.' : 'Cảm ơn bạn đã mua hàng. Vui lòng hoàn tất thanh toán bên dưới.'}</p>
     </div>
   </div>
@@ -294,7 +294,8 @@ const PriceRow = ({ label, value, valueClassName }: { label: string; value: stri
 
 // Order Summary Item
 const OrderSummaryItem = ({ item }: { item: IOrderProduct }) => {
-  const thumbnail = item?.thumbnail?.path || NEW_MISSING_IMAGE
+  console.log('item', item)
+  const thumbnail = item?.productOptions?.[0]?.thumbnail?.path || item?.thumbnail?.path || NEW_MISSING_IMAGE
   const productOptions = item?.productOptions || []
   const variantText = productOptions
     .map((opt) => opt.name)
@@ -303,13 +304,17 @@ const OrderSummaryItem = ({ item }: { item: IOrderProduct }) => {
 
   return (
     <div className="flex gap-4 items-start">
-      <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-slate-100 relative">
-        <Image alt={item.productName || 'Product'} className="w-full h-full object-cover" src={thumbnail} width={64} height={64} />
-        <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full backdrop-blur-sm">x{item.quantity}</span>
+      <div className="w-16 h-16 rounded-lg bg-slate-100 relative">
+        <Image alt={item.productName || 'Product'} className="w-full h-full" src={thumbnail} fill objectFit="cover" />
+        <span className="absolute -top-2 -right-2 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded-full backdrop-blur-sm">{item.quantity}</span>
       </div>
       <div className="flex flex-col flex-1 gap-1">
-        <h3 className="font-bold text-slate-900 text-sm line-clamp-2">{item.productName}</h3>
-        {variantText && <p className="text-xs text-slate-500">Variant: {variantText}</p>}
+        <h3 className="font-bold text-slate-900 text-sm line-clamp-2">{item.categoryName}</h3>
+        {variantText && (
+          <p className="text-xs text-slate-500">
+            {item.productName}: {variantText}
+          </p>
+        )}
         <p className="text-sm font-semibold text-slate-900 mt-1">{formatCurrency(item.totalPrice)}</p>
       </div>
     </div>
@@ -337,7 +342,7 @@ const OrderSummarySidebar = ({ order, email }: OrderSummarySidebarProps) => {
       </div>
 
       {/* Cart Items */}
-      <div className="flex flex-col gap-4 mb-6 max-h-100 overflow-y-auto pr-2">
+      <div className="flex flex-col gap-4 mb-6 max-h-100 pr-2">
         {products.map((item, index) => (
           <div key={item.productId || index} className={cn(index > 0 && 'pt-4 border-t border-slate-100')}>
             <OrderSummaryItem item={item} />
@@ -357,7 +362,6 @@ const OrderSummarySidebar = ({ order, email }: OrderSummarySidebarProps) => {
         <span className="text-lg font-bold text-slate-900">Tổng cộng</span>
         <div className="flex items-end flex-col">
           <span className="text-2xl font-black text-primary">{formatCurrency(totalPrice)}</span>
-          <span className="text-xs text-slate-500">VND</span>
         </div>
       </div>
 
@@ -391,11 +395,7 @@ const OrderConfirmPage = () => {
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
 
-  const { mutate: submitOrderPayment, isPending: isSubmitting } = useSubmitOrderPaymentMutation({
-    onSuccess: () => {
-      router.push(`/thankyou/${orderId}`)
-    },
-  })
+  const { mutate: submitOrderPayment, isPending: isSubmitting } = useSubmitOrderPaymentMutation()
 
   const handleConfirmTransfer = useCallback(async () => {
     try {

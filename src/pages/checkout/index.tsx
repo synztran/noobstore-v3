@@ -1,17 +1,17 @@
 import { getFirst } from '@/client'
-import CheckoutClient from '@/client/CheckoutClient'
 import { Button, Checkbox } from '@/components/ReUIComponent'
 import SelectWithIcon from '@/components/selectWIcon'
 import { BillingAddress, CountryFlag, PaymentMethod, ShippingMethod, VNCity } from '@/constants'
 import { NEW_MISSING_IMAGE } from '@/constants/Images'
 import { useAuth } from '@/context/Auth'
 import { IDataPostCheckout } from '@/interface/Client/Checkout'
+import { IResponse } from '@/interface/Client/interface'
 import { IOrderProduct } from '@/interface/Client/Order'
 import { cn } from '@/lib/utils'
 import useCartQuery from '@/react-query/cart/api/useCartQueries'
+import { useCheckoutMutation } from '@/react-query/order/api/useCheckoutMutation'
 import { Base } from '@/templates/Base'
 import { formatCurrency } from '@/utils/FormatNumber'
-import NotifyUtils from '@/utils/NotifyUtils'
 import { Field, Form, Formik, FormikErrors } from 'formik'
 import { ArrowRight, Building2, ChevronRight, CreditCard, Lock, Wallet } from 'lucide-react'
 import Image from 'next/image'
@@ -389,6 +389,7 @@ const CheckoutPage = () => {
   const router = useRouter()
   const { data: cart, isPending } = useCartQuery()
   const { user } = useAuth() as unknown as { user: { customerId: number; email: string } }
+  const { mutate: checkoutMutate, isPending: isSubmitCheckout } = useCheckoutMutation()
   const [deliveryMethod, setDeliveryMethod] = useState<ShippingMethodType>(ShippingMethod[0] as ShippingMethodType)
   const [saveInfo, setSaveInfo] = useState(false)
   const [inProgress, toggleProgress] = useState(false)
@@ -435,17 +436,18 @@ const CheckoutPage = () => {
     }
 
     toggleProgress(true)
-    const respCheckout = await CheckoutClient.postCheckout(formatFormData)
-    if (respCheckout.status === 'OK') {
-      const { orderId } = getFirst(respCheckout) || {}
-      NotifyUtils.success('Đặt hàng thành công !')
-      // Redirect to order-confirm for bank transfer, otherwise to thankyou
-      const redirectPath = formData.paymentMethod === 'BANK_TRANSFER' ? `/order-confirm/${orderId}` : `/thankyou/${orderId}`
-      setTimeout(() => router.push({ pathname: redirectPath }), 1000)
-    } else {
-      NotifyUtils.error(respCheckout.message || 'Có lỗi xảy ra, vui lòng thử lại sau')
-      toggleProgress(false)
-    }
+    checkoutMutate(
+      { payload: formatFormData },
+      {
+        onSuccess: (resp: IResponse<any>) => {
+          if (resp.status === 'OK') {
+            const { orderId } = getFirst(resp) || {}
+            const redirectPath = formData.paymentMethod === 'BANK_TRANSFER' ? `/order-confirm/${orderId}` : `/thankyou/${orderId}`
+            setTimeout(() => router.push({ pathname: redirectPath }), 1000)
+          }
+        },
+      }
+    )
   }
 
   const initialValues: CheckoutFormValues = {

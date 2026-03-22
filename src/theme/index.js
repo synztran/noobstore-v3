@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme } from '@mui/material'
 
 // Create a theme instance.
 // const theme = createTheme({
@@ -168,16 +168,39 @@ import { createTheme } from "@mui/material";
 // });
 
 const theme = createTheme({
-	overrides: {
-		MuiTooltip: {
-			tooltip: {
-				fontSize: "1rem",
-				fontFamily: "Nunito, sans-serif",
-				backgroundColor: "rgba(0, 0, 0, 0.87)",
-				color: "#fff",
-			},
-		},
-	},
-});
+  palette: {
+    primary: {
+      light: '#f47044', // 400
+      main: '#ca5025', // 500 — brand primary
+      dark: '#aa421e', // 600
+      contrastText: '#ffffff',
+    },
+    secondary: {
+      light: '#bb8672', // 400
+      main: '#a96650', // 500 — brand secondary
+      dark: '#8d5241', // 600
+      contrastText: '#ffffff',
+    },
+    info: {
+      light: '#33c5df', // 400
+      main: '#009bbd', // 500 — brand tertiary
+      dark: '#007d97', // 600
+      contrastText: '#ffffff',
+    },
+  },
+  typography: {
+    fontFamily: 'Nunito, sans-serif',
+  },
+  overrides: {
+    MuiTooltip: {
+      tooltip: {
+        fontSize: '1rem',
+        fontFamily: 'Nunito, sans-serif',
+        backgroundColor: 'rgba(0, 0, 0, 0.87)',
+        color: '#fff',
+      },
+    },
+  },
+})
 
-export default theme;
+export default theme

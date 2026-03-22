@@ -1,11 +1,14 @@
-import { CircularProgress } from "@mui/material";
-
 const LoadingComponent = () => {
   return (
-    <div className="h-[80vh - 130px - 320px] relative w-full">
-      <CircularProgress className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+    <div className="relative flex w-full items-center justify-center">
+      <div
+        className="
+          w-8 aspect-square rounded-full p-0.75 animate-[spin_2s_infinite]
+          [background:radial-gradient(farthest-side,#ec97b2_95%,#0000)_50%_0/10px_10px_no-repeat,radial-gradient(farthest-side,#0000_calc(100%-3px),#ec97b2_calc(100%-2px))_content-box]
+        "
+      />
     </div>
-  );
-};
+  )
+}
 
-export default LoadingComponent;
+export default LoadingComponent

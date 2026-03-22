@@ -1,8 +1,8 @@
 import { IRaffleListParams } from '@/client/RaffleClient'
+import { IPaginatedRafflesResponse } from '@/interface/Client/Raffle'
 import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query'
 import { queryPresets } from 'react-query/configs'
 import { appQueryKeys } from 'react-query/root'
-import { IPaginatedRafflesResponse } from '@/interface/Client/Raffle'
 
 type IQueryOptions = {
   params?: IRaffleListParams

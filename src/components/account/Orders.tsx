@@ -114,7 +114,6 @@ const ProductThumbnails: React.FC<{ products?: IOrderProduct[] }> = ({ products 
 
   const displayProducts = products.slice(0, 2)
   const displayProductOptions = displayProducts.map((p) => p.productOptions).flat()
-  console.log('displayProductOptions', displayProductOptions)
   const remainingCount = products.map((p) => p.productOptions.length).reduce((sum, count) => sum + count, 0) - displayProductOptions.length
 
   return (
@@ -156,7 +155,7 @@ const OrderCard: React.FC<{ order: IOrdered; isFirst?: boolean; onViewDetail?: (
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-3">
-                <span className="font-bold text-lg text-slate-900 dark:text-white">Đơn hàng #{order.orderId?.slice(-8) || 'N/A'}</span>
+                <span className="font-bold text-lg text-slate-900 dark:text-white">Đơn hàng #{order.orderId || 'N/A'}</span>
                 <span className="text-sm text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">{formatOrderDate(order.orderedAt)}</span>
               </div>
               <div className="flex items-center gap-2 mt-1">

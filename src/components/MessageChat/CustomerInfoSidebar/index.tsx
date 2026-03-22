@@ -1,10 +1,10 @@
-import { IRoom } from '@/services/ChatWS'
-import { TConnectionStatus, MappingConnectionStatus } from '../interface'
-import Image from 'next/image'
-import { Badge, History, Ban, Headphones } from 'lucide-react'
 import { Button } from '@/components/ReUIComponent/Button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ReUIComponent/Tooltip'
 import { IAuthUser } from '@/interface/Context/auth'
+import { IRoom } from '@/services/ChatWS'
+import { Badge, Ban, Headphones, History } from 'lucide-react'
+import Image from 'next/image'
+import { MappingConnectionStatus, TConnectionStatus } from '../interface'
 
 interface IProps {
   currentRoom: IRoom | null
@@ -116,7 +116,7 @@ const CustomerInfoSidebar = ({ currentRoom, connectionStatus, connectionStats, i
               </div>
             </div>
           )}
-          {!isAdmin && (
+          {/* {!isAdmin && (
             <div className="flex flex-col gap-1">
               <span className="text-xs text-gray-500">Thời gian phản hồi</span>
               <div className="font-medium text-sm flex items-center gap-2 bg-gray-50 p-2 rounded-lg border border-gray-200/50">
@@ -124,7 +124,7 @@ const CustomerInfoSidebar = ({ currentRoom, connectionStatus, connectionStats, i
                 Thường trả lời trong 5 phút
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Quick Actions */}

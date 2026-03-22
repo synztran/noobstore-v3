@@ -17,10 +17,11 @@ const MAKER_PREFIX = `${DOMAIN_PREFIX}/maker`
 export const CATEGORY_API = {
   ALL_CATEGORY: `${CATEGORY_PREFIX}/all`,
   ALL_VALID_CATEGORY: `${CATEGORY_PREFIX}/all-valid`,
-  DETAIL: `${CATEGORY_PREFIX}`, // {id}
+  DETAIL: `${CATEGORY_PREFIX}`, // {slug}
   ALL_CATEGORIES_BY_IDS: `${CATEGORY_PREFIX}/getCategoriesByIds`, // {ids}
   CREATE: `${CATEGORY_PREFIX}/add`,
   UPDATE: `${CATEGORY_PREFIX}/update`,
+  DELETE: `${CATEGORY_PREFIX}/deletes`,
 }
 
 export const PRODUCTS_API = {

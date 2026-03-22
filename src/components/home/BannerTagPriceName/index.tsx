@@ -1,31 +1,24 @@
-import React from "react";
-import Image from "next/image";
-import {
-  KEYBOARD_FILCO,
-  KEYBOARD_TGR_910,
-  LOGO_STORE,
-  NEW_MISSING_IMAGE,
-  SWITCH_BCP,
-} from "@/constants/Images";
-import { Hammer, Star } from "lucide-react";
-import { formatCurrency } from "@/utils/FormatNumber";
+import { KEYBOARD_FILCO, KEYBOARD_TGR_910, LOGO_STORE, NEW_MISSING_IMAGE, SWITCH_BCP } from '@/constants/Images'
+import { formatCurrency } from '@/utils/FormatNumber'
+import { Hammer, Star } from 'lucide-react'
+import Image from 'next/image'
 
 // You can replace the below image constants with your actual images from storage/constants/images/index.js
-const KEYCAPS_V3_IMAGE = NEW_MISSING_IMAGE;
-const CUSTOMIZE_KEYBOARD_IMAGE = NEW_MISSING_IMAGE;
+const KEYCAPS_V3_IMAGE = NEW_MISSING_IMAGE
+const CUSTOMIZE_KEYBOARD_IMAGE = NEW_MISSING_IMAGE
 
 // Data for the cards, easy to change later
 const featuredProduct = {
-  tag: "NEW",
-  title: "TGR 910 ME V2",
-  price: "$450.99",
+  tag: 'NEW',
+  title: 'TGR 910 ME V2',
+  price: '$450.99',
   image: KEYBOARD_TGR_910,
-};
+}
 
 const featuredSwitches = [
   {
-    brand: "Kailh",
-    name: "Moon V2 Linear Switches",
+    brand: 'Kailh',
+    name: 'Moon V2 Linear Switches',
     price: 6000,
     image: SWITCH_BCP,
     rating: {
@@ -34,8 +27,8 @@ const featuredSwitches = [
     },
   },
   {
-    brand: "Kailh",
-    name: "Salmon Tactile Switch",
+    brand: 'Kailh',
+    name: 'Salmon Tactile Switch',
     price: 6000,
     image: SWITCH_BCP,
     rating: {
@@ -44,8 +37,8 @@ const featuredSwitches = [
     },
   },
   {
-    brand: "Kailh",
-    name: "Hippo Linear Switches",
+    brand: 'Kailh',
+    name: 'Hippo Linear Switches',
     price: 6000,
     image: SWITCH_BCP,
     rating: {
@@ -53,24 +46,21 @@ const featuredSwitches = [
       reviews: 100,
     },
   },
-];
+]
 
 const customizeSection = {
   title: (
     <div className="text-center text-2xl" style={{ lineHeight: 1 }}>
-      <span
-        className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent text-2xl font-bold"
-        style={{ lineHeight: 1 }}
-      >
-        Customize
+      <span className="bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent text-2xl font-bold" style={{ lineHeight: 1 }}>
+        Tùy chỉnh
       </span>
-      &nbsp;your dream keyboard
+      &nbsp;bàn phím mơ ước của bạn
     </div>
   ),
-  description: "Choose from various layouts, switches and keycaps.",
-  buttonText: "Start building",
+  description: 'Chọn từ các layout, switch và keycap khác nhau.',
+  buttonText: 'Bắt đầu xây dựng',
   image: CUSTOMIZE_KEYBOARD_IMAGE,
-};
+}
 
 const BannerTagPriceName = () => {
   return (
@@ -78,89 +68,54 @@ const BannerTagPriceName = () => {
       <div
         className="flex-1 rounded-2xl shadow-md px-4 pt-4 flex flex-col items-center relative col-span-1 gap-2"
         style={{
-          background:
-            "linear-gradient(135deg, #fee2e2 0%, #fef2f2 60%, #fee2e2 100%)",
+          background: 'linear-gradient(135deg, #fee2e2 0%, #fef2f2 60%, #fee2e2 100%)',
         }}
       >
         <div className="relative mr-auto">
-          <span className="bg-white text-black text-[12px] font-bold px-3 py-1 rounded-lg shadow-sm border border-gray-400">
-            {featuredProduct.tag}
-          </span>
+          <span className="bg-white text-black text-[12px] font-bold px-3 py-1 rounded-lg shadow-sm border border-gray-400">{featuredProduct.tag}</span>
         </div>
-        <div
-          className="text-2xl font-semibold text-center px-8"
-          style={{ lineHeight: 1 }}
-        >
+        <div className="text-2xl font-semibold text-center px-8" style={{ lineHeight: 1 }}>
           {featuredProduct.title}
         </div>
-        <div className="text-gray-500 font-bold text-xl">
-          {featuredProduct.price}
-        </div>
+        <div className="text-gray-500 font-bold text-xl">{featuredProduct.price}</div>
 
         <div className="w-full flex-1 flex items-end justify-center relative mt-4">
-          <Image
-            src={featuredProduct.image}
-            alt={featuredProduct.title}
-            fill
-            className="object-cover"
-          />
+          <Image src={featuredProduct.image} alt={featuredProduct.title} fill className="object-cover" />
         </div>
       </div>
 
       {/* Middle Card: Featured Switches */}
-      <div className="bg-gray-200 rounded-2xl shadow-md p-4 gap-2 grid col-span-1">
+      <div className="bg-gray-100 rounded-2xl shadow-md p-4 gap-2 grid col-span-1">
         <div className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-semibold w-fit opacity-0 h-[24px]" />
         <div className="flex flex-col items-center">
-          <span
-            className="text-2xl font-bold text-gray-600"
-            style={{ lineHeight: 1 }}
-          >
-            Featured
+          <span className="text-2xl font-bold text-gray-600" style={{ lineHeight: 1 }}>
+            Switch
           </span>
-          <span
-            className="text-2xl font-bold text-black"
-            style={{ lineHeight: 1 }}
-          >
-            Switches
+          <span className="text-2xl font-bold text-black" style={{ lineHeight: 1 }}>
+            Nổi bật
           </span>
         </div>
 
         {/* Container for switches */}
         <div className="grid grid-rows-3 gap-3 my-4">
           {featuredSwitches.map((sw, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-[80px_1fr] items-center bg-white rounded-md shadow-sm p-1 gap-2 cursor-pointer hover:shadow-lg transition-all duration-300"
-            >
+            <div key={idx} className="grid grid-cols-[80px_1fr] items-center bg-white rounded-md shadow-sm p-1 gap-2 cursor-pointer hover:shadow-lg transition-all duration-300">
               <div className="relative rounded-md bg-gray-200 p-2 w-full h-full min-h-[80px]">
-                <Image
-                  src={sw.image}
-                  alt={sw.name}
-                  fill
-                  className="object-cover rounded"
-                />
+                <Image src={sw.image} alt={sw.name} fill className="object-cover rounded" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <div
-                    className="text-sm text-gray-500 font-bold"
-                    style={{ lineHeight: 1 }}
-                  >
+                  <div className="text-sm text-gray-500 font-bold" style={{ lineHeight: 1 }}>
                     {sw.brand}
                   </div>
-                  <div
-                    className="flex items-center gap-1 text-sm"
-                    style={{ lineHeight: 1 }}
-                  >
+                  <div className="flex items-center gap-1 text-sm" style={{ lineHeight: 1 }}>
                     <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" />
                     <span className="text-sm">{sw.rating.stars}</span>
                     <span className="text-sm">({sw.rating.reviews})</span>
                   </div>
                 </div>
                 <div className="font-medium text-base">{sw.name}</div>
-                <div className="text-sm text-gray-700 font-bold">
-                  {formatCurrency(sw.price)}
-                </div>
+                <div className="text-sm text-gray-700 font-bold">{formatCurrency(sw.price)}</div>
               </div>
             </div>
           ))}
@@ -169,22 +124,12 @@ const BannerTagPriceName = () => {
         {/* Help section */}
         <div className="flex items-center justify-center gap-4 my-4">
           <div className="relative w-16 h-16">
-            <Image
-              src={LOGO_STORE}
-              alt="help"
-              fill
-              style={{ objectFit: "cover" }}
-              className="rounded-full object-contain"
-            />
+            <Image src={LOGO_STORE} alt="help" fill style={{ objectFit: 'cover' }} className="rounded-full object-contain" />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-lg">Need some help?</span>
-            <a
-              href="#"
-              className="decoration-none text-blue-500 font-bold text-sm"
-              style={{ lineHeight: 1 }}
-            >
-              We're here to help
+            <span className="font-semibold text-lg">Bạn cần hỗ trợ?</span>
+            <a href="#" className="decoration-none text-blue-500 font-bold text-sm" style={{ lineHeight: 1 }}>
+              Chúng tôi sẵn sàng giúp đỡ
             </a>
           </div>
         </div>
@@ -198,29 +143,23 @@ const BannerTagPriceName = () => {
           className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{
             padding: 2,
-            background: "linear-gradient(135deg, #5B8CFF 0%, #C26EFF 100%)",
-            WebkitMask:
-              "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-            WebkitMaskComposite: "xor",
-            maskComposite: "exclude",
+            background: 'linear-gradient(135deg, #5B8CFF 0%, #C26EFF 100%)',
+            WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+            WebkitMaskComposite: 'xor',
+            maskComposite: 'exclude',
           }}
         />
         <div className="relative z-10 w-full">
-          <div className="text-xl font-bold mb-4 text-center">
-            {customizeSection.title}
-          </div>
-          <div className="text-center text-gray-600 mb-4 text-lg">
-            {customizeSection.description}
-          </div>
+          <div className="text-xl font-bold mb-4 text-center">{customizeSection.title}</div>
+          <div className="text-center text-gray-600 mb-4 text-lg">{customizeSection.description}</div>
           <div className="flex justify-center">
             <button
               className="inline-flex items-center gap-2 px-4 py-2 rounded-md font-semibold text-blue-600 bg-white relative transition group"
               style={{
-                border: "2px solid transparent",
-                backgroundImage:
-                  "linear-gradient(white, white), linear-gradient(90deg, #5B8CFF 0%, #C26EFF 100%)",
-                backgroundOrigin: "border-box",
-                backgroundClip: "padding-box, border-box",
+                border: '2px solid transparent',
+                backgroundImage: 'linear-gradient(white, white), linear-gradient(90deg, #5B8CFF 0%, #C26EFF 100%)',
+                backgroundOrigin: 'border-box',
+                backgroundClip: 'padding-box, border-box',
               }}
             >
               <Hammer className="group-hover:rotate-12 transition-all duration-300" />
@@ -228,17 +167,12 @@ const BannerTagPriceName = () => {
             </button>
           </div>
           <div className="relative w-full h-full">
-            <Image
-              src={KEYBOARD_FILCO}
-              alt="keyboard"
-              fill
-              className="object-cover"
-            />
+            <Image src={KEYBOARD_FILCO} alt="keyboard" fill className="object-cover" />
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BannerTagPriceName;
+export default BannerTagPriceName

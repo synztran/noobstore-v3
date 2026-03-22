@@ -1,8 +1,11 @@
-import { forwardRef } from 'react'
-import { IMessage, IRoom } from '@/services/ChatWS'
+import { IOrdered } from '@/interface/Client/Order'
 import { IAuthUser } from '@/interface/Context/auth'
+import { EnumOrderStatus, EnumPaymentStatus } from '@/interface/interface'
+import { IMessage, IRoom } from '@/services/ChatWS'
+import { formatCurrency } from '@/utils/FormatNumber'
+import { Info, Receipt } from 'lucide-react'
 import Image from 'next/image'
-import { Info, ExternalLink } from 'lucide-react'
+import { forwardRef } from 'react'
 
 interface IProps {
   messages: IMessage[]
@@ -10,9 +13,10 @@ interface IProps {
   user: IAuthUser | null
   isAdmin: boolean
   isLoading?: boolean
+  orderMap?: Record<string, IOrdered>
 }
 
-const MessageList = forwardRef<HTMLDivElement, IProps>(({ messages, currentRoom, user, isAdmin, isLoading = false }, ref) => {
+const MessageList = forwardRef<HTMLDivElement, IProps>(({ messages, currentRoom, user, isAdmin, isLoading = false, orderMap = {} }, ref) => {
   const formatTime = (timestamp: string) => {
     return new Date(timestamp).toLocaleTimeString('vi-VN', {
       hour: '2-digit',
@@ -52,6 +56,65 @@ const MessageList = forwardRef<HTMLDivElement, IProps>(({ messages, currentRoom,
     }
     return message.senderRole === 'customer'
   }
+
+  const getPaymentStatusLabel = (status?: EnumPaymentStatus) => {
+    switch (status) {
+      case EnumPaymentStatus.PAID:
+        return 'Đã thanh toán'
+      case EnumPaymentStatus.PENDING:
+        return 'Chờ thanh toán'
+      case EnumPaymentStatus.CANCELLED:
+        return 'Đã huỷ thanh toán'
+      case EnumPaymentStatus.REFUNDED:
+        return 'Đã hoàn tiền'
+      default:
+        return 'Chưa cập nhật'
+    }
+  }
+
+  const getOrderStatusLabel = (status?: EnumOrderStatus) => {
+    switch (status) {
+      case EnumOrderStatus.PROCESSING:
+        return 'Đang xử lý'
+      case EnumOrderStatus.COMPLETED:
+        return 'Hoàn thành'
+      case EnumOrderStatus.CANCELLED:
+        return 'Đã huỷ'
+      default:
+        return 'Chưa cập nhật'
+    }
+  }
+
+  const renderMessageContent = (message: IMessage, isMe: boolean) => {
+    const isIncludeOrder = message.message.includes('Đơn hàng #')
+    console.log('isIncludeOrder', isIncludeOrder)
+    if (!isIncludeOrder) {
+      return <p>{message.message}</p>
+    }
+
+    // Try to get order from map first (might have more complete data), fallback to message.orderInfo
+    const orderId = message.message.match(/Đơn hàng #(\w+)/)?.[1] || message?.orderInfo?.orderId
+    console.log('orderId', orderId)
+    const orderInfo = orderMap[orderId as keyof typeof orderMap] || message.orderInfo
+
+    return (
+      <div className={`min-w-60 rounded-xl border p-3 ${isMe ? 'border-orange-300 bg-orange-400/30 text-white' : 'border-gray-200 bg-white text-gray-900'}`}>
+        <div className={`mb-2 flex items-center gap-2 text-xs font-semibold ${isMe ? 'text-orange-100' : 'text-orange-500'}`}>
+          <Receipt className="h-3.5 w-3.5" />
+          Liên kết đơn hàng
+        </div>
+        <p className={`text-sm font-bold ${isMe ? 'text-white' : 'text-gray-900'}`}>{message.message}</p>
+        <div className={`mt-2 space-y-1 text-xs ${isMe ? 'text-orange-100' : 'text-gray-600'}`}>
+          <p>Tổng tiền: {formatCurrency(orderInfo?.totalPrice || 0)}</p>
+          <p>Số lượng: {orderInfo?.totalQuantity || 0} sản phẩm</p>
+          <p>Thanh toán: {getPaymentStatusLabel(orderInfo?.paymentStatus)}</p>
+          <p>Trạng thái: {getOrderStatusLabel(orderInfo?.orderStatus)}</p>
+        </div>
+      </div>
+    )
+  }
+
+  console.log('messages', messages)
 
   // Loading skeleton
   if (isLoading) {
@@ -122,7 +185,7 @@ const MessageList = forwardRef<HTMLDivElement, IProps>(({ messages, currentRoom,
                   {isMe ? 'Tôi' : getSenderName(msg)}, {formatTime(msg.timestamp)}
                 </span>
                 <div className={`px-5 py-4 text-sm leading-relaxed shadow-sm ${isMe ? 'rounded-2xl rounded-br-none bg-orange-500 text-white' : 'rounded-2xl rounded-bl-none bg-white border border-gray-200 text-gray-900'}`} style={{ wordBreak: 'break-word' }}>
-                  <p>{msg.message}</p>
+                  {renderMessageContent(msg, isMe)}
                 </div>
               </div>
             </div>

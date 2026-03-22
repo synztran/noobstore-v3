@@ -1,7 +1,9 @@
 import { NEW_MISSING_IMAGE } from '@/constants/Images'
+import { formatCurrency } from '@/utils/FormatNumber'
 import { Heart, Star } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
+import { Button } from '../ReUIComponent'
 
 export interface ProductCardData {
   id: string | number
@@ -9,13 +11,15 @@ export interface ProductCardData {
   brand: string
   description?: string
   price: number
-  originalPrice?: number
+  // originalPrice?: number
   rating: number
   reviewCount: number
   images: string[]
   status?: 'NEW' | 'IN_STOCK' | 'PRE_ORDER' | 'SOLD_OUT'
   isFavorited?: boolean
   slug: string
+  salePrice?: number
+  salePricePercent?: number
 }
 
 interface Props {
@@ -32,16 +36,10 @@ const statusConfig = {
 }
 
 const ShopProductCard = ({ product, onFavoriteToggle, onClick }: Props) => {
+  console.log('product', product)
   const [selectedImage, setSelectedImage] = useState(0)
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
-    }).format(price)
-  }
-
-  const discountPercent = product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : null
+  // const discountPercent = product.salePrice ? Math.round(((product.price - product.salePrice) / product.price) * 100) : null
 
   return (
     <div className="group flex flex-col bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary/30 cursor-pointer" onClick={() => onClick?.(product.slug)}>
@@ -55,18 +53,19 @@ const ShopProductCard = ({ product, onFavoriteToggle, onClick }: Props) => {
           {product.status && <div className={`absolute bottom-2 left-2 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide ${statusConfig[product.status].className}`}>{statusConfig[product.status].label}</div>}
 
           {/* Discount Badge - Bottom Right */}
-          {discountPercent && <div className="absolute bottom-3 right-14 px-2 py-1 bg-red-500 text-white rounded text-xs font-bold">-{discountPercent}%</div>}
+          {product.salePricePercent ? <div className="absolute top-2 left-2 px-2 py-1 bg-red-500 text-white rounded text-xs font-bold">-{product.salePricePercent}%</div> : null}
 
           {/* Favorite Button - Top Right */}
-          <button
+          <Button
+            size="sm"
             onClick={(e) => {
               e.stopPropagation()
               onFavoriteToggle?.(product.id)
             }}
-            className={`absolute top-3 right-3 p-2 rounded-full transition-all ${product.isFavorited ? 'bg-red-50 text-red-500' : 'bg-white/80 text-slate-400 hover:text-red-500 hover:bg-white'} shadow-md hover:scale-110`}
+            className={`absolute top-2 right-2 rounded-full transition-all ${product.isFavorited ? 'bg-red-50 text-red-500' : 'bg-white/80 text-slate-400 hover:text-red-500 hover:bg-white'} shadow-md hover:scale-110`}
           >
             <Heart className={`w-4 h-4 ${product.isFavorited ? 'fill-current' : ''}`} />
-          </button>
+          </Button>
         </div>
         {/* Thumbnail Sidebar */}
         <div className="w-full flex gap-2 z-10">
@@ -86,11 +85,14 @@ const ShopProductCard = ({ product, onFavoriteToggle, onClick }: Props) => {
       </div>
 
       {/* Content Section */}
-      <div className="p-4 pt-3 flex-1 flex flex-col">
+      <div className="p-4 flex-1 flex flex-col">
         {/* Brand & Price Row */}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-red-600">{product.brand}</span>
-          <span className="font-bold text-base text-slate-900 dark:text-white">{formatPrice(product.price)}</span>
+          <span className="text-sm font-bold uppercase tracking-wider text-red-600">{product.brand}</span>
+          <div className="relative">
+            <span className="font-bold text-base text-slate-900 dark:text-white">{formatCurrency(product.salePrice || product.price)}</span>
+            {product.salePrice ? <span className="absolute -top-3 right-0 font-semibold text-xs line-through decoration-red-600  ml-2">{formatCurrency(product.price)}</span> : null}
+          </div>
         </div>
 
         {/* Name */}

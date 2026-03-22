@@ -68,8 +68,6 @@ const Footer = () => {
             <p className="font-semibold text-gray-800 text-lg">Địa chỉ</p>
 
             <div className="flex flex-col items-start gap-2 text-gray-600 ">
-              NoobStore
-              <br />
               <Link href="https://maps.app.goo.gl/HXmDG3stY3fspqcz8" target="_blank" className="text-gray-600 transition-all duration-300 hover:text-blue-500">
                 70/4b Đường 47 Hiệp Bình Chánh Thủ Đức, TP. Hồ Chí minh
               </Link>

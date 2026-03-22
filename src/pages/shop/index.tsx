@@ -1,21 +1,18 @@
 import Pagination from '@/components/Pagination'
 import ShopFilterSection from '@/components/shop/ShopFilterSection'
-import ShopProductCard, { ProductCardData } from '@/components/shop/ShopProductCard'
+import ShopProductCard from '@/components/shop/ShopProductCard'
 import ShopSearchBar from '@/components/shop/ShopSearchBar'
 import { useAuth } from '@/context/Auth'
 import useShop from '@/hook/useShop'
-import { EnumSaleStatus, ICategory } from '@/interface/interface'
-import useCategoryQuery from '@/react-query/shop/api/useCategoryQueries'
 import { Base } from '@/templates/Base'
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import { CircularProgress } from '@mui/material'
 import { SlidersHorizontal } from 'lucide-react'
 import { useRouter } from 'next/router'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 const ShopPage = () => {
   const router = useRouter()
-  const { status } = router.query
   const { isAuthenticated } = useAuth() as unknown as {
     isAuthenticated: boolean
   }
@@ -23,80 +20,7 @@ const ShopPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9
 
-  const { setMobileFiltersOpen, priceRange, searchQuery, sortOption, updateSearch } = useShop()
-
-  const { data: categoryList, isLoading } = useCategoryQuery({
-    status: status as string,
-    isValidate: true,
-  })
-
-  // Transform category data to product card format
-  const products: ProductCardData[] = useMemo(() => {
-    if (!categoryList) return []
-    return categoryList.map((category: ICategory) => ({
-      id: category.categoryId || category.slug || '',
-      name: category.categoryName,
-      brand: category.brand || 'NoobStore',
-      description: category.description,
-      price: category.minPrice || 0,
-      originalPrice: category.maxPrice !== category.minPrice ? category.maxPrice : undefined,
-      rating: typeof category.rating === 'object' ? category.rating.star : 4.5,
-      reviewCount: typeof category.rating === 'object' ? category.rating.rateMessages?.length || 0 : 0,
-      images: category.images?.length ? category.images.map((img) => img.path) : [category.thumbnail?.path || '/images/placeholder.png'],
-      status: mapStatus(category.status),
-      isFavorited: false,
-      slug: category.slug || '',
-    }))
-  }, [categoryList])
-
-  // Map EnumSaleStatus to ProductCardData status
-  function mapStatus(status: ICategory['status']): ProductCardData['status'] {
-    switch (status) {
-      case EnumSaleStatus.INSTOCK:
-        return 'IN_STOCK'
-      case EnumSaleStatus.OUTSTOCK:
-        return 'SOLD_OUT'
-      case EnumSaleStatus.GB:
-        return 'PRE_ORDER'
-      case EnumSaleStatus.TBD:
-        return 'NEW'
-      default:
-        return undefined
-    }
-  }
-
-  // Filter and sort products
-  const filteredProducts = useMemo(() => {
-    let result = [...products]
-
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      result = result.filter((p) => p.name.toLowerCase().includes(query) || p.brand.toLowerCase().includes(query) || p.description?.toLowerCase().includes(query))
-    }
-
-    // Price filter
-    result = result.filter((p) => p.price >= priceRange.min && p.price <= priceRange.max)
-
-    // Sort
-    switch (sortOption) {
-      case 'price_asc':
-        result.sort((a, b) => a.price - b.price)
-        break
-      case 'price_desc':
-        result.sort((a, b) => b.price - a.price)
-        break
-      case 'newest':
-        result.sort((a, b) => String(b.id).localeCompare(String(a.id)))
-        break
-      case 'popular':
-      default:
-        result.sort((a, b) => b.reviewCount - a.reviewCount)
-        break
-    }
-
-    return result
-  }, [products, searchQuery, priceRange, sortOption])
+  const { setMobileFiltersOpen, isLoading, categoryList: filteredProducts, searchQuery, updateSearch } = useShop()
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage)

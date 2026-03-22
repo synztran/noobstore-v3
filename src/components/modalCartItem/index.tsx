@@ -27,7 +27,6 @@ const quickAccess = [
 
 const ModalCartItem = ({ open, handleClose }: Props) => {
   const { data: cart } = useCartQuery()
-  console.log('Cart data:', cart)
   const router = useRouter()
   const handleRemoveProduct = useRemoveItemMutation()
   const [isRemoving, setRemoving] = useState(false)

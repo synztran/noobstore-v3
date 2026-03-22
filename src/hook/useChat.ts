@@ -1,8 +1,33 @@
-import { useEffect, useState, useCallback } from 'react'
-import { IMessage } from '@/services/ChatWS'
 import { TConnectionStatus } from '@/components/MessageChat/interface'
-import { IRoom, websocketService } from '@/services/ChatWS'
+import { IOrdered } from '@/interface/Client/Order'
 import { IAuthUser } from '@/interface/Context/auth'
+import { ChatMessageType, IChatOrderInfo, IMessage, IRoom, websocketService } from '@/services/ChatWS'
+import { useEffect, useState } from 'react'
+
+interface SendMessageOptions {
+  messageType?: ChatMessageType
+  orderInfo?: IChatOrderInfo
+}
+
+type IRawMessage = Partial<IMessage> & {
+  senderId?: number
+  senderRole?: 'customer' | 'admin'
+  message?: string
+  timestamp?: string
+  images?: string[]
+  messageType?: ChatMessageType
+  orderInfo?: IChatOrderInfo
+}
+
+const mapIncomingMessage = (msg: IRawMessage): IMessage => ({
+  senderId: msg.senderId || 0,
+  senderRole: msg.senderRole || 'customer',
+  message: msg.message || '',
+  timestamp: msg.timestamp || new Date().toISOString(),
+  images: msg.images,
+  messageType: msg.messageType || 'text',
+  orderInfo: msg.orderInfo,
+})
 
 // Helper to check if message is duplicate (same content within 5 seconds)
 const isDuplicateMessage = (existing: IMessage[], newMsg: IMessage): boolean => {
@@ -12,7 +37,7 @@ const isDuplicateMessage = (existing: IMessage[], newMsg: IMessage): boolean => 
   })
 }
 
-const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; isModule?: boolean; isOpen?: boolean }) => {
+const useMessageChat = ({ user, userOrdersMap, isModule, isOpen }: { user: IAuthUser | null; userOrdersMap: Record<string, IOrdered>; isModule?: boolean; isOpen?: boolean }) => {
   const [listRoom, setListRoom] = useState<IRoom[]>([])
   const [messages, setMessages] = useState<IMessage[]>([])
   const [currentRoom, setCurrentRoom] = useState<IRoom | null>(null)
@@ -48,25 +73,14 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
       switch (message.action) {
         case 'sync_response':
           if (message.payload && Array.isArray(message.payload.messages)) {
-            const mappedMessages = message.payload.messages.map((msg: any) => ({
-              customerId: msg.customerId,
-              senderId: msg.senderId,
-              senderRole: msg.senderRole,
-              message: msg.message,
-              timestamp: msg.timestamp,
-            }))
+            const mappedMessages = message.payload.messages.map((msg) => mapIncomingMessage(msg))
+            // populateOrderMapFromMessages(mappedMessages)
             setMessages(mappedMessages)
           }
           break
         case 'message_update':
-          const mappedMessage: IMessage[] =
-            message.payload.messages?.map((msg) => ({
-              senderId: msg.senderId,
-              senderRole: msg.senderRole,
-              message: msg.message,
-              timestamp: msg.timestamp,
-              images: msg.images,
-            })) || []
+          const mappedMessage: IMessage[] = message.payload.messages?.map((msg) => mapIncomingMessage(msg)) || []
+          // populateOrderMapFromMessages(mappedMessage)
           if (mappedMessage && mappedMessage.length) {
             setMessages((prev) => {
               const newMessages = mappedMessage.filter((newMsg) => !isDuplicateMessage(prev, newMsg))
@@ -76,12 +90,7 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
           break
         case 'session':
           if (message.payload && message.payload.room) {
-            const mappedMessages = message.payload?.room?.messages?.map((msg: any) => ({
-              senderId: msg.senderId,
-              senderRole: msg.senderRole,
-              message: msg.message,
-              timestamp: msg.timestamp,
-            }))
+            const mappedMessages = message.payload?.room?.messages?.map((msg) => mapIncomingMessage(msg)) || []
             setMessages(mappedMessages)
             setCurrentRoom(message?.payload?.room || null)
           }
@@ -92,21 +101,16 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
           }
           break
         case 'admin_selected_room_response':
-          const adminMapMessage: IMessage[] =
-            message.payload?.room?.messages?.map((msg) => ({
-              senderId: msg.senderId,
-              senderRole: msg.senderRole,
-              message: msg.message,
-              timestamp: msg.timestamp,
-              images: msg.images,
-            })) || []
+          const adminMapMessage: IMessage[] = message.payload?.room?.messages?.map((msg) => mapIncomingMessage(msg)) || []
           if (adminMapMessage && adminMapMessage.length) {
+            // populateOrderMapFromMessages(adminMapMessage)
             setMessages(adminMapMessage)
           }
           setCurrentRoom(message?.payload?.room || null)
           break
         case 'message_sync':
           const syncMsg = message?.payload?.message as unknown as IMessage
+          console.log('syncMsg', syncMsg)
           if (syncMsg) {
             setMessages((prev) => {
               if (isDuplicateMessage(prev, syncMsg)) return prev
@@ -121,6 +125,16 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
       setConnectionStats(websocketService.getConnectionStats())
     }, 3000)
 
+    // if (userOrders) {
+    //   const ordersFromMessages = Object.values(orderMap)
+    //   const allOrders = [...userOrders, ...ordersFromMessages]
+    //   const uniqueOrders = allOrders.reduce((acc: Record<string, IOrdered>, order) => {
+    //     acc[order.orderId] = order
+    //     return acc
+    //   }, {})
+    //   setOrderMap(uniqueOrders)
+    // }
+
     return () => {
       unsubscribe()
       statusUnsubscribe()
@@ -132,6 +146,8 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
       }
     }
   }, [user, user?.customerId, isModule, isOpen])
+
+  console.log('userOrderMap', userOrdersMap)
 
   const getStatusColor = (status: TConnectionStatus) => {
     switch (status) {
@@ -146,16 +162,24 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
   }
 
   // Send message with optimistic update
-  const sendMessage = (message: string, roomId: string, isAdmin: boolean, sendTo?: number) => {
+  const sendMessage = (message: string, roomId: string, isAdmin: boolean, sendTo?: number, options?: SendMessageOptions) => {
     if (!user || !roomId) return
 
+    const messageType = options?.messageType || 'text'
     const timestamp = new Date().toISOString()
     const newMessage: IMessage = {
       senderId: user.customerId,
       senderRole: isAdmin ? 'admin' : 'customer',
       message,
       timestamp,
+      messageType,
+      orderInfo: options?.orderInfo,
     }
+
+    // Add order to map if this is an order message
+    // if (messageType === 'order' && options?.orderInfo) {
+    //   addOrderToMap(options.orderInfo)
+    // }
 
     // Optimistic update - add message to state immediately
     setMessages((prev) => [...prev, newMessage])
@@ -165,6 +189,8 @@ const useMessageChat = ({ user, isModule, isOpen }: { user: IAuthUser | null; is
       action: 'message_send',
       payload: {
         type: 'message',
+        messageType,
+        orderInfo: options?.orderInfo,
         message,
         timestamp: Date.now(),
         roomId,

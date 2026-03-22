@@ -1,5 +1,4 @@
 // Tailwind CSS v4 configuration
-import { type Config } from 'tailwindcss'
 
 const generateNumbers = (start: number, end: number, space = 10) => {
   const numbers: Record<string, string> = {}
@@ -59,20 +58,78 @@ export default {
         xl: '1920px',
       },
       colors: {
-        // Existing colors
+        // ============================================================
+        // Design System brand tokens
+        // Primary:   #ca5025  Secondary: #a96650
+        // Tertiary:  #009bbd  Neutral:   #85736e
+        // ============================================================
+
+        // Primary brand scale — mirrors the overridden orange palette in global.css
         primary: {
-          100: '#E6F6FE',
-          200: '#C0EAFC',
-          300: '#9ADDFB',
-          400: '#4FC3F7',
-          500: '#03A9F4',
-          600: '#0398DC',
-          700: '#026592',
-          800: '#014C6E',
-          900: '#013349',
+          50: '#fff3ee',
+          100: '#ffe2d0',
+          200: '#ffc0a0',
+          300: '#ff9a68',
+          400: '#f47044',
+          500: '#ca5025',
+          600: '#aa421e',
+          700: '#863417',
+          800: '#6a2712',
+          900: '#46190b',
+          950: '#2a0d05',
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
         },
+
+        // Secondary brand scale
+        secondary: {
+          50: '#f8f2f0',
+          100: '#f0e3de',
+          200: '#e0c5bb',
+          300: '#cfa696',
+          400: '#bb8672',
+          500: '#a96650',
+          600: '#8d5241',
+          700: '#6e3f32',
+          800: '#502d23',
+          900: '#321b15',
+          950: '#1a0e0a',
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+
+        // Tertiary / accent (teal) scale
+        tertiary: {
+          50: '#e6f8fb',
+          100: '#ccf1f7',
+          200: '#99e3ef',
+          300: '#66d4e7',
+          400: '#33c5df',
+          500: '#009bbd',
+          600: '#007d97',
+          700: '#005e71',
+          800: '#003f4c',
+          900: '#001f26',
+          950: '#001013',
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+
+        // Neutral brand scale
+        neutral: {
+          50: '#f6f4f3',
+          100: '#ece8e7',
+          200: '#d8d1cf',
+          300: '#c4bab8',
+          400: '#b0a3a0',
+          500: '#85736e',
+          600: '#6e5d59',
+          700: '#574844',
+          800: '#3f342f',
+          900: '#27201b',
+          950: '#130f0c',
+        },
+
         gray: {
           100: '#f7fafc',
           200: '#edf2f7',
@@ -93,10 +150,6 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
@@ -320,4 +373,4 @@ export default {
       },
     },
   },
-} satisfies Config
+}

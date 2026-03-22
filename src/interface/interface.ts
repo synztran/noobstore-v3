@@ -5,6 +5,7 @@ export enum EnumCategoryType {
   SWITCH = 'SWITCH',
   KEYCAP = 'KEYCAP',
   ACCESSORY = 'ACCESSORY',
+  ARTISAN = 'ARTISAN',
 }
 
 export enum EnumProductType {
@@ -25,6 +26,9 @@ export enum EnumSaleStatus {
   GB = 'GB',
   TBD = 'TBD',
   ALL = '',
+  GROUPBUY = 'GROUPBUY',
+  ORDER = 'ORDER',
+  IC = 'IC',
 }
 
 export enum EnumUsedProductStatus {
@@ -312,22 +316,26 @@ export interface ICategory {
   salePricePercent: number
   tax: number
   handle: number
-  // specs?: string;
   thumbnail: {
     path: string
-    size: number
+    alt?: string
+    size?: number
   }
   productBelong?: string
   images?: {
     path: string
-    id: number
+    alt?: string
+    size?: number
   }[]
-  saleType: EnumCategorySaleType
+  saleType?: EnumCategorySaleType
   isActive: boolean
+  isUsed?: boolean
+  isValidSetup?: boolean
   description: string
   collapseContent?: ICollapseContent[]
   salePrice?: number
   content: string
+  timeLine?: Record<string, unknown>
   brand?: string
   rating?: {
     star: number

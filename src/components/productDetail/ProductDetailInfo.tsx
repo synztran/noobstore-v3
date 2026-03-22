@@ -26,8 +26,6 @@ const ProductDetailInfo = ({ category, products, productOptions, selectedOpt, se
   const [showSpecs, setShowSpecs] = useState(false)
   const { rating, brand, categoryName, description, minPrice, maxPrice, status, salePrice, collapseContent, author } = category || {}
 
-  console.log('selectedOpt', selectedOpt)
-
   // Calculate total price
   const totalPriceCurrentOpt = useMemo(() => {
     const basePrice = products?.reduce((acc, product) => {
@@ -190,7 +188,7 @@ const ProductDetailInfo = ({ category, products, productOptions, selectedOpt, se
       )}
 
       {/* Technical Specifications */}
-      {collapseContent && collapseContent.length > 0 && (
+      {/* {collapseContent && collapseContent.length > 0 && (
         <div>
           <button onClick={() => setShowSpecs(!showSpecs)} className="w-full flex justify-between items-center mb-3 group">
             <h3 className="font-bold text-gray-900">Thông số kỹ thuật</h3>
@@ -209,7 +207,7 @@ const ProductDetailInfo = ({ category, products, productOptions, selectedOpt, se
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   )
 }

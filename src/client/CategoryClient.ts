@@ -1,22 +1,12 @@
-import { CATEGORY_API } from "@/constants/APIUri";
-import { IResponse } from "@/interface/Client/interface";
-import { ICategory } from "@/interface/interface";
-import { GET, POST, PUT } from ".";
+import { CATEGORY_API } from '@/constants/APIUri'
+import { IResponse } from '@/interface/Client/interface'
+import { ICategory } from '@/interface/interface'
+import { DELETE, GET, POST, PUT } from '.'
 
-const getAllCategory = async ({
-	ctx,
-	params,
-	signal,
-	isAuth = true,
-}: {
-	ctx?: any;
-	params?: any;
-	signal?: AbortSignal;
-	isAuth?: boolean;
-}): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.ALL_CATEGORY;
-	return GET({ url, params, isAuth, signal, ctx });
-};
+const getAllCategory = async ({ ctx, params, signal, isAuth = true }: { ctx?: any; params?: any; signal?: AbortSignal; isAuth?: boolean }): Promise<IResponse<ICategory>> => {
+  const url = CATEGORY_API.ALL_CATEGORY
+  return GET({ url, params, isAuth, signal, ctx })
+}
 
 // const getAllValidCategory = async ({
 // 	ctx,
@@ -33,52 +23,53 @@ const getAllCategory = async ({
 // 	return GET({ url, params, isAuth, signal, ctx });
 // };
 
-const getCategoryById = async ({
-	id,
-}: {
-	id: string;
-}): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.DETAIL + `/${id}`;
-	return GET({ url, isAuth: false });
-};
+const getCategoryById = async ({ id }: { id: string }): Promise<IResponse<ICategory>> => {
+  const url = CATEGORY_API.DETAIL + `/${id}`
+  return GET({ url, isAuth: false })
+}
 
-const getCategoriesByIds = async (
-	ids: string[]
-): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.ALL_CATEGORIES_BY_IDS;
-	const body = {
-		ids,
-	};
-	return POST({ url, body, isAuth: false });
-};
+const getCategoriesByIds = async (ids: string[]): Promise<IResponse<ICategory>> => {
+  const url = CATEGORY_API.ALL_CATEGORIES_BY_IDS
+  const body = {
+    ids,
+  }
+  return POST({ url, body, isAuth: false })
+}
 
 const postCreateCategory = async ({
-	body,
-	signal,
+  body,
+  signal,
 }: {
-	body: ICategory; // eslint-disable-line
-	signal?: AbortSignal;
+  body: ICategory // eslint-disable-line
+  signal?: AbortSignal
 }): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.CREATE;
-	return POST({ url, body, isAuth: true, signal });
-};
+  const url = CATEGORY_API.CREATE
+  return POST({ url, body, isAuth: true, signal })
+}
 
 const postUpdateCategory = async ({
-	body,
-	signal,
+  body,
+  signal,
 }: {
-	body: ICategory; // eslint-disable-line
-	signal?: AbortSignal;
+  body: ICategory // eslint-disable-line
+  signal?: AbortSignal
 }): Promise<IResponse<ICategory>> => {
-	const url = CATEGORY_API.UPDATE;
-	return PUT({ url, body, isAuth: true, signal });
-};
+  const url = CATEGORY_API.UPDATE
+  return PUT({ url, body, isAuth: true, signal })
+}
+
+const deleteCategories = async ({ categoryIds, signal }: { categoryIds: string[]; signal?: AbortSignal }): Promise<IResponse<ICategory>> => {
+  const url = CATEGORY_API.DELETE
+  const body = { categoryIds }
+  return DELETE({ url, body, isAuth: true, signal })
+}
 
 export default {
-	getAllCategory,
-	getCategoryById,
-	getCategoriesByIds,
-	// getAllValidCategory,
-	postCreateCategory,
-	postUpdateCategory,
-};
+  getAllCategory,
+  getCategoryById,
+  getCategoriesByIds,
+  // getAllValidCategory,
+  postCreateCategory,
+  postUpdateCategory,
+  deleteCategories,
+}

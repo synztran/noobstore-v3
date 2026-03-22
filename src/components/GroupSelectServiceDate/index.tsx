@@ -1,44 +1,32 @@
-import useServicePage from "@/hook/useServicePage";
-import useServicePlanQuery from "@/react-query/services/api/useServicePlanQueries";
-import { formatCurrency } from "@/utils/FormatNumber";
-import useServices, {
-  useServiceAction,
-  IServicePlan,
-} from "@/zustand/useServices";
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
-import React, { useEffect } from "react";
-import { ErrorMessage } from "@/components/ErrorMessage"; // Import ErrorMessage
+import useServicePage from '@/hook/useServicePage'
+import useServicePlanQuery from '@/react-query/services/api/useServicePlanQueries'
+import { formatCurrency } from '@/utils/FormatNumber'
+import useServices, { IServicePlan, useServiceAction } from '@/zustand/useServices'
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material'
+import React, { useEffect } from 'react'
+import ErrorMessage from '../ErrorMessage'
 
 interface IProps {
-  options?: IServicePlan[];
+  options?: IServicePlan[]
 }
 const GroupSelectServiceDate = (props: IProps) => {
-  const { selectedPlan, selectedOpt, errorMessages } = useServices();
-  const { selectPlan } = useServiceAction();
-  const { data: planOptions, isPending } = useServicePlanQuery();
+  const { selectedPlan, selectedOpt, errorMessages } = useServices()
+  const { selectPlan } = useServiceAction()
+  const { data: planOptions, isPending } = useServicePlanQuery()
 
-  const currentSelection =
-    selectedPlan || selectedOpt || (planOptions?.[0] as IServicePlan);
+  const currentSelection = selectedPlan || selectedOpt || (planOptions?.[0] as IServicePlan)
 
   useEffect(() => {
     if (planOptions) {
-      selectPlan(planOptions?.[0] as IServicePlan);
+      selectPlan(planOptions?.[0] as IServicePlan)
     }
-  }, [planOptions]);
+  }, [planOptions])
 
   if (isPending) {
     return (
       <div className="w-full grid grid-cols-2 gap-2">
         {Array.from({ length: 2 }).map((_, idx) => (
-          <div
-            key={idx}
-            className="h-40 bg-white rounded-md p-4 flex flex-col justify-between shadow relative"
-          >
+          <div key={idx} className="h-40 bg-white rounded-md p-4 flex flex-col justify-between shadow relative">
             <div>
               <div className="h-6 w-1/2 bg-gray-200 animate-pulse rounded mb-2" />
               <div className="h-4 w-2/3 bg-gray-200 animate-pulse rounded mb-4" />
@@ -53,7 +41,7 @@ const GroupSelectServiceDate = (props: IProps) => {
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   return (
@@ -61,33 +49,21 @@ const GroupSelectServiceDate = (props: IProps) => {
       {/* Show error message if there is an error for selectedPlan */}
       {errorMessages?.selectedPlan && (
         <div className="mb-2">
-          <ErrorMessage
-            message={errorMessages.selectedPlan}
-            type="error"
-            autoHide
-          />
+          <ErrorMessage message={errorMessages.selectedPlan} type="error" autoHide />
         </div>
       )}
-      <FormControl
-        className={`!grid grid-cols-${planOptions?.length} gap-2 w-full`}
-      >
+      <FormControl className={`!grid grid-cols-${planOptions?.length} gap-2 w-full`}>
         {planOptions?.map((option, index) => (
-          <RadioGroup
-            key={index}
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue={planOptions?.[0]?.planId}
-            defaultChecked={option.planId === currentSelection?.planId}
-            name="radio-buttons-group"
-          >
+          <RadioGroup key={index} aria-labelledby="demo-radio-buttons-group-label" defaultValue={planOptions?.[0]?.planId} defaultChecked={option.planId === currentSelection?.planId} name="radio-buttons-group">
             <Wrapper option={option as unknown as IServicePlan} key={index}>
               <FormControlLabel
                 checked={option.planId === currentSelection?.planId}
                 value={option.planId}
                 control={<Radio className="p-0" />}
                 label=""
-                classes={{ root: "mr-0" }}
+                classes={{ root: 'mr-0' }}
                 onChange={() => {
-                  selectPlan(option as unknown as IServicePlan);
+                  selectPlan(option as unknown as IServicePlan)
                 }}
               />
             </Wrapper>
@@ -95,42 +71,26 @@ const GroupSelectServiceDate = (props: IProps) => {
         ))}
       </FormControl>
     </div>
-  );
-};
+  )
+}
 
-export default GroupSelectServiceDate;
+export default GroupSelectServiceDate
 
-const Wrapper = ({
-  children,
-  option,
-  onClick,
-}: {
-  children: React.ReactNode;
-  option: IServicePlan;
-  onClick?: () => void;
-}) => {
-  const { selectedPlan, selectedOpt } = useServices();
-  const { selectPlan } = useServiceAction();
-  const { calculateExpectedPlan } = useServicePage();
+const Wrapper = ({ children, option, onClick }: { children: React.ReactNode; option: IServicePlan; onClick?: () => void }) => {
+  const { selectedPlan, selectedOpt } = useServices()
+  const { selectPlan } = useServiceAction()
+  const { calculateExpectedPlan } = useServicePage()
 
   // Use new selectedPlan or fallback to legacy selectedOpt
-  const currentSelection = selectedPlan || selectedOpt;
+  const currentSelection = selectedPlan || selectedOpt
 
   return (
-    <div
-      className={`w-full min-h-[160px] rounded-xl p-4 border-2 shadow-lg bg-gray-100 flex flex-col justify-between cursor-pointer hover:border-blue-500 hover:shadow-lg ${
-        option.planId === currentSelection?.planId ? "border-blue-700" : ""
-      }`}
-      onClick={() => selectPlan(option)}
-    >
+    <div className={`w-full min-h-[160px] rounded-xl p-4 border-2 shadow-lg bg-gray-100 flex flex-col justify-between cursor-pointer hover:border-blue-500 hover:shadow-lg ${option.planId === currentSelection?.planId ? 'border-blue-700' : ''}`} onClick={() => selectPlan(option)}>
       <div className="flex justify-between items-center">
         <span className="text-lg font-bold">{option.name}</span>
         {children}
       </div>
-      <div
-        className="text-sm"
-        dangerouslySetInnerHTML={{ __html: option.description }}
-      />
+      <div className="text-sm" dangerouslySetInnerHTML={{ __html: option.description }} />
       <div className="flex justify-between items-end mt-auto">
         <div className="flex flex-col">
           <strong>Dự kiến</strong>
@@ -143,10 +103,8 @@ const Wrapper = ({
             Từ {option.min} ~ {option.max} ngày làm việc
           </span>
         </div>
-        <span className="font-bold text-[24px]">
-          {option.price > 0 ? formatCurrency(option.price) : ""}
-        </span>
+        <span className="font-bold text-[24px]">{option.price > 0 ? formatCurrency(option.price) : ''}</span>
       </div>
     </div>
-  );
-};
+  )
+}

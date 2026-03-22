@@ -3,17 +3,22 @@ export enum EnumResponseStatus {
   ERROR = 'ERROR',
 }
 
+export interface IPagination {
+  page: number
+  total: number
+  totalPage: number
+  total_items?: number
+  limit?: number
+  total_pages?: number
+}
+
 export interface IResponse<T> {
   message: string
   status: EnumResponseStatus
   code: number
   data?: T[]
   errorCode?: string
-  pagination?: {
-    page: number
-    total: number
-    totalPage: number
-  }
+  pagination?: IPagination
 }
 
 export interface IRequest {

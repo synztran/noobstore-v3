@@ -137,7 +137,7 @@ export default InputQuantity
 
 const MinusButton = ({ handleDecreaseQuantity, isDisabled = false }: { handleDecreaseQuantity: (e: React.MouseEvent<HTMLElement>) => void; isDisabled: boolean }) => {
   return (
-    <Button className="w-6 min-w-[2.5rem] !h-[40px] rounded-tr-none rounded-br-none" onClick={handleDecreaseQuantity} disabled={isDisabled}>
+    <Button className="w-6 min-w-10 h-10 rounded-tr-none rounded-br-none rounded-md" onClick={handleDecreaseQuantity} disabled={isDisabled}>
       -
     </Button>
   )
@@ -201,7 +201,7 @@ const ProductQuantity = memo(({ quantity, handleOnChange }: { quantity: number; 
 
 const AddMoreButton = ({ handleIncreaseQuantity, isDisabled = false }: { handleIncreaseQuantity: (e: React.MouseEvent<HTMLElement>) => void; isDisabled: boolean }) => {
   return (
-    <Button className="w-8 !min-w-[2.5rem] !h-[40px] rounded-tl-none rounded-bl-none" onClick={handleIncreaseQuantity} disabled={isDisabled}>
+    <Button className="w-8 !min-w-10 !h-10 rounded-tl-none rounded-bl-none rounded-tr-md rounded-br-md" onClick={handleIncreaseQuantity} disabled={isDisabled}>
       +
     </Button>
   )

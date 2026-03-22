@@ -1,10 +1,13 @@
 import { useAuth } from '@/context/Auth'
 import useMessageChat from '@/hook/useChat'
 import { useCalcBodyHeight } from '@/hook/useConfig'
+import { IOrdered } from '@/interface/Client/Order'
 import { IAuthUser } from '@/interface/Context/auth'
+import useMyOrdersQuery from '@/react-query/order/api/useMyOrdersQuery'
 import { websocketService } from '@/services/ChatWS'
+import { formatCurrency } from '@/utils/FormatNumber'
 import { Drawer } from '@mui/material'
-import { X } from 'lucide-react'
+import { Receipt, X } from 'lucide-react'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ChatHeader from './ChatHeader'
@@ -23,7 +26,15 @@ const ChatComponent = ({ isModule = false }: IProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isInitializing, setInitializing] = useState(true)
   const [isSwichCustomer, setSwichCustomer] = useState(false)
-  const { listRoom, messages, currentRoom, connectionStatus, connectionStats, getStatusColor, sendMessage } = useMessageChat({ user, isModule, isOpen })
+  const { data: orders = [], isLoading } = useMyOrdersQuery()
+  const userOrdersMap = orders.reduce(
+    (map, order) => {
+      map[order.orderId] = order
+      return map
+    },
+    {} as Record<string, IOrdered>
+  )
+  const { listRoom, messages, currentRoom, connectionStatus, connectionStats, getStatusColor, sendMessage } = useMessageChat({ user, userOrdersMap, isModule, isOpen })
   const { bodyHeight } = useCalcBodyHeight({})
   const messageListRef = useRef<HTMLDivElement>(null)
 
@@ -92,7 +103,7 @@ const ChatComponent = ({ isModule = false }: IProps) => {
           </div>
           <div className="flex flex-col bg-gray-100 h-full relative">
             {isInitializing ? (
-              <div className="absolute flex items-center justify-center h-full w-full bg-white z-[11]">
+              <div className="absolute flex items-center justify-center h-full w-full bg-white z-11">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
               </div>
             ) : null}
@@ -101,7 +112,28 @@ const ChatComponent = ({ isModule = false }: IProps) => {
                 <div key={index} className={`flex gap-2 mb-2 ${msg.senderRole ? 'flex-row' : 'flex-row-reverse'}`}>
                   <Image src={msg.senderRole === 'admin' ? currentRoom?.adminInfo?.avatar || '' : currentRoom?.customerInfo?.avatar || user?.avatar} alt="avatar" width={32} height={32} className="w-8 h-8 rounded-full" />
                   <div className={`flex flex-col w-full max-w-[80%] ${msg.senderRole ? 'items-start' : 'items-end'}`}>
-                    <div className={`px-4 py-2 rounded-lg max-w-[95%] break-words ${msg.senderRole === 'admin' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}>{msg.message}</div>
+                    <div className={`px-4 py-2 rounded-lg max-w-[95%] wrap-break-word ${msg.senderRole === 'admin' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}>
+                      {msg.messageType === 'order' && msg.orderInfo ? (
+                        <div className="min-w-50 space-y-1 text-xs">
+                          <div className="flex items-center gap-1.5 font-semibold">
+                            <Receipt className="h-3.5 w-3.5" />
+                            Liên kết đơn hàng
+                          </div>
+                          {(() => {
+                            const orderInfo = userOrdersMap[msg.orderInfo.orderId] || msg.orderInfo
+                            return (
+                              <>
+                                <p className="text-sm font-bold">Đơn #{orderInfo.orderId}</p>
+                                <p>Tổng tiền: {formatCurrency(orderInfo.totalPrice || 0)}</p>
+                                <p>Số lượng: {orderInfo.totalQuantity || 0} sản phẩm</p>
+                              </>
+                            )
+                          })()}
+                        </div>
+                      ) : (
+                        msg.message
+                      )}
+                    </div>
                     <span className="text-xs text-gray-500 mt-1">{new Date(msg.timestamp).toLocaleTimeString()}</span>
                   </div>
                 </div>
@@ -129,7 +161,7 @@ const ChatComponent = ({ isModule = false }: IProps) => {
 
       {/* Left Sidebar with Room List - for admin */}
       {isAdmin && (
-        <aside className="w-full max-w-[380px] flex flex-col border-r border-gray-200 bg-white h-full">
+        <aside className="w-full max-w-95 flex flex-col border-r border-gray-200 bg-white h-full">
           {/* Search & Filters */}
           <div className="p-4 border-b border-gray-200 space-y-4">
             <div className="relative">
@@ -198,8 +230,8 @@ const ChatComponent = ({ isModule = false }: IProps) => {
       <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50 relative">
         {/* Loading overlay when switching customer */}
         {isSwichCustomer && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-[11]">
-            <MessageList messages={[]} currentRoom={null} user={user} isAdmin={isAdmin} isLoading={true} />
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-sm z-11">
+            <MessageList messages={[]} currentRoom={null} user={user} isAdmin={isAdmin} isLoading={true} orderMap={userOrdersMap} />
           </div>
         )}
 
@@ -207,7 +239,7 @@ const ChatComponent = ({ isModule = false }: IProps) => {
         <ChatHeader currentRoom={currentRoom} isAdmin={isAdmin} />
 
         {/* Message List */}
-        <MessageList ref={messageListRef} messages={messages} currentRoom={currentRoom} user={user} isAdmin={isAdmin} />
+        <MessageList ref={messageListRef} messages={messages} currentRoom={currentRoom} user={user} isAdmin={isAdmin} orderMap={userOrdersMap} />
 
         {/* Chat Input */}
         <ChatInput connectionStatus={connectionStatus} roomId={websocketService.getRoomId()} user={user} isAdmin={isAdmin} currentRoom={currentRoom} onSendMessage={sendMessage} />

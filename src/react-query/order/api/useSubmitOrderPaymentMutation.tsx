@@ -1,6 +1,7 @@
 import UserClient from '@/client/UserClient'
 import { IResponse } from '@/interface/Client/interface'
 import { TPayloadSubmitOrderPayment } from '@/interface/Context/auth'
+import { appQueryKeys } from '@/react-query/root'
 import NotifyUtils from '@/utils/NotifyUtils'
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 
@@ -24,7 +25,7 @@ export function useSubmitOrderPaymentMutation(mutationOptions: UseMutationOption
       NotifyUtils.success('Gửi thanh toán đơn hàng thành công')
       // Invalidate raffle list query to refetch updated data
       queryClient.invalidateQueries({
-        queryKey: ['order', 'getMyOrders'],
+        queryKey: ['order', 'getMyOrders', appQueryKeys.order.getOrderDetail],
       })
     },
     ...mutationOptions,

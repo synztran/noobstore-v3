@@ -1,3 +1,4 @@
+import { ProductCardData } from '@/components/shop/ShopProductCard'
 import { EnumSaleStatus, ICategory } from '@/interface/interface'
 import useCategoryQuery from '@/react-query/shop/api/useCategoryQueries'
 import { useRouter } from 'next/router'
@@ -22,7 +23,16 @@ export interface PriceRange {
   max: number
 }
 
-export type SortOption = 'popular' | 'newest' | 'price_asc' | 'price_desc'
+export enum EnumSortOption {
+  POPULAR = 'POPULAR',
+  NEWEST = 'NEWEST',
+  PRICE_ASC = 'PRICE_ASC',
+  PRICE_DESC = 'PRICE_DESC',
+  RATING_DESC = 'RATING_DESC',
+  RATING_ASC = 'RATING_ASC',
+}
+
+export type SortOption = EnumSortOption
 
 interface ShopFilters {
   status: string
@@ -68,14 +78,32 @@ const FILTER_SECTIONS: FilterSection[] = [
   },
 ]
 
-export const SORT_OPTIONS = [
-  { value: 'popular', label: 'Phổ biến' },
-  { value: 'newest', label: 'Mới nhất' },
-  { value: 'price_asc', label: 'Giá: Thấp đến Cao' },
-  { value: 'price_desc', label: 'Giá: Cao đến Thấp' },
+export const SORT_OPTIONS: { value: EnumSortOption; label: string }[] = [
+  { value: EnumSortOption.POPULAR, label: 'Phổ biến' },
+  { value: EnumSortOption.NEWEST, label: 'Mới nhất' },
+  { value: EnumSortOption.PRICE_ASC, label: 'Giá: Thấp đến Cao' },
+  { value: EnumSortOption.PRICE_DESC, label: 'Giá: Cao đến Thấp' },
+  { value: EnumSortOption.RATING_DESC, label: 'Đánh giá: Cao đến Thấp' },
+  { value: EnumSortOption.RATING_ASC, label: 'Đánh giá: Thấp đến Cao' },
 ] as const
 
 const DEFAULT_PRICE_RANGE: PriceRange = { min: 0, max: 5000000 }
+
+function mapCategoryStatus(status: ICategory['status']): ProductCardData['status'] {
+  switch (status) {
+    case EnumSaleStatus.INSTOCK:
+      return 'IN_STOCK'
+    case EnumSaleStatus.OUTSTOCK:
+      return 'SOLD_OUT'
+    case EnumSaleStatus.GB:
+    case EnumSaleStatus.GROUPBUY:
+      return 'PRE_ORDER'
+    case EnumSaleStatus.TBD:
+      return 'NEW'
+    default:
+      return undefined
+  }
+}
 
 const useShop = () => {
   const router = useRouter()
@@ -86,7 +114,7 @@ const useShop = () => {
   const [filterSections, setFilterSections] = useState<FilterSection[]>(FILTER_SECTIONS)
   const [priceRange, setPriceRange] = useState<PriceRange>(DEFAULT_PRICE_RANGE)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortOption, setSortOption] = useState<SortOption>('popular')
+  const [sortOption, setSortOption] = useState<SortOption>(EnumSortOption.POPULAR)
 
   // Sync with URL query params
   useEffect(() => {
@@ -100,7 +128,7 @@ const useShop = () => {
 
   // API Query
   const {
-    data: categoryList,
+    data: categoryQueryResult,
     isLoading,
     refetch,
   } = useCategoryQuery({
@@ -108,49 +136,71 @@ const useShop = () => {
     isValidate: true,
   })
 
+  const categoryList = categoryQueryResult?.items ?? []
+
+  // Transform ICategory → ProductCardData
+  const products = useMemo<ProductCardData[]>(
+    () =>
+      categoryList.map((category) => ({
+        id: category.categoryId || category.slug || '',
+        name: category.categoryName,
+        brand: category.brand || category.author || 'NoobStore',
+        description: category.description,
+        price: category.minPrice || category.maxPrice || 0,
+        // originalPrice: category.maxPrice !== category.minPrice ? category.maxPrice : undefined,
+        rating: typeof category.rating === 'object' ? category.rating.star : 4.5,
+        reviewCount: typeof category.rating === 'object' ? category.rating.rateMessages?.length || 0 : 0,
+        images: category.images?.length ? category.images.map((img) => img.path) : [category.thumbnail?.path || '/images/placeholder.png'],
+        status: mapCategoryStatus(category.status),
+        isFavorited: false,
+        slug: category.slug || '',
+        salePrice: category.salePrice || 0,
+        salePricePercent: category.salePricePercent || 0,
+      })),
+    [categoryList]
+  )
+
   // Computed values
-  const totalResults = useMemo(() => categoryList?.length || 0, [categoryList])
+  const totalResults = useMemo(() => products.length, [products])
 
   const filteredProducts = useMemo(() => {
-    if (!categoryList) return []
+    if (!products.length) return []
 
-    let filtered = [...categoryList]
+    let filtered = [...products]
 
     // Filter by search
     if (searchQuery) {
       const searchLower = searchQuery.toLowerCase()
-      filtered = filtered.filter((item: ICategory) => item.categoryName?.toLowerCase().includes(searchLower) || item.description?.toLowerCase().includes(searchLower) || item.brand?.toLowerCase().includes(searchLower))
+      filtered = filtered.filter((item) => item.name?.toLowerCase().includes(searchLower) || item.description?.toLowerCase().includes(searchLower) || item.brand?.toLowerCase().includes(searchLower))
     }
 
     // Filter by price range
-    filtered = filtered.filter((item: ICategory) => {
-      const price = item.minPrice || 0
-      return price >= priceRange.min && price <= priceRange.max
-    })
+    filtered = filtered.filter((item) => item.price >= priceRange.min && item.price <= priceRange.max)
 
     // Sort
     switch (sortOption) {
-      case 'newest':
-        // Sort by dateStart or categoryId as proxy for creation date
-        filtered.sort((a, b) => {
-          const dateA = a.dateStart ? new Date(a.dateStart).getTime() : 0
-          const dateB = b.dateStart ? new Date(b.dateStart).getTime() : 0
-          return dateB - dateA
-        })
+      case EnumSortOption.NEWEST:
+        filtered.sort((a, b) => String(b.id).localeCompare(String(a.id)))
         break
-      case 'price_asc':
-        filtered.sort((a, b) => (a.minPrice || 0) - (b.minPrice || 0))
+      case EnumSortOption.PRICE_ASC:
+        filtered.sort((a, b) => a.price - b.price)
         break
-      case 'price_desc':
-        filtered.sort((a, b) => (b.minPrice || 0) - (a.minPrice || 0))
+      case EnumSortOption.PRICE_DESC:
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case EnumSortOption.RATING_DESC:
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        break
+      case EnumSortOption.RATING_ASC:
+        filtered.sort((a, b) => (a.rating || 0) - (b.rating || 0))
         break
       default:
-        // popular - keep original order or sort by rating
-        filtered.sort((a, b) => (b.rating?.star || 0) - (a.rating?.star || 0))
+        // popular — sort by review count
+        filtered.sort((a, b) => b.reviewCount - a.reviewCount)
     }
 
     return filtered
-  }, [categoryList, searchQuery, priceRange, sortOption])
+  }, [products, searchQuery, priceRange, sortOption])
 
   // Actions
   const toggleMobileFilters = useCallback(() => {
@@ -194,7 +244,7 @@ const useShop = () => {
     setFilterSections(FILTER_SECTIONS)
     setPriceRange(DEFAULT_PRICE_RANGE)
     setSearchQuery('')
-    setSortOption('popular')
+    setSortOption(EnumSortOption.POPULAR)
     router.replace({ pathname: router.pathname, query: {} }, undefined, { shallow: true })
   }, [router])
 
@@ -202,7 +252,7 @@ const useShop = () => {
     const query: Record<string, string> = {}
 
     if (searchQuery) query.search = searchQuery
-    if (sortOption !== 'popular') query.sort = sortOption
+    if (sortOption !== EnumSortOption.POPULAR) query.sort = sortOption
 
     router.replace({ pathname: router.pathname, query }, undefined, { shallow: true })
     closeMobileFilters()

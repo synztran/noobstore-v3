@@ -1,26 +1,18 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Collapsible as CollapsiblePrimitive } from 'radix-ui'
-import { ChevronDown, ShieldCheck, CheckCircle, Clock, XCircle, AlertTriangle, QrCode, Eye } from 'lucide-react'
-import { EnumPaymentStatus, EnumPaymentMethod } from '@/interface/interface'
+import { VIETINBANK_QR } from '@/constants/Images'
+import { IOrdered } from '@/interface/Client/Order'
+import { EnumOrderStatus, EnumPaymentMethod, EnumPaymentStatus } from '@/interface/interface'
 import dayjs from 'dayjs'
+import { AlertTriangle, CheckCircle, Clock, Eye, ShieldCheck, XCircle } from 'lucide-react'
+import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+import ExistingData from '../ExistingData'
 
-interface PaymentInfo {
-  paymentStatus?: EnumPaymentStatus
-  paymentMethod?: EnumPaymentMethod
-  orderId?: string
-  orderedAt?: string
-  submittedAt?: string
-  verifiedAt?: string
-  verifiedBy?: string
-  cancelReason?: string
-  qrCodeUrl?: string
-  paymentDeadline?: string
-}
+type TPaymentInfo = Pick<IOrdered, 'paymentStatus' | 'paymentMethod' | 'orderId' | 'orderedAt' | 'paymentConfirmedAt' | 'updatedAt' | 'verifiedBy' | 'orderStatus'>
 
 interface PaymentStatusCardProps {
-  paymentInfo: PaymentInfo
+  paymentInfo: TPaymentInfo
 }
 
 const formatDate = (date?: string, format = 'DD/MM/YYYY') => {
@@ -85,7 +77,8 @@ const useCountdown = (deadline?: string) => {
 }
 
 // Payment Required - QR Code with countdown
-const PaymentPending: React.FC<{ info: PaymentInfo }> = ({ info }) => {
+const PaymentPending: React.FC<{ info: TPaymentInfo }> = ({ info }) => {
+  console.log(info.orderStatus)
   const defaultDeadline = dayjs().add(24, 'hour').toISOString()
   const deadline = info.orderedAt ? dayjs(info.orderedAt).add(24, 'hour').toISOString() : defaultDeadline
   const countdown = useCountdown(deadline)
@@ -112,15 +105,9 @@ const PaymentPending: React.FC<{ info: PaymentInfo }> = ({ info }) => {
       </div>
 
       {/* QR Code */}
-      <div className="flex flex-col items-center">
-        <div className="relative bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-          {info.qrCodeUrl ? (
-            <img src={info.qrCodeUrl} alt="Payment QR Code" className="w-32 h-32 object-contain" />
-          ) : (
-            <div className="w-32 h-32 bg-linear-to-br from-slate-100 to-slate-50 rounded-lg flex items-center justify-center">
-              <QrCode className="size-12 text-slate-400" />
-            </div>
-          )}
+      <div className={`flex flex-col items-center h-96 ${info.orderStatus === EnumOrderStatus.CANCELLED ? 'sr-only' : ''}`}>
+        <div className="relative p-3 rounded-xl shadow-sm border border-slate-200 w-full h-full aspect-auto overflow-hidden">
+          <Image alt="Payment QR Code" src={VIETINBANK_QR} layout="fill" objectFit="cover" className="scale-125 top-11!" />
         </div>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">Quét mã QR để thanh toán</p>
       </div>
@@ -141,7 +128,7 @@ const PaymentPending: React.FC<{ info: PaymentInfo }> = ({ info }) => {
 }
 
 // Payment Submitted - Awaiting verification
-const PaymentSubmitted: React.FC<{ info: PaymentInfo }> = ({ info }) => (
+const PaymentSubmitted: React.FC<{ info: TPaymentInfo }> = ({ info }) => (
   <div className="space-y-4">
     {/* Header */}
     <div className="flex items-center gap-3 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg">
@@ -162,7 +149,7 @@ const PaymentSubmitted: React.FC<{ info: PaymentInfo }> = ({ info }) => (
       </div>
       <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
         <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Ngày gửi</span>
-        <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(info.submittedAt || info.orderedAt)}</span>
+        <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(info.updatedAt || info.orderedAt)}</span>
       </div>
       <div className="flex justify-between items-center py-2">
         <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Mã giao dịch</span>
@@ -173,10 +160,10 @@ const PaymentSubmitted: React.FC<{ info: PaymentInfo }> = ({ info }) => (
 )
 
 // Payment Verified/Paid
-const PaymentVerified: React.FC<{ info: PaymentInfo }> = ({ info }) => (
+const PaymentVerified: React.FC<{ info: TPaymentInfo }> = ({ info }) => (
   <div className="space-y-4">
     {/* Header */}
-    <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg">
+    {/* <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 p-3 rounded-lg">
       <div className="p-1.5 bg-emerald-100 dark:bg-emerald-800/50 rounded-full">
         <CheckCircle className="size-4" />
       </div>
@@ -189,21 +176,30 @@ const PaymentVerified: React.FC<{ info: PaymentInfo }> = ({ info }) => (
           Đã xác minh {formatTime(info.verifiedAt)}
         </span>
       </div>
-    </div>
+    </div> */}
 
     {/* Info */}
     <div className="space-y-2 text-xs">
+      <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+        <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Phương thức</span>
+        <span className="font-medium text-slate-700 dark:text-slate-300 font-mono">{getPaymentMethodLabel(info.paymentMethod)}</span>
+      </div>
+      <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
+        <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Trạng thái</span>
+        <span className="inline-flex items-center gap-1 text-xs bg-emerald-100 dark:bg-emerald-800/50 px-2 py-1 rounded-full">
+          <CheckCircle className="size-3" />
+          Đã xác minh {formatTime(info.paymentConfirmedAt)}
+        </span>
+      </div>
       <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
         <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Mã giao dịch</span>
         <span className="font-medium text-slate-700 dark:text-slate-300 font-mono">TRX-{info.orderId?.slice(-6) || 'N/A'}</span>
       </div>
       <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
-        <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Ngày gửi</span>
-        <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(info.submittedAt || info.orderedAt)}</span>
-      </div>
-      <div className="flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700">
         <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Ngày xác minh</span>
-        <span className="font-medium text-slate-700 dark:text-slate-300">{formatDate(info.verifiedAt)}</span>
+        <span className="font-medium text-slate-700 dark:text-slate-300">
+          <ExistingData value={info?.paymentConfirmedAt} />
+        </span>
       </div>
       <div className="flex justify-between items-center py-2">
         <span className="text-slate-400 uppercase tracking-wide text-[10px] font-semibold">Xác minh bởi</span>
@@ -220,7 +216,7 @@ const PaymentVerified: React.FC<{ info: PaymentInfo }> = ({ info }) => (
 )
 
 // Payment Cancelled/Voided
-const PaymentCancelled: React.FC<{ info: PaymentInfo }> = ({ info }) => (
+const PaymentCancelled: React.FC<{ info: TPaymentInfo }> = ({ info }) => (
   <div className="space-y-4">
     {/* Header */}
     <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 p-3 rounded-lg">
@@ -242,7 +238,7 @@ const PaymentCancelled: React.FC<{ info: PaymentInfo }> = ({ info }) => (
     <div className="space-y-2 text-xs border-t border-slate-100 dark:border-slate-700 pt-3">
       <div className="flex justify-between items-center py-1">
         <span className="text-slate-400">Lý do</span>
-        <span className="font-medium text-slate-700 dark:text-slate-300">{info.cancelReason || 'Người dùng yêu cầu'}</span>
+        <span className="font-medium text-slate-700 dark:text-slate-300">Hết thời gian thanh toán</span>
       </div>
       <div className="flex justify-between items-center py-1">
         <span className="text-slate-400">Phương thức</span>
@@ -254,14 +250,14 @@ const PaymentCancelled: React.FC<{ info: PaymentInfo }> = ({ info }) => (
 
 // Main Component
 const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({ paymentInfo }) => {
-  const [expanded, setExpanded] = useState(false)
   const { paymentStatus } = paymentInfo
+  console.log('paymentInfo', paymentInfo)
 
   const getStatusIcon = () => {
     switch (paymentStatus) {
       case EnumPaymentStatus.PAID:
         return <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400" />
-      case EnumPaymentStatus.SUBMITTED:
+      case EnumPaymentStatus.CHECKING:
         return <ShieldCheck className="size-5 text-blue-600 dark:text-blue-400" />
       case EnumPaymentStatus.CANCELLED:
         return <XCircle className="size-5 text-slate-500 dark:text-slate-400" />
@@ -274,7 +270,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({ paymentInfo }) =>
     switch (paymentStatus) {
       case EnumPaymentStatus.PAID:
         return 'Đã thanh toán'
-      case EnumPaymentStatus.SUBMITTED:
+      case EnumPaymentStatus.CHECKING:
         return 'Đang xác minh'
       case EnumPaymentStatus.CANCELLED:
         return 'Đã huỷ'
@@ -287,7 +283,7 @@ const PaymentStatusCard: React.FC<PaymentStatusCardProps> = ({ paymentInfo }) =>
     switch (paymentStatus) {
       case EnumPaymentStatus.PAID:
         return <PaymentVerified info={paymentInfo} />
-      case EnumPaymentStatus.SUBMITTED:
+      case EnumPaymentStatus.CHECKING:
         return <PaymentSubmitted info={paymentInfo} />
       case EnumPaymentStatus.CANCELLED:
         return <PaymentCancelled info={paymentInfo} />
